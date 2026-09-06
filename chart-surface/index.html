@@ -1228,12 +1228,14 @@
         if (event.key === 'stock-analysis-coverage-overrides') window.location.reload();
       });
       let layoutSyncTimer;
+      let chartResizeObserver;
       function syncResponsiveMode() {
         const viewportWidth = getViewportWidth();
         const viewportHeight = Math.round(window.visualViewport?.height || document.documentElement.clientHeight || window.innerHeight);
         document.documentElement.classList.toggle('force-phone-portrait', viewportWidth <= 560 && viewportHeight > viewportWidth);
       }
       function scheduleLayoutSync() {
+        syncResponsiveMode();
         if (!chart) return;
         cancelAnimationFrame(layoutSyncTimer);
         const sync = () => {
@@ -1258,8 +1260,11 @@
       window.addEventListener('orientationchange', scheduleLayoutSync, { passive: true });
       window.visualViewport?.addEventListener('resize', scheduleLayoutSync, { passive: true });
       if (!L || !datasets) { $('chart-stack').innerHTML = '<div class="chart-error">Chart library or benchmark data could not be loaded.</div>'; return; }
+      chartResizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(scheduleLayoutSync) : null;
+      chartResizeObserver?.observe($('chart-stack'));
       window.__chartSurface = { getPriceRange: () => candleSeries?.priceScale().getVisibleRange(), getLayers: () => ({ ...state.layers }) };
       render();
+      scheduleLayoutSync();
     })();
   </script>
 </body>
