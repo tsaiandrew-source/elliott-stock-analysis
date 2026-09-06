@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>股票分析圖表層</title>
+  <script src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071018;
+      --surface: #0d1a25;
+      --surface-2: #112433;
+      --line: #203849;
+      --text: #edf6fb;
+      --muted: #91a8b7;
+      --blue: #2d9cff;
+      --aqua: #55d9d5;
+      --amber: #f2b84b;
+      --pink: #ef83a8;
+      --purple: #9a66c7;
+      --green: #65d49b;
+      --red: #ff7e8f;
+      --pattern-family: #c8f169;
+      --pattern-family-confirm: #7ee787;
+      --pattern-family-invalid: #4fd1a5;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, select { font: inherit; }
+    .shell { max-width: 1280px; margin: 0 auto; padding: 20px; }
+    .topbar { position: relative; display: flex; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .eyebrow { color: var(--aqua); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { color: var(--aqua); font-size: clamp(18px, 2.2vw, 20px); line-height: 1.1; margin-top: 4px; }
+    h2 { font-size: 17px; }
+    h3 { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+    .menu-backdrop { position: fixed; z-index: 49; inset: 0; border: 0; background: rgba(3, 9, 14, .48); cursor: pointer; }
+    .menu-backdrop[hidden], .ticker-sheet[hidden] { display: none; }
+    .floating-dock { position: fixed; z-index: 60; top: 14px; right: 50%; display: flex; align-items: center; gap: 7px; transform: translateX(50%); padding: 7px; border: 1px solid rgba(85, 217, 213, .38); border-radius: 17px; background: rgba(85, 217, 213, .06); box-shadow: 0 14px 38px rgba(0, 0, 0, .34), 0 0 0 1px rgba(85,217,213,.06) inset; backdrop-filter: blur(3px); }
+    .dock-action { display: inline-flex; align-items: center; gap: 7px; min-width: 102px; height: 42px; padding: 7px 12px; border: 0; border-radius: 11px; color: var(--muted); background: transparent; text-decoration: none; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .dock-action:hover, .dock-action:focus-visible, .dock-action.is-active { color: var(--text); background: var(--surface-2); }
+    .dock-action.is-active { color: var(--aqua); box-shadow: inset 0 -2px var(--aqua); }
+    .dock-icon { display: grid; place-items: center; width: 24px; height: 24px; color: var(--aqua); font-size: 20px; line-height: 1; }
+    .dock-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .ticker-sheet { position: fixed; z-index: 50; top: 73px; right: 50%; width: min(460px, calc(100vw - 28px)); height: 44vh; max-height: 44vh; overflow: hidden; transform: translateX(50%); padding: 13px; border: 1px solid rgba(85, 217, 213, .35); border-radius: 16px; background: rgba(13, 26, 37, .98); box-shadow: 0 18px 46px rgba(0,0,0,.42); }
+    .ticker-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .ticker-sheet-head strong { color: var(--aqua); font-size: 13px; }
+    .ticker-sheet-head span { color: var(--muted); font-size: 11px; }
+    .ticker-sheet-close { border: 0; color: var(--muted); background: transparent; font-size: 22px; line-height: 1; cursor: pointer; }
+    .ticker-sheet-close:hover, .ticker-sheet-close:focus-visible { color: var(--text); }
+    .ticker-wheel { display: flex; flex-direction: column; height: calc(44vh - 100px); overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: thin; scrollbar-color: var(--aqua) transparent; border: 1px solid var(--line); border-radius: 11px; background: rgba(7,16,24,.52); }
+    .ticker-wheel-item { display: flex; flex: 0 0 42px; align-items: center; justify-content: space-between; gap: 10px; scroll-snap-align: center; padding: 6px 13px; border: 0; border-bottom: 1px solid rgba(32,56,73,.55); color: var(--muted); background: transparent; text-align: left; cursor: pointer; }
+    .ticker-wheel-item:last-child { border-bottom: 0; }
+    .ticker-wheel-item strong { font-size: 13px; }
+    .ticker-wheel-item span { overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .ticker-wheel-item.is-current { color: var(--text); background: rgba(85,217,213,.13); box-shadow: inset 3px 0 var(--aqua); }
+    .ticker-wheel-item.is-current strong { color: var(--aqua); }
+    @media (min-width:1000px) {
+      body { padding-top: 0; padding-bottom: 0; }
+      .floating-dock { top: 14px; bottom: auto; }
+      .ticker-sheet { top: 73px; bottom: auto; }
+    }
+    select { background: var(--surface-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px 30px 10px 12px; min-width: 130px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(300px, .8fr); gap: 18px; align-items: start; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+    .chart-panel { padding: 14px; }
+    .chart-head { display: flex; gap: 12px; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+    .chart-head .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .view-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .view-switch, .gex-expiry-switch { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 3px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .72); white-space: nowrap; }
+    .view-switch { flex-shrink: 0; }
+    .view-switch button, .gex-expiry-switch button { flex: 0 0 auto; border: 0; border-radius: 6px; padding: 6px 10px; color: var(--muted); background: transparent; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .view-switch button.is-active, .gex-expiry-switch button.is-active { color: #071018; background: var(--aqua); }
+    .view-switch button:focus-visible, .gex-expiry-switch button:focus-visible { outline: 2px solid var(--aqua); outline-offset: 1px; }
+    .gex-expiry-switch { border-color: color-mix(in srgb, var(--purple) 55%, transparent); }
+    .gex-expiry-switch button.is-active { background: var(--purple); color: var(--text); }
+    #gex-expiry-switch[hidden] { display: none !important; }
+    #chart-overlays[hidden], #chart-legend[hidden] { display: none !important; }
+    #structure-panel[hidden] { display: none !important; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px 0; margin-bottom: 10px; }
+    .control { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; user-select: none; }
+    .control input { accent-color: var(--aqua); width: 16px; height: 16px; }
+    .control[data-tone] { color: var(--signal-color); }
+    .control[data-tone] input { accent-color: var(--signal-color); }
+    .control[data-tone="pattern"] { --signal-color: var(--pattern-family); }
+    .control[data-tone="bollinger"] { --signal-color: #65b7d6; }
+    .control[data-tone="wyckoff"] { --signal-color: var(--aqua); }
+    .control[data-tone="gex"] { --signal-color: var(--purple); }
+    .control[data-tone="rsi"] { --signal-color: var(--blue); }
+    .control[data-tone="macd"] { --signal-color: var(--amber); }
+    .pattern-control { gap: 7px; }
+    .candidate-switch { display: inline-flex; align-items: center; gap: 3px; padding: 2px; border: 1px solid color-mix(in srgb, var(--pattern-family) 45%, transparent); border-radius: 7px; background: rgba(13, 26, 37, .72); }
+    .candidate-switch button { border: 0; border-radius: 5px; padding: 4px 8px; color: var(--muted); background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .candidate-switch button.is-active { color: #071018; background: var(--pattern-family); }
+    .candidate-switch button:focus-visible { outline: 2px solid var(--pattern-family); outline-offset: 1px; }
+    #candidate-switch[hidden] { display: none !important; }
+    .candidate-switch button[hidden] { display: none !important; }
+    .combo-dots { display: inline-flex; align-items: center; gap: 3px; margin-left: 1px; }
+    .combo-dots i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+    .combo-dots i:nth-child(1) { background: var(--pattern-family); }
+    .combo-dots i:nth-child(2) { background: var(--pattern-family-confirm); }
+    .combo-dots i:nth-child(3) { background: var(--pattern-family-invalid); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--muted); font-size: 12px; margin: 8px 0; }
+    .legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+    #price-chart { display: none; }
+    #chart-stack { position: relative; height: 900px; }
+    #price-time-axis { position: absolute; left: 0; right: 0; z-index: 9; height: 30px; border-top: 1px solid var(--line); background: var(--surface); pointer-events: none; overflow: hidden; }
+    #price-time-axis[hidden] { display: none; }
+    .price-axis-label { position: absolute; top: 7px; color: var(--muted); font-size: 12px; line-height: 1; white-space: nowrap; transform: translateX(-50%); }
+    .price-axis-label.is-left { transform: none; }
+    .price-axis-label.is-right { transform: translateX(-100%); }
+    #phase-overlay { position: absolute; top: 0; left: 0; right: 0; z-index: 8; pointer-events: none; overflow: hidden; }
+    #gex-profile { position: absolute; inset: 0; z-index: 12; overflow-y: auto; padding: 18px 70px 28px 18px; background: #0d1a25; }
+    #gex-profile[hidden] { display: none; }
+    .gex-profile-head { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+    .gex-profile-head strong { color: var(--purple); }
+    .gex-expiry-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .44fr); gap: 14px; padding: 12px 0 18px; border-bottom: 1px solid var(--line); }
+    .gex-expiry-panel:last-child { border-bottom: 0; padding-bottom: 4px; }
+    .gex-visual { min-width: 0; }
+    .gex-levels { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 10px; }
+    .gex-levels span { font-weight: 700; white-space: nowrap; }
+    .gex-profile-canvas { position: relative; height: 340px; margin-bottom: 30px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .gex-profile-canvas svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .gex-profile-note { position: absolute; left: 0; bottom: -22px; color: var(--muted); font-size: 11px; }
+    .gex-profile-disclaimer { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .source-evidence { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .source-evidence[hidden] { display: none; }
+    .source-evidence .label { display: block; margin-bottom: 5px; color: var(--purple); }
+    .source-evidence ul { margin: 0; padding-left: 17px; color: var(--muted); font-size: 11px; }
+    .source-evidence li + li { margin-top: 5px; }
+    .gex-analysis-rail { display: grid; gap: 8px; margin: 10px 0 22px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(17, 36, 51, .42); }
+    .gex-expiry-panel > .gex-analysis-rail { align-self: start; margin: 28px 0 0; border-left: 3px solid var(--purple); }
+    .gex-analysis-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .gex-analysis-head strong { color: var(--purple); font-size: 13px; }
+    .gex-analysis-head span { color: var(--muted); font-size: 11px; }
+    .gex-analysis-rail p { color: var(--text); font-size: 13px; }
+    .gex-analysis-row { display: grid; grid-template-columns: 58px 1fr; gap: 8px; align-items: start; }
+    .gex-analysis-row .label { color: var(--muted); font-size: 11px; }
+    .gex-analysis-row p { color: var(--muted); font-size: 12px; }
+    .gex-level-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .gex-level-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 5px; font-size: 11px; font-weight: 800; }
+    .gex-level-tag[data-role="magnet"] { color: #65b7d6; border-color: color-mix(in srgb, #65b7d6 55%, transparent); }
+    .gex-level-tag[data-role="flip"] { color: #9a66c7; border-color: color-mix(in srgb, #9a66c7 55%, transparent); }
+    .gex-level-tag[data-role="call"] { color: #7ee787; border-color: color-mix(in srgb, #7ee787 55%, transparent); }
+    .gex-level-tag[data-role="put"] { color: #4fd1a5; border-color: color-mix(in srgb, #4fd1a5 55%, transparent); }
+    .gex-analysis-rail .gex-limit { color: var(--muted); font-size: 11px; }
+    .gex-analysis-detail { border-top: 1px solid var(--line); padding-top: 8px; }
+    .gex-analysis-detail summary { color: var(--muted); font-size: 11px; cursor: pointer; }
+    .gex-analysis-detail ul { margin: 7px 0 0; padding-left: 18px; color: var(--muted); font-size: 11px; }
+    .gex-analysis-detail li + li { margin-top: 5px; }
+    .phase-mark { position: absolute; top: 0; bottom: 0; width: 0; }
+    .phase-label { position: absolute; z-index: 1; top: 8px; left: 6px; padding: 3px 5px; color: var(--aqua); background: rgba(13, 26, 37, .92); border-left: 2px solid var(--aqua); font-size: 11px; font-weight: 800; white-space: nowrap; letter-spacing: .02em; text-shadow: 0 1px 2px #071018; }
+    .indicator-pane { position: relative; margin-top: 8px; }
+    .pane-label { position: absolute; z-index: 2; top: 7px; left: 8px; color: var(--muted); font-size: 12px; font-weight: 700; pointer-events: none; }
+    #rsi-chart, #macd-chart { height: 118px; }
+    .chart-error { color: var(--red); padding: 40px 10px; text-align: center; }
+    .stack { display: grid; gap: 12px; }
+    .summary { padding: 16px; }
+    .summary + .summary { margin-top: 12px; }
+    .summary p { margin-top: 8px; }
+    .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .value { font-weight: 700; }
+    .thesis { font-size: 17px; line-height: 1.42; }
+    .business-summary { margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .business-context { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .business-context > div { min-width: 0; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .38); }
+    .business-context p { color: var(--text); font-size: 12px; }
+    .cadence-note { margin-top: 10px; }
+    .thesis-details { display: grid; gap: 8px; margin-top: 14px; }
+    .thesis-details[hidden] { display: none !important; }
+    .digest-details { border-top: 1px solid var(--line); }
+    .digest-details summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 11px; color: var(--aqua); font-size: 13px; font-weight: 800; cursor: pointer; list-style: none; }
+    .digest-details summary::-webkit-details-marker { display: none; }
+    .digest-details summary::before { content: "＋"; display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid color-mix(in srgb, var(--aqua) 55%, transparent); border-radius: 50%; font-size: 15px; line-height: 1; }
+    .digest-details[data-tone="weekly"] summary { color: var(--pattern-family); }
+    .digest-details[data-tone="weekly"] summary::before { border-color: color-mix(in srgb, var(--pattern-family) 55%, transparent); }
+    .digest-details[data-tone="midday"] summary { color: var(--amber); }
+    .digest-details[data-tone="midday"] summary::before { border-color: color-mix(in srgb, var(--amber) 55%, transparent); }
+    .digest-details[open] summary::before { content: "－"; }
+    .digest-details summary:focus-visible { outline: 2px solid var(--aqua); outline-offset: 3px; border-radius: 4px; }
+    .digest-details-content { margin-top: 11px; }
+    .digest-block { padding: 11px; border: 1px solid var(--line); border-left: 3px solid var(--aqua); border-radius: 8px; background: rgba(17, 36, 51, .48); }
+    .digest-block[data-tone="weekly"] { border-left-color: var(--pattern-family); }
+    .digest-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; color: var(--text); font-size: 12px; font-weight: 800; }
+    .digest-date { color: var(--muted); font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .digest-section + .digest-section { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .digest-section h4 { margin: 0; color: var(--aqua); font-size: 12px; font-weight: 800; }
+    .digest-block[data-tone="weekly"] .digest-section h4 { color: var(--pattern-family); }
+    .digest-section ul { margin: 6px 0 0; padding-left: 18px; color: var(--text); font-size: 13px; }
+    .digest-section li + li { margin-top: 6px; }
+    .digest-block ul { margin: 8px 0 0; padding-left: 18px; color: var(--text); font-size: 13px; }
+    .digest-block li + li { margin-top: 6px; }
+    .digest-next { color: var(--muted); font-size: 12px; }
+    .digest-next strong { color: var(--amber); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 13px; }
+    .pattern-combo { margin-top: 14px; padding: 10px; border: 1px solid color-mix(in srgb, var(--pattern-family) 55%, transparent); border-radius: 9px; background: linear-gradient(135deg, color-mix(in srgb, var(--pattern-family) 9%, transparent), rgba(13, 26, 37, .16)); }
+    .combo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; color: var(--pattern-family); font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+    .combo-hint { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0; }
+    .combo-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .combo-grid .metric { position: relative; min-width: 0; }
+    .combo-grid .metric:not(:last-child)::after { content: none; }
+    .metric { border-top: 1px solid var(--line); padding-top: 8px; }
+    .metric[data-tone] { border-top-color: var(--signal-color); }
+    .metric[data-tone] .label { color: var(--signal-color); }
+    .metric[data-tone] .label::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 6px 1px 0; border-radius: 50%; background: var(--signal-color); }
+    .metric[data-tone="pattern"] { --signal-color: var(--pattern-family); }
+    .metric[data-tone="confirmation"] { --signal-color: var(--pattern-family-confirm); }
+    .metric[data-tone="wyckoff"] { --signal-color: var(--aqua); }
+    .metric[data-tone="invalidation"] { --signal-color: var(--pattern-family-invalid); }
+    .summary[data-tone] { border-top: 2px solid var(--signal-color); }
+    .summary[data-tone="gex"] { --signal-color: var(--purple); }
+    .metric .value { display: block; margin-top: 3px; }
+    .source-note { color: var(--muted); font-size: 12px; }
+    .source-note a { color: var(--aqua); }
+    .notice { color: var(--amber); font-size: 12px; margin-top: 10px; }
+    .footer { color: var(--muted); font-size: 12px; padding: 16px 2px 4px; }
+    @media (max-width: 780px) {
+      .shell { padding: 14px; }
+      .topbar { align-items: center; }
+      .view-switch { display: inline-flex; }
+      .layout { grid-template-columns: 1fr; }
+      #chart-stack { height: 780px; }
+      .combo-grid { grid-template-columns: 1fr; gap: 10px; }
+      .combo-grid .metric:not(:last-child)::after { content: none; }
+      .floating-dock { right: 12px; left: 12px; justify-content: center; transform: none; }
+      .dock-action { flex: 1 1 0; justify-content: center; }
+    }
+    @media (max-width: 420px) {
+      .chart-panel, .summary { padding: 12px; }
+      #chart-stack { height: 690px; }
+      .grid-2 { grid-template-columns: 1fr; gap: 8px; }
+      .business-context { grid-template-columns: 1fr; }
+      .chart-head { flex-direction: column; }
+      .view-tools { width: 100%; justify-content: flex-start; }
+      .view-switch { flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
+      .view-switch button { flex: 0 0 auto; }
+      #gex-profile { padding: 12px 38px 22px 8px; }
+      .ticker-sheet { width: calc(100vw - 24px); }
+      .gex-expiry-panel { grid-template-columns: 1fr; gap: 2px; }
+      .gex-expiry-panel > .gex-analysis-rail { margin: 8px 0 16px; border-left: 1px solid var(--line); }
+      .gex-profile-head { flex-direction: column; gap: 3px; font-size: 11px; }
+      .gex-profile-canvas { height: 270px; }
+      .gex-analysis-row { grid-template-columns: 1fr; gap: 2px; }
+      .digest-head { align-items: start; flex-direction: column; gap: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell" aria-label="Stock analysis chart surface">
+    <header class="topbar">
+      <div>
+        <h1 id="title">NBIS · Nebius Group</h1>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="panel chart-panel" aria-labelledby="chart-title">
+        <div class="chart-head">
+          <div>
+          <h2 id="chart-title">GoNoGo 風格 K 線</h2>
+          <p class="meta" id="chart-meta">日線 · 資料截至 2026-08-28</p>
+          </div>
+          <div class="view-tools" aria-label="分析視圖切換">
+            <div id="view-switch" class="view-switch" role="tablist" aria-label="分析視圖">
+              <button type="button" data-view="gex" aria-pressed="false">GEX</button>
+              <button type="button" data-view="daily" class="is-active" aria-pressed="true">日線</button>
+              <button type="button" data-view="weekly" aria-pressed="false">週線</button>
+            </div>
+            <div id="gex-expiry-switch" class="gex-expiry-switch" role="group" aria-label="GEX 到期日" hidden>
+              <button type="button" data-gex-expiry="current" class="is-active" aria-pressed="true">本週到期</button>
+              <button type="button" data-gex-expiry="next" aria-pressed="false">下週到期</button>
+            </div>
+          </div>
+        </div>
+        <div id="chart-overlays" class="controls" aria-label="Chart overlays">
+          <label class="control pattern-control" data-tone="pattern" aria-label="型態組合：型態線、型態確認位、失效位"><input type="checkbox" data-layer="technical" checked> 型態組合 <span class="combo-dots" aria-hidden="true"><i></i><i></i><i></i></span></label>
+          <div id="candidate-switch" class="candidate-switch" role="group" aria-label="型態候選切換" hidden>
+            <button type="button" class="candidate-option is-active" data-candidate="primary" aria-pressed="true">主候選 · 形成中 · 信心 87</button>
+            <button type="button" class="candidate-option" data-candidate="secondary" aria-pressed="false">次候選</button>
+          </div>
+          <label class="control" data-tone="bollinger"><input type="checkbox" data-layer="bollinger" checked> 布林通道</label>
+          <label class="control" data-tone="wyckoff"><input type="checkbox" data-layer="wyckoff" checked> Wyckoff</label>
+          <label class="control" data-tone="gex"><input type="checkbox" data-layer="gex" checked> 選擇權／GEX</label>
+        </div>
+        <div id="chart-legend" class="legend" aria-label="Candle state legend">
+          <span><i class="swatch" style="background:var(--blue)"></i>強 Go</span>
+          <span><i class="swatch" style="background:var(--aqua)"></i>弱 Go</span>
+          <span><i class="swatch" style="background:var(--amber)"></i>轉換</span>
+          <span><i class="swatch" style="background:var(--pink)"></i>弱 NoGo</span>
+          <span><i class="swatch" style="background:var(--purple)"></i>強 NoGo</span>
+          <span><i class="swatch" style="background:var(--aqua)"></i>Wyckoff 垂直階段</span>
+        </div>
+        <div id="chart-stack" role="img" aria-label="Interactive candlestick chart with volume, RSI, and MACD panes">
+          <div id="price-chart" aria-hidden="true"></div>
+          <div id="phase-overlay" aria-hidden="true"></div>
+          <div id="price-time-axis" aria-label="主圖日期軸" hidden></div>
+          <div id="gex-profile" aria-label="Gamma exposure graph" hidden></div>
+          <div id="rsi-pane-label" class="pane-label">RSI (14)</div>
+          <div id="macd-pane-label" class="pane-label">MACD (12, 26, 9)</div>
+        </div>
+        <div class="notice" id="chart-notice"></div>
+      </section>
+
+      <aside class="stack" aria-label="目前分析">
+        <section class="panel summary" id="business-panel">
+          <h3>核心論述</h3>
+          <p class="thesis" id="thesis"></p>
+          <p class="source-note cadence-note" id="thesis-refresh"></p>
+          <div class="business-summary">
+            <span class="label">基本面／新聞脈絡</span>
+            <p id="business"></p>
+            <div class="business-context">
+              <div><span class="label">已證明</span><p id="business-proved"></p></div>
+              <div><span class="label">待證明</span><p id="business-unproved"></p></div>
+              <div><span class="label">下一個商業測試</span><p id="business-next-test"></p></div>
+            </div>
+          </div>
+          <div class="thesis-details" id="business-details" hidden></div>
+        </section>
+        <section id="structure-panel" class="panel summary">
+          <h3>技術結構分析</h3>
+          <div id="pattern-combo" class="pattern-combo" aria-label="型態組合：型態線、型態確認位、失效位">
+            <div class="combo-head"><span>型態組合</span><span class="combo-hint" id="candidate-label">主候選 · 狀態 → 確認 → 失效</span></div>
+            <div class="combo-grid">
+              <div class="metric" data-tone="pattern"><span class="label">型態線</span><span class="value" id="pattern"></span></div>
+              <div class="metric" data-tone="confirmation"><span class="label">型態確認位</span><span class="value" id="pattern-gate"></span></div>
+              <div class="metric" data-tone="invalidation"><span class="label">失效位</span><span class="value" id="invalidation"></span></div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="metric" data-tone="wyckoff"><span class="label" id="wyckoff-label">Wyckoff 階段 · 日線</span><span class="value" id="wyckoff"></span></div>
+          </div>
+        </section>
+        <section class="panel summary" data-tone="gex">
+          <h3>選擇權／GEX</h3>
+          <p id="options"></p>
+          <p class="source-note" id="freshness"></p>
+        </section>
+        <section class="panel summary">
+          <h3>來源追溯</h3>
+          <p class="source-note" id="source-summary">圖表與分析紀錄仍連結至試作 workbook 的來源目錄及 manifest／hash。</p>
+          <p class="source-note" id="contract-status"></p>
+          <div class="source-evidence" id="source-evidence" hidden></div>
+          <p class="source-note" style="margin-top:8px"><a id="source-link" target="_blank" rel="noopener">開啟市場資料來源</a></p>
+        </section>
+      </aside>
+    </div>
+    <p class="footer">原型固定資料 · Lightweight Charts by TradingView · 公開部署時須保留來源標示。</p>
+  </main>
+  <button type="button" class="menu-backdrop" id="menu-backdrop" aria-label="關閉代號選單" hidden></button>
+  <section class="ticker-sheet" id="ticker-sheet" aria-label="Ticker selections" hidden>
+    <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
+    <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
+  </section>
+  <nav class="floating-dock" aria-label="快速導覽">
+    <a class="dock-action" id="dock-home" href="../data-model/home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
+    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
+  </nav>
+  <script src="benchmark-data.js?v=20260905-6"></script>
+  <script src="weekly-history.js?v=20260905-1"></script>
+  <script src="analysis-details.js?v=20260905-1"></script>
+  <script src="data-contract.js?v=sheets-import-202609062221"></script>
+  <script>
+    (() => {
+      const L = window.LightweightCharts;
+      const contract = window.PROTOTYPE_DATA_CONTRACT || {};
+      const datasets = contract.datasets?.benchmark || window.BENCHMARK_DATA;
+      const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
+      const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
+      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
+      const analysisRuns = contract.analysisRuns || [];
+      const $ = (id) => document.getElementById(id);
+      const query = new URLSearchParams(window.location.search);
+      const state = { ticker: query.get('ticker') || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
+      const baseCoverage = contract.coverage || Object.keys(datasets || {}).map((ticker) => ({ ticker, company: datasets[ticker]?.company || ticker, active: true }));
+      let coverageOverrides = {};
+      try { coverageOverrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { coverageOverrides = {}; }
+      const coverageRows = () => {
+        const merged = new Map(baseCoverage.map((item) => [item.ticker, { ...item }]));
+        Object.entries(coverageOverrides).forEach(([ticker, item]) => merged.set(ticker, { ...(merged.get(ticker) || { ticker }), ...item }));
+        return [...merged.values()];
+      };
+      const activeCoverage = coverageRows().filter((item) => item.active !== false && datasets?.[item.ticker]);
+      if (activeCoverage.length && !activeCoverage.some((item) => item.ticker === state.ticker)) state.ticker = activeCoverage[0].ticker;
+      if (query.get('candidate') === 'secondary') state.candidate = 'secondary';
+      let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, layerSeries = {}, phaseMarkers = [], axisBars = [];
+
+      function closeMainMenu() {
+        $('ticker-sheet').hidden = true;
+        $('menu-backdrop').hidden = true;
+        $('ticker-menu-toggle').setAttribute('aria-expanded', 'false');
+      }
+
+      function selectTicker(ticker) {
+        if (!activeCoverage.some((item) => item.ticker === ticker)) return;
+        state.ticker = ticker;
+        state.candidate = 'primary';
+        closeMainMenu();
+        render();
+      }
+
+      function renderMenu() {
+        const wheel = $('ticker-wheel');
+        document.querySelectorAll('[data-view]').forEach((button) => {
+          const active = button.dataset.view === state.view;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        wheel.replaceChildren(...activeCoverage.map((item) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'ticker-wheel-item' + (item.ticker === state.ticker ? ' is-current' : '');
+          button.dataset.ticker = item.ticker;
+          button.setAttribute('role', 'option');
+          button.setAttribute('aria-selected', String(item.ticker === state.ticker));
+          const strong = document.createElement('strong');
+          strong.textContent = item.ticker;
+          const company = document.createElement('span');
+          company.textContent = item.company;
+          button.append(strong, company);
+          button.addEventListener('click', () => selectTicker(item.ticker));
+          return button;
+        }));
+        const currentItem = wheel.querySelector('.is-current');
+        if (currentItem) wheel.scrollTop = Math.max(0, currentItem.offsetTop - wheel.clientHeight / 2 + currentItem.offsetHeight / 2);
+      }
+
+      function sma(values, length) {
+        return values.map((_, i) => {
+          if (i < length - 1) return null;
+          const slice = values.slice(i - length + 1, i + 1);
+          return slice.reduce((sum, value) => sum + value, 0) / length;
+        });
+      }
+
+      function bollinger(bars) {
+        const closes = bars.map((bar) => bar.close);
+        const mids = sma(closes, 20);
+        return bars.map((bar, i) => {
+          if (mids[i] === null) return null;
+          const slice = closes.slice(i - 19, i + 1);
+          const mean = mids[i];
+          const deviation = Math.sqrt(slice.reduce((sum, value) => sum + (value - mean) ** 2, 0) / 20);
+          return { time: bar.time, upper: mean + 2 * deviation, middle: mean, lower: mean - 2 * deviation };
+        }).filter(Boolean);
+      }
+
+      function rsiData(bars, length = 14) {
+        const closes = bars.map((bar) => bar.close);
+        if (closes.length <= length) return [];
+        let gain = 0;
+        let loss = 0;
+        for (let i = 1; i <= length; i += 1) {
+          const change = closes[i] - closes[i - 1];
+          gain += Math.max(change, 0);
+          loss += Math.max(-change, 0);
+        }
+        let averageGain = gain / length;
+        let averageLoss = loss / length;
+        const result = [];
+        for (let i = length; i < closes.length; i += 1) {
+          if (i > length) {
+            const change = closes[i] - closes[i - 1];
+            averageGain = (averageGain * (length - 1) + Math.max(change, 0)) / length;
+            averageLoss = (averageLoss * (length - 1) + Math.max(-change, 0)) / length;
+          }
+          const relativeStrength = averageLoss === 0 ? Infinity : averageGain / averageLoss;
+          result.push({ time: bars[i].time, value: 100 - (100 / (1 + relativeStrength)) });
+        }
+        return result;
+      }
+
+      function ema(values, length) {
+        if (!values.length) return [];
+        const multiplier = 2 / (length + 1);
+        return values.reduce((result, value, index) => {
+          result.push(index === 0 ? value : (value - result[index - 1]) * multiplier + result[index - 1]);
+          return result;
+        }, []);
+      }
+
+      function macdData(bars) {
+        const closes = bars.map((bar) => bar.close);
+        const fast = ema(closes, 12);
+        const slow = ema(closes, 26);
+        const macdValues = bars.slice(25).map((bar, index) => ({ time: bar.time, value: fast[index + 25] - slow[index + 25] }));
+        const signalValues = ema(macdValues.map((item) => item.value), 9);
+        return { macd: macdValues, signal: macdValues.map((item, index) => ({ time: item.time, value: signalValues[index] })) };
+      }
+
+      class PhaseRenderer {
+        constructor(primitive) { this.primitive = primitive; }
+        draw(target) {
+          if (!this.primitive.visible || !this.primitive.chart) return;
+          target.useMediaCoordinateSpace(({ context, mediaSize }) => {
+            context.save();
+            try {
+              this.primitive.phases.forEach((phase) => {
+                const x = this.primitive.chart.timeScale().timeToCoordinate(phase.time);
+                if (x === null) return;
+                context.fillStyle = 'rgba(85, 217, 213, .10)';
+                context.fillRect(x - 18, 0, 36, mediaSize.height);
+                context.strokeStyle = colors.wyckoff;
+                context.lineWidth = 1.5;
+                context.setLineDash([5, 4]);
+                context.beginPath();
+                context.moveTo(Math.round(x) + .5, 0);
+                context.lineTo(Math.round(x) + .5, mediaSize.height);
+                context.stroke();
+              });
+            } finally {
+              context.restore();
+            }
+          });
+        }
+      }
+
+      class PhasePaneView {
+        constructor(primitive) { this.primitive = primitive; }
+        zOrder() { return 'bottom'; }
+        renderer() { return new PhaseRenderer(this.primitive); }
+      }
+
+      class VerticalPhasePrimitive {
+        constructor(phases) {
+          this.phases = phases;
+          this.visible = true;
+          this.chart = null;
+          this.view = new PhasePaneView(this);
+          this.requestUpdate = () => {};
+        }
+        attached({ chart, requestUpdate }) {
+          this.chart = chart;
+          this.requestUpdate = requestUpdate;
+        }
+        detached() { this.chart = null; }
+        paneViews() { return [this.view]; }
+        updateAllViews() {}
+        setVisible(visible) {
+          this.visible = visible;
+          this.requestUpdate();
+        }
+      }
+
+      function classifyBars(bars) {
+        const mids = sma(bars.map((bar) => bar.close), 20);
+        return bars.map((bar, i) => {
+          const previous = bars[i - 1];
+          if (!previous || mids[i] === null) return { ...bar, color: colors.transition, borderColor: colors.transition, wickColor: colors.transition, state: 'Transition' };
+          const closeDelta = (bar.close - previous.close) / previous.close;
+          const distance = Math.abs(bar.close - mids[i]) / mids[i];
+          let stateName = 'Transition';
+          if (distance < 0.012) stateName = 'Transition';
+          else if (bar.close >= mids[i] && closeDelta >= 0) stateName = closeDelta > 0.025 ? 'Strong Go' : 'Weak Go';
+          else if (bar.close < mids[i] && closeDelta < 0) stateName = closeDelta < -0.025 ? 'Strong NoGo' : 'Weak NoGo';
+          else stateName = bar.close >= mids[i] ? 'Weak Go' : 'Weak NoGo';
+          const key = { 'Strong Go': 'strongGo', 'Weak Go': 'weakGo', Transition: 'transition', 'Weak NoGo': 'weakNoGo', 'Strong NoGo': 'strongNoGo' }[stateName];
+          return { ...bar, state: stateName, color: colors[key], borderColor: colors[key], wickColor: colors[key] };
+        });
+      }
+
+      function makeChart(container) {
+        const instance = L.createChart(container, {
+          width: container.clientWidth,
+          height: container.clientHeight,
+          grid: { vertLines: { color: '#162b39' }, horzLines: { color: '#162b39' } },
+          rightPriceScale: { borderColor: '#203849', minimumWidth: 62, scaleMargins: { top: 0.08, bottom: 0.08 } },
+          layout: { background: { type: 'solid', color: '#0d1a25' }, textColor: '#91a8b7', attributionLogo: true, panes: { separatorColor: '#203849', separatorHoverColor: '#203849', enableResize: false } },
+          timeScale: { borderColor: '#203849', timeVisible: false, visible: false, rightOffset: 3, fixLeftEdge: true },
+          crosshair: { mode: L.CrosshairMode.Normal },
+          handleScroll: { mouseWheel: false, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
+          handleScale: { mouseWheel: false, pinch: false, axisPressedMouseMove: false, axisDoubleClickReset: false }
+        });
+        container.addEventListener('wheel', (event) => {
+          const horizontalDelta = event.deltaX || (event.shiftKey ? event.deltaY : 0);
+          if (!horizontalDelta) return;
+          const range = instance.timeScale().getVisibleLogicalRange?.();
+          if (!range) return;
+          const span = range.to - range.from;
+          const pixels = Math.max(container.clientWidth, 1);
+          const shift = horizontalDelta * span / pixels;
+          instance.timeScale().setVisibleLogicalRange({ from: range.from + shift, to: range.to + shift });
+          event.preventDefault();
+        }, { passive: false });
+        return instance;
+      }
+
+      function addLine(name, data, color, width = 1, style = L.LineStyle.Dashed) {
+        const series = chart.addSeries(L.LineSeries, { color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' });
+        series.setData(data);
+        layerSeries[name] = series;
+        return series;
+      }
+
+      function levelData(bars, value) { return bars.map((bar) => ({ time: bar.time, value })); }
+
+      function weeklyBars(bars, ticker) {
+        if (weeklyHistory[ticker]?.length >= 20) return weeklyHistory[ticker];
+        const groups = new Map();
+        bars.forEach((bar) => {
+          const date = new Date(bar.time * 1000);
+          const monday = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+          const day = monday.getUTCDay() || 7;
+          monday.setUTCDate(monday.getUTCDate() - day + 1);
+          const key = monday.toISOString().slice(0, 10);
+          const group = groups.get(key) || { time: Math.floor(monday.getTime() / 1000), date: key, open: bar.open, high: bar.high, low: bar.low, close: bar.close, volume: 0 };
+          group.high = Math.max(group.high, bar.high);
+          group.low = Math.min(group.low, bar.low);
+          group.close = bar.close;
+          group.volume += bar.volume;
+          groups.set(key, group);
+        });
+        return [...groups.values()];
+      }
+
+      function viewBars(data) { return state.view === 'weekly' ? weeklyBars(data.bars, state.ticker) : data.bars; }
+
+      function gexView(data) { return data.gexViews?.[state.gexExpiry] || data.gexViews?.current || { label: '本週到期', expiry: '未標示', magnet: state.ticker === 'NBIS' ? 200 : 35.5, flip: state.ticker === 'NBIS' ? 200 : 35.5, callWall: state.ticker === 'NBIS' ? 220 : 36, putWall: state.ticker === 'NBIS' ? 190 : 35, strikes: [], exposure: [], text: data.options, freshness: data.freshness }; }
+
+      function candidatesSimilar(data) {
+        const primary = data.patternCandidates?.primary;
+        const secondary = data.patternCandidates?.secondary;
+        if (!primary || !secondary) return false;
+        if (primary.geometry && primary.geometry === secondary.geometry) return true;
+        const behavior = (text) => String(text || '').split('｜').slice(1).join('｜').replace(/主候選|次候選|週線|日線|信心\s*\d+/g, '').replace(/\s+/g, '').trim();
+        return behavior(primary.text) !== '' && behavior(primary.text) === behavior(secondary.text);
+      }
+
+      function normalizePatternLevels(pattern) {
+        if (!pattern) return pattern;
+        return {
+          ...pattern,
+          confirmation: Number(pattern.confirmation),
+          invalidation: Number(pattern.invalidation)
+        };
+      }
+
+      function weeklyPattern(data) {
+        const candidate = data.patternCandidates?.secondary || data.patternCandidates?.primary;
+        if (!candidate) return normalizePatternLevels({ label: '主候選', text: data.pattern, status: data.patternStatus, confirmation: data.patternGate, invalidation: data.invalidation, geometry: 'none', callout: false });
+        const stateText = String(candidate.status || '').replace(/^(主候選|次候選)\s*·\s*/, '');
+        return normalizePatternLevels({ ...candidate, label: '主候選', status: `主候選 · ${stateText}`, callout: false });
+      }
+
+      function getPattern(data) {
+        if (state.view === 'weekly') return weeklyPattern(data);
+        const candidates = data.patternCandidates || {};
+        const selected = candidates[candidatesSimilar(data) ? 'primary' : state.candidate] || candidates.primary;
+        return normalizePatternLevels(selected || {
+          label: '主候選',
+          text: data.pattern,
+          status: data.patternStatus,
+          confirmation: data.patternGate,
+          invalidation: data.invalidation,
+          geometry: 'none',
+          callout: false
+        });
+      }
+
+      function patternGeometry(bars, ticker, pattern) {
+        const byDate = Object.fromEntries(bars.map((bar) => [bar.date, bar]));
+        const current = bars.at(-1);
+        if (!current) return [];
+        if (state.view === 'weekly') {
+          if (ticker === 'NBIS' && pattern.geometry === 'headShoulders') {
+            const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
+            return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.high : index === 2 ? bar.high : index === 3 ? bar.close : bar.high }));
+          }
+          if (ticker === 'IREN' && pattern.geometry === 'doubleTop') {
+            const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
+            return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.low : index === 3 ? bar.close : bar.high }));
+          }
+        }
+        if (ticker === 'NBIS' && pattern.geometry === 'doubleBottom') {
+          const firstLow = byDate['7/29/2026'];
+          const middleHigh = byDate['8/3/2026'];
+          const secondLow = byDate['8/10/2026'];
+          if (!firstLow || !middleHigh || !secondLow) return [];
+          return [{ time: firstLow.time, value: firstLow.low }, { time: middleHigh.time, value: middleHigh.high }, { time: secondLow.time, value: secondLow.low }, { time: current.time, value: current.close }];
+        }
+        if (ticker === 'NBIS' && pattern.geometry === 'headShoulders') {
+          const leftShoulder = byDate['8/3/2026'];
+          const head = byDate['8/14/2026'];
+          const rightShoulder = byDate['8/21/2026'];
+          if (!leftShoulder || !head || !rightShoulder) return [];
+          return [{ time: leftShoulder.time, value: leftShoulder.high }, { time: head.time, value: head.high }, { time: rightShoulder.time, value: rightShoulder.high }, { time: current.time, value: current.close }];
+        }
+        if (ticker === 'IREN' && pattern.geometry === 'doubleTop') {
+          const firstPeak = byDate['7/20/2026'];
+          const middleLow = byDate['7/29/2026'];
+          const secondPeak = byDate['8/13/2026'];
+          if (!firstPeak || !middleLow || !secondPeak) return [];
+          return [{ time: firstPeak.time, value: firstPeak.high }, { time: middleLow.time, value: middleLow.low }, { time: secondPeak.time, value: secondPeak.high }, { time: current.time, value: current.close }];
+        }
+        return [];
+      }
+
+      function phaseData(bars, ticker) {
+        const indices = ticker === 'NBIS' ? [0.16, 0.56, 0.80] : [0.16, 0.60, 0.86];
+        const descriptions = ticker === 'NBIS' ? ['啟動', '整理', 'UTAD候選'] : ['吸收', '整理', 'Spring候選'];
+        return indices.map((ratio, index) => ({
+          time: bars[Math.min(bars.length - 1, Math.round((bars.length - 1) * ratio))].time,
+          label: `Phase ${String.fromCharCode(65 + index)} | ${descriptions[index]}`
+        }));
+      }
+
+      function drawPhaseOverlay(bars, phases = phaseData(bars, state.ticker)) {
+        const overlay = $('phase-overlay');
+        overlay.replaceChildren();
+        phaseMarkers = phases.map((phase) => {
+          const mark = document.createElement('div');
+          mark.className = 'phase-mark';
+          mark.dataset.phase = phase.label;
+          const label = document.createElement('span');
+          label.className = 'phase-label';
+          label.textContent = phase.label;
+          mark.append(label);
+          overlay.append(mark);
+          return { ...phase, element: mark };
+        });
+        updatePhasePositions();
+      }
+
+      function updatePhasePositions() {
+        if (!chart || !phaseMarkers.length) return;
+        phaseMarkers.forEach((phase) => {
+          const coordinate = chart.timeScale().timeToCoordinate(phase.time);
+          phase.element.style.left = coordinate === null ? '-20px' : `${coordinate}px`;
+          phase.element.hidden = coordinate === null;
+        });
+      }
+
+      function freezePriceFrame(bars, data, pattern) {
+        const values = bars.flatMap((bar) => [bar.low, bar.high]);
+        const gex = gexView(data);
+        values.push(pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
+        if (state.ticker === 'IREN') {
+          values.push(41.44 + (bars.length - 1) * 0.381, 19.29 + (bars.length - 1) * 0.408, 41.44, 19.29);
+        }
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const padding = Math.max((max - min) * 0.06, 0.5);
+        const scale = candleSeries.priceScale();
+        scale.applyOptions({ autoScale: false, scaleMargins: { top: 0.08, bottom: 0.08 } });
+        scale.setVisibleRange({ from: min - padding, to: max + padding });
+      }
+
+      function freezeIndicatorFrame(series, values, min, max) {
+        const low = min ?? Math.min(...values);
+        const high = max ?? Math.max(...values);
+        const padding = Math.max((high - low) * 0.12, 0.1);
+        const scale = series.priceScale();
+        scale.applyOptions({ autoScale: false, scaleMargins: { top: 0.12, bottom: 0.12 } });
+        scale.setVisibleRange({ from: low - padding, to: high + padding });
+      }
+
+      function updateDateAxis() {
+        const axis = $('price-time-axis');
+        if (!chart || state.view === 'gex' || !axisBars.length) {
+          axis.hidden = true;
+          axis.replaceChildren();
+          return;
+        }
+        const panes = chart.panes();
+        const datePane = panes[1];
+        const datePaneElement = datePane?.getHTMLElement?.();
+        axis.hidden = false;
+        axis.style.top = `${datePaneElement?.offsetTop || 0}px`;
+        axis.style.height = `${datePane?.getHeight?.() || 30}px`;
+        const range = chart.timeScale().getVisibleLogicalRange?.();
+        const from = Math.max(0, Math.floor(range?.from ?? 0));
+        const to = Math.min(axisBars.length - 1, Math.ceil(range?.to ?? axisBars.length - 1));
+        const count = window.innerWidth <= 420 ? 4 : 6;
+        const indices = [...new Set(Array.from({ length: count }, (_, index) => Math.max(from, Math.min(to, Math.round(from + (to - from) * index / Math.max(count - 1, 1))))))];
+        const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+        const seenLabels = new Set();
+        axis.innerHTML = indices.map((index, position) => {
+          const coordinate = chart.timeScale().timeToCoordinate(axisBars[index].time);
+          if (coordinate === null) return '';
+          const text = formatter.format(new Date(axisBars[index].time * 1000));
+          if (seenLabels.has(text)) return '';
+          seenLabels.add(text);
+          const label = document.createElement('span');
+          label.className = `price-axis-label${position === 0 ? ' is-left' : ''}${position === indices.length - 1 ? ' is-right' : ''}`;
+          label.style.left = `${coordinate}px`;
+          label.textContent = text;
+          return label.outerHTML;
+        }).join('');
+      }
+
+      function setPaneLayout() {
+        if (!chart) return;
+        const stack = $('chart-stack');
+        const stackHeight = window.innerWidth <= 420 ? 690 : window.innerWidth <= 780 ? 780 : 900;
+        stack.style.height = `${stackHeight}px`;
+        chart.applyOptions({ width: stack.clientWidth, height: stack.clientHeight });
+        const panes = chart.panes();
+        [candleSeries, volumeSeries, rsiSeries?.value, macdSeries?.macd].filter(Boolean).forEach((series) => series.priceScale().applyOptions({ minimumWidth: 62 }));
+        const lowerPaneHeight = window.innerWidth <= 420 ? 145 : window.innerWidth <= 780 ? 165 : 180;
+        // Keep the three lower panes visually equal. Apply in reverse order because
+        // Lightweight Charts reallocates the remaining space after each resize.
+        [4, 3, 2].forEach((paneIndex) => panes[paneIndex]?.setHeight(lowerPaneHeight));
+        panes[1]?.setHeight(window.innerWidth <= 420 ? 28 : 30);
+        [2, 3, 4].forEach((paneIndex) => panes[paneIndex]?.setStretchFactor?.(1));
+        panes[0]?.setStretchFactor?.(3);
+        const phasePaneHeight = panes[0]?.getHeight?.() || 430;
+        $('phase-overlay').style.height = `${phasePaneHeight}px`;
+        [['rsi-pane-label', 3], ['macd-pane-label', 4]].forEach(([labelId, paneIndex]) => {
+          const paneElement = panes[paneIndex]?.getHTMLElement?.();
+          const label = $(labelId);
+          const paneTop = paneElement ? paneElement.offsetTop : panes.slice(0, paneIndex).reduce((sum, pane) => sum + (pane.getHeight?.() || 0), 0);
+          label.style.top = `${paneTop + 8}px`;
+        });
+        updateDateAxis();
+        stack.dataset.paneHeights = panes.map((pane) => pane.getHeight?.() || 0).join(',');
+      }
+
+      function syncIndicatorRanges() {
+        updatePhasePositions();
+        setPaneLayout();
+      }
+
+      function renderGexProfile(data) {
+        const container = $('gex-profile');
+        if (state.view !== 'gex') {
+          container.hidden = true;
+          container.replaceChildren();
+          return;
+        }
+        // Make the GEX surface visible before constructing the SVG. If a
+        // malformed optional profile row is encountered, the page must not
+        // silently fall back to an empty/hidden GEX view.
+        container.hidden = false;
+        try {
+        const compactGex = window.innerWidth <= 420;
+        const width = compactGex ? 520 : 720;
+        const height = 390;
+        const labelSize = compactGex ? 16 : 20;
+        const valueSize = compactGex ? 14 : 18;
+        const profiles = [data.gexViews?.current, data.gexViews?.next].filter(Boolean);
+        const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
+        const currentPrice = data.bars.at(-1)?.close || sharedTicks[0];
+        const sharedDomain = { min: Math.min(...sharedTicks, currentPrice), max: Math.max(...sharedTicks, currentPrice), ticks: sharedTicks };
+        const renderPanel = (gex, key, domain) => {
+          const strikes = gex.strikes || [];
+          const exposure = gex.exposure || [];
+          const insight = analysisDetails[state.ticker]?.gex?.[key];
+          if (!strikes.length || strikes.length !== exposure.length) return '<div class="chart-error">GEX exposure profile unavailable for this benchmark.</div>';
+          const left = compactGex ? 44 : 48;
+          const right = compactGex ? 52 : 58;
+          const top = 58;
+          const bottom = 42;
+          const plotWidth = width - left - right;
+          const plotHeight = height - top - bottom;
+          const minStrike = domain.min;
+          const maxStrike = domain.max;
+          const minExposure = Math.min(...exposure, 0);
+          const maxExposure = Math.max(...exposure, 0);
+          const exposureSpan = Math.max(maxExposure - minExposure, 0.1);
+          const yFor = (value) => top + (maxExposure - value) / exposureSpan * plotHeight;
+          const xFor = (strike) => left + (strike - minStrike) / Math.max(maxStrike - minStrike, 1) * plotWidth;
+          const barWidth = Math.max(16, Math.min(44, plotWidth / Math.max(strikes.length, 1) * .58));
+          const zeroY = yFor(0);
+          const cumulative = [];
+          exposure.reduce((sum, value) => { const next = sum + value; cumulative.push(next); return next; }, 0);
+          const maxCumulative = Math.max(...cumulative.map((value) => Math.abs(value)), 0.1);
+          const cumulativePoints = cumulative.map((value, index) => ({ x: xFor(strikes[index]), y: yFor((value / maxCumulative) * maxExposure) }));
+          const smoothPath = (points) => points.reduce((path, point, index) => {
+            if (index === 0) return `M ${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+            const previous = points[index - 1];
+            const beforePrevious = points[index - 2] || previous;
+            const next = points[index + 1] || point;
+            const controlOne = { x: previous.x + (point.x - beforePrevious.x) / 6, y: previous.y + (point.y - beforePrevious.y) / 6 };
+            const controlTwo = { x: point.x - (next.x - previous.x) / 6, y: point.y - (next.y - previous.y) / 6 };
+            return `${path} C ${controlOne.x.toFixed(1)} ${controlOne.y.toFixed(1)}, ${controlTwo.x.toFixed(1)} ${controlTwo.y.toFixed(1)}, ${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+          }, '');
+          const bars = strikes.map((strike, index) => {
+            const x = xFor(strike) - barWidth / 2;
+            const y = Math.min(zeroY, yFor(exposure[index]));
+            const h = Math.max(2, Math.abs(yFor(exposure[index]) - zeroY));
+            const color = exposure[index] >= 0 ? '#24d17a' : '#ff4d6d';
+            const valueInside = h >= 24;
+            const valueY = valueInside ? y + h / 2 + 4 : exposure[index] >= 0 ? y - 7 : y + h + 14;
+            const valueColor = valueInside ? '#071018' : '#91a8b7';
+            return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${color}" opacity=".9"/><text x="${xFor(strike).toFixed(1)}" y="${valueY.toFixed(1)}" fill="${valueColor}" text-anchor="middle" font-size="${valueSize}" font-weight="${valueInside ? '700' : '400'}">${exposure[index].toFixed(2)}</text>`;
+          }).join('');
+          const xGrid = domain.ticks.map((strike) => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="#162b39" stroke-width="1"/><text x="${xFor(strike).toFixed(1)}" y="${height - 18}" fill="#edf6fb" text-anchor="middle" font-size="${labelSize}" font-weight="700">$${strike}</text>`).join('');
+          const vline = (strike, color, label, row, dash = '7 5') => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} $${strike}</text>`;
+          const magnetIsFlip = gex.magnet === gex.flip;
+          const magnetLine = vline(gex.magnet, '#65b7d6', magnetIsFlip ? 'Magnet／Flip' : 'Magnet', 1);
+          const flipLine = magnetIsFlip ? '' : vline(gex.flip, '#9a66c7', 'Flip', 2);
+          const levelTags = insight?.levels?.map((level) => `<span class="gex-level-tag" data-role="${level.role}">${level.label} $${level.value}</span>`).join('') || '';
+          const detailList = insight?.detail?.map((item) => `<li>${item}</li>`).join('') || '';
+          const rail = insight ? `<div class="gex-analysis-rail"><div class="gex-analysis-head"><strong>${gex.label} · 讀法</strong><span>${insight.confidence}</span></div><p>${insight.plain}</p><div class="gex-level-tags">${levelTags}</div><div class="gex-analysis-row"><span class="label">路徑</span><p>${insight.path}</p></div><div class="gex-analysis-row"><span class="label">確認</span><p>${insight.confirm}</p></div><div class="gex-analysis-row"><span class="label">失效</span><p>${insight.invalidate}</p></div><details class="gex-analysis-detail"><summary>判讀依據</summary><ul>${detailList}</ul></details></div>` : '';
+          return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>Gamma exposure profile</strong> · ${gex.label} · ${gex.expiry}</span><span>綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma exposure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
+        };
+        container.innerHTML = `${renderPanel(data.gexViews?.current, 'current', sharedDomain)}${renderPanel(data.gexViews?.next, 'next', sharedDomain)}<p class="gex-profile-disclaimer">資料限制：本圖以 unsigned benchmark pressure profile 呈現；Magnet／Flip／Walls 為分析參考線，不代表 signed dealer GEX、必然磁吸、交易目標或即時交易訊號。完整來源、計算方法與 attribution 見右側「來源追溯」。</p>`;
+        } catch (error) {
+          console.error('GEX profile render failed', error);
+          container.innerHTML = '<div class="chart-error">GEX pressure profile could not be rendered from the current benchmark rows.</div>';
+        }
+      }
+
+      function render() {
+        const data = datasets[state.ticker];
+        renderMenu();
+        // Synchronize the view shell before rebuilding chart series. This
+        // prevents a GEX overlay from remaining in front of the candle chart
+        // if a later text-panel update is interrupted during a view switch.
+        const isGex = state.view === 'gex';
+        $('gex-profile').hidden = !isGex;
+        $('chart-overlays').hidden = isGex;
+        $('chart-legend').hidden = isGex;
+        $('price-time-axis').hidden = isGex;
+        $('pattern-combo').hidden = isGex;
+        $('structure-panel').hidden = isGex;
+        renderGexProfile(data);
+        const pattern = getPattern(data);
+        const barsForView = viewBars(data);
+        if (chart) chart.remove();
+        layerSeries = {};
+        phaseMarkers = [];
+        chart = makeChart($('chart-stack'));
+        const bars = classifyBars(barsForView);
+        axisBars = bars;
+        const candleData = bars.map(({ time, open, high, low, close, color, borderColor, wickColor }) => ({ time, open, high, low, close, color, borderColor, wickColor }));
+        candleSeries = chart.addSeries(L.CandlestickSeries, { upColor: colors.weakGo, downColor: colors.weakNoGo, borderVisible: true, wickUpColor: colors.weakGo, wickDownColor: colors.weakNoGo });
+        candleSeries.setData(candleData);
+        const phases = phaseData(bars, state.ticker);
+        phasePrimitive = new VerticalPhasePrimitive(phases);
+        candleSeries.attachPrimitive(phasePrimitive);
+        markerApi = L.createSeriesMarkers(candleSeries, [
+          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text.split('｜')[0] },
+          { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
+        ]);
+        dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
+        dateAxisSeries.setData([{ time: bars[0].time, value: 0 }, { time: bars.at(-1).time, value: 0 }]);
+        const volume = chart.addSeries(L.HistogramSeries, { color: colors.aqua, priceFormat: { type: 'volume' }, priceScaleId: '' }, 2);
+        volume.setData(bars.map((bar) => ({ time: bar.time, value: bar.close >= bar.open ? bar.volume : -bar.volume, color: bar.close >= bar.open ? colors.volumeUp : colors.volumeDown })));
+        volumeSeries = volume;
+        const rsi = rsiData(bars);
+        rsiSeries = {
+          value: chart.addSeries(L.LineSeries, { color: colors.indicator, lineWidth: 2, priceLineVisible: false, lastValueVisible: true, priceScaleId: 'right', priceFormat: { type: 'custom', minMove: 1, formatter: (price) => (price <= 0.01 || price >= 99.99 ? '' : price.toFixed(0)) } }, 3),
+          overbought: chart.addSeries(L.LineSeries, { color: colors.confirmation, lineWidth: 1, lineStyle: L.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: true, priceScaleId: 'right' }, 3),
+          mid: chart.addSeries(L.LineSeries, { color: '#91a8b7', lineWidth: 1, lineStyle: L.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 3),
+          oversold: chart.addSeries(L.LineSeries, { color: colors.invalidation, lineWidth: 1, lineStyle: L.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: true, priceScaleId: 'right' }, 3)
+        };
+        rsiSeries.value.setData(rsi);
+        rsiSeries.overbought.setData(rsi.map((item) => ({ time: item.time, value: 80 })));
+        rsiSeries.mid.setData(levelData(bars.slice(14), 50));
+        rsiSeries.oversold.setData(rsi.map((item) => ({ time: item.time, value: 20 })));
+        const macd = macdData(bars);
+        const histogram = macd.macd.map((item, index) => ({ time: item.time, value: item.value - macd.signal[index].value, color: item.value >= macd.signal[index].value ? colors.macdPositive : colors.macdNegative }));
+        macdSeries = {
+          histogram: chart.addSeries(L.HistogramSeries, { color: colors.macdPositive, priceFormat: { type: 'price', precision: 2, minMove: 0.01 }, base: 0, priceScaleId: 'right' }, 4),
+          macd: chart.addSeries(L.LineSeries, { color: colors.indicator, lineWidth: 2, priceLineVisible: false, lastValueVisible: true, priceScaleId: 'right' }, 4),
+          signal: chart.addSeries(L.LineSeries, { color: colors.confirmation, lineWidth: 2, priceLineVisible: false, lastValueVisible: true, priceScaleId: 'right' }, 4),
+          zero: chart.addSeries(L.LineSeries, { color: '#91a8b7', lineWidth: 1, lineStyle: L.LineStyle.Dashed, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 4)
+        };
+        macdSeries.histogram.setData(histogram);
+        macdSeries.macd.setData(macd.macd);
+        macdSeries.signal.setData(macd.signal);
+        macdSeries.zero.setData(levelData(bars.slice(25), 0));
+        const bb = bollinger(bars);
+        layerSeries.bbUpper = addLine('bbUpper', bb.map((item) => ({ time: item.time, value: item.upper })), colors.bollinger, 1);
+        layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
+        layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
+        layerSeries.patternGeometry = addLine('patternGeometry', patternGeometry(bars, state.ticker, pattern), colors.pattern, 3, L.LineStyle.Solid);
+        layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
+        layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
+        layerSeries.wyckoffGate = addLine('wyckoffGate', levelData(bars, data.wyckoffGate), colors.wyckoff, 2);
+        const gex = gexView(data);
+        layerSeries.gexFlip = addLine('gexFlip', levelData(bars, gex.flip), colors.gex, 3, L.LineStyle.Dotted);
+        layerSeries.gexCallWall = addLine('gexCallWall', levelData(bars, gex.callWall), colors.patternConfirmation, 2, L.LineStyle.Dashed);
+        layerSeries.gexPutWall = addLine('gexPutWall', levelData(bars, gex.putWall), colors.patternInvalidation, 2, L.LineStyle.Dashed);
+        if (state.ticker === 'IREN') {
+          const upper = bars.map((bar, i) => ({ time: bar.time, value: 41.44 + (bars.length - 1 - i) * 0.381 }));
+          const lower = bars.map((bar, i) => ({ time: bar.time, value: 19.29 + (bars.length - 1 - i) * 0.408 }));
+          layerSeries.channelUpper = addLine('channelUpper', upper, colors.pattern, 2, L.LineStyle.Solid);
+          layerSeries.channelLower = addLine('channelLower', lower, colors.pattern, 1, L.LineStyle.Solid);
+        }
+        freezePriceFrame(bars, data, pattern);
+        freezeIndicatorFrame(rsiSeries.value, rsi.map((item) => item.value), 0, 100);
+        const macdValues = [...macd.macd.map((item) => item.value), ...macd.signal.map((item) => item.value), ...histogram.map((item) => item.value), 0];
+        freezeIndicatorFrame(macdSeries.macd, macdValues);
+        chart.timeScale().fitContent();
+        setPaneLayout();
+        syncIndicatorRanges();
+        chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+          syncIndicatorRanges();
+        });
+        drawPhaseOverlay(bars, phases);
+        updateLayerVisibility();
+        updateText(data, pattern);
+        if (state.view !== 'gex') renderGexProfile(data);
+        requestAnimationFrame(() => setPaneLayout());
+      }
+
+      function updateLayerVisibility() {
+        if (!chart) return;
+        Object.entries(layerSeries).forEach(([name, series]) => {
+          const primaryOnly = name === 'channelUpper' || name === 'channelLower';
+          const isGex = name.startsWith('gex');
+          const visible = name.startsWith('bb') ? state.layers.bollinger && state.view !== 'gex' : name === 'wyckoffGate' ? state.layers.wyckoff && state.view !== 'gex' : isGex ? state.layers.gex : primaryOnly ? state.layers.technical && state.candidate === 'primary' && state.view !== 'gex' : state.layers.technical && state.view !== 'gex';
+          series.applyOptions({ visible });
+        });
+        if (phasePrimitive) phasePrimitive.setVisible(state.layers.wyckoff && state.view !== 'gex');
+        const pattern = getPattern(datasets[state.ticker]);
+        const bars = viewBars(datasets[state.ticker]);
+        markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
+          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text.split('｜')[0] },
+          { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
+        ] : []);
+        $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
+      }
+
+      function updateText(data, pattern = getPattern(data)) {
+        const gex = gexView(data);
+        const isGex = state.view === 'gex';
+        $('title').textContent = state.ticker + ' · ' + data.company;
+        $('chart-title').textContent = isGex ? 'GEX 壓力圖 · Top／Bottom' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
+        const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
+        $('chart-meta').textContent = isGex ? `GEX · 本週／下週到期 · ${gex.freshness}` : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + '資料截至 ' + data.dataThrough + ' · ' + data.sourceCutoff;
+        const detail = analysisDetails[state.ticker];
+        const businessDetails = $('business-details');
+        const overall = detail?.overall;
+        $('thesis').textContent = overall?.thesis || data.thesis;
+        $('thesis-refresh').textContent = overall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
+        $('business').textContent = overall?.businessSummary || data.business;
+        $('business-proved').textContent = overall?.proved || '—';
+        $('business-unproved').textContent = overall?.unproved || '—';
+        $('business-next-test').textContent = overall?.nextTest || '—';
+        const renderDigest = (item, tone) => {
+          if (!item) return '';
+          const body = item.sections
+            ? item.sections.map((section) => `<section class="digest-section"><h4>${section.heading}</h4><ul>${section.points.map((point) => `<li>${point}</li>`).join('')}</ul></section>`).join('')
+            : `<ul>${item.points.map((point) => `<li>${point}</li>`).join('')}</ul>`;
+          return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p></article></div></details>`;
+        };
+        businessDetails.innerHTML = detail ? renderDigest(detail.midday, 'midday') + renderDigest(detail.endOfDay, 'endOfDay') + renderDigest(detail.weekly, 'weekly') : '';
+        businessDetails.hidden = !businessDetails.innerHTML;
+        $('pattern').textContent = pattern.text;
+        $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
+        $('wyckoff').textContent = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
+        $('pattern-gate').textContent = '$' + pattern.confirmation.toFixed(2);
+        $('invalidation').textContent = '$' + pattern.invalidation.toFixed(2);
+        $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
+        const secondary = data.patternCandidates?.secondary;
+        const candidateSwitch = $('candidate-switch');
+        const deduplicated = candidatesSimilar(data) || state.view === 'weekly';
+        const showSecondary = Boolean(secondary?.callout) && !deduplicated && !isGex;
+        // Keep the primary candidate visible whenever the dataset provides
+        // one. The secondary candidate is optional and only appears when it
+        // is explicitly called out and materially distinct.
+        candidateSwitch.hidden = isGex || !data.patternCandidates?.primary;
+        if (!showSecondary && state.candidate !== 'primary') state.candidate = 'primary';
+        candidateSwitch.querySelectorAll('[data-candidate]').forEach((button) => {
+          const active = button.dataset.candidate === state.candidate;
+          const candidate = data.patternCandidates?.[button.dataset.candidate];
+          button.hidden = deduplicated && button.dataset.candidate !== 'primary';
+          button.textContent = deduplicated && button.dataset.candidate === 'primary' ? pattern.status : candidate ? candidate.status : button.dataset.candidate;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        const gexOverview = analysisDetails[state.ticker]?.gex?.overview;
+        $('options').textContent = isGex ? (gexOverview || `${data.gexViews?.current?.text || gex.text} ${data.gexViews?.next?.text || ''}`) : data.options;
+        $('freshness').textContent = isGex ? `${data.gexViews?.current?.freshness || gex.freshness} · ${data.gexViews?.next?.freshness || ''}` : data.freshness;
+        $('contract-status').textContent = `資料契約 ${contract.contractVersion || 'legacy-seed'} · ${contract.mode === 'sheets-csv-import' ? 'Google Sheets CSV import' : 'local seed'}`;
+        const sourceSummary = $('source-summary');
+        const sourceEvidence = $('source-evidence');
+        const gexSource = data.gexSource;
+        if (isGex && gexSource) {
+          sourceSummary.textContent = 'GEX 判讀使用延遲 aggregate options source；圖表價格沿用同一 ticker 的 completed-session market source。';
+          sourceEvidence.hidden = false;
+          sourceEvidence.innerHTML = `<span class="label">GEX 證據與聲明依據</span><ul><li>選擇權來源：${gexSource.provider}；資料截止 ${gexSource.cutoff}。</li><li>計算方法：${gexSource.method}。</li><li>可聲稱：履約價附近的理論 gamma sensitivity concentration、相對位置與條件式價格路徑。</li><li>不可聲稱：${gexSource.limitations}。</li><li>圖表層：Lightweight Charts by TradingView；公開部署時須保留來源標示。</li></ul>`;
+          $('source-link').href = gexSource.url;
+          $('source-link').textContent = '開啟 GEX 原始資料來源';
+        } else {
+          sourceSummary.textContent = '圖表與分析紀錄仍連結至試作 workbook 的來源目錄及 manifest／hash。';
+          sourceEvidence.hidden = true;
+          sourceEvidence.replaceChildren();
+          $('source-link').href = data.sourceUrl;
+          $('source-link').textContent = '開啟市場資料來源';
+        }
+        $('pattern-combo').hidden = isGex;
+        $('structure-panel').hidden = isGex;
+        document.querySelectorAll('.controls label[data-tone]').forEach((label) => {
+          label.hidden = isGex && label.dataset.tone !== 'gex';
+        });
+        document.querySelectorAll('[data-view]').forEach((button) => {
+          const active = button.dataset.view === state.view;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        const homeLink = $('dock-home');
+        if (homeLink) homeLink.href = `../data-model/home.html?ticker=${encodeURIComponent(state.ticker)}`;
+        const expirySwitch = $('gex-expiry-switch');
+        expirySwitch.hidden = true;
+        expirySwitch.querySelectorAll('[data-gex-expiry]').forEach((button) => {
+          const active = button.dataset.gexExpiry === state.gexExpiry;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        $('chart-notice').textContent = isGex ? 'GEX 目前使用 benchmark pressure map；signed GEX 若不可得會明確標示，不把未簽名壓力牆當成精確 Gamma Flip。' : state.ticker === 'IREN' ? '選擇權／GEX 圖層刻意標示為早於目前技術分析 session。' : 'NBIS 圖表 OHLCV 已更新至 2026-09-04；文字分析與日報／選擇權沿用各自的實際 cutoff。';
+        $('price-time-axis').hidden = isGex;
+        $('chart-overlays').hidden = isGex;
+        $('chart-legend').hidden = isGex;
+      }
+
+      const toggleTickerMenu = () => {
+        const menu = $('ticker-sheet');
+        const open = menu.hidden;
+        if (open) {
+          renderMenu();
+          menu.hidden = false;
+          $('menu-backdrop').hidden = false;
+          $('ticker-menu-toggle').setAttribute('aria-expanded', 'true');
+        } else closeMainMenu();
+      };
+      $('ticker-menu-toggle').addEventListener('click', toggleTickerMenu);
+      $('ticker-sheet-close').addEventListener('click', closeMainMenu);
+      $('menu-backdrop').addEventListener('click', closeMainMenu);
+      let wheelScrollTimer;
+      $('ticker-wheel').addEventListener('scroll', () => {
+        clearTimeout(wheelScrollTimer);
+        wheelScrollTimer = setTimeout(() => {
+          if ($('ticker-sheet').hidden) return;
+          const items = [...$('ticker-wheel').querySelectorAll('.ticker-wheel-item')];
+          if (!items.length) return;
+          const wheelRect = $('ticker-wheel').getBoundingClientRect();
+          const center = wheelRect.top + wheelRect.height / 2;
+          const selected = items.reduce((closest, item) => {
+            const rect = item.getBoundingClientRect();
+            return Math.abs(rect.top + rect.height / 2 - center) < Math.abs(closest.rect.top + closest.rect.height / 2 - center) ? { item, rect } : closest;
+          }, { item: items[0], rect: items[0].getBoundingClientRect() }).item;
+          if (selected?.dataset.ticker && selected.dataset.ticker !== state.ticker) {
+            state.ticker = selected.dataset.ticker;
+            state.candidate = 'primary';
+            render();
+          }
+        }, 160);
+      }, { passive: true });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !$('ticker-sheet').hidden) closeMainMenu(); });
+      document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
+        if (button.dataset.view === state.view) return;
+        state.view = button.dataset.view;
+        render();
+      }));
+      document.querySelectorAll('[data-gex-expiry]').forEach((button) => button.addEventListener('click', () => {
+        if (button.dataset.gexExpiry === state.gexExpiry) return;
+        state.gexExpiry = button.dataset.gexExpiry;
+        if (state.view !== 'gex') state.view = 'gex';
+        render();
+      }));
+      document.querySelectorAll('[data-candidate]').forEach((button) => button.addEventListener('click', () => {
+        if (button.dataset.candidate === state.candidate) return;
+        state.candidate = button.dataset.candidate;
+        render();
+      }));
+      document.querySelectorAll('[data-layer]').forEach((input) => input.addEventListener('change', (event) => { state.layers[event.target.dataset.layer] = event.target.checked; updateLayerVisibility(); }));
+      window.addEventListener('storage', (event) => {
+        if (event.key === 'stock-analysis-coverage-overrides') window.location.reload();
+      });
+      window.addEventListener('resize', () => { if (chart) { setPaneLayout(); updatePhasePositions(); } });
+      if (!L || !datasets) { $('chart-stack').innerHTML = '<div class="chart-error">Chart library or benchmark data could not be loaded.</div>'; return; }
+      window.__chartSurface = { getPriceRange: () => candleSeries?.priceScale().getVisibleRange(), getLayers: () => ({ ...state.layers }) };
+      render();
+    })();
+  </script>
+</body>
+</html>
