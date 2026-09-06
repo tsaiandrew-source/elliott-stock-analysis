@@ -14,8 +14,6 @@
     .eyebrow { color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.1em; }
     h1 { margin:4px 0 0; color:var(--aqua); font-size:24px; }
     .subtitle { margin-top:5px; color:var(--muted); font-size:13px; }
-    .top-link { color:var(--aqua); border:1px solid var(--line); border-radius:8px; padding:8px 10px; text-decoration:none; font-size:12px; font-weight:800; white-space:nowrap; }
-    .top-link:hover, .top-link:focus-visible { border-color:var(--aqua); background:var(--surface2); }
     .section { padding:15px; border:1px solid var(--line); border-radius:13px; background:var(--surface); }
     .section-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
     .section-head strong { color:var(--aqua); font-size:13px; }
@@ -97,7 +95,6 @@
       .home { padding:24px; }
       h1 { font-size:28px; }
       .subtitle { font-size:15px; }
-      .top-link { padding:10px 12px; font-size:14px; }
       .section { padding:18px; }
       .section-head strong { font-size:15px; }
       .section-head span, .coverage-tab { font-size:13px; }
@@ -127,7 +124,6 @@
     @media (max-width:560px) {
       .home { padding:16px 12px 30px; }
       .top { display:block; }
-      .top-link { display:inline-block; margin-top:12px; }
       .section { padding:12px; }
       .coverage-form { grid-template-columns:1fr; }
       .coverage-header, .ticker-row { min-width:690px; }
@@ -156,7 +152,6 @@
   <main class="home">
     <header class="top">
       <div><div class="eyebrow">ELLIOTT+ STOCK ANALYSIS</div><h1>分析首頁</h1><p class="subtitle">Covered tickers · 點選代號開啟日線分析</p></div>
-      <a class="top-link" id="current-analysis" href="../chart-surface/index.html?view=daily">目前分析</a>
     </header>
     <section class="section" aria-labelledby="coverage-heading">
       <div class="section-head">
