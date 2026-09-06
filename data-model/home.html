@@ -87,7 +87,7 @@
       .floating-dock { top:14px; bottom:auto; }
       .ticker-sheet { top:73px; bottom:auto; }
     }
-    @media (min-width:561px) and (max-width:999px) {
+    @media (min-width:561px) and (max-width:999px) and (min-height:600px) {
       .floating-dock { right:50%; left:auto; width:max-content; max-width:calc(100vw - 32px); transform:translateX(50%); }
       .dock-action { flex:0 0 auto; min-width:96px; }
       .ticker-sheet { top:73px; }
@@ -144,7 +144,30 @@
       .ticker-history { grid-column:6; }
       .ticker-history summary { grid-column:6; grid-row:1; font-size:18px; }
       .ticker-history .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
-      .history-entry { line-height:1.45; overflow-wrap:anywhere; }
+      .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
+    }
+    /* Small landscape phones still use a compact scan row; do not let the
+       tablet sizing rules make the history panel oversized. */
+    @media (max-width:700px) and (orientation: landscape) {
+      body { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+      .home { padding:16px 12px 30px; }
+      .section { padding:12px; }
+      .ticker-list { overflow-x:visible; }
+      .coverage-header, .ticker-row { min-width:0; }
+      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .coverage-header span:nth-child(5) { display:none; }
+      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding:9px 8px; }
+      .ticker-main { grid-column:1 / 6; grid-template-columns:9px 58px minmax(0,1fr) 42px 62px; gap:6px; }
+      .latest-wyckoff { display:none; }
+      .ticker-history { grid-column:6; }
+      .ticker-history summary { grid-column:6; grid-row:1; font-size:18px; }
+      .ticker-history .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
+      .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
+      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
+      .dock-action { height:38px; padding:6px 9px; font-size:11px; }
+      .dock-icon { font-size:18px; }
+      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
+      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
     }
   </style>
 </head>
@@ -211,7 +234,8 @@
       const list = document.getElementById('ticker-list');
       const coverage = rows().filter((item) => item.active !== false);
       document.getElementById('coverage-count').textContent = `${coverage.length} 個 active ticker`;
-      document.getElementById('current-analysis').href = `../chart-surface/index.html?ticker=${encodeURIComponent(selectedTicker)}&view=daily`;
+      const currentAnalysis = document.getElementById('current-analysis');
+      if (currentAnalysis) currentAnalysis.href = `../chart-surface/index.html?ticker=${encodeURIComponent(selectedTicker)}&view=daily`;
       list.innerHTML = `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>型態</span><span>信心</span><span>Wyckoff</span><span>更新</span><span aria-hidden="true"></span></div>` + coverage.map((item) => {
         const latest = latestRun(item.ticker);
         const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
