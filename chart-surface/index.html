@@ -236,6 +236,7 @@
       .gex-expiry-panel { grid-template-columns: minmax(0, 1fr) minmax(230px, .5fr); gap: 10px; }
     }
     @media (max-width: 420px) {
+      body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
       .chart-panel, .summary { padding: 12px; }
       #chart-stack { height: 690px; }
       .grid-2 { grid-template-columns: 1fr; gap: 8px; }
@@ -252,6 +253,13 @@
       .gex-profile-canvas { height: 270px; }
       .gex-analysis-row { grid-template-columns: 1fr; gap: 2px; }
       .digest-head { align-items: start; flex-direction: column; gap: 2px; }
+      .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; background: rgba(30, 89, 99, .18); backdrop-filter: blur(1px); }
+      .dock-action { height: 38px; min-width: 0; padding: 6px 9px; font-size: 11px; }
+      .dock-icon { width: 20px; height: 20px; font-size: 18px; }
+      .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
+      .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
+      .gex-profile-head { line-height: 1.35; }
+      .gex-profile-disclaimer { font-size: 10px; line-height: 1.4; }
     }
   </style>
 </head>
