@@ -604,12 +604,13 @@
       }
 
       function makeChart(container) {
+        const tabletText = window.innerWidth >= 561 && window.innerWidth <= 999;
         const instance = L.createChart(container, {
           width: container.clientWidth,
           height: container.clientHeight,
           grid: { vertLines: { color: '#162b39' }, horzLines: { color: '#162b39' } },
           rightPriceScale: { borderColor: '#203849', minimumWidth: 62, scaleMargins: { top: 0.08, bottom: 0.08 } },
-          layout: { background: { type: 'solid', color: '#0d1a25' }, textColor: '#91a8b7', attributionLogo: true, panes: { separatorColor: '#203849', separatorHoverColor: '#203849', enableResize: false } },
+          layout: { background: { type: 'solid', color: '#0d1a25' }, textColor: '#91a8b7', fontSize: tabletText ? 14 : 12, attributionLogo: true, panes: { separatorColor: '#203849', separatorHoverColor: '#203849', enableResize: false } },
           timeScale: { borderColor: '#203849', timeVisible: false, visible: false, rightOffset: 3, fixLeftEdge: true },
           crosshair: { mode: L.CrosshairMode.Normal },
           handleScroll: { mouseWheel: false, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
