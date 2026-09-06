@@ -95,11 +95,11 @@
       .ticker-sheet { top:73px; }
     }
     @media (max-width:560px) {
-      body { padding-bottom:76px; }
-      .floating-dock { top:auto; bottom:12px; left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
+      body { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
       .dock-action { height:38px; padding:6px 9px; font-size:11px; }
       .dock-icon { font-size:18px; }
-      .ticker-sheet { top:auto; bottom:69px; height:min(44vh,320px); max-height:min(44vh,320px); }
+      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
       .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
     }
     @media (max-width:560px) {
@@ -112,6 +112,20 @@
       .floating-dock { right:12px; left:12px; justify-content:center; transform:none; }
       .dock-action { flex:1 1 0; min-width:0; }
       .ticker-sheet { width:calc(100vw - 24px); }
+    }
+    /* Portrait phones keep the analysis scan line compact: ticker, pattern,
+       confidence, updated date, and the inline history affordance. */
+    @media (max-width:560px) and (orientation: portrait) {
+      .ticker-list { overflow-x:visible; }
+      .coverage-header, .ticker-row { min-width:0; }
+      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .coverage-header span:nth-child(5) { display:none; }
+      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding:9px 8px; }
+      .ticker-main { grid-column:1 / 6; grid-template-columns:9px 58px minmax(0,1fr) 42px 62px; gap:6px; }
+      .latest-wyckoff { display:none; }
+      .ticker-history { grid-column:6; }
+      .ticker-history summary { grid-column:auto; font-size:18px; }
+      .ticker-history .history-panel { min-width:0; margin-left:0; }
     }
   </style>
 </head>
