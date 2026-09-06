@@ -40,12 +40,9 @@
     .ticker-main em { color:var(--muted); font-size:11px; font-style:normal; white-space:nowrap; }
     .new-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(126,231,135,.13); }
     .new-dot[hidden] { display:none; }
-    .ticker-history { display:contents; }
-    .ticker-history summary { grid-column:7; grid-row:1; display:block; align-self:center; justify-self:center; width:auto; height:auto; padding:0; border:0; color:var(--aqua); background:transparent; font-size:18px; font-weight:500; line-height:1; text-align:center; cursor:pointer; list-style:none; }
-    .ticker-history summary::-webkit-details-marker { display:none; }
-    .ticker-history summary::before { display:none; }
-    .ticker-history summary:hover, .ticker-history summary:focus-visible { border-color:var(--aqua); color:var(--text); }
-    .ticker-history .history-panel { grid-column:1 / -1; grid-row:2; width:100%; min-width:640px; margin:9px 0 0 18px; padding-top:6px; border-top:1px solid rgba(32,56,73,.7); }
+    .ticker-history-toggle { grid-column:7; grid-row:1; align-self:center; justify-self:center; width:auto; height:auto; padding:0; border:0; color:var(--aqua); background:transparent; font-size:18px; font-weight:500; line-height:1; text-align:center; cursor:pointer; }
+    .ticker-history-toggle:hover, .ticker-history-toggle:focus-visible { color:var(--text); }
+    .history-panel { grid-column:1 / -1; grid-row:2; width:100%; min-width:640px; margin:9px 0 0 18px; padding-top:6px; border-top:1px solid rgba(32,56,73,.7); }
     .history-entry { padding-top:6px; color:var(--muted); font-size:11px; white-space:normal; overflow-wrap:break-word; }
     .history-entry strong { color:var(--text); }
     .coverage-form { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:8px; margin-top:12px; }
@@ -142,8 +139,8 @@
       .ticker-main { grid-column:1 / 6; grid-template-columns:9px 58px minmax(0,1fr) 42px 62px; gap:6px; }
       .latest-wyckoff { display:none; }
       .ticker-history { grid-column:6; }
-      .ticker-history summary { grid-column:6; grid-row:1; font-size:18px; }
-      .ticker-history .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
+      .ticker-history-toggle { grid-column:6; grid-row:1; font-size:18px; }
+      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
       .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
     }
     /* Small landscape phones still use a compact scan row; do not let the
@@ -160,8 +157,8 @@
       .ticker-main { grid-column:1 / 6; grid-template-columns:9px 58px minmax(0,1fr) 42px 62px; gap:6px; }
       .latest-wyckoff { display:none; }
       .ticker-history { grid-column:6; }
-      .ticker-history summary { grid-column:6; grid-row:1; font-size:18px; }
-      .ticker-history .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
+      .ticker-history-toggle { grid-column:6; grid-row:1; font-size:18px; }
+      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
       .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
       .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
       .dock-action { height:38px; padding:6px 9px; font-size:11px; }
@@ -243,9 +240,16 @@
         const compactPattern = latest?.pattern?.split('｜')[0] || '尚無最新分析';
         const compactWyckoff = latest?.wyckoff || 'Wyckoff 未標示';
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
-        return `<div class="ticker-row"><button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}"><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(latest?.confidence ?? '—')}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span></button><details class="ticker-history"><summary aria-label="${escapeHtml(item.ticker)} 分析歷史">+</summary><div class="history-panel">${historyHtml}</div></details></div>`;
+        return `<div class="ticker-row"><button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}"><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(latest?.confidence ?? '—')}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span></button><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
       list.querySelectorAll('[data-ticker]').forEach((button) => button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(button.dataset.ticker)}&view=daily`; }));
+      list.querySelectorAll('.ticker-history-toggle').forEach((button) => button.addEventListener('click', () => {
+        const panel = button.nextElementSibling;
+        const open = panel && !panel.hidden;
+        if (panel) panel.hidden = open;
+        button.setAttribute('aria-expanded', String(!open));
+        button.textContent = open ? '+' : '−';
+      }));
       const saveCoverage = () => localStorage.setItem('stock-analysis-coverage-overrides', JSON.stringify(overrides));
       const admin = document.getElementById('coverage-admin');
       const reloadInManagementMode = () => {
