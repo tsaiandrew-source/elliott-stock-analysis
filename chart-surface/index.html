@@ -299,6 +299,16 @@
     html.force-phone-portrait .dock-icon { width: 21px; height: 21px; font-size: 20px; }
     html.force-phone-portrait .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
     html.force-phone-portrait .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
+    /* iPhone landscape is wider than the normal phone breakpoint. Keep the
+       dock in the thumb zone and retain compact sizing without affecting iPad. */
+    @media (max-width: 999px) and (orientation: landscape) and (max-height: 500px) {
+      body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+      .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; }
+      .dock-action { height: 44px; min-width: 0; padding: 7px 10px; font-size: 12px; }
+      .dock-icon { width: 21px; height: 21px; font-size: 20px; }
+      .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
+      .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
+    }
   </style>
 </head>
 <body>
