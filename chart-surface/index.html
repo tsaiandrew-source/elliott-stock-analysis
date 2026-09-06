@@ -398,7 +398,7 @@
   </section>
   <nav class="floating-dock" aria-label="快速導覽">
     <a class="dock-action" id="dock-home" href="../data-model/home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
-    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
+    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span id="ticker-menu-label">Ticker</span></button>
   </nav>
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
@@ -444,6 +444,8 @@
       }
 
       function renderMenu() {
+        $('ticker-menu-label').textContent = state.ticker;
+        $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
         const wheel = $('ticker-wheel');
         document.querySelectorAll('[data-view]').forEach((button) => {
           const active = button.dataset.view === state.view;
