@@ -228,7 +228,7 @@
       .dock-action { flex: 1 1 0; justify-content: center; }
     }
     /* Tablet keeps the dock as a compact top overlay; phone moves it to the thumb zone. */
-    @media (min-width: 561px) and (max-width: 999px) {
+    @media (min-width: 561px) and (max-width: 999px) and (min-height: 600px) {
       .floating-dock { right: 50%; left: auto; width: max-content; max-width: calc(100vw - 32px); transform: translateX(50%); }
       .dock-action { flex: 0 0 auto; min-width: 96px; }
       .ticker-sheet { top: 73px; }
