@@ -416,6 +416,8 @@
       const $ = (id) => document.getElementById(id);
       const query = new URLSearchParams(window.location.search);
       const state = { ticker: query.get('ticker') || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
+      $('ticker-menu-label').textContent = state.ticker;
+      $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
       const baseCoverage = contract.coverage || Object.keys(datasets || {}).map((ticker) => ({ ticker, company: datasets[ticker]?.company || ticker, active: true }));
       let coverageOverrides = {};
       try { coverageOverrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { coverageOverrides = {}; }
@@ -439,6 +441,8 @@
         if (!activeCoverage.some((item) => item.ticker === ticker)) return;
         state.ticker = ticker;
         state.candidate = 'primary';
+        $('ticker-menu-label').textContent = state.ticker;
+        $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
         closeMainMenu();
         render();
       }
