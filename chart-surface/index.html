@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>股票分析圖表層</title>
   <script src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"></script>
   <style>
@@ -280,8 +280,8 @@
       .gex-analysis-row { grid-template-columns: 1fr; gap: 2px; }
       .digest-head { align-items: start; flex-direction: column; gap: 2px; }
       .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; background: rgba(30, 89, 99, .18); backdrop-filter: blur(1px); }
-      .dock-action { height: 38px; min-width: 0; padding: 6px 9px; font-size: 11px; }
-      .dock-icon { width: 20px; height: 20px; font-size: 18px; }
+      .dock-action { height: 44px; min-width: 0; padding: 7px 10px; font-size: 12px; }
+      .dock-icon { width: 21px; height: 21px; font-size: 20px; }
       .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
       .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
       .gex-profile-head { line-height: 1.35; }
@@ -1212,7 +1212,30 @@
       window.addEventListener('storage', (event) => {
         if (event.key === 'stock-analysis-coverage-overrides') window.location.reload();
       });
-      window.addEventListener('resize', () => { if (chart) { setPaneLayout(); updatePhasePositions(); } });
+      let layoutSyncTimer;
+      function scheduleLayoutSync() {
+        if (!chart) return;
+        cancelAnimationFrame(layoutSyncTimer);
+        const sync = () => {
+          if (!chart) return;
+          const range = chart.timeScale().getVisibleLogicalRange?.();
+          setPaneLayout();
+          updatePhasePositions();
+          if (range) chart.timeScale().setVisibleLogicalRange(range);
+        };
+        requestAnimationFrame(() => {
+          sync();
+          // Safari may report the old visual viewport for the first frame
+          // after an orientation change. Re-read the settled dimensions so
+          // portrait returns from landscape without requiring a zoom gesture.
+          requestAnimationFrame(sync);
+        });
+        clearTimeout(scheduleLayoutSync.timer);
+        scheduleLayoutSync.timer = setTimeout(sync, 360);
+      }
+      window.addEventListener('resize', scheduleLayoutSync, { passive: true });
+      window.addEventListener('orientationchange', scheduleLayoutSync, { passive: true });
+      window.visualViewport?.addEventListener('resize', scheduleLayoutSync, { passive: true });
       if (!L || !datasets) { $('chart-stack').innerHTML = '<div class="chart-error">Chart library or benchmark data could not be loaded.</div>'; return; }
       window.__chartSurface = { getPriceRange: () => candleSeries?.priceScale().getVisibleRange(), getLayers: () => ({ ...state.layers }) };
       render();
