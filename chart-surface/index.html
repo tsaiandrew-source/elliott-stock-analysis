@@ -287,6 +287,18 @@
       .gex-profile-head { line-height: 1.35; }
       .gex-profile-disclaimer { font-size: 10px; line-height: 1.4; }
     }
+    /* Use the visual viewport as a fallback when iPhone Safari keeps the
+       layout viewport in its previous orientation for a frame or two. */
+    html.force-phone-portrait .layout { grid-template-columns: 1fr; }
+    html.force-phone-portrait .chart-head { flex-direction: column; }
+    html.force-phone-portrait .view-tools { width: 100%; justify-content: flex-start; }
+    html.force-phone-portrait .view-switch { flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
+    html.force-phone-portrait #chart-stack { height: 690px; }
+    html.force-phone-portrait .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; }
+    html.force-phone-portrait .dock-action { height: 44px; min-width: 0; padding: 7px 10px; font-size: 12px; }
+    html.force-phone-portrait .dock-icon { width: 21px; height: 21px; font-size: 20px; }
+    html.force-phone-portrait .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
+    html.force-phone-portrait .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
   </style>
 </head>
 <body>
@@ -414,6 +426,9 @@
       const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
       const analysisRuns = contract.analysisRuns || [];
       const $ = (id) => document.getElementById(id);
+      function getViewportWidth() {
+        return Math.round(window.visualViewport?.width || document.documentElement.clientWidth || window.innerWidth);
+      }
       const query = new URLSearchParams(window.location.search);
       const state = { ticker: query.get('ticker') || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
       $('ticker-menu-label').textContent = state.ticker;
@@ -821,7 +836,7 @@
         const range = chart.timeScale().getVisibleLogicalRange?.();
         const from = Math.max(0, Math.floor(range?.from ?? 0));
         const to = Math.min(axisBars.length - 1, Math.ceil(range?.to ?? axisBars.length - 1));
-        const count = window.innerWidth <= 420 ? 4 : 6;
+        const count = getViewportWidth() <= 420 ? 4 : 6;
         const indices = [...new Set(Array.from({ length: count }, (_, index) => Math.max(from, Math.min(to, Math.round(from + (to - from) * index / Math.max(count - 1, 1))))))];
         const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
         const seenLabels = new Set();
@@ -842,16 +857,16 @@
       function setPaneLayout() {
         if (!chart) return;
         const stack = $('chart-stack');
-        const stackHeight = window.innerWidth <= 420 ? 690 : window.innerWidth <= 780 ? 780 : 900;
+        const stackHeight = getViewportWidth() <= 420 ? 690 : getViewportWidth() <= 780 ? 780 : 900;
         stack.style.height = `${stackHeight}px`;
         chart.applyOptions({ width: stack.clientWidth, height: stack.clientHeight });
         const panes = chart.panes();
         [candleSeries, volumeSeries, rsiSeries?.value, macdSeries?.macd].filter(Boolean).forEach((series) => series.priceScale().applyOptions({ minimumWidth: 62 }));
-        const lowerPaneHeight = window.innerWidth <= 420 ? 145 : window.innerWidth <= 780 ? 165 : 180;
+        const lowerPaneHeight = getViewportWidth() <= 420 ? 145 : getViewportWidth() <= 780 ? 165 : 180;
         // Keep the three lower panes visually equal. Apply in reverse order because
         // Lightweight Charts reallocates the remaining space after each resize.
         [4, 3, 2].forEach((paneIndex) => panes[paneIndex]?.setHeight(lowerPaneHeight));
-        panes[1]?.setHeight(window.innerWidth <= 420 ? 28 : 30);
+        panes[1]?.setHeight(getViewportWidth() <= 420 ? 28 : 30);
         [2, 3, 4].forEach((paneIndex) => panes[paneIndex]?.setStretchFactor?.(1));
         panes[0]?.setStretchFactor?.(3);
         const phasePaneHeight = panes[0]?.getHeight?.() || 430;
@@ -883,7 +898,7 @@
         // silently fall back to an empty/hidden GEX view.
         container.hidden = false;
         try {
-        const compactGex = window.innerWidth <= 420;
+        const compactGex = getViewportWidth() <= 420;
         const width = compactGex ? 520 : 720;
         const height = 390;
         const labelSize = compactGex ? 16 : 20;
@@ -1213,11 +1228,17 @@
         if (event.key === 'stock-analysis-coverage-overrides') window.location.reload();
       });
       let layoutSyncTimer;
+      function syncResponsiveMode() {
+        const viewportWidth = getViewportWidth();
+        const viewportHeight = Math.round(window.visualViewport?.height || document.documentElement.clientHeight || window.innerHeight);
+        document.documentElement.classList.toggle('force-phone-portrait', viewportWidth <= 560 && viewportHeight > viewportWidth);
+      }
       function scheduleLayoutSync() {
         if (!chart) return;
         cancelAnimationFrame(layoutSyncTimer);
         const sync = () => {
           if (!chart) return;
+          syncResponsiveMode();
           const range = chart.timeScale().getVisibleLogicalRange?.();
           setPaneLayout();
           updatePhasePositions();
