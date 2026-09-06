@@ -227,6 +227,14 @@
       .floating-dock { right: 12px; left: 12px; justify-content: center; transform: none; }
       .dock-action { flex: 1 1 0; justify-content: center; }
     }
+    /* Tablet keeps the dock as a compact top overlay; phone moves it to the thumb zone. */
+    @media (min-width: 561px) and (max-width: 999px) {
+      .floating-dock { right: 50%; left: auto; width: max-content; max-width: calc(100vw - 32px); transform: translateX(50%); }
+      .dock-action { flex: 0 0 auto; min-width: 96px; }
+      .ticker-sheet { top: 73px; }
+      .layout { gap: 14px; }
+      .gex-expiry-panel { grid-template-columns: minmax(0, 1fr) minmax(230px, .5fr); gap: 10px; }
+    }
     @media (max-width: 420px) {
       .chart-panel, .summary { padding: 12px; }
       #chart-stack { height: 690px; }
