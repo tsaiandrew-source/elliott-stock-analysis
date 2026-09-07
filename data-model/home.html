@@ -31,6 +31,8 @@
     .ticker-row { display:grid; grid-template-columns:9px 74px 150px 42px 210px 62px 26px; align-items:center; gap:8px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:rgba(17,36,51,.42); }
     .ticker-main { display:grid; grid-column:1 / 7; grid-template-columns:9px 74px 150px 42px 210px 62px; align-items:center; gap:8px; width:100%; padding:0; border:0; color:var(--text); background:transparent; text-align:left; cursor:pointer; }
     .ticker-main:hover, .ticker-main:focus-visible { color:var(--aqua); }
+    .ticker-main.is-disabled { color:var(--muted); cursor:not-allowed; }
+    .ticker-main.is-disabled:hover, .ticker-main.is-disabled:focus-visible { color:var(--muted); }
     .ticker-main strong { display:block; }
     .ticker-main strong { font-size:14px; }
     .ticker-copy, .latest-pattern, .latest-confidence, .latest-wyckoff, .latest-date { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -79,6 +81,8 @@
     .ticker-wheel-item span { overflow:hidden; color:var(--muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
     .ticker-wheel-item.is-current { color:var(--text); background:rgba(85,217,213,.13); box-shadow:inset 3px 0 var(--aqua); }
     .ticker-wheel-item.is-current strong { color:var(--aqua); }
+    .ticker-wheel-item:disabled { opacity:.62; cursor:not-allowed; }
+    .ticker-wheel-item:disabled strong { color:var(--muted); }
     @media (min-width:1000px) {
       body { padding-top:0; padding-bottom:0; }
       .floating-dock { top:14px; bottom:auto; }
@@ -264,9 +268,14 @@
         const compactPattern = latest?.pattern?.split('｜')[0] || '尚無最新分析';
         const compactWyckoff = latest?.wyckoff || 'Wyckoff 未標示';
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
-        return `<div class="ticker-row"><button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}"><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(latest?.confidence ?? '—')}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span></button><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
+        const hasDetail = Boolean(latest && datasets[item.ticker]);
+        const tickerButton = hasDetail
+          ? `<button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}">`
+          : `<span class="ticker-main is-disabled" role="button" aria-disabled="true" title="尚無可用分析，暫不可開啟">`;
+        const tickerButtonEnd = hasDetail ? '</button>' : '</span>';
+        return `<div class="ticker-row">${tickerButton}<span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(latest?.confidence ?? '—')}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span>${tickerButtonEnd}<button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
-      list.querySelectorAll('[data-ticker]').forEach((button) => button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(button.dataset.ticker)}&view=daily`; }));
+      list.querySelectorAll('.ticker-main[data-ticker]').forEach((button) => button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(button.dataset.ticker)}&view=daily`; }));
       list.querySelectorAll('.ticker-history-toggle').forEach((button) => button.addEventListener('click', () => {
         const panel = button.nextElementSibling;
         const open = panel && !panel.hidden;
@@ -327,7 +336,10 @@
         const ticker = document.createElement('strong'); ticker.textContent = item.ticker;
         const company = document.createElement('span'); company.textContent = item.company || item.ticker;
         button.append(ticker, company);
-        button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
+        const hasDetail = Boolean(latestRun(item.ticker) && datasets[item.ticker]);
+        button.disabled = !hasDetail;
+        if (!hasDetail) button.title = '尚無可用分析，暫不可開啟';
+        if (hasDetail) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
         return button;
       }));
       const currentItem = wheel.querySelector('.is-current');
