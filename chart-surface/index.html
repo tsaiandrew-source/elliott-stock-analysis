@@ -12,6 +12,7 @@
   <link rel="mask-icon" href="../assets/elliott-plus-icon.svg" color="#55d9d5">
   <title>股票分析圖表層</title>
   <script src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"></script>
+  <script>if (!window.LightweightCharts) document.write('<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"><\/script>');</script>
   <style>
     :root {
       color-scheme: dark;
@@ -433,9 +434,27 @@
   <script>document.write('<script src="weekly-history.js?open=' + Date.now() + '"><\/script>');</script>
   <script>document.write('<script src="analysis-details.js?open=' + Date.now() + '"><\/script>');</script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script>document.write('<script src="https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec?format=js&open=' + Date.now() + '"><\/script>');</script>
   <script>
+    window.__PROTOTYPE_DATA_PROXY_PENDING = true;
+    window.__PROTOTYPE_DATA_PROXY_DONE = false;
     (() => {
+      const finish = () => {
+        if (window.__PROTOTYPE_DATA_PROXY_DONE) return;
+        window.__PROTOTYPE_DATA_PROXY_DONE = true;
+        window.__PROTOTYPE_DATA_PROXY_PENDING = false;
+        window.dispatchEvent(new Event('prototype-data-ready'));
+      };
+      const script = document.createElement('script');
+      script.src = 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec?format=js&open=' + Date.now();
+      script.async = true;
+      script.onload = finish;
+      script.onerror = finish;
+      document.head.appendChild(script);
+      window.setTimeout(finish, 5000);
+    })();
+  </script>
+  <script>
+    const bootChartSurface = () => {
       const L = window.LightweightCharts;
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
       const datasets = contract.datasets?.benchmark || window.BENCHMARK_DATA;
@@ -1283,7 +1302,12 @@
       window.__chartSurface = { getPriceRange: () => candleSeries?.priceScale().getVisibleRange(), getLayers: () => ({ ...state.layers }) };
       render();
       scheduleLayoutSync();
-    })();
+    };
+    if (window.__PROTOTYPE_DATA_PROXY_PENDING) {
+      window.addEventListener('prototype-data-ready', bootChartSurface, { once: true });
+    } else {
+      bootChartSurface();
+    }
   </script>
 </body>
 </html>
