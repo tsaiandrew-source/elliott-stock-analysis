@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>股票分析 · AppSheet prototype</title>
   <style>
     :root { color-scheme: dark; --bg:#071018; --surface:#0d1a25; --surface2:#112433; --line:#203849; --text:#edf6fb; --muted:#91a8b7; --aqua:#55d9d5; --lime:#c8f169; --purple:#9a66c7; --amber:#f2b84b; --green:#7ee787; --teal:#4fd1a5; }
@@ -125,7 +128,7 @@
     <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
-  <script src="../chart-surface/data-contract.js?v=20260905-2"></script>
+  <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (() => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
