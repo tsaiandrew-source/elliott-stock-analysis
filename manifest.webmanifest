@@ -1,0 +1,18 @@
+{
+  "name": "ELLIOTT+ STOCK ANALYSIS",
+  "short_name": "ELLIOTT+",
+  "description": "Elliott+ stock analysis dashboard",
+  "start_url": "./data-model/home.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071018",
+  "theme_color": "#071018",
+  "icons": [
+    {
+      "src": "./assets/elliott-plus-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}
