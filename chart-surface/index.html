@@ -429,9 +429,9 @@
     <a class="dock-action" id="dock-home" href="../data-model/home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span id="ticker-menu-label">Ticker</span></button>
   </nav>
-  <script src="benchmark-data.js?v=20260905-6"></script>
-  <script src="weekly-history.js?v=20260905-1"></script>
-  <script src="analysis-details.js?v=20260905-1"></script>
+  <script>document.write('<script src="benchmark-data.js?open=' + Date.now() + '"><\/script>');</script>
+  <script>document.write('<script src="weekly-history.js?open=' + Date.now() + '"><\/script>');</script>
+  <script>document.write('<script src="analysis-details.js?open=' + Date.now() + '"><\/script>');</script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (() => {
