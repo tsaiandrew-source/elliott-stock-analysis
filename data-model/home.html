@@ -59,6 +59,7 @@
     .action[data-active="false"] { color:var(--amber); }
     .status-active { color:var(--green); font-weight:800; }
     .status-inactive { color:var(--amber); font-weight:800; }
+    .status-removed { color:var(--muted); font-weight:800; }
     .coverage-admin { margin-top:10px; }
     .coverage-admin table { width:100%; min-width:620px; border-collapse:collapse; font-size:12px; }
     .coverage-admin th, .coverage-admin td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
@@ -257,11 +258,11 @@
       };
       const query = new URLSearchParams(window.location.search);
       const coverageMode = query.get('mode') === 'manage' ? 'manage' : 'view';
-      const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false)?.ticker || 'NBIS';
+      const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || 'NBIS';
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
       const latestRun = (ticker) => runs.filter((run) => run.ticker === ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)))[0];
       const list = document.getElementById('ticker-list');
-      const coverage = rows().filter((item) => item.active !== false);
+      const coverage = rows().filter((item) => item.active !== false && item.hidden !== true);
       document.getElementById('coverage-count').textContent = `${coverage.length} 個 active ticker`;
       const currentAnalysis = document.getElementById('current-analysis');
       if (currentAnalysis) currentAnalysis.href = `../chart-surface/index.html?ticker=${encodeURIComponent(selectedTicker)}&view=daily`;
@@ -272,6 +273,11 @@
         const compactPattern = latest?.pattern?.split('｜')[0] || '尚無最新分析';
         const compactWyckoff = latest?.wyckoff || 'Wyckoff 未標示';
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
+        const hasDetail = Boolean(latest && datasets[item.ticker]);
+        const tickerButton = hasDetail
+          ? `<button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}">`
+          : `<span class="ticker-main is-disabled" role="button" aria-disabled="true" title="尚無可用分析，暫不可開啟">`;
+        const tickerButtonEnd = hasDetail ? '</button>' : '</span>';
         const hasDetail = Boolean(latest && datasets[item.ticker]);
         const tickerButton = hasDetail
           ? `<button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}">`
@@ -295,11 +301,25 @@
         window.location.href = next.toString();
       };
       const renderCoverageAdmin = () => {
-        admin.innerHTML = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows().map((item) => `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class="${item.active === false ? 'status-inactive' : 'status-active'}">${item.active === false ? 'Inactive' : 'Active'}</td><td><button type="button" class="action" data-active="${item.active !== false}" data-toggle-ticker="${escapeHtml(item.ticker)}">${item.active === false ? 'Reactivate' : 'Deactivate'}</button></td></tr>`).join('')}</tbody></table>`;
+        admin.innerHTML = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows().map((item) => { const removed = item.hidden === true; const statusClass = removed ? 'status-removed' : item.active === false ? 'status-inactive' : 'status-active'; const status = removed ? 'Removed' : item.active === false ? 'Inactive' : 'Active'; const actions = removed ? `<button type="button" class="action" data-restore-ticker="${escapeHtml(item.ticker)}">Restore</button>` : `<button type="button" class="action" data-active="${item.active !== false}" data-toggle-ticker="${escapeHtml(item.ticker)}">${item.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(item.ticker)}">Remove</button>`; return `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class="${statusClass}">${status}</td><td>${actions}</td></tr>`; }).join('')}</tbody></table>`;
         admin.querySelectorAll('[data-toggle-ticker]').forEach((button) => button.addEventListener('click', () => {
           const ticker = button.dataset.toggleTicker;
           const current = rows().find((item) => item.ticker === ticker) || { ticker };
           overrides[ticker] = { ...current, active: button.dataset.active !== 'true' };
+          saveCoverage();
+          reloadInManagementMode();
+        }));
+        admin.querySelectorAll('[data-remove-ticker]').forEach((button) => button.addEventListener('click', () => {
+          const ticker = button.dataset.removeTicker;
+          const current = rows().find((item) => item.ticker === ticker) || { ticker };
+          overrides[ticker] = { ...current, hidden: true };
+          saveCoverage();
+          reloadInManagementMode();
+        }));
+        admin.querySelectorAll('[data-restore-ticker]').forEach((button) => button.addEventListener('click', () => {
+          const ticker = button.dataset.restoreTicker;
+          const current = rows().find((item) => item.ticker === ticker) || { ticker };
+          overrides[ticker] = { ...current, hidden: false, active: true };
           saveCoverage();
           reloadInManagementMode();
         }));
@@ -310,7 +330,7 @@
         const ticker = document.getElementById('new-ticker').value.trim().toUpperCase();
         if (!ticker) return;
         const current = rows().find((item) => item.ticker === ticker) || { ticker };
-        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, active: true, defaultView: current.defaultView || 'daily' };
+        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, active: true, hidden: false, defaultView: current.defaultView || 'daily' };
         saveCoverage();
         reloadInManagementMode();
       });
