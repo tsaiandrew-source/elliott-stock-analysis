@@ -138,7 +138,7 @@
         Object.entries(coverageOverrides).forEach(([ticker, item]) => rows.set(ticker, { ...(rows.get(ticker) || { ticker }), ...item }));
         return [...rows.values()];
       };
-      const activeCoverage = () => coverageRows().filter((item) => item.active !== false && datasets[item.ticker]);
+      const activeCoverage = () => coverageRows().filter((item) => item.removed !== true && item.active !== false && datasets[item.ticker]);
       const runs = contract.analysisRuns || [];
       const query = new URLSearchParams(window.location.search);
       const initialView = ['history', 'sources', 'coverage'].includes(query.get('view')) ? query.get('view') : 'latest';
@@ -209,18 +209,24 @@
       function saveCoverage() { localStorage.setItem('stock-analysis-coverage-overrides', JSON.stringify(coverageOverrides)); }
       function renderCoverage() {
         $('heading').textContent = 'Coverage';
-        $('subheading').textContent = '新增、停用或恢復 ticker；停用不刪除歷史分析。';
-        $('content').innerHTML = `<section class="section"><h3>Coverage table</h3><form class="coverage-form" id="coverage-form"><input id="new-ticker" placeholder="Ticker，例如：AMD" maxlength="12" required><input id="new-company" placeholder="Company name" maxlength="48"><button class="action" type="submit">Add</button></form><div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${coverageRows().map((row) => `<tr><td><strong>${escapeHtml(row.ticker)}</strong></td><td>${escapeHtml(row.company || row.ticker)}</td><td>${escapeHtml(row.defaultView || 'daily')}</td><td class="${row.active === false ? 'status-inactive' : 'status-active'}">${row.active === false ? 'Inactive' : 'Active'}</td><td><button type="button" class="action" data-active="${row.active !== false}" data-toggle-ticker="${escapeHtml(row.ticker)}">${row.active === false ? 'Reactivate' : 'Deactivate'}</button></td></tr>`).join('')}</tbody></table></div></section>`;
+        $('subheading').textContent = '新增、停用或移除 ticker；停用只離開選擇清單，移除保留歷史分析。';
+        $('content').innerHTML = `<section class="section"><h3>Coverage table</h3><form class="coverage-form" id="coverage-form"><input id="new-ticker" placeholder="Ticker，例如：AMD" maxlength="12" required><input id="new-company" placeholder="Company name" maxlength="48"><button class="action" type="submit">Add</button></form><div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${coverageRows().filter((row) => row.removed !== true).map((row) => `<tr><td><strong>${escapeHtml(row.ticker)}</strong></td><td>${escapeHtml(row.company || row.ticker)}</td><td>${escapeHtml(row.defaultView || 'daily')}</td><td class="${row.active === false ? 'status-inactive' : 'status-active'}">${row.active === false ? 'Inactive' : 'Active'}</td><td><button type="button" class="action" data-active="${row.active !== false}" data-toggle-ticker="${escapeHtml(row.ticker)}">${row.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(row.ticker)}">Remove</button></td></tr>`).join('')}</tbody></table></div></section>`;
         $('coverage-form').addEventListener('submit', (event) => {
           event.preventDefault();
           const ticker = $('new-ticker').value.trim().toUpperCase();
           if (!ticker) return;
-          coverageOverrides[ticker] = { ...(coverageRows().find((row) => row.ticker === ticker) || {}), ticker, company: $('new-company').value.trim() || ticker, active: true, defaultView: 'daily' };
+          coverageOverrides[ticker] = { ...(coverageRows().find((row) => row.ticker === ticker) || {}), ticker, company: $('new-company').value.trim() || ticker, active: true, hidden: false, removed: false, defaultView: 'daily' };
           saveCoverage(); state.ticker = ticker; render();
         });
         document.querySelectorAll('[data-toggle-ticker]').forEach((button) => button.addEventListener('click', () => {
           const ticker = button.dataset.toggleTicker;
           coverageOverrides[ticker] = { ...(coverageRows().find((row) => row.ticker === ticker) || {}), ticker, active: button.dataset.active !== 'true' };
+          saveCoverage(); render();
+        }));
+        document.querySelectorAll('[data-remove-ticker]').forEach((button) => button.addEventListener('click', () => {
+          const ticker = button.dataset.removeTicker;
+          if (!window.confirm(`Remove ${ticker} from Coverage? Historical analyses will be preserved, but the ticker will disappear from Management and selection.`)) return;
+          coverageOverrides[ticker] = { ...(coverageRows().find((row) => row.ticker === ticker) || { ticker }), ticker, hidden: true, removed: true, active: false };
           saveCoverage(); render();
         }));
       }
