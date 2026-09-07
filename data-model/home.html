@@ -278,11 +278,6 @@
           ? `<button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}">`
           : `<span class="ticker-main is-disabled" role="button" aria-disabled="true" title="尚無可用分析，暫不可開啟">`;
         const tickerButtonEnd = hasDetail ? '</button>' : '</span>';
-        const hasDetail = Boolean(latest && datasets[item.ticker]);
-        const tickerButton = hasDetail
-          ? `<button type="button" class="ticker-main" data-ticker="${escapeHtml(item.ticker)}">`
-          : `<span class="ticker-main is-disabled" role="button" aria-disabled="true" title="尚無可用分析，暫不可開啟">`;
-        const tickerButtonEnd = hasDetail ? '</button>' : '</span>';
         return `<div class="ticker-row">${tickerButton}<span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(latest?.confidence ?? '—')}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span>${tickerButtonEnd}<button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
       list.querySelectorAll('.ticker-main[data-ticker]').forEach((button) => button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(button.dataset.ticker)}&view=daily`; }));
