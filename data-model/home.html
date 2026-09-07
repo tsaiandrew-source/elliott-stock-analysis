@@ -251,11 +251,12 @@
       const baseCoverage = contract.coverage || [];
       let overrides = {};
       try { overrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { overrides = {}; }
-      const rows = () => {
+      const allRows = () => {
         const merged = new Map(baseCoverage.map((item) => [item.ticker, { ...item }]));
         Object.entries(overrides).forEach(([ticker, item]) => merged.set(ticker, { ...(merged.get(ticker) || { ticker }), ...item }));
         return [...merged.values()];
       };
+      const rows = () => allRows().filter((item) => item.removed !== true);
       const query = new URLSearchParams(window.location.search);
       const coverageMode = query.get('mode') === 'manage' ? 'manage' : 'view';
       const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || 'NBIS';
@@ -296,7 +297,7 @@
         window.location.href = next.toString();
       };
       const renderCoverageAdmin = () => {
-        admin.innerHTML = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows().map((item) => { const removed = item.hidden === true; const statusClass = removed ? 'status-removed' : item.active === false ? 'status-inactive' : 'status-active'; const status = removed ? 'Removed' : item.active === false ? 'Inactive' : 'Active'; const actions = removed ? `<button type="button" class="action" data-restore-ticker="${escapeHtml(item.ticker)}">Restore</button>` : `<button type="button" class="action" data-active="${item.active !== false}" data-toggle-ticker="${escapeHtml(item.ticker)}">${item.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(item.ticker)}">Remove</button>`; return `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class="${statusClass}">${status}</td><td>${actions}</td></tr>`; }).join('')}</tbody></table>`;
+        admin.innerHTML = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows().map((item) => { const statusClass = item.active === false ? 'status-inactive' : 'status-active'; const status = item.active === false ? 'Inactive' : 'Active'; const actions = `<button type='button' class='action' data-active='${item.active !== false}' data-toggle-ticker='${escapeHtml(item.ticker)}'>${item.active === false ? 'Reactivate' : 'Deactivate'}</button><button type='button' class='action' data-remove-ticker='${escapeHtml(item.ticker)}'>Remove</button>`; return `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class='${statusClass}'>${status}</td><td>${actions}</td></tr>`; }).join('')}</tbody></table>`;
         admin.querySelectorAll('[data-toggle-ticker]').forEach((button) => button.addEventListener('click', () => {
           const ticker = button.dataset.toggleTicker;
           const current = rows().find((item) => item.ticker === ticker) || { ticker };
@@ -306,15 +307,9 @@
         }));
         admin.querySelectorAll('[data-remove-ticker]').forEach((button) => button.addEventListener('click', () => {
           const ticker = button.dataset.removeTicker;
-          const current = rows().find((item) => item.ticker === ticker) || { ticker };
-          overrides[ticker] = { ...current, hidden: true };
-          saveCoverage();
-          reloadInManagementMode();
-        }));
-        admin.querySelectorAll('[data-restore-ticker]').forEach((button) => button.addEventListener('click', () => {
-          const ticker = button.dataset.restoreTicker;
-          const current = rows().find((item) => item.ticker === ticker) || { ticker };
-          overrides[ticker] = { ...current, hidden: false, active: true };
+          if (!window.confirm(`Remove ${ticker} from Coverage? Historical analyses will be preserved, but the ticker will disappear from Management and selection.`)) return;
+          const current = allRows().find((item) => item.ticker === ticker) || { ticker };
+          overrides[ticker] = { ...current, hidden: true, removed: true, active: false };
           saveCoverage();
           reloadInManagementMode();
         }));
@@ -324,8 +319,8 @@
         event.preventDefault();
         const ticker = document.getElementById('new-ticker').value.trim().toUpperCase();
         if (!ticker) return;
-        const current = rows().find((item) => item.ticker === ticker) || { ticker };
-        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, active: true, hidden: false, defaultView: current.defaultView || 'daily' };
+        const current = allRows().find((item) => item.ticker === ticker) || { ticker };
+        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, active: true, hidden: false, removed: false, defaultView: current.defaultView || 'daily' };
         saveCoverage();
         reloadInManagementMode();
       });
