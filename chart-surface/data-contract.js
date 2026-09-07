@@ -5247,3 +5247,56 @@ window.PROTOTYPE_DATA_CONTRACT = {
     }
   }
 };
+
+// __TAIL_TEST__
+
+// Runtime compatibility layer: keep the public UI localized while accepting
+// newer Sheets proxy payloads, and keep Daily bars available when a partial
+// proxy response arrives on mobile Safari/Chrome.
+(() => {
+  const localContract = window.PROTOTYPE_DATA_CONTRACT || {};
+  const localDatasets = localContract.datasets?.benchmark || window.BENCHMARK_DATA || {};
+  const candidate = (remoteCandidate, localCandidate) => ({
+    ...(remoteCandidate || {}),
+    ...(localCandidate || {}),
+    confidence: remoteCandidate?.confidence ?? localCandidate?.confidence,
+    geometry: remoteCandidate?.geometry || localCandidate?.geometry,
+    callout: remoteCandidate?.callout ?? localCandidate?.callout
+  });
+  const mergeDataset = (remote, local) => {
+    if (!local) return remote || {};
+    const merged = { ...local, ...(remote || {}) };
+    ['pattern', 'patternStatus', 'thesis', 'wyckoff', 'weeklyWyckoff', 'options', 'business', 'freshness'].forEach((key) => {
+      if (local[key] != null && local[key] !== '') merged[key] = local[key];
+    });
+    merged.bars = Array.isArray(remote?.bars) && remote.bars.length >= 20 ? remote.bars : (local.bars || []);
+    merged.patternCandidates = {
+      ...(remote?.patternCandidates || {}),
+      primary: candidate(remote?.patternCandidates?.primary, local.patternCandidates?.primary),
+      secondary: candidate(remote?.patternCandidates?.secondary, local.patternCandidates?.secondary)
+    };
+    merged.gexViews = local.gexViews || remote?.gexViews;
+    return merged;
+  };
+  const applyLocalizedContract = () => {
+    const remote = window.PROTOTYPE_DATA_CONTRACT || {};
+    if (!remote.datasets && remote === localContract) return;
+    const remoteDatasets = remote.datasets?.benchmark || {};
+    const tickers = new Set([...Object.keys(localDatasets), ...Object.keys(remoteDatasets)]);
+    const benchmark = Object.fromEntries([...tickers].map((ticker) => [ticker, mergeDataset(remoteDatasets[ticker], localDatasets[ticker])]));
+    const localRuns = localContract.analysisRuns || [];
+    const runs = (remote.analysisRuns || localRuns).map((run) => {
+      const local = localRuns.find((item) => item.runId === run.runId) || localRuns.find((item) => item.ticker === run.ticker && item.analysisDate === run.analysisDate && item.runType === run.runType);
+      if (!local) return run;
+      return { ...run, ...local, chartSource: run.chartSource || local.chartSource, gexSource: run.gexSource || local.gexSource };
+    });
+    window.PROTOTYPE_DATA_CONTRACT = {
+      ...remote,
+      coverage: remote.coverage?.length ? remote.coverage : localContract.coverage,
+      analysisRuns: runs,
+      datasets: { ...(remote.datasets || {}), benchmark, analysisDetails: remote.datasets?.analysisDetails || localContract.datasets?.analysisDetails, weeklyHistory: remote.datasets?.weeklyHistory || localContract.datasets?.weeklyHistory }
+    };
+  };
+  if (window.__PROTOTYPE_DATA_PROXY_DONE) applyLocalizedContract();
+  else window.addEventListener('prototype-data-ready', applyLocalizedContract, { once: true });
+})();
