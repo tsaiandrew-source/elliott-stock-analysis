@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Elliott+ Stock Analysis</title>
+  <desc id="desc">Dark navy app icon with a bold cyan Elliott E and separated lime plus sign</desc>
+  <rect width="128" height="128" rx="26" fill="#071018"/>
+  <rect x="4" y="4" width="120" height="120" rx="22" fill="none" stroke="#55d9d5" stroke-width="6"/>
+  <path d="M31 31h45M31 31v66M31 64h30M31 97h45" fill="none" stroke="#55d9d5" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M90 50v28M76 64h28" fill="none" stroke="#c8f169" stroke-width="8" stroke-linecap="round"/>
+</svg>
