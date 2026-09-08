@@ -86,6 +86,9 @@
     return run?.confidenceLabel ? translateConfidence(run.confidenceLabel) : '—';
   };
   const confidencePercent = (run) => {
+    const explicitText = String(run?.confidencePercent ?? '').match(/\d+(?:\.\d+)?/);
+    const explicit = explicitText ? Number(explicitText[0]) : NaN;
+    if (Number.isFinite(explicit) && explicit > 0) return `${explicit}%`;
     const numeric = Number(run?.confidence);
     if (Number.isFinite(numeric) && numeric > 0) return `${numeric}%`;
     const match = String(run?.pattern || '').match(/(\d+(?:\.\d+)?)%/i);
@@ -93,6 +96,7 @@
   };
   const compactPattern = (run) => {
     if (!run) return '尚無最新分析';
+    if (run.patternLabel) return String(run.patternLabel);
     const rawPattern = localizePattern(String(run.pattern || '')).split('/')[0].trim();
     const thesis = String(run.thesis || '');
     const compact = [
@@ -114,6 +118,10 @@
   };
   const direction = (run) => {
     if (!run) return { symbol: '→', key: 'flat', label: '延續盤整' };
+    const explicit = String(run.predictionDirection || '').toLowerCase();
+    if (explicit === 'up' || explicit === 'bullish' || explicit === '↗') return { symbol: '↗', key: 'up', label: '趨勢向上' };
+    if (explicit === 'down' || explicit === 'bearish' || explicit === '↘') return { symbol: '↘', key: 'down', label: '趨勢向下' };
+    if (explicit === 'flat' || explicit === 'neutral' || explicit === '→') return { symbol: '→', key: 'flat', label: '延續盤整' };
     const text = `${run.thesis || ''} ${run.pattern || ''}`;
     if (/無明確|中性|尚無.*結論|no defensible|rejected|否決|失效|inconclusive|unclassified/i.test(text)) return { symbol: '→', key: 'flat', label: '延續盤整' };
     if (/看空|bearish|double top|雙重頂|head[- ]and[- ]shoulders top|頭肩頂|downside|向下|下跌/i.test(text)) return { symbol: '↘', key: 'down', label: '趨勢向下' };
@@ -121,8 +129,9 @@
     return { symbol: '→', key: 'flat', label: '延續盤整' };
   };
   const localizePattern = (value) => {
-    if (!value || /[\u3400-\u9fff]/.test(value)) return value;
-    let text = String(value);
+    const stripped = String(value ?? '').replace(/\s*\/\s*\d+(?:\.\d+)?%.*$/i, '').trim();
+    if (!stripped || /[\u3400-\u9fff]/.test(stripped)) return stripped;
+    let text = stripped;
     text = replaceAll(text, [
       [/none \/ no defensible confidence/i, '無明確型態／無可辯護信心'],
       [/double bottom, forming/i, '雙重底形成中'],
@@ -175,8 +184,10 @@
     return {
       ...run,
       pattern: localizePattern(run.pattern),
+      patternLabel: run.patternLabel ? localizePattern(run.patternLabel) : undefined,
       thesis: preset.thesis || run.thesis,
       business: preset.business || run.business,
+      confidencePercent: confidencePercent(run),
       confidenceLabel: confidenceDisplay(run),
       confidenceDisplay: confidenceDisplay(run),
       confirmation: localizeConfirmation(run.confirmation),
