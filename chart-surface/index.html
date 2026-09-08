@@ -948,6 +948,10 @@
         const current = bars.at(-1);
         if (!current) return [];
         if (state.view === 'weekly') {
+          if (ticker === 'NBIS' && pattern.geometry === 'doubleBottom') {
+            const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
+            return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.high : index === 2 ? bar.low : index === 3 ? bar.close : bar.low }));
+          }
           if (ticker === 'NBIS' && pattern.geometry === 'headShoulders') {
             const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
             return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.high : index === 2 ? bar.high : index === 3 ? bar.close : bar.high }));
