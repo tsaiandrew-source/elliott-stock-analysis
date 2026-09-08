@@ -472,15 +472,27 @@
           }
         };
       };
+      const liveCacheKey = 'stock-analysis-live-contract-v1';
       let contract = bundledContract;
-      if (window.location.protocol !== 'file:') {
+      try {
+        const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
+        if (cached && Array.isArray(cached.coverage)) contract = mergeRuntimeContract(bundledContract, cached);
+      } catch (_) { /* Ignore an unavailable or malformed browser cache. */ }
+      const liveSignature = (live) => JSON.stringify({ coverage: live.coverage || [], analysisRuns: live.analysisRuns || [], tables: live.tables || {} });
+      const refreshLiveInBackground = async () => {
+        if (window.location.protocol === 'file:') return;
         try {
-          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`);
-          if (live) contract = mergeRuntimeContract(bundledContract, live);
+          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 15000);
+          if (!live || !Array.isArray(live.coverage)) return;
+          const nextSignature = liveSignature(live);
+          const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
+          sessionStorage.setItem(liveCacheKey, JSON.stringify(live));
+          sessionStorage.setItem(`${liveCacheKey}-signature`, nextSignature);
+          if (nextSignature !== previousSignature) window.location.reload();
         } catch (_) {
-          // Keep the bundled last-good contract when the proxy is unavailable.
+          // The already-rendered bundled or cached contract remains usable.
         }
-      }
+      };
       const partialChartSources = { '2646': 'partial-market-data/2646.json' };
       const partialDatasets = {};
       await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
@@ -1407,6 +1419,7 @@
       window.__chartSurface = { getPriceRange: () => candleSeries?.priceScale().getVisibleRange(), getLayers: () => ({ ...state.layers }) };
       render();
       scheduleLayoutSync();
+      void refreshLiveInBackground();
     })();
   </script>
 </body>
