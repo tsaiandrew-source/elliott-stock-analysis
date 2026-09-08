@@ -1,5 +1,5 @@
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
-const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbwN2nwwPTYSQlYn-SFdKJ4xUFrvEfhsw85TNyWN2SPxmmg735ARE_giwjYiWsePvxRe1w/exec';
+const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbxsRXw6ScEz6FeHwBrDZuErFT5dieJKClKii6m0c7uKYplq6OeIB7KCm_ES7Y0UbhKYZA/exec';
 const tickers = ['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', '2330', 'AVGO'];
 const routes = [
   '/',
