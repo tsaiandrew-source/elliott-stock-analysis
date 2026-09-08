@@ -519,7 +519,9 @@
           // Partial analysis remains usable even if its supplemental chart is unavailable.
         }
       }));
-      const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
+      const benchmarkDatasets = contract.datasets?.benchmark || window.BENCHMARK_DATA || {};
+      const datasetTickers = new Set([...Object.keys(partialDatasets), ...Object.keys(benchmarkDatasets)]);
+      const datasets = Object.fromEntries([...datasetTickers].map((ticker) => [ticker, { ...(partialDatasets[ticker] || {}), ...(benchmarkDatasets[ticker] || {}) }]));
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
       const analysisGeometry = window.PROTOTYPE_ANALYSIS_GEOMETRY || {};
@@ -637,7 +639,8 @@
         const staticDataset = window.BENCHMARK_DATA?.[ticker] || {};
         const savedDataset = { ...staticDataset, ...(datasets[ticker] || {}) };
         const savedCandidates = staticDataset.patternCandidates || datasets[ticker]?.patternCandidates || {};
-        const sidecarCoordinates = !staticDataset.patternCandidates ? analysisGeometry[ticker]?.coordinates : null;
+        const hasLiveCoordinates = Boolean(savedCandidates.primary?.coordinates || savedCandidates.primary?.geometryCoordinates);
+        const sidecarCoordinates = !hasLiveCoordinates ? analysisGeometry[ticker]?.coordinates : null;
         const sidecarPrimary = sidecarCandidate(sidecarCoordinates);
         const runtimeCandidates = patternRun?.patternCandidates || {};
         const runtimePrimary = runtimeCandidates.primary || patternRun?.primaryCandidate || {};
