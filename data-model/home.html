@@ -252,6 +252,7 @@
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
+  <script src="../chart-surface/analysis-localization.js?open=20260908"></script>
   <script>
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
@@ -283,7 +284,8 @@
         // Keep the bundled last-good contract when the proxy is unavailable.
       }
       const datasets = activeContract.datasets?.benchmark || {};
-      const runs = activeContract.analysisRuns || [];
+      const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
+      const runs = (activeContract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
       const baseCoverage = activeContract.coverage || [];
       let overrides = {};
       try { overrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { overrides = {}; }
@@ -311,7 +313,7 @@
       const renderTickerRows = (items) => items.map((item) => {
         const latest = latestRun(item.ticker);
         const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
-        const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'latest' ? '最新' : '歷史')} · 信心 ${escapeHtml(run.confidence ?? run.confidenceLabel ?? '—')} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
+        const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'latest' ? '最新' : '歷史')} · 信心 ${escapeHtml(localizer.confidenceDisplay ? localizer.confidenceDisplay(run) : (run.confidence ?? run.confidenceLabel ?? '—'))} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
         const compactPattern = latest?.pattern?.split('｜')[0] || '尚無最新分析';
         const compactWyckoff = latest?.wyckoff || 'Wyckoff 未標示';
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
@@ -319,7 +321,7 @@
         const rowAttributes = hasDetail
           ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
           : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
-        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(latest?.confidence ?? latest?.confidenceLabel ?? '—')}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
+        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(localizer.confidenceDisplay ? localizer.confidenceDisplay(latest) : (latest?.confidence ?? latest?.confidenceLabel ?? '—'))}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
       list.innerHTML = ['tracking', 'exploration'].map((group) => {
         const items = coverage.filter((item) => coverageGroup(item) === group);

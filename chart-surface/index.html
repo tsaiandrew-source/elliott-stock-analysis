@@ -437,6 +437,7 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
+  <script src="analysis-localization.js?open=20260908"></script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
@@ -472,7 +473,8 @@
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
       const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
-      const analysisRuns = contract.analysisRuns || [];
+      const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
+      const analysisRuns = (contract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
       const $ = (id) => document.getElementById(id);
       function getViewportWidth() {
         return Math.round(window.visualViewport?.width || document.documentElement.clientWidth || window.innerWidth);
@@ -495,7 +497,7 @@
       const analysisOnlyDataset = (ticker) => {
         const run = latestRun(ticker);
         if (!run) return null;
-        const confidence = Number.isFinite(Number(run.confidence)) ? Number(run.confidence) : null;
+        const confidence = Number.isFinite(Number(run.confidence)) && Number(run.confidence) > 0 ? Number(run.confidence) : null;
         const text = run.pattern || '已有文字分析；技術圖表資料待補。';
         return {
           company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
@@ -506,7 +508,7 @@
           sourceUrl: run.chartSource || '',
           pattern: text,
           patternStatus: run.status || 'partial',
-          patternCandidates: { primary: { label: 'Primary', text, confidence, status: run.status || 'partial', confirmation: run.confirmation, invalidation: run.invalidation, geometry: 'none', callout: false } },
+          patternCandidates: { primary: { label: '主候選', text, confidence, confidenceLabel: run.confidenceDisplay || run.confidenceLabel, status: run.status || 'partial', confirmation: run.confirmation, invalidation: run.invalidation, geometry: 'none', callout: false } },
           thesis: run.thesis || '已有部分分析；技術圖表資料待補。',
           wyckoff: run.wyckoff || 'Pending',
           weeklyWyckoff: run.weeklyWyckoff || 'Pending',
