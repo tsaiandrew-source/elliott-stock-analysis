@@ -78,19 +78,21 @@
   const replaceAll = (value, pairs) => pairs.reduce((text, [from, to]) => text.replace(from, to), String(value ?? ''));
   const translateConfidence = (value) => confidenceMap[String(value ?? '').replace(/`/g, '').trim()] || value;
   const confidenceDisplay = (run) => {
-    if (run?.confidenceBand) return translateConfidence(run.confidenceBand);
+    const confidenceBand = run?.confidenceBand || run?.primaryCandidate?.confidenceBand || run?.primaryCandidate?.confidenceLabel;
+    if (confidenceBand) return translateConfidence(confidenceBand);
     const pattern = String(run?.pattern || '');
     const usable = pattern.match(/(?:reconciled confidence|usable confidence)\s*`?([^`;,]+)`?/i);
     if (usable) return translateConfidence(usable[1]);
-    if (Number(run?.confidence) > 0) return String(run.confidence);
+    const numeric = Number(run?.confidence ?? run?.primaryCandidate?.confidence);
+    if (numeric > 0) return String(numeric);
     if (/no defensible confidence/i.test(pattern)) return '—';
     return run?.confidenceLabel ? translateConfidence(run.confidenceLabel) : '—';
   };
   const confidencePercent = (run) => {
-    const explicitText = String(run?.confidencePercent ?? '').match(/\d+(?:\.\d+)?/);
+    const explicitText = String(run?.confidencePercent ?? run?.primaryCandidate?.confidencePercent ?? '').match(/\d+(?:\.\d+)?/);
     const explicit = explicitText ? Number(explicitText[0]) : NaN;
     if (Number.isFinite(explicit) && explicit > 0) return `${explicit}%`;
-    const numeric = Number(run?.confidence);
+    const numeric = Number(run?.confidence ?? run?.primaryCandidate?.confidence);
     if (Number.isFinite(numeric) && numeric > 0) return `${numeric}%`;
     const match = String(run?.pattern || '').match(/(\d+(?:\.\d+)?)%/i);
     return match ? `${match[1]}%` : '—';
@@ -210,7 +212,7 @@
       thesis: preset.thesis || run.thesis,
       business: preset.business || run.business,
       confidencePercent: confidencePercent(run),
-      confidence: run.confidencePercent ?? run.confidence,
+      confidence: run.confidencePercent ?? run.confidence ?? normalizedPrimary?.confidence,
       confidenceBand: run.confidenceBand || normalizedPrimary?.confidenceLabel,
       predictionDirection: run.predictionDirection,
       patternCandidates: candidates,
