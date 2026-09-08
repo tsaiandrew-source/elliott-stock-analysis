@@ -309,6 +309,7 @@
         }
       };
       const datasets = activeContract.datasets?.benchmark || {};
+      const hasChartData = (ticker) => Array.isArray(datasets[ticker]?.bars) && datasets[ticker].bars.length >= 2;
       const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
       const runs = (activeContract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
       const baseCoverage = activeContract.coverage || [];
@@ -342,13 +343,14 @@
         const compactPattern = localizer.compactPattern ? localizer.compactPattern(latest) : (latest?.pattern?.split('｜')[0] || '尚無最新分析');
         const forecast = localizer.direction ? localizer.direction(latest) : { symbol: '→', key: 'flat', label: '延續盤整' };
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
-        const hasDetail = Boolean(latest);
-        const rowAttributes = hasDetail
+        const canOpenChart = hasChartData(item.ticker);
+        const rowAttributes = canOpenChart
           ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
-          : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
+          : ` class="ticker-row is-disabled" title="尚無可用圖表，暫不可開啟"`;
         const confidence = localizer.confidencePercent ? localizer.confidencePercent(latest) : (latest?.confidence ? `${latest.confidence}%` : '—');
         const confidenceTitle = localizer.confidenceDisplay && latest ? `可用信心：${localizer.confidenceDisplay(latest)}` : '';
-        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span><span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
+        const statusTitle = latest ? `新分析：${escapeHtml(latest.analysisDate)}` : (canOpenChart ? '可開啟部分圖表；分析待補' : '尚無可用圖表');
+        return `<div${rowAttributes}><span class="new-dot" title="${statusTitle}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span><span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
       list.innerHTML = ['tracking', 'exploration'].map((group) => {
         const items = coverage.filter((item) => coverageGroup(item) === group);
@@ -435,10 +437,10 @@
         const ticker = document.createElement('strong'); ticker.textContent = item.ticker;
         const company = document.createElement('span'); company.textContent = item.company || item.ticker;
         button.append(ticker, company);
-        const hasDetail = Boolean(latestRun(item.ticker));
-        button.disabled = !hasDetail;
-        if (!hasDetail) button.title = '尚無可用分析，暫不可開啟';
-        if (hasDetail) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
+        const canOpenChart = hasChartData(item.ticker);
+        button.disabled = !canOpenChart;
+        if (!canOpenChart) button.title = '尚無可用圖表，暫不可開啟';
+        if (canOpenChart) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
         return button;
       }));
       const currentItem = wheel.querySelector('.is-current');
