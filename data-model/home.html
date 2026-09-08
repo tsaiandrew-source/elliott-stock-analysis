@@ -27,7 +27,9 @@
     .section-head span { color:var(--muted); font-size:11px; }
     .section-head-tools { display:flex; align-items:center; justify-content:flex-end; gap:9px; }
     .coverage-tabs { display:flex; gap:5px; }
-    .coverage-tab { border:1px solid var(--line); border-radius:7px; padding:6px 10px; color:var(--muted); background:transparent; font-size:11px; font-weight:800; cursor:pointer; }
+    .coverage-tab { display:inline-flex; align-items:center; justify-content:center; width:36px; height:32px; border:1px solid var(--line); border-radius:8px; padding:5px; color:var(--muted); background:transparent; cursor:pointer; }
+    .coverage-tab svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     .coverage-tab[aria-selected="true"] { border-color:var(--aqua); color:#071018; background:var(--aqua); }
     .coverage-tab:hover, .coverage-tab:focus-visible { border-color:var(--aqua); color:var(--text); }
     .coverage-tab[aria-selected="true"]:hover, .coverage-tab[aria-selected="true"]:focus-visible { color:#071018; }
@@ -218,8 +220,8 @@
         <div class="section-head-tools">
           <span id="coverage-count"></span>
           <div class="coverage-tabs" role="tablist" aria-label="Coverage views">
-            <button type="button" class="coverage-tab" id="coverage-view-tab" role="tab" aria-selected="true" aria-controls="coverage-view-panel">分析檢視</button>
-            <button type="button" class="coverage-tab" id="coverage-manage-tab" role="tab" aria-selected="false" aria-controls="coverage-manage-panel">管理</button>
+            <button type="button" class="coverage-tab" id="coverage-view-tab" role="tab" aria-selected="true" aria-controls="coverage-view-panel" aria-label="分析檢視" title="分析檢視"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 18V6M4 18h16"/><path d="m7 14 3-3 3 2 5-6"/><path d="M18 7h2v2"/></svg><span class="sr-only">分析檢視</span></button>
+            <button type="button" class="coverage-tab" id="coverage-manage-tab" role="tab" aria-selected="false" aria-controls="coverage-manage-panel" aria-label="管理" title="管理"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg><span class="sr-only">管理</span></button>
           </div>
         </div>
       </div>
