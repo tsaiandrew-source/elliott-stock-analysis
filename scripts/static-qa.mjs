@@ -10,6 +10,7 @@ const requiredFiles = [
   'chart-surface/index.html',
   'chart-surface/data-contract.js',
   'chart-surface/analysis-localization.js',
+  'chart-surface/analysis-geometry.js',
   'data-model/home.html'
 ];
 

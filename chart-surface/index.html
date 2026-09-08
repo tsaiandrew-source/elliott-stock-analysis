@@ -445,6 +445,7 @@
   <script src="analysis-details.js?v=20260905-1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script src="analysis-localization.js?open=20260908g"></script>
+  <script src="analysis-geometry.js?open=20260908h"></script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
@@ -521,6 +522,7 @@
       const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
+      const analysisGeometry = window.PROTOTYPE_ANALYSIS_GEOMETRY || {};
       const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
       const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
       const analysisRuns = (contract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
@@ -582,6 +584,49 @@
         if (typeof value !== 'string' || !value.trim().startsWith('{')) return null;
         try { return JSON.parse(value); } catch (_) { return null; }
       };
+      const sidecarPatternText = (coordinates) => {
+        const typeLabels = {
+          double_bottom: '雙重底',
+          double_top: '雙重頂',
+          horizontal_channel: '水平通道',
+          descending_channel: '下降通道',
+          head_shoulders: '頭肩頂',
+          descending_triangle: '下降三角形',
+          ascending_triangle: '上升三角形',
+          inverse_head_shoulders: '逆頭肩底'
+        };
+        const stateLabels = {
+          forming: '形成中',
+          breakout_candidate: '突破候選',
+          breakout_confirmed: '突破確認',
+          retest_held: '回測守住',
+          rejected: '已否決'
+        };
+        if (!coordinates?.type) return '';
+        const label = typeLabels[coordinates.type] || '型態候選';
+        const state = stateLabels[coordinates.state] || '';
+        if (coordinates.watch_direction === 'up' && coordinates.state === 'breakout_candidate') return `看多${label}${state}`;
+        if (coordinates.watch_direction === 'down' && coordinates.state === 'breakout_candidate') return `看空${label}${state}`;
+        return `${label}${state}`;
+      };
+      const sidecarCandidate = (coordinates) => {
+        if (!coordinates?.type) return null;
+        const text = sidecarPatternText(coordinates);
+        const stateLabels = { forming: '形成中', breakout_candidate: '突破候選', breakout_confirmed: '突破確認', retest_held: '回測守住', rejected: '已否決' };
+        const confidence = Number(coordinates.confidence);
+        const state = stateLabels[coordinates.state] || '資料待補';
+        return {
+          text,
+          pattern: text,
+          status: `主候選 · ${state}${Number.isFinite(confidence) ? ` · 信心 ${confidence}` : ''}`,
+          confidence: Number.isFinite(confidence) ? confidence : null,
+          confidencePercent: Number.isFinite(confidence) ? `${confidence}%` : '',
+          direction: coordinates.watch_direction || coordinates.direction || 'flat',
+          geometry: coordinates.type,
+          coordinates,
+          callout: true
+        };
+      };
       const analysisOnlyDataset = (ticker) => {
         const dailyRun = latestDailyRun(ticker);
         const weeklyRun = latestWeeklyRun(ticker);
@@ -592,24 +637,30 @@
         const staticDataset = window.BENCHMARK_DATA?.[ticker] || {};
         const savedDataset = { ...staticDataset, ...(datasets[ticker] || {}) };
         const savedCandidates = staticDataset.patternCandidates || datasets[ticker]?.patternCandidates || {};
+        const sidecarCoordinates = !staticDataset.patternCandidates ? analysisGeometry[ticker]?.coordinates : null;
+        const sidecarPrimary = sidecarCandidate(sidecarCoordinates);
         const runtimeCandidates = patternRun?.patternCandidates || {};
         const runtimePrimary = runtimeCandidates.primary || patternRun?.primaryCandidate || {};
         const runtimePrimaryIsChinese = /[\u3400-\u9fff]/.test(String(runtimePrimary.text || runtimePrimary.pattern || patternRun?.patternLabel || ''));
         const candidateSource = runtimePrimaryIsChinese ? runtimePrimary : {};
         const primaryCandidate = {
           ...(savedCandidates.primary || {}),
+          ...(sidecarPrimary || {}),
+          ...(sidecarCoordinates ? { coordinates: sidecarCoordinates } : {}),
           ...candidateSource,
-          geometry: candidateSource.geometry || savedCandidates.primary?.geometry || 'none'
+          geometry: candidateSource.geometry || savedCandidates.primary?.geometry || sidecarPrimary?.geometry || 'none'
         };
         const patternText = runtimePrimaryIsChinese
           ? (patternRun?.patternLabel || patternRun?.pattern || savedCandidates.primary?.text || savedDataset.pattern)
-          : (savedCandidates.primary?.text || savedDataset.pattern || patternRun?.pattern || '已有文字分析；技術圖表資料待補。');
+          : (sidecarPrimary?.text || savedCandidates.primary?.text || savedDataset.pattern || patternRun?.pattern || '已有文字分析；技術圖表資料待補。');
         const secondarySource = runtimeCandidates.secondary || (!patternRun?.patternCandidates ? savedCandidates.secondary : null);
         const patternCandidates = {
           primary: primaryCandidate,
           ...(secondarySource ? { secondary: { ...(savedCandidates.secondary || {}), ...secondarySource } } : {})
         };
-        const confidence = Number.isFinite(Number(patternRun?.confidence)) && Number(patternRun.confidence) > 0 ? Number(patternRun.confidence) : null;
+        const confidence = Number.isFinite(Number(patternRun?.confidence)) && Number(patternRun.confidence) > 0
+          ? Number(patternRun.confidence)
+          : (sidecarPrimary?.confidence || null);
         const text = patternText;
         const businessEvidence = selectedRun?.businessEvidence || {};
         const dailyDigest = parseStructured(dailyRun?.dailyDigest);
@@ -631,7 +682,8 @@
           chartSource: selectedRun.chartSource || '',
           sourceUrl: selectedRun.chartSource || '',
           pattern: text,
-          patternStatus: patternRun?.status || 'partial',
+          patternStatus: patternRun?.status || analysisGeometry[ticker]?.status || 'partial',
+          confidence,
           patternCandidates,
           thesis: selectedRun.thesis || '已有部分分析；技術圖表資料待補。',
           wyckoff: patternRun?.wyckoff || patternRun?.wyckoffPhase?.daily || 'Pending',
@@ -981,6 +1033,32 @@
             ];
           }
         }
+        const coordinateLine = (band) => {
+          const slope = Number(coordinates?.[band]?.slope_per_bar);
+          const intercept = Number(coordinates?.[band]?.intercept);
+          if (!coordinates?.[band] || !Number.isFinite(slope) || !Number.isFinite(intercept) || !coordinates.start_date) return [];
+          const start = byDate[coordinates.start_date];
+          const end = (coordinates.fit_cutoff && byDate[coordinates.fit_cutoff]) || (coordinates.breakout_date && byDate[coordinates.breakout_date]) || current;
+          const startIndex = Number(coordinates.start_index);
+          const endIndex = Number(coordinates.fit_end_index ?? coordinates.event_index ?? startIndex + Number(coordinates.span_bars || 0));
+          if (!start || !end || !Number.isFinite(startIndex) || !Number.isFinite(endIndex)) return [];
+          return [{ time: start.time, value: slope * startIndex + intercept }, { time: end.time, value: slope * endIndex + intercept }, { time: current.time, value: slope * (endIndex + Math.max(0, bars.length - 1 - bars.indexOf(end))) + intercept }];
+        };
+        if (coordinates?.upper && coordinates?.lower) return coordinateLine('upper');
+        if (coordinates?.type === 'double_bottom' || coordinates?.type === 'double_top') {
+          const startIndex = Math.max(0, bars.findIndex((bar) => bar.date === coordinates.start_date));
+          const endIndex = Math.min(bars.length - 1, startIndex + Number(coordinates.span_bars || 0));
+          const window = bars.slice(startIndex, endIndex + 1);
+          if (window.length >= 6) {
+            const pivot = Math.floor(window.length / 2);
+            const left = window.slice(0, pivot).reduce((best, bar) => coordinates.type === 'double_bottom' ? (bar.low < best.low ? bar : best) : (bar.high > best.high ? bar : best));
+            const right = window.slice(pivot).reduce((best, bar) => coordinates.type === 'double_bottom' ? (bar.low < best.low ? bar : best) : (bar.high > best.high ? bar : best));
+            const middle = window.slice(window.indexOf(left) + 1, window.indexOf(right)).reduce((best, bar) => coordinates.type === 'double_bottom' ? (bar.high > best.high ? bar : best) : (bar.low < best.low ? bar : best), window[Math.floor(window.length / 2)]);
+            const value = (bar) => coordinates.type === 'double_bottom' ? bar.low : bar.high;
+            const middleValue = coordinates.type === 'double_bottom' ? middle.high : middle.low;
+            return [{ time: left.time, value: value(left) }, { time: middle.time, value: middleValue }, { time: right.time, value: value(right) }, { time: current.time, value: current.close }];
+          }
+        }
         if (state.view === 'weekly') {
           if (ticker === 'NBIS' && pattern.geometry === 'doubleBottom') {
             const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
@@ -1025,6 +1103,20 @@
           return [{ time: leftShoulder.time, value: leftShoulder.high }, { time: head.time, value: head.high }, { time: rightShoulder.time, value: rightShoulder.high }, { time: breakout.time, value: breakout.close }, { time: current.time, value: current.close }];
         }
         return [];
+      }
+
+      function patternGeometrySecondary(bars, pattern) {
+        const coordinates = pattern?.coordinates || pattern?.geometryCoordinates;
+        if (!coordinates?.upper || !coordinates?.lower) return [];
+        const byDate = Object.fromEntries(bars.map((bar) => [bar.date, bar]));
+        const start = byDate[coordinates.start_date];
+        const end = (coordinates.fit_cutoff && byDate[coordinates.fit_cutoff]) || (coordinates.breakout_date && byDate[coordinates.breakout_date]) || bars.at(-1);
+        const slope = Number(coordinates.lower.slope_per_bar);
+        const intercept = Number(coordinates.lower.intercept);
+        const startIndex = Number(coordinates.start_index);
+        const endIndex = Number(coordinates.fit_end_index ?? coordinates.event_index ?? startIndex + Number(coordinates.span_bars || 0));
+        if (!start || !end || !Number.isFinite(slope) || !Number.isFinite(intercept) || !Number.isFinite(startIndex) || !Number.isFinite(endIndex)) return [];
+        return [{ time: start.time, value: slope * startIndex + intercept }, { time: end.time, value: slope * endIndex + intercept }, { time: bars.at(-1).time, value: slope * (endIndex + Math.max(0, bars.length - 1 - bars.indexOf(end))) + intercept }];
       }
 
       function phaseData(bars, ticker) {
@@ -1335,6 +1427,7 @@
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
         layerSeries.patternGeometry = addLine('patternGeometry', patternGeometry(bars, state.ticker, pattern), colors.pattern, 3, L.LineStyle.Solid);
+        layerSeries.patternGeometrySecondary = addLine('patternGeometrySecondary', patternGeometrySecondary(bars, pattern), colors.pattern, 2, L.LineStyle.Solid);
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
         layerSeries.wyckoffGate = addLine('wyckoffGate', levelData(bars, data.wyckoffGate), colors.wyckoff, 2);
