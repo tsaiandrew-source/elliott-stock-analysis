@@ -178,6 +178,12 @@
   const localizeOptions = (value) => {
     if (!value || /[\u3400-\u9fff]/.test(value)) return value;
     if (/No Cboe options packet/i.test(value)) return '台股標的未附 Cboe 選擇權資料；ADR 選擇權屬不同標的。';
+    if (/Current\/next-expiration|embedded fields|\{\"expiry\"|No Cboe options packet|signed GEX.*Gamma Flip/i.test(value)) {
+      return '本週／下週選擇權資料不完整；未提供可辯護的 signed GEX、Gamma Flip、Call Wall／Put Wall。';
+    }
+    if (/Unsigned benchmark|pressure map/i.test(value)) {
+      return '未簽名 benchmark pressure map；Magnet／Flip／Walls 僅作分析參考，不代表 signed dealer GEX。';
+    }
     if (/partial|missing/i.test(value)) return '本週／下週選擇權資料不完整；未提供可辯護的 signed GEX、Gamma Flip、Call Wall／Put Wall。';
     return value;
   };
@@ -205,12 +211,13 @@
       ? { primary: normalizedPrimary, ...(normalizedSecondary ? { secondary: normalizedSecondary } : {}) }
       : run.patternCandidates;
     const displayPattern = run.patternLabel || normalizedPrimary?.text || run.pattern;
+    const chineseText = (value, fallback) => /[\u3400-\u9fff]/.test(String(value || '')) ? value : fallback;
     return {
       ...run,
       pattern: localizePattern(displayPattern),
       patternLabel: run.patternLabel ? localizePattern(run.patternLabel) : undefined,
-      thesis: preset.thesis || run.thesis,
-      business: preset.business || run.business,
+      thesis: preset.thesis || chineseText(run.thesis, '繁體中文整體論述待 Iris 更新。'),
+      business: preset.business || chineseText(run.business, '繁體中文基本面／新聞摘要待補。'),
       confidencePercent: confidencePercent(run),
       confidence: run.confidencePercent ?? run.confidence ?? normalizedPrimary?.confidence,
       confidenceBand: run.confidenceBand || normalizedPrimary?.confidenceLabel,
@@ -226,5 +233,5 @@
       status: localizePattern(run.status)
     };
   };
-  window.PROTOTYPE_ANALYSIS_LOCALIZER = { confidenceDisplay, confidencePercent, compactPattern, direction, localizeRun, localizePattern, localizeWyckoff };
+  window.PROTOTYPE_ANALYSIS_LOCALIZER = { confidenceDisplay, confidencePercent, compactPattern, direction, localizeRun, localizePattern, localizeOptions, localizeWyckoff };
 })();
