@@ -1,5 +1,5 @@
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
-const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbxsRXw6ScEz6FeHwBrDZuErFT5dieJKClKii6m0c7uKYplq6OeIB7KCm_ES7Y0UbhKYZA/exec';
+const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
 const tickers = ['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', '2330', 'AVGO'];
 const routes = [
   '/',
@@ -35,7 +35,7 @@ for (const route of routes) {
       }
     }
     if (route.includes('/data-model/') || route.includes('/chart-surface/')) {
-      if (!body.includes('AKfycbxsRX')) failures.push(`read proxy marker missing ${route}`);
+      if (!body.includes('AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ')) failures.push(`read proxy marker missing ${route}`);
       if (body.includes('AKfycbwN2')) failures.push(`write-only ingest URL leaked into frontend ${route}`);
     }
   } catch (error) {
