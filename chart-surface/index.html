@@ -1320,10 +1320,11 @@
         $('chart-title').textContent = isGex ? 'GEX 壓力圖 · Top／Bottom' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
         const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
         $('chart-meta').textContent = isGex ? `GEX · 本週／下週到期 · ${gex.freshness}` : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + '資料截至 ' + data.dataThrough + ' · ' + data.sourceCutoff;
-        const detail = analysisDetails[state.ticker];
+        const detail = analysisDetails[state.ticker] || {};
+        const staticDetail = window.BENCHMARK_ANALYSIS_DETAILS?.[state.ticker] || {};
         const businessDetails = $('business-details');
         const runtimeOverall = data.overall || {};
-        const savedOverall = detail?.overall || {};
+        const savedOverall = { ...(staticDetail.overall || {}), ...(detail.overall || {}) };
         const preferValue = (value, fallback) => value && value !== '—' ? value : fallback;
         const overall = {
           updated: preferValue(runtimeOverall.updated, savedOverall.updated),
@@ -1349,7 +1350,11 @@
           return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p></article></div></details>`;
         };
         const runtimeDigests = data.digestDetails || {};
-        const savedDigests = detail || {};
+        const savedDigests = {
+          midday: detail.midday || staticDetail.midday || null,
+          endOfDay: detail.endOfDay || staticDetail.endOfDay || null,
+          weekly: detail.weekly || staticDetail.weekly || null
+        };
         // A live run can be intentionally partial. Merge each lane separately
         // so an empty midday/EOD/weekly field never erases the last complete
         // digest that is still valid for that cadence.
