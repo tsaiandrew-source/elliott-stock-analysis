@@ -165,7 +165,7 @@
   };
   const localizeWyckoff = (value) => {
     if (!value || /[\u3400-\u9fff]/.test(value)) return value;
-    return replaceAll(value, [[/accumulation/gi, '吸籌'], [/distribution/gi, '派發'], [/unclassified/gi, '未分類'], [/classified/gi, '已分類'], [/withheld/gi, '尚未提供'], [/locked detector daily-only/gi, '鎖定偵測器僅支援日線'], [/Phase C/gi, 'Phase C']]);
+    return replaceAll(value, [[/accumulation/gi, '吸籌'], [/distribution/gi, '派發'], [/unclassified/gi, '未分類'], [/classified/gi, '已分類'], [/withheld/gi, '尚未提供'], [/locked detector daily-only/gi, '鎖定偵測器僅支援日線'], [/Phase C\s*\/\s*UTAD candidate/gi, 'Phase C／UTAD 候選'], [/Spring candidate/gi, 'Spring 候選'], [/candidate/gi, '候選'], [/Phase C/gi, 'Phase C']]);
   };
   const localizeConfirmation = (value) => {
     if (!value || /[\u3400-\u9fff]/.test(value)) return value;
