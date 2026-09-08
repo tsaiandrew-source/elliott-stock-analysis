@@ -535,7 +535,12 @@
       const state = { ticker: requestedTicker || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
       $('ticker-menu-label').textContent = state.ticker;
       $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
-      const baseCoverage = contract.coverage || Object.keys(datasets || {}).map((ticker) => ({ ticker, company: datasets[ticker]?.company || ticker, active: true }));
+      const contractCoverage = contract.coverage || [];
+      const contractTickers = new Set(contractCoverage.map((item) => normalizeTicker(item.ticker)));
+      const supplementalCoverage = Object.entries(partialDatasets)
+        .filter(([ticker]) => !contractTickers.has(normalizeTicker(ticker)))
+        .map(([ticker, data]) => ({ ticker, company: data.company || ticker, exchange: data.exchange || '', active: true, defaultView: 'daily', latestChartDate: data.dataThrough || '' }));
+      const baseCoverage = [...contractCoverage, ...supplementalCoverage];
       let coverageOverrides = {};
       try { coverageOverrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { coverageOverrides = {}; }
       const coverageRows = () => {
@@ -923,24 +928,36 @@
         // use the primary thesis when the alternative is not materially
         // distinct, rather than relabeling the secondary candidate as primary.
         const candidate = data.patternCandidates?.primary || data.patternCandidates?.secondary;
-        if (!candidate) return normalizePatternLevels({ label: '主候選', text: data.pattern, status: data.patternStatus, confirmation: data.patternGate, invalidation: data.invalidation, geometry: 'none', callout: false });
+        if (!candidate) return normalizePatternLevels({ label: '主候選', text: data.pattern || '型態資料待補', status: data.patternStatus || '資料待補', confirmation: data.patternGate, invalidation: data.invalidation, geometry: 'none', callout: false });
         const stateText = String(candidate.status || '').replace(/^(主候選|次候選)\s*·\s*/, '');
-        return normalizePatternLevels({ ...candidate, label: '主候選', status: `主候選 · ${stateText}`, callout: false });
+        return normalizePatternLevels({ ...candidate, label: '主候選', text: candidate.text || candidate.pattern || data.pattern || '型態資料待補', status: `主候選 · ${stateText || '資料待補'}`, callout: false });
       }
 
       function getPattern(data) {
         if (state.view === 'weekly') return weeklyPattern(data);
         const candidates = data.patternCandidates || {};
         const selected = candidates[candidatesSimilar(data) ? 'primary' : state.candidate] || candidates.primary;
-        return normalizePatternLevels(selected || {
+        const fallback = {
           label: '主候選',
-          text: data.pattern,
-          status: data.patternStatus,
+          text: data.pattern || '型態資料待補',
+          status: data.patternStatus || '資料待補',
           confirmation: data.patternGate,
           invalidation: data.invalidation,
           geometry: 'none',
           callout: false
+        };
+        const result = selected || fallback;
+        return normalizePatternLevels({
+          ...fallback,
+          ...result,
+          label: result.label || fallback.label,
+          text: result.text || result.pattern || fallback.text,
+          status: result.status || fallback.status
         });
+      }
+
+      function patternMarkerText(pattern, data) {
+        return String(pattern?.text || pattern?.pattern || data?.pattern || '型態資料待補').split('｜')[0].trim();
       }
 
       function patternGeometry(bars, ticker, pattern) {
@@ -1130,6 +1147,10 @@
         const labelSize = compactGex ? 16 : 20;
         const valueSize = compactGex ? 14 : 18;
         const profiles = [data.gexViews?.current, data.gexViews?.next].filter(Boolean);
+        if (!profiles.length || profiles.every((profile) => !Array.isArray(profile.strikes) || !profile.strikes.length || !Array.isArray(profile.exposure) || !profile.exposure.length)) {
+          container.innerHTML = '<div class="chart-empty-message">此 ticker 尚無可核驗的選擇權／GEX pressure map；資料補齊後會在這裡顯示。</div>';
+          return;
+        }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
         const currentPrice = data.bars.at(-1)?.close || sharedTicks[0];
         const sharedDomain = { min: Math.min(...sharedTicks, currentPrice), max: Math.max(...sharedTicks, currentPrice), ticks: sharedTicks };
@@ -1253,7 +1274,7 @@
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text.split('｜')[0] },
+          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternMarkerText(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
@@ -1331,7 +1352,7 @@
         const pattern = getPattern(datasets[state.ticker]);
         const bars = viewBars(datasets[state.ticker]);
         markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text.split('｜')[0] },
+          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternMarkerText(pattern, datasets[state.ticker]) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
@@ -1360,9 +1381,9 @@
           nextTest: preferValue(runtimeOverall.nextTest, savedOverall.nextTest)
         };
         const hasOverall = Object.values(overall).some(Boolean);
-        $('thesis').textContent = overall?.thesis || data.thesis;
+        $('thesis').textContent = overall?.thesis || data.thesis || '目前僅有市場 K 線資料；文字分析待載入。';
         $('thesis-refresh').textContent = hasOverall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
-        $('business').textContent = overall?.businessSummary || data.business;
+        $('business').textContent = overall?.businessSummary || data.business || '基本面／新聞分析待補。';
         $('business-proved').textContent = overall?.proved || '—';
         $('business-unproved').textContent = overall?.unproved || '—';
         $('business-next-test').textContent = overall?.nextTest || '—';
@@ -1402,7 +1423,7 @@
         $('pattern').textContent = pattern.text;
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         const wyckoffText = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
-        $('wyckoff').textContent = localizer.localizeWyckoff ? localizer.localizeWyckoff(wyckoffText) : wyckoffText;
+        $('wyckoff').textContent = localizer.localizeWyckoff ? (localizer.localizeWyckoff(wyckoffText) || '資料待補') : (wyckoffText || '資料待補');
         $('pattern-gate').textContent = Number.isFinite(pattern.confirmation) ? '$' + pattern.confirmation.toFixed(2) : '—';
         $('invalidation').textContent = Number.isFinite(pattern.invalidation) ? '$' + pattern.invalidation.toFixed(2) : '—';
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
@@ -1424,9 +1445,9 @@
           button.setAttribute('aria-pressed', String(active));
         });
         const gexOverview = analysisDetails[state.ticker]?.gex?.overview;
-        const localizedOptions = localizer.localizeOptions ? localizer.localizeOptions(data.options) : data.options;
+        const localizedOptions = localizer.localizeOptions ? (localizer.localizeOptions(data.options) || '選擇權／GEX 資料待補。') : (data.options || '選擇權／GEX 資料待補。');
         $('options').textContent = isGex ? (gexOverview || `${data.gexViews?.current?.text || gex.text} ${data.gexViews?.next?.text || ''}`) : localizedOptions;
-        $('freshness').textContent = isGex ? `${data.gexViews?.current?.freshness || gex.freshness} · ${data.gexViews?.next?.freshness || ''}` : data.freshness;
+        $('freshness').textContent = isGex ? `${data.gexViews?.current?.freshness || gex.freshness} · ${data.gexViews?.next?.freshness || ''}` : (data.freshness || `市場資料截至 ${data.dataThrough || '—'}；分析資料待補。`);
         $('contract-status').textContent = `資料契約 ${contract.contractVersion || 'legacy-seed'} · ${contract.mode === 'sheets-csv-import' ? 'Google Sheets CSV import' : 'local seed'}`;
         const sourceSummary = $('source-summary');
         const sourceEvidence = $('source-evidence');
@@ -1438,11 +1459,13 @@
           $('source-link').href = gexSource.url;
           $('source-link').textContent = '開啟 GEX 原始資料來源';
         } else {
-          sourceSummary.textContent = '圖表與分析紀錄仍連結至試作 workbook 的來源目錄及 manifest／hash。';
+          sourceSummary.textContent = data._partialMarketData ? '市場 K 線已載入；文字分析、選擇權與 GEX 來源待補。' : '圖表與分析紀錄仍連結至試作 workbook 的來源目錄及 manifest／hash。';
           sourceEvidence.hidden = true;
           sourceEvidence.replaceChildren();
-          $('source-link').href = data.sourceUrl;
-          $('source-link').textContent = '開啟市場資料來源';
+          const marketSource = data.sourceUrl || data.marketSource || '';
+          $('source-link').hidden = !marketSource;
+          $('source-link').href = marketSource || '#';
+          $('source-link').textContent = marketSource ? '開啟市場資料來源' : '市場來源待補';
         }
         $('pattern-combo').hidden = isGex;
         $('structure-panel').hidden = isGex;
@@ -1463,7 +1486,7 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        $('chart-notice').textContent = isGex ? 'GEX 目前使用 benchmark pressure map；signed GEX 若不可得會明確標示，不把未簽名壓力牆當成精確 Gamma Flip。' : state.ticker === 'IREN' ? '選擇權／GEX 圖層刻意標示為早於目前技術分析 session。' : 'NBIS 圖表 OHLCV 已更新至 2026-09-04；文字分析與日報／選擇權沿用各自的實際 cutoff。';
+        $('chart-notice').textContent = isGex ? 'GEX 目前使用 benchmark pressure map；signed GEX 若不可得會明確標示，不把未簽名壓力牆當成精確 Gamma Flip。' : state.ticker === 'IREN' ? '選擇權／GEX 圖層刻意標示為早於目前技術分析 session。' : data._partialMarketData ? `市場 K 線已更新至 ${data.dataThrough || '—'}；文字分析與 GEX 尚未載入，資料補齊後會自動顯示。` : `K 線 OHLCV 已更新至 ${data.dataThrough || '—'}；文字分析與日報／選擇權沿用各自的實際截止日。`;
         $('price-time-axis').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
