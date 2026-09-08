@@ -55,6 +55,15 @@ for (const file of htmlFiles) {
   }
 }
 
+if (await exists('data-model/home.html')) {
+  const home = await read('data-model/home.html');
+  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
+  if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/home.html: partial-safe chart navigation gate is missing');
+  for (const ticker of requiredPartialTickers) {
+    if (!home.includes(`'${ticker}'`)) failures.push(`data-model/home.html: partial chart ticker missing from navigation fallback: ${ticker}`);
+  }
+}
+
 for (const file of ['chart-surface/data-contract.js', 'chart-surface/benchmark-data.js', 'chart-surface/analysis-details.js', 'chart-surface/analysis-localization.js', 'chart-surface/analysis-geometry.js']) {
   if (!(await exists(file))) continue;
   const source = await read(file);

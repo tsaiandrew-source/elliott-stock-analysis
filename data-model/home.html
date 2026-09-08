@@ -309,7 +309,8 @@
         }
       };
       const datasets = activeContract.datasets?.benchmark || {};
-      const hasChartData = (ticker) => Array.isArray(datasets[ticker]?.bars) && datasets[ticker].bars.length >= 2;
+      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
+      const hasChartData = (ticker) => (Array.isArray(datasets[ticker]?.bars) && datasets[ticker].bars.length >= 2) || partialChartTickers.has(ticker);
       const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
       const runs = (activeContract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
       const baseCoverage = activeContract.coverage || [];
