@@ -6,6 +6,7 @@ const routes = [
   '/manifest.webmanifest',
   '/assets/elliott-plus-icon.svg',
   '/data-model/home.html',
+  '/data-model/app.html',
   '/chart-surface/index.html?ticker=NBIS&view=daily',
   '/chart-surface/index.html?ticker=NBIS&view=weekly',
   '/chart-surface/index.html?ticker=NBIS&view=gex',
