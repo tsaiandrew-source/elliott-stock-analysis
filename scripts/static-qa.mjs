@@ -42,6 +42,7 @@ for (const file of htmlFiles) {
   if (!(await exists(file))) continue;
   const html = await read(file);
   if (/file:\/\//i.test(html)) failures.push(`${file}: contains file:// reference`);
+  if (/\/Users\/|[A-Z]:\\\\|P F Social|shared_research/i.test(html)) failures.push(`${file}: contains a local workspace path`);
   if (/BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|INGEST_TOKEN\s*[:=]/i.test(html)) failures.push(`${file}: possible secret material`);
   const references = [...html.matchAll(/(?:src|href)=["']([^"']+)["']/gi)].map((match) => match[1]);
   for (const reference of references) {
@@ -52,6 +53,12 @@ for (const file of htmlFiles) {
     const resolved = path.normalize(path.join(path.dirname(file), clean));
     if (!(await exists(resolved))) failures.push(`${file}: referenced file not found: ${reference}`);
   }
+}
+
+for (const file of ['chart-surface/data-contract.js', 'chart-surface/benchmark-data.js', 'chart-surface/analysis-details.js', 'chart-surface/analysis-localization.js', 'chart-surface/analysis-geometry.js']) {
+  if (!(await exists(file))) continue;
+  const source = await read(file);
+  if (/\/Users\/|[A-Z]:\\\\|P F Social|shared_research/i.test(source)) failures.push(`${file}: contains a local workspace path`);
 }
 
 const partialDir = path.join(root, 'chart-surface/partial-market-data');

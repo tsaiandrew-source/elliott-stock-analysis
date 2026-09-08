@@ -4,7 +4,7 @@ window.PROTOTYPE_DATA_CONTRACT = {
   "generatedAt": "2026-09-06T22:21:09.141Z",
   "mode": "sheets-csv-import",
   "source": {
-    "inputDir": "/Users/andrtsai/Documents/ChatGPT/P F Social/appsheet-prototype/data-model/imports",
+    "inputDir": "public-contract-import",
     "marketDataLayer": "Google Sheets / GOOGLEFINANCE export",
     "optionsDataLayer": "Imported GEXSnapshots benchmark rows with source cutoff"
   },
