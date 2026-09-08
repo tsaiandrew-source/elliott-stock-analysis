@@ -329,7 +329,10 @@
       const normalizeCoverageGroup = (value) => ['exploration', 'explore', 'exploratory'].includes(String(value ?? '').trim().toLowerCase()) ? 'exploration' : 'tracking';
       const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracking · 追蹤';
       const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group);
-      const latestRun = (ticker) => runs.filter((run) => run.ticker === ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)))[0];
+      const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
+      const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
+      const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
+      const latestRun = (ticker) => runs.filter((run) => run.ticker === ticker && !isWeeklyRun(run)).sort(compareRuns)[0] || runs.filter((run) => run.ticker === ticker).sort(compareRuns)[0];
       const list = document.getElementById('ticker-list');
       const coverage = rows().filter((item) => item.active !== false && item.hidden !== true);
       const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;

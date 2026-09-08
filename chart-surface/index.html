@@ -554,7 +554,8 @@
       };
       const runDate = (run) => String(run?.analysisDate || run?.dataThrough || '').slice(0, 10);
       const isWeeklyRun = (run) => /weekly|week|週線|週報/i.test(String(run?.runType || ''));
-      const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))));
+      const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
+      const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || '')));
       const tickerRuns = (ticker) => sortRuns(analysisRuns.filter((run) => run.ticker === ticker));
       const chartDataCutoff = (ticker) => {
         const bars = datasets[ticker]?.bars;
