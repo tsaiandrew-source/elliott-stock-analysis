@@ -40,22 +40,22 @@
     .coverage-group[data-group="exploration"] .coverage-group-head { border-bottom-color:rgba(242,184,75,.32); }
     .coverage-group[data-group="exploration"] .coverage-group-head strong { color:var(--amber); }
     .coverage-group-empty { margin:0; padding:8px 3px 2px; color:var(--muted); font-size:11px; }
-    .coverage-header, .ticker-row { min-width:690px; }
-    .coverage-header { display:grid; grid-template-columns:9px 74px 150px 42px 210px 62px 26px; gap:8px; padding:0 11px 6px; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
-    .ticker-row { display:grid; grid-template-columns:9px 74px 150px 42px 210px 62px 26px; align-items:center; gap:8px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:rgba(17,36,51,.42); }
+    .coverage-header, .ticker-row { min-width:0; }
+    .coverage-header { display:grid; grid-template-columns:9px 74px minmax(220px,1fr) 72px 62px 26px; gap:8px; padding:0 11px 6px; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .ticker-row { display:grid; grid-template-columns:9px 74px minmax(220px,1fr) 72px 62px 26px; align-items:center; gap:8px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:rgba(17,36,51,.42); }
     .ticker-row.has-detail { cursor:pointer; }
     .ticker-row.has-detail:hover { border-color:rgba(85,217,213,.6); background:rgba(17,36,51,.7); }
     .ticker-row.has-detail:focus-visible { outline:2px solid var(--aqua); outline-offset:2px; }
     .ticker-row.is-disabled { color:var(--muted); cursor:not-allowed; }
     .ticker-copy strong { display:block; font-size:14px; }
-    .ticker-copy, .latest-pattern, .latest-confidence, .latest-wyckoff, .latest-date { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .latest-pattern, .latest-wyckoff { color:var(--text); font-size:12px; }
+    .ticker-copy, .latest-pattern, .latest-confidence, .latest-date { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .latest-pattern { color:var(--text); font-size:12px; }
     .latest-confidence { color:var(--lime); font-size:13px; font-weight:800; }
     .latest-date { color:var(--muted); font-size:11px; }
     .ticker-copy em { color:var(--muted); font-size:11px; font-style:normal; white-space:nowrap; }
     .new-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(126,231,135,.13); }
     .new-dot[hidden] { display:none; }
-    .ticker-history-toggle { grid-column:7; grid-row:1; align-self:center; justify-self:center; width:auto; height:auto; padding:0; border:0; color:var(--aqua); background:transparent; font-size:18px; font-weight:500; line-height:1; text-align:center; cursor:pointer; }
+    .ticker-history-toggle { grid-column:6; grid-row:1; align-self:center; justify-self:center; width:auto; height:auto; padding:0; border:0; color:var(--aqua); background:transparent; font-size:18px; font-weight:500; line-height:1; text-align:center; cursor:pointer; }
     .ticker-history-toggle:hover, .ticker-history-toggle:focus-visible { color:var(--text); }
     .history-panel { grid-column:1 / -1; grid-row:2; width:100%; min-width:640px; margin:9px 0 0 18px; padding-top:6px; border-top:1px solid rgba(32,56,73,.7); }
     .history-panel[hidden] { display:none; }
@@ -111,7 +111,7 @@
       .top { display:block; }
       .section { padding:12px; }
       .coverage-form { grid-template-columns:1fr; }
-      .coverage-header, .ticker-row { min-width:690px; }
+      .coverage-header, .ticker-row { min-width:0; }
       .floating-dock { right:12px; left:12px; justify-content:center; transform:none; }
       .dock-action { flex:1 1 0; min-width:0; }
       .ticker-sheet { width:calc(100vw - 24px); }
@@ -130,7 +130,7 @@
       .coverage-tab { padding:8px 12px; }
       .coverage-header { font-size:12px; }
       .ticker-copy strong { font-size:16px; }
-      .latest-pattern, .latest-wyckoff { font-size:14px; }
+      .latest-pattern { font-size:14px; }
       .latest-confidence { font-size:15px; }
       .latest-date, .history-entry, .foot { font-size:13px; }
       .action { font-size:14px; }
@@ -154,10 +154,8 @@
     @media (max-width:560px) and (orientation: portrait) {
       .ticker-list { overflow-x:visible; }
       .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
-      .coverage-header span:nth-child(5) { display:none; }
-      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding:9px 8px; }
-      .latest-wyckoff { display:none; }
+      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 58px 62px 22px; gap:6px; padding:9px 8px; }
       .ticker-history { grid-column:6; }
       .ticker-history-toggle { grid-column:6; grid-row:1; font-size:18px; }
       .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
@@ -171,10 +169,8 @@
       .section { padding:12px; }
       .ticker-list { overflow-x:visible; }
       .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
-      .coverage-header span:nth-child(5) { display:none; }
-      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding:9px 8px; }
-      .latest-wyckoff { display:none; }
+      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 58px 62px 22px; gap:6px; padding:9px 8px; }
       .ticker-history-toggle { grid-column:6; grid-row:1; font-size:18px; }
       .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
       .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
@@ -191,11 +187,9 @@
       .home { width:min(760px,100%); padding:16px 12px 30px; }
       .section { padding:12px; }
       .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; font-size:10px; }
-      .coverage-header span:nth-child(5) { display:none; }
-      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 42px 62px 22px; gap:6px; padding:9px 8px; }
+      .coverage-header { grid-template-columns:9px 58px minmax(0,1fr) 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; font-size:10px; }
+      .ticker-row { grid-template-columns:9px 58px minmax(0,1fr) 58px 62px 22px; gap:6px; padding:9px 8px; }
       .latest-pattern { font-size:12px; }
-      .latest-wyckoff { display:none; }
       .latest-confidence { font-size:13px; }
       .latest-date { font-size:11px; }
       .ticker-history-toggle { grid-column:6; grid-row:1; font-size:18px; }
@@ -314,19 +308,20 @@
         const latest = latestRun(item.ticker);
         const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
         const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'latest' ? '最新' : '歷史')} · 信心 ${escapeHtml(localizer.confidenceDisplay ? localizer.confidenceDisplay(run) : (run.confidence ?? run.confidenceLabel ?? '—'))} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
-        const compactPattern = latest?.pattern?.split('｜')[0] || '尚無最新分析';
-        const compactWyckoff = latest?.wyckoff || 'Wyckoff 未標示';
+        const compactPattern = latest?.thesis || latest?.pattern?.split('｜')[0] || '尚無最新分析';
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
         const hasDetail = Boolean(latest);
         const rowAttributes = hasDetail
           ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
           : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
-        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence">${escapeHtml(localizer.confidenceDisplay ? localizer.confidenceDisplay(latest) : (latest?.confidence ?? latest?.confidenceLabel ?? '—'))}</span><span class="latest-wyckoff" title="${escapeHtml(compactWyckoff)}">${escapeHtml(compactWyckoff)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
+        const confidence = localizer.confidencePercent ? localizer.confidencePercent(latest) : (latest?.confidence ? `${latest.confidence}%` : '—');
+        const confidenceTitle = localizer.confidenceDisplay && latest ? `可用信心：${localizer.confidenceDisplay(latest)}` : '';
+        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
       list.innerHTML = ['tracking', 'exploration'].map((group) => {
         const items = coverage.filter((item) => coverageGroup(item) === group);
         const label = coverageGroupLabel(group);
-        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>型態</span><span>信心</span><span>Wyckoff</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
+        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>型態</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
         return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
       }).join('');
       list.querySelectorAll('.ticker-row.has-detail[data-ticker]').forEach((row) => {

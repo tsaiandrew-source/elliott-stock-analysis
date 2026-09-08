@@ -85,6 +85,12 @@
     if (/no defensible confidence/i.test(pattern)) return '—';
     return run?.confidenceLabel ? translateConfidence(run.confidenceLabel) : '—';
   };
+  const confidencePercent = (run) => {
+    const numeric = Number(run?.confidence);
+    if (Number.isFinite(numeric) && numeric > 0) return `${numeric}%`;
+    const match = String(run?.pattern || '').match(/(\d+(?:\.\d+)?)%\s*(?:detector confidence|偵測器信心)/i);
+    return match ? `${match[1]}%` : '—';
+  };
   const localizePattern = (value) => {
     if (!value || /[\u3400-\u9fff]/.test(value)) return value;
     let text = String(value);
@@ -152,5 +158,5 @@
       status: localizePattern(run.status)
     };
   };
-  window.PROTOTYPE_ANALYSIS_LOCALIZER = { confidenceDisplay, localizeRun, localizePattern, localizeWyckoff };
+  window.PROTOTYPE_ANALYSIS_LOCALIZER = { confidenceDisplay, confidencePercent, localizeRun, localizePattern, localizeWyckoff };
 })();
