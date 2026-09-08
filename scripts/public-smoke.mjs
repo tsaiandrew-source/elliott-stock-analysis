@@ -34,6 +34,10 @@ for (const route of routes) {
         if (!body.includes(`'${ticker}'`)) failures.push(`home partial ticker fallback missing ${ticker}`);
       }
     }
+    if (route.includes('/data-model/') || route.includes('/chart-surface/')) {
+      if (!body.includes('AKfycbxsRX')) failures.push(`read proxy marker missing ${route}`);
+      if (body.includes('AKfycbwN2')) failures.push(`write-only ingest URL leaked into frontend ${route}`);
+    }
   } catch (error) {
     failures.push(`${route}: ${error.message}`);
   }
