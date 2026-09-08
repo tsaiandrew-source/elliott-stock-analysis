@@ -179,6 +179,12 @@
     .cadence-note { margin-top: 10px; }
     .thesis-details { display: grid; gap: 8px; margin-top: 14px; }
     .thesis-details[hidden] { display: none !important; }
+    .analysis-history { margin-top: 14px; }
+    .analysis-history-entry { padding: 10px 0; border-top: 1px solid var(--line); }
+    .analysis-history-entry:first-child { border-top: 0; }
+    .analysis-history-entry strong { color: var(--text); }
+    .analysis-history-entry .history-meta { color: var(--muted); font-size: 11px; }
+    .analysis-history-entry p { margin-top: 5px; color: var(--text); font-size: 12px; line-height: 1.45; }
     .digest-details { border-top: 1px solid var(--line); }
     .digest-details summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 11px; color: var(--aqua); font-size: 13px; font-weight: 800; cursor: pointer; list-style: none; }
     .digest-details summary::-webkit-details-marker { display: none; }
@@ -393,6 +399,7 @@
             </div>
           </div>
           <div class="thesis-details" id="business-details" hidden></div>
+          <div class="thesis-details analysis-history" id="analysis-history" hidden></div>
         </section>
         <section id="structure-panel" class="panel summary">
           <h3>技術結構分析</h3>
@@ -518,6 +525,7 @@
       const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
       const analysisRuns = (contract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
       const $ = (id) => document.getElementById(id);
+      const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
       function getViewportWidth() {
         return Math.round(window.visualViewport?.width || document.documentElement.clientWidth || window.innerWidth);
       }
@@ -570,6 +578,7 @@
           options: gexSummary?.displayText || run.options || '選擇權／GEX 資料待補。',
           business: run.business || '基本面／新聞分析已載入最新紀錄。',
           overall: hasStructuredDisplay ? { updated: run.analysisDate || run.dataThrough || '', cadence: run.cadence || '每次收盤／重大事件', thesis: run.thesis || '已有部分分析；整體論述待補。', businessSummary: run.fundamentalsNews || run.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
+          analysisHistory: analysisRuns.filter((item) => item.ticker === ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || ''))),
           digestDetails,
           gexSummary,
           freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`,
@@ -1292,6 +1301,16 @@
         const activeDigests = data.digestDetails || detail || {};
         businessDetails.innerHTML = renderDigest(activeDigests.midday, 'midday') + renderDigest(activeDigests.endOfDay, 'endOfDay') + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
+        const historyPanel = $('analysis-history');
+        const history = data.analysisHistory || analysisRuns.filter((run) => run.ticker === state.ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')));
+        const historyEntries = history.map((run) => {
+          const type = run.runType === 'latest' ? '最新' : run.runType === 'weekly' ? '週線' : '歷史';
+          const confidence = localizer.confidenceDisplay ? localizer.confidenceDisplay(run) : (run.confidencePercent || run.confidence || '—');
+          const pattern = localizer.compactPattern ? localizer.compactPattern(run) : (run.patternLabel || run.pattern || '—');
+          return `<div class="analysis-history-entry"><strong>${escapeHtml(run.analysisDate || run.dataThrough || '—')}</strong><span class="history-meta"> · ${escapeHtml(type)} · 型態 ${escapeHtml(pattern)} · 信心 ${escapeHtml(confidence)}</span><p>${escapeHtml(run.thesis || run.pattern || '—')}</p></div>`;
+        }).join('');
+        historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
+        historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         $('wyckoff').textContent = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
