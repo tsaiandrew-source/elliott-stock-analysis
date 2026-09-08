@@ -543,42 +543,67 @@
         Object.entries(coverageOverrides).forEach(([ticker, item]) => merged.set(ticker, { ...(merged.get(ticker) || { ticker }), ...item }));
         return [...merged.values()];
       };
-      const latestRun = (ticker) => analysisRuns
-        .filter((run) => run.ticker === ticker)
-        .sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
+      const runDate = (run) => String(run?.analysisDate || run?.dataThrough || '').slice(0, 10);
+      const isWeeklyRun = (run) => /weekly|week|週線|週報/i.test(String(run?.runType || ''));
+      const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))));
+      const tickerRuns = (ticker) => sortRuns(analysisRuns.filter((run) => run.ticker === ticker));
+      const isIncompleteRun = (run) => /partial|pending|incomplete|not[_ -]?available|in[_ -]?progress/i.test(`${run?.status || ''} ${run?.dataStatus || ''} ${run?.patternStatus || ''}`);
+      const latestDailyRun = (ticker) => sortRuns(tickerRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
+      const latestWeeklyRun = (ticker) => sortRuns(tickerRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
+      const patternDailyRun = (ticker) => {
+        const daily = sortRuns(tickerRuns(ticker).filter((run) => !isWeeklyRun(run)));
+        const latest = daily[0];
+        if (!latest) return null;
+        const hasPattern = Boolean(latest.patternLabel || latest.pattern || latest.primaryCandidate);
+        if ((isIncompleteRun(latest) || !hasPattern) && daily[1]) return daily[1];
+        return latest;
+      };
+      const parseStructured = (value) => {
+        if (value && typeof value === 'object') return value;
+        if (typeof value !== 'string' || !value.trim().startsWith('{')) return null;
+        try { return JSON.parse(value); } catch (_) { return null; }
+      };
       const analysisOnlyDataset = (ticker) => {
-        const run = latestRun(ticker);
-        if (!run) return null;
-        const confidence = Number.isFinite(Number(run.confidence)) && Number(run.confidence) > 0 ? Number(run.confidence) : null;
-        const text = run.pattern || '已有文字分析；技術圖表資料待補。';
-        const businessEvidence = run.businessEvidence || {};
-        const digestDetails = run.digestDetails || {
-          midday: run.dailyDigest?.midday || null,
-          endOfDay: run.dailyDigest?.endOfDay || null,
-          weekly: run.weeklyDigest || null
+        const dailyRun = latestDailyRun(ticker);
+        const weeklyRun = latestWeeklyRun(ticker);
+        const patternRun = state.view === 'weekly' ? (weeklyRun || patternDailyRun(ticker)) : patternDailyRun(ticker);
+        const run = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
+        if (!run && !patternRun) return null;
+        const selectedRun = run || patternRun;
+        const confidence = Number.isFinite(Number(patternRun?.confidence)) && Number(patternRun.confidence) > 0 ? Number(patternRun.confidence) : null;
+        const text = patternRun?.patternLabel || patternRun?.pattern || '已有文字分析；技術圖表資料待補。';
+        const businessEvidence = selectedRun?.businessEvidence || {};
+        const dailyDigest = parseStructured(dailyRun?.dailyDigest);
+        const weeklyDigest = parseStructured(weeklyRun?.weeklyDigest) || parseStructured(dailyRun?.weeklyDigest);
+        const dailyDetails = dailyRun?.digestDetails || {};
+        const weeklyDetails = weeklyRun?.digestDetails || {};
+        const digestDetails = {
+          midday: dailyDetails.midday || dailyDigest?.midday || null,
+          endOfDay: dailyDetails.endOfDay || dailyDigest?.endOfDay || null,
+          weekly: weeklyDetails.weekly || weeklyDigest || null
         };
-        const gexSummary = run.gexSummary || null;
-        const hasStructuredDisplay = Boolean(run.businessEvidence || run.digestDetails || run.dailyDigest?.midday || run.dailyDigest?.endOfDay || run.weeklyDigest?.points);
+        const gexSummary = dailyRun?.gexSummary || selectedRun?.gexSummary || null;
+        const hasStructuredDisplay = Boolean(selectedRun?.businessEvidence || dailyDetails.midday || dailyDetails.endOfDay || weeklyDetails.weekly || dailyDigest?.midday || dailyDigest?.endOfDay || weeklyDigest);
         return {
           company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
           exchange: coverageRows().find((item) => item.ticker === ticker)?.exchange || '',
-          dataThrough: run.dataThrough || run.analysisDate || '',
-          sourceCutoff: run.dataThrough || run.analysisDate || '',
-          chartSource: run.chartSource || '',
-          sourceUrl: run.chartSource || '',
+          dataThrough: selectedRun.dataThrough || selectedRun.analysisDate || '',
+          sourceCutoff: selectedRun.dataThrough || selectedRun.analysisDate || '',
+          chartSource: selectedRun.chartSource || '',
+          sourceUrl: selectedRun.chartSource || '',
           pattern: text,
-          patternStatus: run.status || 'partial',
-          patternCandidates: run.patternCandidates || { primary: { label: '主候選', text, confidence, confidenceLabel: run.confidenceDisplay || run.confidenceLabel, status: run.status || 'partial', confirmation: run.confirmation, invalidation: run.invalidation, geometry: 'none', callout: false } },
-          thesis: run.thesis || '已有部分分析；技術圖表資料待補。',
-          wyckoff: run.wyckoff || run.wyckoffPhase?.daily || 'Pending',
-          weeklyWyckoff: run.weeklyWyckoff || run.wyckoffPhase?.weekly || 'Pending',
+          patternStatus: patternRun?.status || 'partial',
+          patternCandidates: patternRun?.patternCandidates || { primary: { label: '主候選', text, confidence, confidenceLabel: patternRun?.confidenceDisplay || patternRun?.confidenceLabel, status: patternRun?.status || 'partial', confirmation: patternRun?.confirmation, invalidation: patternRun?.invalidation, geometry: 'none', callout: false } },
+          thesis: selectedRun.thesis || '已有部分分析；技術圖表資料待補。',
+          wyckoff: patternRun?.wyckoff || patternRun?.wyckoffPhase?.daily || 'Pending',
+          weeklyWyckoff: weeklyRun?.weeklyWyckoff || weeklyRun?.wyckoffPhase?.weekly || patternRun?.weeklyWyckoff || patternRun?.wyckoffPhase?.weekly || 'Pending',
           wyckoffGate: null,
-          patternGate: run.confirmation || run.primaryCandidate?.confirmation,
-          invalidation: run.invalidation || run.primaryCandidate?.invalidation,
-          options: gexSummary?.displayText || run.options || '選擇權／GEX 資料待補。',
-          business: run.business || '基本面／新聞分析已載入最新紀錄。',
-          overall: hasStructuredDisplay ? { updated: run.analysisDate || run.dataThrough || '', cadence: run.cadence || '每次收盤／重大事件', thesis: run.thesis || '已有部分分析；整體論述待補。', businessSummary: run.fundamentalsNews || run.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
-          analysisHistory: analysisRuns.filter((item) => item.ticker === ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || ''))),
+          patternGate: patternRun?.confirmation || patternRun?.primaryCandidate?.confirmation,
+          invalidation: patternRun?.invalidation || patternRun?.primaryCandidate?.invalidation,
+          options: gexSummary?.displayText || dailyRun?.options || selectedRun.options || '選擇權／GEX 資料待補。',
+          business: selectedRun.business || '基本面／新聞分析已載入最新紀錄。',
+          overall: hasStructuredDisplay ? { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: selectedRun.cadence || '每次收盤／重大事件', thesis: selectedRun.thesis || '已有部分分析；整體論述待補。', businessSummary: selectedRun.fundamentalsNews || selectedRun.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
+          analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
           freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`,
