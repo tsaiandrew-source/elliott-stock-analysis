@@ -548,7 +548,10 @@
       const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))));
       const tickerRuns = (ticker) => sortRuns(analysisRuns.filter((run) => run.ticker === ticker));
       const chartDataCutoff = (ticker) => {
-        const datasetDate = datasets[ticker]?.dataThrough || datasets[ticker]?.latestChartDate;
+        const bars = datasets[ticker]?.bars;
+        const barDate = Array.isArray(bars) && bars.length ? bars[bars.length - 1]?.date : '';
+        const staticDate = window.BENCHMARK_DATA?.[ticker]?.dataThrough;
+        const datasetDate = barDate || staticDate || datasets[ticker]?.dataThrough || datasets[ticker]?.latestChartDate;
         const coverageDate = coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker))?.latestChartDate;
         return String(datasetDate || coverageDate || '').slice(0, 10);
       };
