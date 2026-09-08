@@ -7,7 +7,7 @@ static GitHub Pages web app.
 - Daily/Weekly/GEX charts: `chart-surface/index.html`
 - Representative tickers: NBIS and IREN
 - Data: contract based on the Google Sheets / GOOGLEFINANCE model, refreshed
-  from the Apps Script proxy when a page opens
+  from the read-only Apps Script proxy when a page opens
 - Charting: TradingView Lightweight Charts attribution is retained in the UI
 
 This deployment contains only the front-end files. The operating repository,
@@ -21,6 +21,11 @@ cached for the current browser session and causes one reload so Home and Chart
 share the same latest snapshot. If the proxy is unavailable, the last bundled
 snapshot remains visible and incomplete analysis is labeled as partial rather
 than being fabricated.
+
+Pending analysis does not make a chart-capable ticker unreachable. Home keeps
+partial-safe ticker rows selectable when a market chart source is available;
+the separate Apps Script ingestion bridge is write-only and is never called by
+the browser.
 
 ## Release checks
 

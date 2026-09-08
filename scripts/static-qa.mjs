@@ -44,6 +44,7 @@ for (const file of htmlFiles) {
   if (/file:\/\//i.test(html)) failures.push(`${file}: contains file:// reference`);
   if (/\/Users\/|[A-Z]:\\\\|P F Social|shared_research/i.test(html)) failures.push(`${file}: contains a local workspace path`);
   if (/BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|INGEST_TOKEN\s*[:=]/i.test(html)) failures.push(`${file}: possible secret material`);
+  if (/AKfycbwN2/i.test(html)) failures.push(`${file}: write-only ingest bridge must not be used by the browser`);
   const references = [...html.matchAll(/(?:src|href)=["']([^"']+)["']/gi)].map((match) => match[1]);
   for (const reference of references) {
     if (!reference || /^(?:[a-z]+:|\/\/|#)/i.test(reference)) continue;
