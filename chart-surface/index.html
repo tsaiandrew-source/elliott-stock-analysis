@@ -581,8 +581,9 @@
         const run = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
         if (!run && !patternRun) return null;
         const selectedRun = run || patternRun;
-        const savedDataset = datasets[ticker] || {};
-        const savedCandidates = savedDataset.patternCandidates || {};
+        const staticDataset = window.BENCHMARK_DATA?.[ticker] || {};
+        const savedDataset = { ...staticDataset, ...(datasets[ticker] || {}) };
+        const savedCandidates = staticDataset.patternCandidates || datasets[ticker]?.patternCandidates || {};
         const runtimeCandidates = patternRun?.patternCandidates || {};
         const runtimePrimary = runtimeCandidates.primary || patternRun?.primaryCandidate || {};
         const runtimePrimaryIsChinese = /[\u3400-\u9fff]/.test(String(runtimePrimary.text || runtimePrimary.pattern || patternRun?.patternLabel || ''));
@@ -592,13 +593,16 @@
           ...candidateSource,
           geometry: candidateSource.geometry || savedCandidates.primary?.geometry || 'none'
         };
+        const patternText = runtimePrimaryIsChinese
+          ? (patternRun?.patternLabel || patternRun?.pattern || savedCandidates.primary?.text || savedDataset.pattern)
+          : (savedCandidates.primary?.text || savedDataset.pattern || patternRun?.pattern || '已有文字分析；技術圖表資料待補。');
         const secondarySource = runtimeCandidates.secondary || (!patternRun?.patternCandidates ? savedCandidates.secondary : null);
         const patternCandidates = {
           primary: primaryCandidate,
           ...(secondarySource ? { secondary: { ...(savedCandidates.secondary || {}), ...secondarySource } } : {})
         };
         const confidence = Number.isFinite(Number(patternRun?.confidence)) && Number(patternRun.confidence) > 0 ? Number(patternRun.confidence) : null;
-        const text = patternRun?.patternLabel || patternRun?.pattern || '已有文字分析；技術圖表資料待補。';
+        const text = patternText;
         const businessEvidence = selectedRun?.businessEvidence || {};
         const dailyDigest = parseStructured(dailyRun?.dailyDigest);
         const weeklyDigest = parseStructured(weeklyRun?.weeklyDigest) || parseStructured(dailyRun?.weeklyDigest);
