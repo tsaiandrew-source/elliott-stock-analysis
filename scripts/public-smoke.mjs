@@ -26,6 +26,14 @@ for (const route of routes) {
     if (route.includes('/chart-surface/') && !body.includes('Stock analysis chart surface')) {
       failures.push(`chart shell marker missing ${route}`);
     }
+    if (route === '/data-model/home.html') {
+      if (!body.includes('partialChartTickers') || !body.includes('hasChartData')) {
+        failures.push('home navigation fallback marker missing');
+      }
+      for (const ticker of ['2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK', '2330']) {
+        if (!body.includes(`'${ticker}'`)) failures.push(`home partial ticker fallback missing ${ticker}`);
+      }
+    }
   } catch (error) {
     failures.push(`${route}: ${error.message}`);
   }
