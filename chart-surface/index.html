@@ -964,6 +964,23 @@
         const byDate = Object.fromEntries(bars.map((bar) => [bar.date, bar]));
         const current = bars.at(-1);
         if (!current) return [];
+        const coordinates = pattern?.coordinates || pattern?.geometryCoordinates;
+        if (coordinates?.neckline && coordinates.start_date && coordinates.breakout_date) {
+          const start = byDate[coordinates.start_date];
+          const breakout = byDate[coordinates.breakout_date];
+          const slope = Number(coordinates.neckline.slope_per_bar);
+          const intercept = Number(coordinates.neckline.intercept);
+          const startIndex = Number(coordinates.start_index);
+          const breakoutIndex = Number(coordinates.event_index);
+          if (start && breakout && Number.isFinite(slope) && Number.isFinite(intercept) && Number.isFinite(startIndex) && Number.isFinite(breakoutIndex)) {
+            const currentIndex = breakoutIndex + Math.max(0, bars.length - 1 - bars.indexOf(breakout));
+            return [
+              { time: start.time, value: slope * startIndex + intercept },
+              { time: breakout.time, value: slope * breakoutIndex + intercept },
+              { time: current.time, value: slope * currentIndex + intercept }
+            ];
+          }
+        }
         if (state.view === 'weekly') {
           if (ticker === 'NBIS' && pattern.geometry === 'doubleBottom') {
             const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
@@ -998,6 +1015,14 @@
           const secondPeak = byDate['8/13/2026'];
           if (!firstPeak || !middleLow || !secondPeak) return [];
           return [{ time: firstPeak.time, value: firstPeak.high }, { time: middleLow.time, value: middleLow.low }, { time: secondPeak.time, value: secondPeak.high }, { time: current.time, value: current.close }];
+        }
+        if (ticker === 'ONDS' && /head[ -]?and[ -]?shoulders|頭肩頂/i.test(`${pattern?.text || ''} ${pattern?.status || ''}`)) {
+          const leftShoulder = byDate['7/22/2026'];
+          const head = byDate['8/12/2026'];
+          const rightShoulder = byDate['8/21/2026'];
+          const breakout = byDate['8/28/2026'];
+          if (!leftShoulder || !head || !rightShoulder || !breakout) return [];
+          return [{ time: leftShoulder.time, value: leftShoulder.high }, { time: head.time, value: head.high }, { time: rightShoulder.time, value: rightShoulder.high }, { time: breakout.time, value: breakout.close }, { time: current.time, value: current.close }];
         }
         return [];
       }
@@ -1328,6 +1353,16 @@
         const macdValues = [...macd.macd.map((item) => item.value), ...macd.signal.map((item) => item.value), ...histogram.map((item) => item.value), 0];
         freezeIndicatorFrame(macdSeries.macd, macdValues);
         chart.timeScale().fitContent();
+        if (state.view === 'daily') {
+          // Keep the full history available for horizontal scrolling, but open
+          // on roughly 3–4 months of completed daily sessions.
+          const dailyWindowBars = 80;
+          const lastIndex = bars.length - 1;
+          chart.timeScale().setVisibleLogicalRange({
+            from: Math.max(0, lastIndex - dailyWindowBars + 1),
+            to: lastIndex + 2
+          });
+        }
         setPaneLayout();
         syncIndicatorRanges();
         chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
