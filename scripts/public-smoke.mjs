@@ -1,4 +1,5 @@
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
+const tickers = ['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', '2330', 'AVGO'];
 const routes = [
   '/',
   '/manifest.webmanifest',
@@ -7,8 +8,7 @@ const routes = [
   '/chart-surface/index.html?ticker=NBIS&view=daily',
   '/chart-surface/index.html?ticker=NBIS&view=weekly',
   '/chart-surface/index.html?ticker=NBIS&view=gex',
-  '/chart-surface/index.html?ticker=IREN&view=daily',
-  '/chart-surface/index.html?ticker=PLTR&view=daily'
+  ...tickers.map((ticker) => `/chart-surface/index.html?ticker=${ticker}&view=daily`)
 ];
 const failures = [];
 
@@ -34,5 +34,5 @@ if (failures.length) {
   console.error(JSON.stringify({ status: 'FAIL', base, failures }, null, 2));
   process.exitCode = 1;
 } else {
-  console.log(JSON.stringify({ status: 'PASS', base, checkedRoutes: routes.length }, null, 2));
+  console.log(JSON.stringify({ status: 'PASS', base, checkedRoutes: routes.length, tickers }, null, 2));
 }
