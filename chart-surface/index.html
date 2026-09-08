@@ -786,7 +786,10 @@
         return series;
       }
 
-      function levelData(bars, value) { return bars.map((bar) => ({ time: bar.time, value })); }
+      function levelData(bars, value) {
+        const numeric = Number(value);
+        return Number.isFinite(numeric) ? bars.map((bar) => ({ time: bar.time, value: numeric })) : [];
+      }
 
       function weeklyBars(bars, ticker) {
         if (weeklyHistory[ticker]?.length >= 20) return weeklyHistory[ticker];
@@ -940,8 +943,9 @@
         if (state.ticker === 'IREN') {
           values.push(41.44 + (bars.length - 1) * 0.381, 19.29 + (bars.length - 1) * 0.408, 41.44, 19.29);
         }
-        const min = Math.min(...values);
-        const max = Math.max(...values);
+        const numericValues = values.map(Number).filter(Number.isFinite);
+        const min = Math.min(...numericValues);
+        const max = Math.max(...numericValues);
         const padding = Math.max((max - min) * 0.06, 0.5);
         const scale = candleSeries.priceScale();
         scale.applyOptions({ autoScale: false, scaleMargins: { top: 0.08, bottom: 0.08 } });
