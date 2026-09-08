@@ -542,6 +542,14 @@
         if (!run) return null;
         const confidence = Number.isFinite(Number(run.confidence)) && Number(run.confidence) > 0 ? Number(run.confidence) : null;
         const text = run.pattern || '已有文字分析；技術圖表資料待補。';
+        const businessEvidence = run.businessEvidence || {};
+        const digestDetails = run.digestDetails || {
+          midday: run.dailyDigest?.midday || null,
+          endOfDay: run.dailyDigest?.endOfDay || null,
+          weekly: run.weeklyDigest || null
+        };
+        const gexSummary = run.gexSummary || null;
+        const hasStructuredDisplay = Boolean(run.businessEvidence || run.digestDetails || run.dailyDigest?.midday || run.dailyDigest?.endOfDay || run.weeklyDigest?.points);
         return {
           company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
           exchange: coverageRows().find((item) => item.ticker === ticker)?.exchange || '',
@@ -558,8 +566,11 @@
           wyckoffGate: null,
           patternGate: run.confirmation || run.primaryCandidate?.confirmation,
           invalidation: run.invalidation || run.primaryCandidate?.invalidation,
-          options: run.options || '選擇權／GEX 資料待補。',
+          options: gexSummary?.displayText || run.options || '選擇權／GEX 資料待補。',
           business: run.business || '基本面／新聞分析已載入最新紀錄。',
+          overall: hasStructuredDisplay ? { updated: run.analysisDate || run.dataThrough || '', cadence: run.cadence || '每次收盤／重大事件', thesis: run.thesis || '已有部分分析；整體論述待補。', businessSummary: run.fundamentalsNews || run.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
+          digestDetails,
+          gexSummary,
           freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`,
           gexSource: null,
           gexViews: {},
@@ -1251,7 +1262,7 @@
         $('chart-meta').textContent = isGex ? `GEX · 本週／下週到期 · ${gex.freshness}` : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + '資料截至 ' + data.dataThrough + ' · ' + data.sourceCutoff;
         const detail = analysisDetails[state.ticker];
         const businessDetails = $('business-details');
-        const overall = detail?.overall;
+        const overall = data.overall || detail?.overall;
         $('thesis').textContent = overall?.thesis || data.thesis;
         $('thesis-refresh').textContent = overall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
         $('business').textContent = overall?.businessSummary || data.business;
@@ -1265,7 +1276,9 @@
             : `<ul>${item.points.map((point) => `<li>${point}</li>`).join('')}</ul>`;
           return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p></article></div></details>`;
         };
-        businessDetails.innerHTML = detail ? renderDigest(detail.midday, 'midday') + renderDigest(detail.endOfDay, 'endOfDay') + renderDigest(detail.weekly, 'weekly') : '';
+        const digestDetails = data.digestDetails || {};
+        const activeDigests = data.digestDetails || detail || {};
+        businessDetails.innerHTML = renderDigest(activeDigests.midday, 'midday') + renderDigest(activeDigests.endOfDay, 'endOfDay') + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
         $('pattern').textContent = pattern.text;
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
