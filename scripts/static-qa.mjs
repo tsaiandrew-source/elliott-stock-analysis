@@ -42,6 +42,15 @@ for (const file of htmlFiles) {
   const html = await read(file);
   if (/file:\/\//i.test(html)) failures.push(`${file}: contains file:// reference`);
   if (/BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|INGEST_TOKEN\s*[:=]/i.test(html)) failures.push(`${file}: possible secret material`);
+  const references = [...html.matchAll(/(?:src|href)=["']([^"']+)["']/gi)].map((match) => match[1]);
+  for (const reference of references) {
+    if (!reference || /^(?:[a-z]+:|\/\/|#)/i.test(reference)) continue;
+    if (reference.includes('${') || reference.includes('<') || reference.includes('>')) continue;
+    const clean = reference.split('#')[0].split('?')[0];
+    if (!clean || clean.endsWith('/')) continue;
+    const resolved = path.normalize(path.join(path.dirname(file), clean));
+    if (!(await exists(resolved))) failures.push(`${file}: referenced file not found: ${reference}`);
+  }
 }
 
 const partialDir = path.join(root, 'chart-surface/partial-market-data');
