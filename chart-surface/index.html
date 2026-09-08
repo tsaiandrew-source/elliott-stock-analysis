@@ -570,6 +570,20 @@
         const run = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
         if (!run && !patternRun) return null;
         const selectedRun = run || patternRun;
+        const savedDataset = datasets[ticker] || {};
+        const savedCandidates = savedDataset.patternCandidates || {};
+        const runtimeCandidates = patternRun?.patternCandidates || {};
+        const runtimePrimary = runtimeCandidates.primary || patternRun?.primaryCandidate || {};
+        const primaryCandidate = {
+          ...(savedCandidates.primary || {}),
+          ...runtimePrimary,
+          geometry: runtimePrimary.geometry || savedCandidates.primary?.geometry || 'none'
+        };
+        const secondarySource = runtimeCandidates.secondary || (!patternRun?.patternCandidates ? savedCandidates.secondary : null);
+        const patternCandidates = {
+          primary: primaryCandidate,
+          ...(secondarySource ? { secondary: { ...(savedCandidates.secondary || {}), ...secondarySource } } : {})
+        };
         const confidence = Number.isFinite(Number(patternRun?.confidence)) && Number(patternRun.confidence) > 0 ? Number(patternRun.confidence) : null;
         const text = patternRun?.patternLabel || patternRun?.pattern || '已有文字分析；技術圖表資料待補。';
         const businessEvidence = selectedRun?.businessEvidence || {};
@@ -593,13 +607,13 @@
           sourceUrl: selectedRun.chartSource || '',
           pattern: text,
           patternStatus: patternRun?.status || 'partial',
-          patternCandidates: patternRun?.patternCandidates || { primary: { label: '主候選', text, confidence, confidenceLabel: patternRun?.confidenceDisplay || patternRun?.confidenceLabel, status: patternRun?.status || 'partial', confirmation: patternRun?.confirmation, invalidation: patternRun?.invalidation, geometry: 'none', callout: false } },
+          patternCandidates,
           thesis: selectedRun.thesis || '已有部分分析；技術圖表資料待補。',
           wyckoff: patternRun?.wyckoff || patternRun?.wyckoffPhase?.daily || 'Pending',
           weeklyWyckoff: weeklyRun?.weeklyWyckoff || weeklyRun?.wyckoffPhase?.weekly || patternRun?.weeklyWyckoff || patternRun?.wyckoffPhase?.weekly || 'Pending',
           wyckoffGate: null,
-          patternGate: patternRun?.confirmation || patternRun?.primaryCandidate?.confirmation,
-          invalidation: patternRun?.invalidation || patternRun?.primaryCandidate?.invalidation,
+          patternGate: patternRun?.confirmation || patternRun?.primaryCandidate?.confirmation || primaryCandidate.confirmation || savedDataset.patternGate,
+          invalidation: patternRun?.invalidation || patternRun?.primaryCandidate?.invalidation || primaryCandidate.invalidation || savedDataset.invalidation,
           options: gexSummary?.displayText || dailyRun?.options || selectedRun.options || '選擇權／GEX 資料待補。',
           business: selectedRun.business || '基本面／新聞分析已載入最新紀錄。',
           overall: hasStructuredDisplay ? { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: selectedRun.cadence || '每次收盤／重大事件', thesis: selectedRun.thesis || '已有部分分析；整體論述待補。', businessSummary: selectedRun.fundamentalsNews || selectedRun.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
@@ -1308,9 +1322,21 @@
         $('chart-meta').textContent = isGex ? `GEX · 本週／下週到期 · ${gex.freshness}` : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + '資料截至 ' + data.dataThrough + ' · ' + data.sourceCutoff;
         const detail = analysisDetails[state.ticker];
         const businessDetails = $('business-details');
-        const overall = data.overall || detail?.overall;
+        const runtimeOverall = data.overall || {};
+        const savedOverall = detail?.overall || {};
+        const preferValue = (value, fallback) => value && value !== '—' ? value : fallback;
+        const overall = {
+          updated: preferValue(runtimeOverall.updated, savedOverall.updated),
+          cadence: preferValue(runtimeOverall.cadence, savedOverall.cadence),
+          thesis: preferValue(runtimeOverall.thesis, savedOverall.thesis),
+          businessSummary: preferValue(runtimeOverall.businessSummary, savedOverall.businessSummary),
+          proved: preferValue(runtimeOverall.proved, savedOverall.proved),
+          unproved: preferValue(runtimeOverall.unproved, savedOverall.unproved),
+          nextTest: preferValue(runtimeOverall.nextTest, savedOverall.nextTest)
+        };
+        const hasOverall = Object.values(overall).some(Boolean);
         $('thesis').textContent = overall?.thesis || data.thesis;
-        $('thesis-refresh').textContent = overall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
+        $('thesis-refresh').textContent = hasOverall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
         $('business').textContent = overall?.businessSummary || data.business;
         $('business-proved').textContent = overall?.proved || '—';
         $('business-unproved').textContent = overall?.unproved || '—';
@@ -1322,8 +1348,16 @@
             : `<ul>${item.points.map((point) => `<li>${point}</li>`).join('')}</ul>`;
           return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p></article></div></details>`;
         };
-        const digestDetails = data.digestDetails || {};
-        const activeDigests = data.digestDetails || detail || {};
+        const runtimeDigests = data.digestDetails || {};
+        const savedDigests = detail || {};
+        // A live run can be intentionally partial. Merge each lane separately
+        // so an empty midday/EOD/weekly field never erases the last complete
+        // digest that is still valid for that cadence.
+        const activeDigests = {
+          midday: runtimeDigests.midday || savedDigests.midday || null,
+          endOfDay: runtimeDigests.endOfDay || savedDigests.endOfDay || null,
+          weekly: runtimeDigests.weekly || savedDigests.weekly || null
+        };
         businessDetails.innerHTML = renderDigest(activeDigests.midday, 'midday') + renderDigest(activeDigests.endOfDay, 'endOfDay') + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
         const historyPanel = $('analysis-history');
