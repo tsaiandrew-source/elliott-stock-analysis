@@ -257,6 +257,16 @@
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
       const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
+      const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+          return response.ok ? response.json() : null;
+        } finally {
+          clearTimeout(timeout);
+        }
+      };
       const mergeRuntimeContract = (fallback, live) => {
         if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
         const uniqueRuns = new Map();
@@ -277,11 +287,13 @@
         };
       };
       let activeContract = contract;
-      try {
-        const liveResponse = await fetch(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, { cache: 'no-store' });
-        if (liveResponse.ok) activeContract = mergeRuntimeContract(contract, await liveResponse.json());
-      } catch (_) {
-        // Keep the bundled last-good contract when the proxy is unavailable.
+      if (window.location.protocol !== 'file:') {
+        try {
+          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`);
+          if (live) activeContract = mergeRuntimeContract(contract, live);
+        } catch (_) {
+          // Keep the bundled last-good contract when the proxy is unavailable.
+        }
       }
       const datasets = activeContract.datasets?.benchmark || {};
       const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
