@@ -547,11 +547,21 @@
       const isWeeklyRun = (run) => /weekly|week|週線|週報/i.test(String(run?.runType || ''));
       const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))));
       const tickerRuns = (ticker) => sortRuns(analysisRuns.filter((run) => run.ticker === ticker));
+      const chartDataCutoff = (ticker) => {
+        const datasetDate = datasets[ticker]?.dataThrough || datasets[ticker]?.latestChartDate;
+        const coverageDate = coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker))?.latestChartDate;
+        return String(datasetDate || coverageDate || '').slice(0, 10);
+      };
+      const eligibleRuns = (ticker) => {
+        const cutoff = chartDataCutoff(ticker);
+        const runs = tickerRuns(ticker);
+        return cutoff ? runs.filter((run) => !runDate(run) || runDate(run) <= cutoff) : runs;
+      };
       const isIncompleteRun = (run) => /partial|pending|incomplete|not[_ -]?available|in[_ -]?progress/i.test(`${run?.status || ''} ${run?.dataStatus || ''} ${run?.patternStatus || ''}`);
-      const latestDailyRun = (ticker) => sortRuns(tickerRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
-      const latestWeeklyRun = (ticker) => sortRuns(tickerRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
+      const latestDailyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
+      const latestWeeklyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
       const patternDailyRun = (ticker) => {
-        const daily = sortRuns(tickerRuns(ticker).filter((run) => !isWeeklyRun(run)));
+        const daily = sortRuns(eligibleRuns(ticker).filter((run) => !isWeeklyRun(run)));
         const latest = daily[0];
         if (!latest) return null;
         const hasPattern = Boolean(latest.patternLabel || latest.pattern || latest.primaryCandidate);
