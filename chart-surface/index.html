@@ -480,7 +480,9 @@
         return Math.round(window.visualViewport?.width || document.documentElement.clientWidth || window.innerWidth);
       }
       const query = new URLSearchParams(window.location.search);
-      const state = { ticker: query.get('ticker') || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
+      const normalizeTicker = (value) => String(value ?? '').trim().toUpperCase();
+      const requestedTicker = normalizeTicker(query.get('ticker'));
+      const state = { ticker: requestedTicker || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
       $('ticker-menu-label').textContent = state.ticker;
       $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
       const baseCoverage = contract.coverage || Object.keys(datasets || {}).map((ticker) => ({ ticker, company: datasets[ticker]?.company || ticker, active: true }));
@@ -524,7 +526,9 @@
         };
       };
       const activeCoverage = coverageRows().filter((item) => item.active !== false);
-      if (activeCoverage.length && !activeCoverage.some((item) => item.ticker === state.ticker)) state.ticker = activeCoverage[0].ticker;
+      const requestedCoverage = activeCoverage.find((item) => normalizeTicker(item.ticker) === state.ticker);
+      if (requestedCoverage) state.ticker = requestedCoverage.ticker;
+      else if (!requestedTicker && activeCoverage.length) state.ticker = activeCoverage[0].ticker;
       if (query.get('candidate') === 'secondary') state.candidate = 'secondary';
       let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, layerSeries = {}, phaseMarkers = [], axisBars = [];
 
@@ -535,9 +539,14 @@
       }
 
       function selectTicker(ticker) {
-        if (!activeCoverage.some((item) => item.ticker === ticker)) return;
-        state.ticker = ticker;
+        const selected = activeCoverage.find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker));
+        if (!selected) return;
+        state.ticker = selected.ticker;
         state.candidate = 'primary';
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('ticker', state.ticker);
+        nextUrl.searchParams.set('view', state.view);
+        window.history.replaceState({}, '', nextUrl);
         $('ticker-menu-label').textContent = state.ticker;
         $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
         closeMainMenu();

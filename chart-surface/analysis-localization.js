@@ -91,6 +91,35 @@
     const match = String(run?.pattern || '').match(/(\d+(?:\.\d+)?)%\s*(?:detector confidence|偵測器信心)/i);
     return match ? `${match[1]}%` : '—';
   };
+  const compactPattern = (run) => {
+    if (!run) return '尚無最新分析';
+    const rawPattern = localizePattern(String(run.pattern || '')).split('/')[0].trim();
+    const thesis = String(run.thesis || '');
+    const compact = [
+      [/none\s*\/\s*no defensible confidence|無明確型態|無可辯護信心/i, '無明確型態'],
+      [/double bottom|雙重底/i, /看多|bullish/i.test(thesis) ? '看多雙重底候選仍在形成' : '雙重底形成中'],
+      [/horizontal channel|水平通道/i, /breakout|突破/i.test(rawPattern) ? '水平通道突破確認' : '水平通道形成中'],
+      [/descending[- ]channel.*(?:upside|向上)|下降通道.*向上/i, '看多下降通道突破候選'],
+      [/double top|雙重頂/i, '雙重頂形成中'],
+      [/head[- ]and[- ]shoulders top.*retest|頭肩頂.*回測/i, '頭肩頂回測守住'],
+      [/head[- ]and[- ]shoulders top.*breakout|頭肩頂.*突破/i, '頭肩頂突破確認'],
+      [/descending triangle.*forming|下降三角形.*形成/i, '看多下降三角形形成中'],
+      [/descending[- ]triangle.*retest|下降三角形.*回測/i, '下降三角形突破回測守住'],
+      [/descending[- ]triangle.*breakout|下降三角形.*突破/i, '下降三角形突破確認'],
+      [/inverse head[- ]and[- ]shoulders.*reject|逆頭肩底.*否決/i, '逆頭肩底候選已否決']
+    ].find(([pattern]) => pattern.test(rawPattern));
+    if (compact) return compact[1];
+    if (/無明確|中性|尚無明確|no defensible|unclassified/i.test(`${rawPattern} ${thesis}`)) return '無明確型態';
+    return rawPattern || '尚無最新分析';
+  };
+  const direction = (run) => {
+    if (!run) return { symbol: '→', key: 'flat', label: '延續盤整' };
+    const text = `${run.thesis || ''} ${run.pattern || ''}`;
+    if (/無明確|中性|尚無.*結論|no defensible|rejected|否決|失效|inconclusive|unclassified/i.test(text)) return { symbol: '→', key: 'flat', label: '延續盤整' };
+    if (/看空|bearish|double top|雙重頂|head[- ]and[- ]shoulders top|頭肩頂|downside|向下|下跌/i.test(text)) return { symbol: '↘', key: 'down', label: '趨勢向下' };
+    if (/看多|bullish|upside|向上|上行|breakout|突破|double bottom|雙重底|ascending/i.test(text)) return { symbol: '↗', key: 'up', label: '趨勢向上' };
+    return { symbol: '→', key: 'flat', label: '延續盤整' };
+  };
   const localizePattern = (value) => {
     if (!value || /[\u3400-\u9fff]/.test(value)) return value;
     let text = String(value);
@@ -158,5 +187,5 @@
       status: localizePattern(run.status)
     };
   };
-  window.PROTOTYPE_ANALYSIS_LOCALIZER = { confidenceDisplay, confidencePercent, localizeRun, localizePattern, localizeWyckoff };
+  window.PROTOTYPE_ANALYSIS_LOCALIZER = { confidenceDisplay, confidencePercent, compactPattern, direction, localizeRun, localizePattern, localizeWyckoff };
 })();
