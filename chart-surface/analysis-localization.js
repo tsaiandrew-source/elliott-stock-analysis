@@ -88,7 +88,7 @@
   const confidencePercent = (run) => {
     const numeric = Number(run?.confidence);
     if (Number.isFinite(numeric) && numeric > 0) return `${numeric}%`;
-    const match = String(run?.pattern || '').match(/(\d+(?:\.\d+)?)%\s*(?:detector confidence|偵測器信心)/i);
+    const match = String(run?.pattern || '').match(/(\d+(?:\.\d+)?)%/i);
     return match ? `${match[1]}%` : '—';
   };
   const compactPattern = (run) => {

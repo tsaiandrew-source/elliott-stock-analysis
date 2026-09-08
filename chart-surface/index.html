@@ -437,7 +437,7 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="analysis-localization.js?open=20260908b"></script>
+  <script src="analysis-localization.js?open=20260908c"></script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
@@ -493,7 +493,14 @@
           // The already-rendered bundled or cached contract remains usable.
         }
       };
-      const partialChartSources = { '2646': 'partial-market-data/2646.json' };
+      const partialChartSources = {
+        '2330': 'partial-market-data/2330.json', '2646': 'partial-market-data/2646.json',
+        'ACHR': 'partial-market-data/ACHR.json', 'AMKR': 'partial-market-data/AMKR.json',
+        'CSCO': 'partial-market-data/CSCO.json', 'LITE': 'partial-market-data/LITE.json',
+        'MRVL': 'partial-market-data/MRVL.json', 'NOK': 'partial-market-data/NOK.json',
+        'NVDA': 'partial-market-data/NVDA.json', 'ONDS': 'partial-market-data/ONDS.json',
+        'PLTR': 'partial-market-data/PLTR.json', 'SNDK': 'partial-market-data/SNDK.json'
+      };
       const partialDatasets = {};
       await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
         try {
