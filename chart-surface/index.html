@@ -456,7 +456,8 @@
       const mergeRuntimeContract = (fallback, live) => {
         if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
         const uniqueRuns = new Map();
-        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => uniqueRuns.set(run.runId, run));
+        const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
+        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
         return {
           ...fallback,
           ...live,
