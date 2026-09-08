@@ -78,6 +78,7 @@
   const replaceAll = (value, pairs) => pairs.reduce((text, [from, to]) => text.replace(from, to), String(value ?? ''));
   const translateConfidence = (value) => confidenceMap[String(value ?? '').replace(/`/g, '').trim()] || value;
   const confidenceDisplay = (run) => {
+    if (run?.confidenceBand) return translateConfidence(run.confidenceBand);
     const pattern = String(run?.pattern || '');
     const usable = pattern.match(/(?:reconciled confidence|usable confidence)\s*`?([^`;,]+)`?/i);
     if (usable) return translateConfidence(usable[1]);
@@ -178,22 +179,47 @@
     if (/partial|missing/i.test(value)) return '本週／下週選擇權資料不完整；未提供可辯護的 signed GEX、Gamma Flip、Call Wall／Put Wall。';
     return value;
   };
+  const normalizeCandidate = (candidate, fallbackLabel) => {
+    if (!candidate) return null;
+    const label = candidate.label || fallbackLabel;
+    const patternLabel = candidate.patternLabel || candidate.text || candidate.pattern || '';
+    return {
+      ...candidate,
+      label,
+      text: localizePattern(patternLabel),
+      status: candidate.status || label,
+      confidence: candidate.confidencePercent ?? candidate.confidence ?? null,
+      confidenceLabel: candidate.confidenceBand || candidate.confidenceLabel,
+      confirmation: candidate.confirmation,
+      invalidation: candidate.invalidation
+    };
+  };
   const localizeRun = (run) => {
-    if (!run || /[\u3400-\u9fff]/.test(`${run.thesis || ''}${run.business || ''}${run.pattern || ''}`) && !currentChinese[run.runId]) return run;
+    if (!run) return run;
     const preset = currentChinese[run.runId] || {};
+    const normalizedPrimary = normalizeCandidate(run.primaryCandidate, '主候選');
+    const normalizedSecondary = run.secondaryCandidate ? normalizeCandidate(run.secondaryCandidate, '次候選') : null;
+    const candidates = normalizedPrimary
+      ? { primary: normalizedPrimary, ...(normalizedSecondary ? { secondary: normalizedSecondary } : {}) }
+      : run.patternCandidates;
+    const displayPattern = run.patternLabel || normalizedPrimary?.text || run.pattern;
     return {
       ...run,
-      pattern: localizePattern(run.pattern),
+      pattern: localizePattern(displayPattern),
       patternLabel: run.patternLabel ? localizePattern(run.patternLabel) : undefined,
       thesis: preset.thesis || run.thesis,
       business: preset.business || run.business,
       confidencePercent: confidencePercent(run),
+      confidence: run.confidencePercent ?? run.confidence,
+      confidenceBand: run.confidenceBand || normalizedPrimary?.confidenceLabel,
+      predictionDirection: run.predictionDirection,
+      patternCandidates: candidates,
       confidenceLabel: confidenceDisplay(run),
       confidenceDisplay: confidenceDisplay(run),
       confirmation: localizeConfirmation(run.confirmation),
       invalidation: localizeInvalidation(run.invalidation),
-      wyckoff: localizeWyckoff(run.wyckoff),
-      weeklyWyckoff: localizeWyckoff(run.weeklyWyckoff),
+      wyckoff: localizeWyckoff(run.wyckoff || run.wyckoffPhase?.daily),
+      weeklyWyckoff: localizeWyckoff(run.weeklyWyckoff || run.wyckoffPhase?.weekly),
       options: localizeOptions(run.options),
       status: localizePattern(run.status)
     };

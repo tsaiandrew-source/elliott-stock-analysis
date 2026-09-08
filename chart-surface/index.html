@@ -437,7 +437,7 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="analysis-localization.js?open=20260908d"></script>
+  <script src="analysis-localization.js?open=20260908e"></script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
@@ -551,13 +551,13 @@
           sourceUrl: run.chartSource || '',
           pattern: text,
           patternStatus: run.status || 'partial',
-          patternCandidates: { primary: { label: '主候選', text, confidence, confidenceLabel: run.confidenceDisplay || run.confidenceLabel, status: run.status || 'partial', confirmation: run.confirmation, invalidation: run.invalidation, geometry: 'none', callout: false } },
+          patternCandidates: run.patternCandidates || { primary: { label: '主候選', text, confidence, confidenceLabel: run.confidenceDisplay || run.confidenceLabel, status: run.status || 'partial', confirmation: run.confirmation, invalidation: run.invalidation, geometry: 'none', callout: false } },
           thesis: run.thesis || '已有部分分析；技術圖表資料待補。',
-          wyckoff: run.wyckoff || 'Pending',
-          weeklyWyckoff: run.weeklyWyckoff || 'Pending',
+          wyckoff: run.wyckoff || run.wyckoffPhase?.daily || 'Pending',
+          weeklyWyckoff: run.weeklyWyckoff || run.wyckoffPhase?.weekly || 'Pending',
           wyckoffGate: null,
-          patternGate: run.confirmation,
-          invalidation: run.invalidation,
+          patternGate: run.confirmation || run.primaryCandidate?.confirmation,
+          invalidation: run.invalidation || run.primaryCandidate?.invalidation,
           options: run.options || '選擇權／GEX 資料待補。',
           business: run.business || '基本面／新聞分析已載入最新紀錄。',
           freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`,
