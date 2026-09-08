@@ -1,0 +1,22 @@
+name: Public deployment smoke test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out prototype
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check public GitHub Pages deployment
+        run: node scripts/public-smoke.mjs
