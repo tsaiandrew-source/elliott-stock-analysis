@@ -1397,7 +1397,8 @@
         historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
-        $('wyckoff').textContent = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
+        const wyckoffText = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
+        $('wyckoff').textContent = localizer.localizeWyckoff ? localizer.localizeWyckoff(wyckoffText) : wyckoffText;
         $('pattern-gate').textContent = Number.isFinite(pattern.confirmation) ? '$' + pattern.confirmation.toFixed(2) : '—';
         $('invalidation').textContent = Number.isFinite(pattern.invalidation) ? '$' + pattern.invalidation.toFixed(2) : '—';
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
