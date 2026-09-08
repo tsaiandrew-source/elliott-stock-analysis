@@ -585,10 +585,12 @@
         const savedCandidates = savedDataset.patternCandidates || {};
         const runtimeCandidates = patternRun?.patternCandidates || {};
         const runtimePrimary = runtimeCandidates.primary || patternRun?.primaryCandidate || {};
+        const runtimePrimaryIsChinese = /[\u3400-\u9fff]/.test(String(runtimePrimary.text || runtimePrimary.pattern || patternRun?.patternLabel || ''));
+        const candidateSource = runtimePrimaryIsChinese ? runtimePrimary : {};
         const primaryCandidate = {
           ...(savedCandidates.primary || {}),
-          ...runtimePrimary,
-          geometry: runtimePrimary.geometry || savedCandidates.primary?.geometry || 'none'
+          ...candidateSource,
+          geometry: candidateSource.geometry || savedCandidates.primary?.geometry || 'none'
         };
         const secondarySource = runtimeCandidates.secondary || (!patternRun?.patternCandidates ? savedCandidates.secondary : null);
         const patternCandidates = {
@@ -623,8 +625,8 @@
           wyckoff: patternRun?.wyckoff || patternRun?.wyckoffPhase?.daily || 'Pending',
           weeklyWyckoff: weeklyRun?.weeklyWyckoff || weeklyRun?.wyckoffPhase?.weekly || patternRun?.weeklyWyckoff || patternRun?.wyckoffPhase?.weekly || 'Pending',
           wyckoffGate: null,
-          patternGate: patternRun?.confirmation || patternRun?.primaryCandidate?.confirmation || primaryCandidate.confirmation || savedDataset.patternGate,
-          invalidation: patternRun?.invalidation || patternRun?.primaryCandidate?.invalidation || primaryCandidate.invalidation || savedDataset.invalidation,
+          patternGate: candidateSource.confirmation || primaryCandidate.confirmation || savedDataset.patternGate,
+          invalidation: candidateSource.invalidation || primaryCandidate.invalidation || savedDataset.invalidation,
           options: gexSummary?.displayText || dailyRun?.options || selectedRun.options || '選擇權／GEX 資料待補。',
           business: selectedRun.business || '基本面／新聞分析已載入最新紀錄。',
           overall: hasStructuredDisplay ? { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: selectedRun.cadence || '每次收盤／重大事件', thesis: selectedRun.thesis || '已有部分分析；整體論述待補。', businessSummary: selectedRun.fundamentalsNews || selectedRun.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
