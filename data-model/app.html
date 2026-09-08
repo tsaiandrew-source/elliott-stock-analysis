@@ -21,13 +21,17 @@
     .nav { display:grid; gap:6px; margin:18px 0; }
     .nav button, .ticker button { width:100%; border:0; border-radius:7px; padding:9px 10px; text-align:left; color:var(--muted); background:transparent; cursor:pointer; }
     .nav button[aria-pressed="true"], .ticker button[aria-pressed="true"] { color:#071018; background:var(--aqua); font-weight:800; }
-    .coverage-form { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-top:12px; }
-    .coverage-form input { min-width:0; padding:9px 10px; border:1px solid var(--line); border-radius:7px; color:var(--text); background:var(--surface2); }
+    .coverage-form { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; margin-top:12px; }
+    .coverage-form input, .coverage-form select { min-width:0; padding:9px 10px; border:1px solid var(--line); border-radius:7px; color:var(--text); background:var(--surface2); }
     .action { border:1px solid var(--line); border-radius:6px; padding:6px 8px; color:var(--aqua); background:transparent; cursor:pointer; font-size:12px; font-weight:800; }
     .action[data-active="false"] { color:var(--amber); }
     .status-active { color:var(--green); font-weight:800; }
     .status-inactive { color:var(--amber); font-weight:800; }
     .ticker { display:grid; gap:4px; padding-top:13px; border-top:1px solid var(--line); }
+    .coverage-rail-group { display:grid; gap:4px; }
+    .coverage-rail-group + .coverage-rail-group { margin-top:12px; padding-top:10px; border-top:1px solid rgba(85,217,213,.18); }
+    .coverage-rail-group > small { padding:0 10px 2px; color:var(--aqua); font-size:10px; font-weight:800; letter-spacing:.04em; }
+    .coverage-rail-group + .coverage-rail-group > small { color:var(--amber); }
     .ticker button { display:grid; grid-template-columns:42px 1fr; gap:6px; align-items:center; }
     .ticker strong { color:inherit; }
     .ticker small { color:inherit; opacity:.76; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -128,13 +132,19 @@
     <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260908-v2"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script>document.write('<script src="https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec?format=js&open=' + Date.now() + '"><\/script>');</script>
   <script>
     (() => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
       const datasets = contract.datasets?.benchmark || {};
-      const baseCoverage = contract.coverage || [];
+      const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
+      const v2Batches = Object.values(irisV2.batches || {});
+      const v2Runs = v2Batches.flatMap((batch) => [
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
+      ]);
+      const baseCoverage = [...(contract.coverage || []), ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }))].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
       let coverageOverrides = {};
       try { coverageOverrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { coverageOverrides = {}; }
       const coverageRows = () => {
@@ -142,14 +152,19 @@
         Object.entries(coverageOverrides).forEach(([ticker, item]) => rows.set(ticker, { ...(rows.get(ticker) || { ticker }), ...item }));
         return [...rows.values()];
       };
-      const activeCoverage = () => coverageRows().filter((item) => item.removed !== true && item.active !== false && datasets[item.ticker]);
-      const runs = contract.analysisRuns || [];
+      const activeCoverage = () => coverageRows().filter((item) => item.removed !== true && item.active !== false && (datasets[item.ticker] || v2Runs.some((run) => run.ticker === item.ticker)));
+      const runMap = new Map();
+      [...(contract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
+      const runs = [...runMap.values()];
       const query = new URLSearchParams(window.location.search);
       const initialView = ['history', 'sources', 'coverage'].includes(query.get('view')) ? query.get('view') : 'latest';
-      const state = { view: initialView, ticker: query.get('ticker') || activeCoverage()[0]?.ticker || 'NBIS' };
+      const state = { view: initialView, ticker: query.get('ticker') || activeCoverage()[0]?.ticker || '' };
       const $ = (id) => document.getElementById(id);
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
-      const latestRun = () => runs.filter((run) => run.ticker === state.ticker).sort((a, b) => b.analysisDate.localeCompare(a.analysisDate))[0];
+      const normalizeCoverageGroup = (value) => ['exploration', 'explore', 'exploratory'].includes(String(value ?? '').trim().toLowerCase()) ? 'exploration' : 'tracking';
+      const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracking · 追蹤';
+      const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group);
+      const latestRun = () => runs.filter((run) => run.ticker === state.ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
       const detail = () => contract.datasets?.analysisDetails?.[state.ticker] || {};
       function closeTickerSheet() {
         $('ticker-sheet').hidden = true;
@@ -183,7 +198,8 @@
       function renderRail() {
         $('contract').textContent = contract.mode === 'sheets-csv-import' ? 'Sheets import' : 'Local seed';
         document.querySelectorAll('[data-view]').forEach((button) => { const active = button.dataset.view === state.view; button.setAttribute('aria-pressed', String(active)); });
-        $('ticker-list').innerHTML = activeCoverage().map((item) => `<button type="button" data-ticker="${escapeHtml(item.ticker)}" aria-pressed="${item.ticker === state.ticker}"><strong>${escapeHtml(item.ticker)}</strong><small>${escapeHtml(item.company)}</small></button>`).join('');
+        const railItems = ['tracking', 'exploration'].map((group) => `<div class="coverage-rail-group"><small>${coverageGroupLabel(group)}</small>${activeCoverage().filter((item) => coverageGroup(item) === group).map((item) => `<button type="button" data-ticker="${escapeHtml(item.ticker)}" aria-pressed="${item.ticker === state.ticker}"><strong>${escapeHtml(item.ticker)}</strong><small>${escapeHtml(item.company)}</small></button>`).join('')}</div>`).join('');
+        $('ticker-list').innerHTML = railItems;
         $('ticker-list').querySelectorAll('[data-ticker]').forEach((button) => button.addEventListener('click', () => { state.ticker = button.dataset.ticker; render(); }));
       }
       function renderLinks() {
@@ -191,12 +207,18 @@
         $('chart-links').innerHTML = `<a href="${base}&view=gex">GEX</a><a href="${base}&view=daily">日線</a><a href="${base}&view=weekly">週線</a>`;
       }
       function renderLatest() {
-        const data = datasets[state.ticker]; const run = latestRun(); const info = detail();
-        $('heading').textContent = `${state.ticker} · ${data.company}`;
+        const data = datasets[state.ticker] || {}; const run = latestRun();
+        const isV2 = run?.schemaVersion === 'iris-analysis-contract-v2';
+        $('heading').textContent = `${state.ticker} · ${run?.company || data.company || state.ticker}`;
         $('subheading').textContent = `Latest · 資料截至 ${run?.dataThrough || data.dataThrough || '未標示'}`;
-        const digest = info.endOfDay || info.weekly;
+        const digest = isV2 ? (run.runType === 'weekly' ? run.weeklyDigest : run.dailyDigest) : (detail().endOfDay || detail().weekly);
         const digestHtml = digest ? `<details><summary>${escapeHtml(digest.date)} · ${escapeHtml(digest.title)}</summary><div class="digest"><h4>可展開摘要</h4><ul>${(digest.points || []).slice(0, 5).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div></details>` : '';
-        $('content').innerHTML = `<section class="section"><h3>核心論述</h3><div class="thesis">${escapeHtml(run?.thesis || data.thesis)}</div><div class="grid"><div class="metric" data-tone="pattern"><div class="label">型態組合</div><p>${escapeHtml(run?.pattern || data.pattern)}</p></div><div class="metric" data-tone="wyckoff"><div class="label">Wyckoff 階段</div><p>${escapeHtml(run?.wyckoff || data.wyckoff)}</p></div><div class="metric" data-tone="gex"><div class="label">選擇權／GEX</div><p>${escapeHtml(run?.options || data.options)}</p></div></div>${digestHtml}</section><section class="section"><h3>基本面／新聞</h3><p>${escapeHtml(run?.business || data.business)}</p><p class="empty">完整內容依可用的日報／週報展開。</p></section>`;
+        const pattern = isV2 ? run.patternLabel : (run?.pattern || data.pattern);
+        const wyckoff = isV2 ? (run.wyckoffPhase?.daily || '日線 Wyckoff 待補。') : (run?.wyckoff || data.wyckoff);
+        const gex = isV2 ? (run.gexSummary?.displayText || (run.gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。')) : (run?.options || data.options);
+        const thesis = isV2 ? run.thesis : (run?.thesis || data.thesis);
+        const business = isV2 ? run.fundamentalsNews : (run?.business || data.business);
+        $('content').innerHTML = `<section class="section"><h3>核心論述</h3><div class="thesis">${escapeHtml(thesis)}</div><div class="grid"><div class="metric" data-tone="pattern"><div class="label">型態組合</div><p>${escapeHtml(pattern)}</p></div><div class="metric" data-tone="wyckoff"><div class="label">Wyckoff 階段</div><p>${escapeHtml(wyckoff)}</p></div><div class="metric" data-tone="gex"><div class="label">選擇權／GEX</div><p>${escapeHtml(gex)}</p></div></div>${digestHtml}</section><section class="section"><h3>基本面／新聞</h3><p>${escapeHtml(business)}</p><p class="empty">完整內容依可用的日報／週報展開。</p></section>`;
       }
       function renderHistory() {
         const data = datasets[state.ticker]; const rows = runs.filter((run) => run.ticker === state.ticker).sort((a, b) => b.analysisDate.localeCompare(a.analysisDate));
@@ -214,12 +236,12 @@
       function renderCoverage() {
         $('heading').textContent = 'Coverage';
         $('subheading').textContent = '新增、停用或移除 ticker；停用只離開選擇清單，移除保留歷史分析。';
-        $('content').innerHTML = `<section class="section"><h3>Coverage table</h3><form class="coverage-form" id="coverage-form"><input id="new-ticker" placeholder="Ticker，例如：AMD" maxlength="12" required><input id="new-company" placeholder="Company name" maxlength="48"><button class="action" type="submit">Add</button></form><div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${coverageRows().filter((row) => row.removed !== true).map((row) => `<tr><td><strong>${escapeHtml(row.ticker)}</strong></td><td>${escapeHtml(row.company || row.ticker)}</td><td>${escapeHtml(row.defaultView || 'daily')}</td><td class="${row.active === false ? 'status-inactive' : 'status-active'}">${row.active === false ? 'Inactive' : 'Active'}</td><td><button type="button" class="action" data-active="${row.active !== false}" data-toggle-ticker="${escapeHtml(row.ticker)}">${row.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(row.ticker)}">Remove</button></td></tr>`).join('')}</tbody></table></div></section>`;
+        $('content').innerHTML = `<section class="section"><h3>Coverage table</h3><form class="coverage-form" id="coverage-form"><input id="new-ticker" placeholder="Ticker，例如：AMD" maxlength="12" required><input id="new-company" placeholder="Company name" maxlength="48"><select id="new-group" aria-label="Coverage group"><option value="tracking">Tracking · 追蹤</option><option value="exploration">Exploration · 探索</option></select><button class="action" type="submit">Add</button></form><div class="table-wrap"><table><thead><tr><th>Ticker</th><th>Company</th><th>Group</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${['tracking', 'exploration'].map((group) => `<tr><td colspan="6"><strong>${coverageGroupLabel(group)}</strong></td></tr>${coverageRows().filter((row) => row.removed !== true && coverageGroup(row) === group).map((row) => `<tr><td><strong>${escapeHtml(row.ticker)}</strong></td><td>${escapeHtml(row.company || row.ticker)}</td><td>${escapeHtml(coverageGroupLabel(row))}</td><td>${escapeHtml(row.defaultView || 'daily')}</td><td class="${row.active === false ? 'status-inactive' : 'status-active'}">${row.active === false ? 'Inactive' : 'Active'}</td><td><button type="button" class="action" data-active="${row.active !== false}" data-toggle-ticker="${escapeHtml(row.ticker)}">${row.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(row.ticker)}">Remove</button></td></tr>`).join('')}`).join('')}</tbody></table></div></section>`;
         $('coverage-form').addEventListener('submit', (event) => {
           event.preventDefault();
           const ticker = $('new-ticker').value.trim().toUpperCase();
           if (!ticker) return;
-          coverageOverrides[ticker] = { ...(coverageRows().find((row) => row.ticker === ticker) || {}), ticker, company: $('new-company').value.trim() || ticker, active: true, hidden: false, removed: false, defaultView: 'daily' };
+          coverageOverrides[ticker] = { ...(coverageRows().find((row) => row.ticker === ticker) || {}), ticker, company: $('new-company').value.trim() || ticker, coverageGroup: $('new-group').value, active: true, defaultView: 'daily' };
           saveCoverage(); state.ticker = ticker; render();
         });
         document.querySelectorAll('[data-toggle-ticker]').forEach((button) => button.addEventListener('click', () => {
@@ -235,7 +257,7 @@
         }));
       }
       function field(row, name) { const key = Object.keys(row || {}).find((candidate) => candidate.toLowerCase() === name.toLowerCase()); return key ? row[key] : ''; }
-      function render() { renderDock(); renderRail(); renderLinks(); if (state.view === 'history') renderHistory(); else if (state.view === 'sources') renderSources(); else if (state.view === 'coverage') renderCoverage(); else if (datasets[state.ticker]) renderLatest(); else { $('heading').textContent = `${state.ticker} · 尚未有資料`; $('subheading').textContent = 'Coverage 已加入；等待下一次 Sheets／市場資料 refresh。'; $('content').innerHTML = '<section class="section"><p class="empty">此 ticker 已加入 Coverage，但目前尚未有圖表或分析資料。歷史資料不會因停用而刪除。</p></section>'; } }
+      function render() { renderDock(); renderRail(); renderLinks(); if (state.view === 'history') renderHistory(); else if (state.view === 'sources') renderSources(); else if (state.view === 'coverage') renderCoverage(); else if (datasets[state.ticker] || runs.some((run) => run.ticker === state.ticker)) renderLatest(); else { $('heading').textContent = `${state.ticker} · 尚未有資料`; $('subheading').textContent = 'Coverage 已加入；等待下一次 Sheets／市場資料 refresh。'; $('content').innerHTML = '<section class="section"><p class="empty">此 ticker 已加入 Coverage，但目前尚未有圖表或分析資料。歷史資料不會因停用而刪除。</p></section>'; } }
       document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.view === 'latest') {
           window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(state.ticker)}&view=daily`;

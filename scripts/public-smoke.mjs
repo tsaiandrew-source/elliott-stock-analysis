@@ -5,6 +5,7 @@ const routes = [
   '/',
   '/manifest.webmanifest',
   '/assets/elliott-plus-icon.svg',
+  '/chart-surface/analysis-packets-v2.js',
   '/data-model/home.html',
   '/data-model/app.html',
   '/chart-surface/index.html?ticker=NBIS&view=daily',

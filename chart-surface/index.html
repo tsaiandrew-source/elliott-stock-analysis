@@ -331,7 +331,7 @@
   <main class="shell" aria-label="Stock analysis chart surface">
     <header class="topbar">
       <div>
-        <h1 id="title">NBIS · Nebius Group</h1>
+        <h1 id="title">股票分析</h1>
       </div>
     </header>
 
@@ -443,9 +443,8 @@
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
+  <script src="analysis-packets-v2.js?v=20260908-v2"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="analysis-localization.js?open=20260908g"></script>
-  <script src="analysis-geometry.js?open=20260908h"></script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
@@ -519,15 +518,22 @@
           // Partial analysis remains usable even if its supplemental chart is unavailable.
         }
       }));
-      const benchmarkDatasets = contract.datasets?.benchmark || window.BENCHMARK_DATA || {};
-      const datasetTickers = new Set([...Object.keys(partialDatasets), ...Object.keys(benchmarkDatasets)]);
-      const datasets = Object.fromEntries([...datasetTickers].map((ticker) => [ticker, { ...(partialDatasets[ticker] || {}), ...(benchmarkDatasets[ticker] || {}) }]));
+      const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
-      const analysisGeometry = window.PROTOTYPE_ANALYSIS_GEOMETRY || {};
       const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
-      const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
-      const analysisRuns = (contract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
+      const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
+      const v2Batches = Object.values(irisV2.batches || {});
+      const v2Runs = v2Batches.flatMap((batch) => [
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
+      ]);
+      const analysisRunMap = new Map();
+      [...(contract.analysisRuns || []), ...v2Runs].forEach((run) => {
+        const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|');
+        if (key) analysisRunMap.set(key, run);
+      });
+      const analysisRuns = [...analysisRunMap.values()];
       const $ = (id) => document.getElementById(id);
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
       function getViewportWidth() {
@@ -536,15 +542,12 @@
       const query = new URLSearchParams(window.location.search);
       const normalizeTicker = (value) => String(value ?? '').trim().toUpperCase();
       const requestedTicker = normalizeTicker(query.get('ticker'));
-      const state = { ticker: requestedTicker || 'NBIS', view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
+      const packetCoverage = [...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }));
+      const baseCoverage = [...(contract.coverage || []), ...packetCoverage].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
+      const defaultTicker = requestedTicker || baseCoverage.find((item) => item.active !== false)?.ticker || Object.keys(datasets)[0] || '';
+      const state = { ticker: defaultTicker, view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
       $('ticker-menu-label').textContent = state.ticker;
       $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
-      const contractCoverage = contract.coverage || [];
-      const contractTickers = new Set(contractCoverage.map((item) => normalizeTicker(item.ticker)));
-      const supplementalCoverage = Object.entries(partialDatasets)
-        .filter(([ticker]) => !contractTickers.has(normalizeTicker(ticker)))
-        .map(([ticker, data]) => ({ ticker, company: data.company || ticker, exchange: data.exchange || '', active: true, defaultView: 'daily', latestChartDate: data.dataThrough || '' }));
-      const baseCoverage = [...contractCoverage, ...supplementalCoverage];
       let coverageOverrides = {};
       try { coverageOverrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { coverageOverrides = {}; }
       const coverageRows = () => {
@@ -568,139 +571,57 @@
       const eligibleRuns = (ticker) => {
         const cutoff = chartDataCutoff(ticker);
         const runs = tickerRuns(ticker);
-        return cutoff ? runs.filter((run) => !runDate(run) || runDate(run) <= cutoff) : runs;
+        return cutoff ? runs.filter((run) => run.schemaVersion === 'iris-analysis-contract-v2' || !runDate(run) || runDate(run) <= cutoff) : runs;
       };
-      const isIncompleteRun = (run) => /partial|pending|incomplete|not[_ -]?available|in[_ -]?progress/i.test(`${run?.status || ''} ${run?.dataStatus || ''} ${run?.patternStatus || ''}`);
-      const hasChinesePattern = (run) => /[\u3400-\u9fff]/.test(String(run?.patternLabel || run?.pattern || run?.primaryCandidate?.text || run?.patternCandidates?.primary?.text || ''));
       const latestDailyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
       const latestWeeklyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
-      const patternDailyRun = (ticker) => {
-        const daily = sortRuns(eligibleRuns(ticker).filter((run) => !isWeeklyRun(run)));
-        const latest = daily.find((run) => !isIncompleteRun(run) && hasChinesePattern(run)) || daily[0];
-        if (!latest) return null;
-        const hasPattern = Boolean(latest.patternLabel || latest.pattern || latest.primaryCandidate);
-        if (!hasPattern) return daily.find((run) => hasChinesePattern(run)) || daily[1] || latest;
-        return latest;
-      };
-      const parseStructured = (value) => {
-        if (value && typeof value === 'object') return value;
-        if (typeof value !== 'string' || !value.trim().startsWith('{')) return null;
-        try { return JSON.parse(value); } catch (_) { return null; }
-      };
-      const sidecarPatternText = (coordinates) => {
-        const typeLabels = {
-          double_bottom: '雙重底',
-          double_top: '雙重頂',
-          horizontal_channel: '水平通道',
-          descending_channel: '下降通道',
-          head_shoulders: '頭肩頂',
-          descending_triangle: '下降三角形',
-          ascending_triangle: '上升三角形',
-          inverse_head_shoulders: '逆頭肩底'
-        };
-        const stateLabels = {
-          forming: '形成中',
-          breakout_candidate: '突破候選',
-          breakout_confirmed: '突破確認',
-          retest_held: '回測守住',
-          rejected: '已否決'
-        };
-        if (!coordinates?.type) return '';
-        const label = typeLabels[coordinates.type] || '型態候選';
-        const state = stateLabels[coordinates.state] || '';
-        if (coordinates.watch_direction === 'up' && coordinates.state === 'breakout_candidate') return `看多${label}${state}`;
-        if (coordinates.watch_direction === 'down' && coordinates.state === 'breakout_candidate') return `看空${label}${state}`;
-        return `${label}${state}`;
-      };
-      const sidecarCandidate = (coordinates) => {
-        if (!coordinates?.type) return null;
-        const text = sidecarPatternText(coordinates);
-        const stateLabels = { forming: '形成中', breakout_candidate: '突破候選', breakout_confirmed: '突破確認', retest_held: '回測守住', rejected: '已否決' };
-        const confidence = Number(coordinates.confidence);
-        const state = stateLabels[coordinates.state] || '資料待補';
-        return {
-          text,
-          pattern: text,
-          status: `主候選 · ${state}${Number.isFinite(confidence) ? ` · 信心 ${confidence}` : ''}`,
-          confidence: Number.isFinite(confidence) ? confidence : null,
-          confidencePercent: Number.isFinite(confidence) ? `${confidence}%` : '',
-          direction: coordinates.watch_direction || coordinates.direction || 'flat',
-          geometry: coordinates.type,
-          coordinates,
-          callout: true
-        };
-      };
       const analysisOnlyDataset = (ticker) => {
         const dailyRun = latestDailyRun(ticker);
         const weeklyRun = latestWeeklyRun(ticker);
-        const patternRun = state.view === 'weekly' ? (weeklyRun || patternDailyRun(ticker)) : patternDailyRun(ticker);
         const run = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
-        if (!run && !patternRun) return null;
-        const selectedRun = run || patternRun;
-        const staticDataset = window.BENCHMARK_DATA?.[ticker] || {};
-        const savedDataset = { ...staticDataset, ...(datasets[ticker] || {}) };
-        const savedCandidates = staticDataset.patternCandidates || datasets[ticker]?.patternCandidates || {};
-        const hasLiveCoordinates = Boolean(savedCandidates.primary?.coordinates || savedCandidates.primary?.geometryCoordinates);
-        const sidecarCoordinates = !hasLiveCoordinates ? analysisGeometry[ticker]?.coordinates : null;
-        const sidecarPrimary = sidecarCandidate(sidecarCoordinates);
-        const runtimeCandidates = patternRun?.patternCandidates || {};
-        const runtimePrimary = runtimeCandidates.primary || patternRun?.primaryCandidate || {};
-        const runtimePrimaryIsChinese = /[\u3400-\u9fff]/.test(String(runtimePrimary.text || runtimePrimary.pattern || patternRun?.patternLabel || ''));
-        const candidateSource = runtimePrimaryIsChinese ? runtimePrimary : {};
-        const primaryCandidate = {
-          ...(savedCandidates.primary || {}),
-          ...(sidecarPrimary || {}),
-          ...(sidecarCoordinates ? { coordinates: sidecarCoordinates } : {}),
-          ...candidateSource,
-          geometry: candidateSource.geometry || savedCandidates.primary?.geometry || sidecarPrimary?.geometry || 'none'
-        };
-        const patternText = runtimePrimaryIsChinese
-          ? (patternRun?.patternLabel || patternRun?.pattern || savedCandidates.primary?.text || savedDataset.pattern)
-          : (sidecarPrimary?.text || savedCandidates.primary?.text || savedDataset.pattern || patternRun?.pattern || '已有文字分析；技術圖表資料待補。');
-        const secondarySource = runtimeCandidates.secondary || (!patternRun?.patternCandidates ? savedCandidates.secondary : null);
-        const patternCandidates = {
-          primary: primaryCandidate,
-          ...(secondarySource ? { secondary: { ...(savedCandidates.secondary || {}), ...secondarySource } } : {})
-        };
-        const confidence = Number.isFinite(Number(patternRun?.confidence)) && Number(patternRun.confidence) > 0
-          ? Number(patternRun.confidence)
-          : (sidecarPrimary?.confidence || null);
-        const text = patternText;
-        const businessEvidence = selectedRun?.businessEvidence || {};
-        const dailyDigest = parseStructured(dailyRun?.dailyDigest);
-        const weeklyDigest = parseStructured(weeklyRun?.weeklyDigest) || parseStructured(dailyRun?.weeklyDigest);
-        const dailyDetails = dailyRun?.digestDetails || {};
-        const weeklyDetails = weeklyRun?.digestDetails || {};
+        if (!run) return null;
+        const selectedRun = run;
+        const patternRun = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
+        const primary = patternRun.primaryCandidate || null;
+        const secondary = patternRun.secondaryCandidate || null;
+        const patternCandidates = primary ? { primary: { ...primary, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
+        const dailyDigest = dailyRun?.dailyDigest || null;
+        const weeklyDigest = weeklyRun?.weeklyDigest || dailyRun?.weeklyDigest || null;
         const digestDetails = {
-          midday: dailyDetails.midday || dailyDigest?.midday || null,
-          endOfDay: dailyDetails.endOfDay || dailyDigest?.endOfDay || null,
-          weekly: weeklyDetails.weekly || weeklyDigest || null
+          midday: dailyDigest?.midday || null,
+          endOfDay: dailyDigest?.endOfDay || null,
+          weekly: weeklyDigest || null
         };
         const gexSummary = dailyRun?.gexSummary || selectedRun?.gexSummary || null;
-        const hasStructuredDisplay = Boolean(selectedRun?.businessEvidence || dailyDetails.midday || dailyDetails.endOfDay || weeklyDetails.weekly || dailyDigest?.midday || dailyDigest?.endOfDay || weeklyDigest);
+        const businessEvidence = selectedRun.businessEvidence || {};
         return {
           company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
           exchange: coverageRows().find((item) => item.ticker === ticker)?.exchange || '',
           dataThrough: selectedRun.dataThrough || selectedRun.analysisDate || '',
           sourceCutoff: selectedRun.dataThrough || selectedRun.analysisDate || '',
-          chartSource: selectedRun.chartSource || '',
-          sourceUrl: selectedRun.chartSource || '',
-          pattern: text,
-          patternStatus: patternRun?.status || analysisGeometry[ticker]?.status || 'partial',
-          confidence,
+          chartSource: '',
+          sourceUrl: selectedRun.sourceEvidence?.find((item) => item.url)?.url || '',
+          pattern: patternRun.patternLabel,
+          patternStatus: patternRun.status,
           patternCandidates,
-          thesis: selectedRun.thesis || '已有部分分析；技術圖表資料待補。',
-          wyckoff: patternRun?.wyckoff || patternRun?.wyckoffPhase?.daily || 'Pending',
-          weeklyWyckoff: weeklyRun?.weeklyWyckoff || weeklyRun?.wyckoffPhase?.weekly || patternRun?.weeklyWyckoff || patternRun?.wyckoffPhase?.weekly || 'Pending',
+          thesis: selectedRun.thesis,
+          wyckoff: patternRun.wyckoffPhase?.daily || '日線 Wyckoff 待補。',
+          weeklyWyckoff: patternRun.wyckoffPhase?.weekly || '週線 Wyckoff 待補。',
           wyckoffGate: null,
-          patternGate: candidateSource.confirmation || primaryCandidate.confirmation || savedDataset.patternGate,
-          invalidation: candidateSource.invalidation || primaryCandidate.invalidation || savedDataset.invalidation,
-          options: gexSummary?.displayText || dailyRun?.options || selectedRun.options || '選擇權／GEX 資料待補。',
-          business: selectedRun.business || '基本面／新聞分析已載入最新紀錄。',
-          overall: hasStructuredDisplay ? { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: selectedRun.cadence || '每次收盤／重大事件', thesis: selectedRun.thesis || '已有部分分析；整體論述待補。', businessSummary: selectedRun.fundamentalsNews || selectedRun.business || '基本面／新聞分析待補。', proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' } : null,
+          patternGate: selectedRun.confirmation,
+          invalidation: selectedRun.invalidation,
+          options: gexSummary?.displayText || (gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
+          business: selectedRun.fundamentalsNews,
+          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' },
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
+          sourceEvidence: selectedRun.sourceEvidence || [],
+          missingFields: selectedRun.missingFields || [],
+          recoveryTiming: selectedRun.recoveryTiming || null,
+          dataStatus: selectedRun.dataStatus,
+          status: selectedRun.status,
+          chartRenderable: selectedRun.chartRenderable === true,
           freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`,
           gexSource: null,
           gexViews: {},
@@ -953,21 +874,34 @@
 
       function viewBars(data) { return state.view === 'weekly' ? weeklyBars(data.bars, state.ticker) : data.bars; }
 
-      function gexView(data) { return data.gexViews?.[state.gexExpiry] || data.gexViews?.current || { label: '本週到期', expiry: '未標示', magnet: state.ticker === 'NBIS' ? 200 : 35.5, flip: state.ticker === 'NBIS' ? 200 : 35.5, callWall: state.ticker === 'NBIS' ? 220 : 36, putWall: state.ticker === 'NBIS' ? 190 : 35, strikes: [], exposure: [], text: data.options, freshness: data.freshness }; }
+      function gexView(data) {
+        const summary = data.gexSummary || {};
+        const expiry = state.gexExpiry === 'next' ? summary.nextExpiration : summary.currentExpiration;
+        return {
+          label: state.gexExpiry === 'next' ? '下週到期' : '本週到期',
+          expiry: expiry?.expiry || '未標示',
+          magnet: expiry?.magnet ?? null,
+          flip: expiry?.gammaFlip ?? null,
+          callWall: expiry?.callWall ?? null,
+          putWall: expiry?.putWall ?? null,
+          strikes: expiry?.strikes || [],
+          exposure: expiry?.exposure || [],
+          text: summary.displayText || (summary.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
+          freshness: summary.dataThrough || data.freshness,
+          status: summary.status || 'pending'
+        };
+      }
 
       function candidatesSimilar(data) {
         const primary = data.patternCandidates?.primary;
         const secondary = data.patternCandidates?.secondary;
         if (!primary || !secondary) return false;
         if (primary.geometry && primary.geometry === secondary.geometry) return true;
-        const behavior = (text) => String(text || '').split('｜').slice(1).join('｜').replace(/主候選|次候選|週線|日線|信心\s*\d+/g, '').replace(/\s+/g, '').trim();
-        return behavior(primary.text) !== '' && behavior(primary.text) === behavior(secondary.text);
+        return false;
       }
 
       function numericPatternLevel(value) {
-        if (Number.isFinite(Number(value))) return Number(value);
-        const match = String(value ?? '').match(/-?\$?\s*(\d+(?:\.\d+)?)/);
-        return match ? Number(match[1]) : null;
+        return typeof value === 'number' && Number.isFinite(value) ? value : null;
       }
 
       function normalizePatternLevels(pattern) {
@@ -984,153 +918,32 @@
         // use the primary thesis when the alternative is not materially
         // distinct, rather than relabeling the secondary candidate as primary.
         const candidate = data.patternCandidates?.primary || data.patternCandidates?.secondary;
-        if (!candidate) return normalizePatternLevels({ label: '主候選', text: data.pattern || '型態資料待補', status: data.patternStatus || '資料待補', confirmation: data.patternGate, invalidation: data.invalidation, geometry: 'none', callout: false });
+        if (!candidate) return normalizePatternLevels({ label: '主候選', text: data.pattern, status: data.patternStatus, confirmation: data.patternGate, invalidation: data.invalidation, geometry: 'none', callout: false });
         const stateText = String(candidate.status || '').replace(/^(主候選|次候選)\s*·\s*/, '');
-        return normalizePatternLevels({ ...candidate, label: '主候選', text: candidate.text || candidate.pattern || data.pattern || '型態資料待補', status: `主候選 · ${stateText || '資料待補'}`, callout: false });
+        return normalizePatternLevels({ ...candidate, label: '主候選', status: `主候選 · ${stateText}`, callout: false });
       }
 
       function getPattern(data) {
         if (state.view === 'weekly') return weeklyPattern(data);
         const candidates = data.patternCandidates || {};
         const selected = candidates[candidatesSimilar(data) ? 'primary' : state.candidate] || candidates.primary;
-        const fallback = {
+        return normalizePatternLevels(selected || {
           label: '主候選',
-          text: data.pattern || '型態資料待補',
-          status: data.patternStatus || '資料待補',
+          text: data.pattern,
+          status: data.patternStatus,
           confirmation: data.patternGate,
           invalidation: data.invalidation,
           geometry: 'none',
           callout: false
-        };
-        const result = selected || fallback;
-        return normalizePatternLevels({
-          ...fallback,
-          ...result,
-          label: result.label || fallback.label,
-          text: result.text || result.pattern || fallback.text,
-          status: result.status || fallback.status
         });
       }
 
-      function patternMarkerText(pattern, data) {
-        return String(pattern?.text || pattern?.pattern || data?.pattern || '型態資料待補').split('｜')[0].trim();
-      }
-
       function patternGeometry(bars, ticker, pattern) {
-        const byDate = Object.fromEntries(bars.map((bar) => [bar.date, bar]));
-        const current = bars.at(-1);
-        if (!current) return [];
-        const coordinates = pattern?.coordinates || pattern?.geometryCoordinates;
-        if (coordinates?.neckline && coordinates.start_date && coordinates.breakout_date) {
-          const start = byDate[coordinates.start_date];
-          const breakout = byDate[coordinates.breakout_date];
-          const slope = Number(coordinates.neckline.slope_per_bar);
-          const intercept = Number(coordinates.neckline.intercept);
-          const startIndex = Number(coordinates.start_index);
-          const breakoutIndex = Number(coordinates.event_index);
-          if (start && breakout && Number.isFinite(slope) && Number.isFinite(intercept) && Number.isFinite(startIndex) && Number.isFinite(breakoutIndex)) {
-            const currentIndex = breakoutIndex + Math.max(0, bars.length - 1 - bars.indexOf(breakout));
-            return [
-              { time: start.time, value: slope * startIndex + intercept },
-              { time: breakout.time, value: slope * breakoutIndex + intercept },
-              { time: current.time, value: slope * currentIndex + intercept }
-            ];
-          }
-        }
-        const coordinateLine = (band) => {
-          const slope = Number(coordinates?.[band]?.slope_per_bar);
-          const intercept = Number(coordinates?.[band]?.intercept);
-          if (!coordinates?.[band] || !Number.isFinite(slope) || !Number.isFinite(intercept) || !coordinates.start_date) return [];
-          const start = byDate[coordinates.start_date];
-          const end = (coordinates.fit_cutoff && byDate[coordinates.fit_cutoff]) || (coordinates.breakout_date && byDate[coordinates.breakout_date]) || current;
-          const startIndex = Number(coordinates.start_index);
-          const endIndex = Number(coordinates.fit_end_index ?? coordinates.event_index ?? startIndex + Number(coordinates.span_bars || 0));
-          if (!start || !end || !Number.isFinite(startIndex) || !Number.isFinite(endIndex)) return [];
-          return [{ time: start.time, value: slope * startIndex + intercept }, { time: end.time, value: slope * endIndex + intercept }, { time: current.time, value: slope * (endIndex + Math.max(0, bars.length - 1 - bars.indexOf(end))) + intercept }];
-        };
-        if (coordinates?.upper && coordinates?.lower) return coordinateLine('upper');
-        if (coordinates?.type === 'double_bottom' || coordinates?.type === 'double_top') {
-          const startIndex = Math.max(0, bars.findIndex((bar) => bar.date === coordinates.start_date));
-          const endIndex = Math.min(bars.length - 1, startIndex + Number(coordinates.span_bars || 0));
-          const window = bars.slice(startIndex, endIndex + 1);
-          if (window.length >= 6) {
-            const pivot = Math.floor(window.length / 2);
-            const left = window.slice(0, pivot).reduce((best, bar) => coordinates.type === 'double_bottom' ? (bar.low < best.low ? bar : best) : (bar.high > best.high ? bar : best));
-            const right = window.slice(pivot).reduce((best, bar) => coordinates.type === 'double_bottom' ? (bar.low < best.low ? bar : best) : (bar.high > best.high ? bar : best));
-            const middle = window.slice(window.indexOf(left) + 1, window.indexOf(right)).reduce((best, bar) => coordinates.type === 'double_bottom' ? (bar.high > best.high ? bar : best) : (bar.low < best.low ? bar : best), window[Math.floor(window.length / 2)]);
-            const value = (bar) => coordinates.type === 'double_bottom' ? bar.low : bar.high;
-            const middleValue = coordinates.type === 'double_bottom' ? middle.high : middle.low;
-            return [{ time: left.time, value: value(left) }, { time: middle.time, value: middleValue }, { time: right.time, value: value(right) }, { time: current.time, value: current.close }];
-          }
-        }
-        if (state.view === 'weekly') {
-          if (ticker === 'NBIS' && pattern.geometry === 'doubleBottom') {
-            const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
-            return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.high : index === 2 ? bar.low : index === 3 ? bar.close : bar.low }));
-          }
-          if (ticker === 'NBIS' && pattern.geometry === 'headShoulders') {
-            const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
-            return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.high : index === 2 ? bar.high : index === 3 ? bar.close : bar.high }));
-          }
-          if (ticker === 'IREN' && pattern.geometry === 'doubleTop') {
-            const points = [bars[Math.max(0, bars.length - 8)], bars[Math.max(0, bars.length - 5)], bars[Math.max(0, bars.length - 3)], current];
-            return points.map((bar, index) => ({ time: bar.time, value: index === 1 ? bar.low : index === 3 ? bar.close : bar.high }));
-          }
-        }
-        if (ticker === 'NBIS' && pattern.geometry === 'doubleBottom') {
-          const firstLow = byDate['7/29/2026'];
-          const middleHigh = byDate['8/3/2026'];
-          const secondLow = byDate['8/10/2026'];
-          if (!firstLow || !middleHigh || !secondLow) return [];
-          return [{ time: firstLow.time, value: firstLow.low }, { time: middleHigh.time, value: middleHigh.high }, { time: secondLow.time, value: secondLow.low }, { time: current.time, value: current.close }];
-        }
-        if (ticker === 'NBIS' && pattern.geometry === 'headShoulders') {
-          const leftShoulder = byDate['8/3/2026'];
-          const head = byDate['8/14/2026'];
-          const rightShoulder = byDate['8/21/2026'];
-          if (!leftShoulder || !head || !rightShoulder) return [];
-          return [{ time: leftShoulder.time, value: leftShoulder.high }, { time: head.time, value: head.high }, { time: rightShoulder.time, value: rightShoulder.high }, { time: current.time, value: current.close }];
-        }
-        if (ticker === 'IREN' && pattern.geometry === 'doubleTop') {
-          const firstPeak = byDate['7/20/2026'];
-          const middleLow = byDate['7/29/2026'];
-          const secondPeak = byDate['8/13/2026'];
-          if (!firstPeak || !middleLow || !secondPeak) return [];
-          return [{ time: firstPeak.time, value: firstPeak.high }, { time: middleLow.time, value: middleLow.low }, { time: secondPeak.time, value: secondPeak.high }, { time: current.time, value: current.close }];
-        }
-        if (ticker === 'ONDS' && /head[ -]?and[ -]?shoulders|頭肩頂/i.test(`${pattern?.text || ''} ${pattern?.status || ''}`)) {
-          const leftShoulder = byDate['7/22/2026'];
-          const head = byDate['8/12/2026'];
-          const rightShoulder = byDate['8/21/2026'];
-          const breakout = byDate['8/28/2026'];
-          if (!leftShoulder || !head || !rightShoulder || !breakout) return [];
-          return [{ time: leftShoulder.time, value: leftShoulder.high }, { time: head.time, value: head.high }, { time: rightShoulder.time, value: rightShoulder.high }, { time: breakout.time, value: breakout.close }, { time: current.time, value: current.close }];
-        }
-        return [];
+        const points = Array.isArray(pattern?.points) ? pattern.points : [];
+        return points.filter((point) => point && Number.isFinite(point.time) && Number.isFinite(point.value));
       }
 
-      function patternGeometrySecondary(bars, pattern) {
-        const coordinates = pattern?.coordinates || pattern?.geometryCoordinates;
-        if (!coordinates?.upper || !coordinates?.lower) return [];
-        const byDate = Object.fromEntries(bars.map((bar) => [bar.date, bar]));
-        const start = byDate[coordinates.start_date];
-        const end = (coordinates.fit_cutoff && byDate[coordinates.fit_cutoff]) || (coordinates.breakout_date && byDate[coordinates.breakout_date]) || bars.at(-1);
-        const slope = Number(coordinates.lower.slope_per_bar);
-        const intercept = Number(coordinates.lower.intercept);
-        const startIndex = Number(coordinates.start_index);
-        const endIndex = Number(coordinates.fit_end_index ?? coordinates.event_index ?? startIndex + Number(coordinates.span_bars || 0));
-        if (!start || !end || !Number.isFinite(slope) || !Number.isFinite(intercept) || !Number.isFinite(startIndex) || !Number.isFinite(endIndex)) return [];
-        return [{ time: start.time, value: slope * startIndex + intercept }, { time: end.time, value: slope * endIndex + intercept }, { time: bars.at(-1).time, value: slope * (endIndex + Math.max(0, bars.length - 1 - bars.indexOf(end))) + intercept }];
-      }
-
-      function phaseData(bars, ticker) {
-        const indices = ticker === 'NBIS' ? [0.16, 0.56, 0.80] : [0.16, 0.60, 0.86];
-        const descriptions = ticker === 'NBIS' ? ['啟動', '整理', 'UTAD候選'] : ['吸收', '整理', 'Spring候選'];
-        return indices.map((ratio, index) => ({
-          time: bars[Math.min(bars.length - 1, Math.round((bars.length - 1) * ratio))].time,
-          label: `Phase ${String.fromCharCode(65 + index)} | ${descriptions[index]}`
-        }));
-      }
+      function phaseData() { return []; }
 
       function drawPhaseOverlay(bars, phases = phaseData(bars, state.ticker)) {
         const overlay = $('phase-overlay');
@@ -1162,9 +975,6 @@
         const values = bars.flatMap((bar) => [bar.low, bar.high]);
         const gex = gexView(data);
         values.push(pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
-        if (state.ticker === 'IREN') {
-          values.push(41.44 + (bars.length - 1) * 0.381, 19.29 + (bars.length - 1) * 0.408, 41.44, 19.29);
-        }
         const numericValues = values.map(Number).filter(Number.isFinite);
         const min = Math.min(...numericValues);
         const max = Math.max(...numericValues);
@@ -1267,9 +1077,16 @@
         const height = 390;
         const labelSize = compactGex ? 16 : 20;
         const valueSize = compactGex ? 14 : 18;
-        const profiles = [data.gexViews?.current, data.gexViews?.next].filter(Boolean);
-        if (!profiles.length || profiles.every((profile) => !Array.isArray(profile.strikes) || !profile.strikes.length || !Array.isArray(profile.exposure) || !profile.exposure.length)) {
-          container.innerHTML = '<div class="chart-empty-message">此 ticker 尚無可核驗的選擇權／GEX pressure map；資料補齊後會在這裡顯示。</div>';
+        const profiles = [
+          { ...gexView(data), ...data.gexViews?.current },
+          { ...gexView(data), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
+        ];
+        const renderableProfiles = profiles.filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length);
+        if (!renderableProfiles.length) {
+          const summary = data.gexSummary || {};
+          const statusText = summary.status === 'not_applicable' ? 'GEX 資料不適用。' : summary.displayText || 'GEX 狀態待補。';
+          const slot = (label, item) => `<article class="gex-pending-card"><strong>${label}</strong><span>${escapeHtml(item?.expiry || '未標示')}</span><p>${escapeHtml(item?.status === 'not_applicable' ? 'GEX 資料不適用。' : statusText)}</p></article>`;
+          container.innerHTML = `<div class="chart-empty-message"><strong>GEX ${summary.status === 'not_applicable' ? 'not_applicable' : 'pending'}</strong><p>${slot('本週到期', summary.currentExpiration)}${slot('下週到期', summary.nextExpiration)}</p><p>${escapeHtml((summary.limitations || []).join('；') || '目前沒有可繪製的 currentExpiration／nextExpiration 數值。')}</p></div>`;
           return;
         }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
@@ -1328,10 +1145,10 @@
           const rail = insight ? `<div class="gex-analysis-rail"><div class="gex-analysis-head"><strong>${gex.label} · 讀法</strong><span>${insight.confidence}</span></div><p>${insight.plain}</p><div class="gex-level-tags">${levelTags}</div><div class="gex-analysis-row"><span class="label">路徑</span><p>${insight.path}</p></div><div class="gex-analysis-row"><span class="label">確認</span><p>${insight.confirm}</p></div><div class="gex-analysis-row"><span class="label">失效</span><p>${insight.invalidate}</p></div><details class="gex-analysis-detail"><summary>判讀依據</summary><ul>${detailList}</ul></details></div>` : '';
           return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>Gamma exposure profile</strong> · ${gex.label} · ${gex.expiry}</span><span>綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma exposure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
         };
-        container.innerHTML = `${renderPanel(data.gexViews?.current, 'current', sharedDomain)}${renderPanel(data.gexViews?.next, 'next', sharedDomain)}<p class="gex-profile-disclaimer">資料限制：本圖以 unsigned benchmark pressure profile 呈現；Magnet／Flip／Walls 為分析參考線，不代表 signed dealer GEX、必然磁吸、交易目標或即時交易訊號。完整來源、計算方法與 attribution 見右側「來源追溯」。</p>`;
+        container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}<p class="gex-profile-disclaimer">資料限制：${escapeHtml((data.gexSummary?.limitations || []).join('；') || '目前僅顯示可追溯的 GEX 欄位，不將缺失資料推測為交易訊號。')}</p>`;
         } catch (error) {
           console.error('GEX profile render failed', error);
-          container.innerHTML = '<div class="chart-error">GEX pressure profile could not be rendered from the current benchmark rows.</div>';
+          container.innerHTML = '<div class="chart-error">GEX 圖層目前無法由明確欄位繪製。</div>';
         }
       }
 
@@ -1342,7 +1159,7 @@
           ...rawData,
           ...analysisOverlay,
           bars: rawData.bars?.length ? rawData.bars : analysisOverlay.bars,
-          gexViews: Object.keys(rawData.gexViews || {}).length ? rawData.gexViews : analysisOverlay.gexViews,
+          gexViews: analysisOverlay.gexViews || {},
           company: rawData.company || analysisOverlay.company,
           exchange: rawData.exchange || analysisOverlay.exchange,
           chartSource: rawData.chartSource || analysisOverlay.chartSource,
@@ -1395,7 +1212,7 @@
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternMarkerText(pattern, data) },
+          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
@@ -1431,7 +1248,6 @@
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
         layerSeries.patternGeometry = addLine('patternGeometry', patternGeometry(bars, state.ticker, pattern), colors.pattern, 3, L.LineStyle.Solid);
-        layerSeries.patternGeometrySecondary = addLine('patternGeometrySecondary', patternGeometrySecondary(bars, pattern), colors.pattern, 2, L.LineStyle.Solid);
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
         layerSeries.wyckoffGate = addLine('wyckoffGate', levelData(bars, data.wyckoffGate), colors.wyckoff, 2);
@@ -1439,27 +1255,11 @@
         layerSeries.gexFlip = addLine('gexFlip', levelData(bars, gex.flip), colors.gex, 3, L.LineStyle.Dotted);
         layerSeries.gexCallWall = addLine('gexCallWall', levelData(bars, gex.callWall), colors.patternConfirmation, 2, L.LineStyle.Dashed);
         layerSeries.gexPutWall = addLine('gexPutWall', levelData(bars, gex.putWall), colors.patternInvalidation, 2, L.LineStyle.Dashed);
-        if (state.ticker === 'IREN') {
-          const upper = bars.map((bar, i) => ({ time: bar.time, value: 41.44 + (bars.length - 1 - i) * 0.381 }));
-          const lower = bars.map((bar, i) => ({ time: bar.time, value: 19.29 + (bars.length - 1 - i) * 0.408 }));
-          layerSeries.channelUpper = addLine('channelUpper', upper, colors.pattern, 2, L.LineStyle.Solid);
-          layerSeries.channelLower = addLine('channelLower', lower, colors.pattern, 1, L.LineStyle.Solid);
-        }
         freezePriceFrame(bars, data, pattern);
         freezeIndicatorFrame(rsiSeries.value, rsi.map((item) => item.value), 0, 100);
         const macdValues = [...macd.macd.map((item) => item.value), ...macd.signal.map((item) => item.value), ...histogram.map((item) => item.value), 0];
         freezeIndicatorFrame(macdSeries.macd, macdValues);
         chart.timeScale().fitContent();
-        if (state.view === 'daily') {
-          // Keep the full history available for horizontal scrolling, but open
-          // on roughly 3–4 months of completed daily sessions.
-          const dailyWindowBars = 80;
-          const lastIndex = bars.length - 1;
-          chart.timeScale().setVisibleLogicalRange({
-            from: Math.max(0, lastIndex - dailyWindowBars + 1),
-            to: lastIndex + 2
-          });
-        }
         setPaneLayout();
         syncIndicatorRanges();
         chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
@@ -1484,7 +1284,7 @@
         const pattern = getPattern(datasets[state.ticker]);
         const bars = viewBars(datasets[state.ticker]);
         markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternMarkerText(pattern, datasets[state.ticker]) },
+          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
@@ -1498,24 +1298,13 @@
         const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
         $('chart-meta').textContent = isGex ? `GEX · 本週／下週到期 · ${gex.freshness}` : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + '資料截至 ' + data.dataThrough + ' · ' + data.sourceCutoff;
         const detail = analysisDetails[state.ticker] || {};
-        const staticDetail = window.BENCHMARK_ANALYSIS_DETAILS?.[state.ticker] || {};
         const businessDetails = $('business-details');
         const runtimeOverall = data.overall || {};
-        const savedOverall = { ...(staticDetail.overall || {}), ...(detail.overall || {}) };
-        const preferValue = (value, fallback) => value && value !== '—' ? value : fallback;
-        const overall = {
-          updated: preferValue(runtimeOverall.updated, savedOverall.updated),
-          cadence: preferValue(runtimeOverall.cadence, savedOverall.cadence),
-          thesis: preferValue(runtimeOverall.thesis, savedOverall.thesis),
-          businessSummary: preferValue(runtimeOverall.businessSummary, savedOverall.businessSummary),
-          proved: preferValue(runtimeOverall.proved, savedOverall.proved),
-          unproved: preferValue(runtimeOverall.unproved, savedOverall.unproved),
-          nextTest: preferValue(runtimeOverall.nextTest, savedOverall.nextTest)
-        };
+        const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
-        $('thesis').textContent = overall?.thesis || data.thesis || '目前僅有市場 K 線資料；文字分析待載入。';
+        $('thesis').textContent = overall?.thesis || data.thesis;
         $('thesis-refresh').textContent = hasOverall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
-        $('business').textContent = overall?.businessSummary || data.business || '基本面／新聞分析待補。';
+        $('business').textContent = overall?.businessSummary || data.business;
         $('business-proved').textContent = overall?.proved || '—';
         $('business-unproved').textContent = overall?.unproved || '—';
         $('business-next-test').textContent = overall?.nextTest || '—';
@@ -1527,27 +1316,19 @@
           return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p></article></div></details>`;
         };
         const runtimeDigests = data.digestDetails || {};
-        const savedDigests = {
-          midday: detail.midday || staticDetail.midday || null,
-          endOfDay: detail.endOfDay || staticDetail.endOfDay || null,
-          weekly: detail.weekly || staticDetail.weekly || null
-        };
-        // A live run can be intentionally partial. Merge each lane separately
-        // so an empty midday/EOD/weekly field never erases the last complete
-        // digest that is still valid for that cadence.
         const activeDigests = {
-          midday: runtimeDigests.midday || savedDigests.midday || null,
-          endOfDay: runtimeDigests.endOfDay || savedDigests.endOfDay || null,
-          weekly: runtimeDigests.weekly || savedDigests.weekly || null
+          midday: runtimeDigests.midday || null,
+          endOfDay: runtimeDigests.endOfDay || null,
+          weekly: runtimeDigests.weekly || null
         };
         businessDetails.innerHTML = renderDigest(activeDigests.midday, 'midday') + renderDigest(activeDigests.endOfDay, 'endOfDay') + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
         const historyPanel = $('analysis-history');
         const history = data.analysisHistory || analysisRuns.filter((run) => run.ticker === state.ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')));
         const historyEntries = history.map((run) => {
-          const type = run.runType === 'latest' ? '最新' : run.runType === 'weekly' ? '週線' : '歷史';
-          const confidence = localizer.confidenceDisplay ? localizer.confidenceDisplay(run) : (run.confidencePercent || run.confidence || '—');
-          const pattern = localizer.compactPattern ? localizer.compactPattern(run) : (run.patternLabel || run.pattern || '—');
+          const type = run.runType === 'latest' ? '最新' : run.runType === 'weekly' ? '週線' : run.runType === 'daily' ? '日線' : '歷史';
+          const confidence = run.confidencePercent == null ? '—' : `${run.confidencePercent}%`;
+          const pattern = run.patternLabel || '—';
           return `<div class="analysis-history-entry"><strong>${escapeHtml(run.analysisDate || run.dataThrough || '—')}</strong><span class="history-meta"> · ${escapeHtml(type)} · 型態 ${escapeHtml(pattern)} · 信心 ${escapeHtml(confidence)}</span><p>${escapeHtml(run.thesis || run.pattern || '—')}</p></div>`;
         }).join('');
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
@@ -1555,7 +1336,7 @@
         $('pattern').textContent = pattern.text;
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         const wyckoffText = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
-        $('wyckoff').textContent = localizer.localizeWyckoff ? (localizer.localizeWyckoff(wyckoffText) || '資料待補') : (wyckoffText || '資料待補');
+        $('wyckoff').textContent = wyckoffText;
         $('pattern-gate').textContent = Number.isFinite(pattern.confirmation) ? '$' + pattern.confirmation.toFixed(2) : '—';
         $('invalidation').textContent = Number.isFinite(pattern.invalidation) ? '$' + pattern.invalidation.toFixed(2) : '—';
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
@@ -1576,11 +1357,9 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        const gexOverview = analysisDetails[state.ticker]?.gex?.overview;
-        const localizedOptions = localizer.localizeOptions ? (localizer.localizeOptions(data.options) || '選擇權／GEX 資料待補。') : (data.options || '選擇權／GEX 資料待補。');
-        $('options').textContent = isGex ? (gexOverview || `${data.gexViews?.current?.text || gex.text} ${data.gexViews?.next?.text || ''}`) : localizedOptions;
-        $('freshness').textContent = isGex ? `${data.gexViews?.current?.freshness || gex.freshness} · ${data.gexViews?.next?.freshness || ''}` : (data.freshness || `市場資料截至 ${data.dataThrough || '—'}；分析資料待補。`);
-        $('contract-status').textContent = `資料契約 ${contract.contractVersion || 'legacy-seed'} · ${contract.mode === 'sheets-csv-import' ? 'Google Sheets CSV import' : 'local seed'}`;
+        $('options').textContent = isGex ? gex.text : data.options;
+        $('freshness').textContent = isGex ? gex.freshness : data.freshness;
+        $('contract-status').textContent = `資料契約 ${irisV2.schemaVersion || contract.contractVersion || 'legacy-seed'} · ${contract.mode === 'sheets-csv-import' ? 'Google Sheets CSV import' : 'local seed'}`;
         const sourceSummary = $('source-summary');
         const sourceEvidence = $('source-evidence');
         const gexSource = data.gexSource;
@@ -1591,13 +1370,13 @@
           $('source-link').href = gexSource.url;
           $('source-link').textContent = '開啟 GEX 原始資料來源';
         } else {
-          sourceSummary.textContent = data._partialMarketData ? '市場 K 線已載入；文字分析、選擇權與 GEX 來源待補。' : '圖表與分析紀錄仍連結至試作 workbook 的來源目錄及 manifest／hash。';
-          sourceEvidence.hidden = true;
-          sourceEvidence.replaceChildren();
-          const marketSource = data.sourceUrl || data.marketSource || '';
-          $('source-link').hidden = !marketSource;
-          $('source-link').href = marketSource || '#';
-          $('source-link').textContent = marketSource ? '開啟市場資料來源' : '市場來源待補';
+          const evidence = data.sourceEvidence || [];
+          sourceSummary.textContent = evidence.length ? 'Iris v2 sourceEvidence · 僅顯示 packet 提供的公開來源與截止日期。' : '目前沒有可顯示的來源證據。';
+          sourceEvidence.hidden = !evidence.length;
+          sourceEvidence.innerHTML = evidence.length ? `<span class="label">來源證據</span><ul>${evidence.map((item) => `<li>${escapeHtml(item.label || '來源')} · ${escapeHtml(item.cutoff || '未標示')}${item.url ? ` · <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">開啟來源</a>` : ''}</li>`).join('')}</ul>` : '';
+          $('source-link').href = evidence.find((item) => item.url)?.url || data.sourceUrl || '#';
+          $('source-link').textContent = evidence.some((item) => item.url) ? '開啟市場資料來源' : '沒有公開來源連結';
+          $('source-link').hidden = !evidence.some((item) => item.url);
         }
         $('pattern-combo').hidden = isGex;
         $('structure-panel').hidden = isGex;
@@ -1618,7 +1397,7 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        $('chart-notice').textContent = isGex ? 'GEX 目前使用 benchmark pressure map；signed GEX 若不可得會明確標示，不把未簽名壓力牆當成精確 Gamma Flip。' : state.ticker === 'IREN' ? '選擇權／GEX 圖層刻意標示為早於目前技術分析 session。' : data._partialMarketData ? `市場 K 線已更新至 ${data.dataThrough || '—'}；文字分析與 GEX 尚未載入，資料補齊後會自動顯示。` : `K 線 OHLCV 已更新至 ${data.dataThrough || '—'}；文字分析與日報／選擇權沿用各自的實際截止日。`;
+        $('chart-notice').textContent = isGex ? (data.gexSummary?.displayText || 'GEX 狀態待補。') : data.status === 'partial-safe' ? `此 ticker 為 partial-safe；${(data.missingFields || []).join('；') || '缺失欄位已明確列出。'}` : '';
         $('price-time-axis').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;

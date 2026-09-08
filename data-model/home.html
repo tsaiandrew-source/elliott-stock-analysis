@@ -251,8 +251,8 @@
     <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260908-v2"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="../chart-surface/analysis-localization.js?open=20260908f"></script>
   <script>
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
@@ -309,11 +309,16 @@
         }
       };
       const datasets = activeContract.datasets?.benchmark || {};
-      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
-      const hasChartData = (ticker) => (Array.isArray(datasets[ticker]?.bars) && datasets[ticker].bars.length >= 2) || partialChartTickers.has(ticker);
-      const localizer = window.PROTOTYPE_ANALYSIS_LOCALIZER || {};
-      const runs = (activeContract.analysisRuns || []).map((run) => localizer.localizeRun ? localizer.localizeRun(run) : run);
-      const baseCoverage = activeContract.coverage || [];
+      const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
+      const v2Batches = Object.values(irisV2.batches || {});
+      const v2Runs = v2Batches.flatMap((batch) => [
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly }))
+      ]);
+      const runMap = new Map();
+      [...(activeContract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
+      const runs = [...runMap.values()];
+      const baseCoverage = [...(activeContract.coverage || []), ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }))].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
       let overrides = {};
       try { overrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { overrides = {}; }
       const allRows = () => {
@@ -324,7 +329,7 @@
       const rows = () => allRows().filter((item) => item.removed !== true);
       const query = new URLSearchParams(window.location.search);
       const coverageMode = query.get('mode') === 'manage' ? 'manage' : 'view';
-      const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || 'NBIS';
+      const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || '';
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
       const normalizeCoverageGroup = (value) => ['exploration', 'explore', 'exploratory'].includes(String(value ?? '').trim().toLowerCase()) ? 'exploration' : 'tracking';
       const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracking · 追蹤';
@@ -343,18 +348,18 @@
       const renderTickerRows = (items) => items.map((item) => {
         const latest = latestRun(item.ticker);
         const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
-        const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'latest' ? '最新' : '歷史')} · 信心 ${escapeHtml(localizer.confidenceDisplay ? localizer.confidenceDisplay(run) : (run.confidence ?? run.confidenceLabel ?? '—'))} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
-        const compactPattern = localizer.compactPattern ? localizer.compactPattern(latest) : (latest?.pattern?.split('｜')[0] || '尚無最新分析');
-        const forecast = localizer.direction ? localizer.direction(latest) : { symbol: '→', key: 'flat', label: '延續盤整' };
+        const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'weekly' ? '週線' : '日線')} · 信心 ${escapeHtml(run.confidencePercent == null ? '—' : `${run.confidencePercent}%`)} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
+        const compactPattern = latest?.patternLabel || '尚無最新分析';
+        const directionMap = { up: { symbol: '↗', key: 'up', label: '趨勢向上' }, down: { symbol: '↘', key: 'down', label: '趨勢向下' }, flat: { symbol: '→', key: 'flat', label: '延續盤整' } };
+        const forecast = directionMap[latest?.predictionDirection] || directionMap.flat;
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
-        const canOpenChart = hasChartData(item.ticker);
-        const rowAttributes = canOpenChart
+        const hasDetail = Boolean(latest);
+        const rowAttributes = hasDetail
           ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
-          : ` class="ticker-row is-disabled" title="尚無可用圖表，暫不可開啟"`;
-        const confidence = localizer.confidencePercent ? localizer.confidencePercent(latest) : (latest?.confidence ? `${latest.confidence}%` : '—');
-        const confidenceTitle = localizer.confidenceDisplay && latest ? `可用信心：${localizer.confidenceDisplay(latest)}` : '';
-        const statusTitle = latest ? `新分析：${escapeHtml(latest.analysisDate)}` : (canOpenChart ? '可開啟部分圖表；分析待補' : '尚無可用圖表');
-        return `<div${rowAttributes}><span class="new-dot" title="${statusTitle}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span><span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
+          : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
+        const confidence = latest?.confidencePercent == null ? '—' : `${latest.confidencePercent}%`;
+        const confidenceTitle = latest?.confidenceBand ? `信心區間：${latest.confidenceBand}` : '';
+        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span><span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
       list.innerHTML = ['tracking', 'exploration'].map((group) => {
         const items = coverage.filter((item) => coverageGroup(item) === group);
@@ -441,10 +446,10 @@
         const ticker = document.createElement('strong'); ticker.textContent = item.ticker;
         const company = document.createElement('span'); company.textContent = item.company || item.ticker;
         button.append(ticker, company);
-        const canOpenChart = hasChartData(item.ticker);
-        button.disabled = !canOpenChart;
-        if (!canOpenChart) button.title = '尚無可用圖表，暫不可開啟';
-        if (canOpenChart) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
+        const hasDetail = Boolean(latestRun(item.ticker));
+        button.disabled = !hasDetail;
+        if (!hasDetail) button.title = '尚無可用分析，暫不可開啟';
+        if (hasDetail) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
         return button;
       }));
       const currentItem = wheel.querySelector('.is-current');
