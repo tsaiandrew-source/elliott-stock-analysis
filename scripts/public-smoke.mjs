@@ -1,4 +1,5 @@
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
+const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
 const tickers = ['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', '2330', 'AVGO'];
 const routes = [
   '/',
@@ -30,9 +31,38 @@ for (const route of routes) {
   }
 }
 
+let proxySummary = null;
+try {
+  const separator = proxyBaseUrl.includes('?') ? '&' : '?';
+  const proxyUrl = `${proxyBaseUrl}${separator}format=json&health=1&refresh=${Date.now()}`;
+  const response = await fetch(proxyUrl, {
+    headers: { 'User-Agent': 'elliott-stock-analysis-release-smoke/1.0' },
+    signal: AbortSignal.timeout(60000)
+  });
+  if (!response.ok) {
+    failures.push(`proxy ${response.status}`);
+  } else {
+    const payload = await response.json();
+    if (payload.error || !Array.isArray(payload.coverage) || !Array.isArray(payload.analysisRuns)) {
+      failures.push('proxy response is missing Coverage or AnalysisRuns');
+    } else {
+      const gexRows = Array.isArray(payload.tables?.GEXSnapshots) ? payload.tables.GEXSnapshots.length : 0;
+      proxySummary = {
+        contractVersion: payload.contractVersion || 'unknown',
+        generatedAt: payload.generatedAt || null,
+        coverage: payload.coverage.length,
+        analysisRuns: payload.analysisRuns.length,
+        gexRows
+      };
+    }
+  }
+} catch (error) {
+  failures.push(`proxy: ${error.message}`);
+}
+
 if (failures.length) {
   console.error(JSON.stringify({ status: 'FAIL', base, failures }, null, 2));
   process.exitCode = 1;
 } else {
-  console.log(JSON.stringify({ status: 'PASS', base, checkedRoutes: routes.length, tickers }, null, 2));
+  console.log(JSON.stringify({ status: 'PASS', base, checkedRoutes: routes.length, tickers, proxy: proxySummary }, null, 2));
 }
