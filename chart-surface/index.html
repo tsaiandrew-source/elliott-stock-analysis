@@ -164,6 +164,8 @@
     .pane-label { position: absolute; z-index: 2; top: 7px; left: 8px; color: var(--muted); font-size: 12px; font-weight: 700; pointer-events: none; }
     #rsi-chart, #macd-chart { height: 118px; }
     .chart-error { color: var(--red); padding: 40px 10px; text-align: center; }
+    .chart-empty-message { display: grid; place-items: center; min-height: 320px; padding: 28px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 9px; }
+    .chart-empty-message[hidden] { display: none; }
     .stack { display: grid; gap: 12px; }
     .summary { padding: 16px; }
     .summary + .summary { margin-top: 12px; }
@@ -369,6 +371,7 @@
           <div id="phase-overlay" aria-hidden="true"></div>
           <div id="price-time-axis" aria-label="主圖日期軸" hidden></div>
           <div id="gex-profile" aria-label="Gamma exposure graph" hidden></div>
+          <div id="chart-empty-message" class="chart-empty-message" hidden></div>
           <div id="rsi-pane-label" class="pane-label">RSI (14)</div>
           <div id="macd-pane-label" class="pane-label">MACD (12, 26, 9)</div>
         </div>
@@ -478,7 +481,28 @@
         Object.entries(coverageOverrides).forEach(([ticker, item]) => merged.set(ticker, { ...(merged.get(ticker) || { ticker }), ...item }));
         return [...merged.values()];
       };
-      const activeCoverage = coverageRows().filter((item) => item.active !== false && datasets?.[item.ticker]);
+      const latestRun = (ticker) => analysisRuns
+        .filter((run) => run.ticker === ticker)
+        .sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
+      const analysisOnlyDataset = (ticker) => {
+        const run = latestRun(ticker);
+        if (!run) return null;
+        const text = run.pattern || '已有文字分析；技術圖表資料待補。';
+        return {
+          company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
+          dataThrough: run.dataThrough || run.analysisDate || '',
+          sourceCutoff: run.dataThrough || run.analysisDate || '',
+          chartSource: run.chartSource || '', sourceUrl: run.chartSource || '',
+          pattern: text, patternStatus: run.status || 'partial',
+          patternCandidates: { primary: { label: 'Primary', text, confidence: run.confidence, status: run.status || 'partial', confirmation: run.confirmation, invalidation: run.invalidation, geometry: 'none', callout: false } },
+          thesis: run.thesis || '已有部分分析；技術圖表資料待補。',
+          wyckoff: run.wyckoff || 'Pending', weeklyWyckoff: run.weeklyWyckoff || 'Pending',
+          patternGate: run.confirmation, invalidation: run.invalidation,
+          options: run.options || '選擇權／GEX 資料待補。', business: run.business || '基本面／新聞分析已載入最新紀錄。',
+          freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`, gexSource: null, gexViews: {}, bars: []
+        };
+      };
+      const activeCoverage = coverageRows().filter((item) => item.active !== false);
       if (activeCoverage.length && !activeCoverage.some((item) => item.ticker === state.ticker)) state.ticker = activeCoverage[0].ticker;
       if (query.get('candidate') === 'secondary') state.candidate = 'secondary';
       let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, layerSeries = {}, phaseMarkers = [], axisBars = [];
@@ -1005,7 +1029,8 @@
       }
 
       function render() {
-        const data = datasets[state.ticker];
+        const data = datasets[state.ticker] || analysisOnlyDataset(state.ticker);
+        if (!data) return;
         renderMenu();
         // Synchronize the view shell before rebuilding chart series. This
         // prevents a GEX overlay from remaining in front of the candle chart
@@ -1020,6 +1045,24 @@
         renderGexProfile(data);
         const pattern = getPattern(data);
         const barsForView = viewBars(data);
+        updateText(data, pattern);
+        if (!barsForView.length) {
+          if (chart) chart.remove();
+          chart = null;
+          candleSeries = null;
+          volumeSeries = null;
+          rsiSeries = null;
+          macdSeries = {};
+          phaseMarkers = [];
+          axisBars = [];
+          $('phase-overlay').hidden = true;
+          $('price-time-axis').hidden = true;
+          $('chart-empty-message').hidden = state.view === 'gex';
+          $('chart-empty-message').textContent = '部分分析已可用；K 線資料仍在等待下一次完成的市場資料 refresh。';
+          $('chart-notice').textContent = 'Text analysis is available now. Candles, indicators, and GEX will appear when their data lanes are complete.';
+          return;
+        }
+        $('chart-empty-message').hidden = true;
         if (chart) chart.remove();
         layerSeries = {};
         phaseMarkers = [];
@@ -1145,8 +1188,8 @@
         $('pattern').textContent = pattern.text;
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         $('wyckoff').textContent = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
-        $('pattern-gate').textContent = '$' + pattern.confirmation.toFixed(2);
-        $('invalidation').textContent = '$' + pattern.invalidation.toFixed(2);
+        $('pattern-gate').textContent = Number.isFinite(pattern.confirmation) ? '$' + pattern.confirmation.toFixed(2) : '—';
+        $('invalidation').textContent = Number.isFinite(pattern.invalidation) ? '$' + pattern.invalidation.toFixed(2) : '—';
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
         const secondary = data.patternCandidates?.secondary;
         const candidateSwitch = $('candidate-switch');
