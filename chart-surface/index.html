@@ -528,7 +528,7 @@
       const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
-      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternGuide: '#f2b84b', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
+      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternGuide: '#f2b84b', currentPrice: '#f2b84b', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
@@ -582,6 +582,17 @@
         const coverageDate = coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker))?.latestChartDate;
         return String(datasetDate || coverageDate || '').slice(0, 10);
       };
+      const normalizePriceSnapshot = (snapshot, fallbackBar) => {
+        const source = snapshot && typeof snapshot === 'object' ? snapshot : {};
+        const value = Number(source.value ?? source.price ?? source.last ?? source.close);
+        if (Number.isFinite(value)) {
+          const status = source.status === 'snapshot' ? 'snapshot' : 'close';
+          return { value, status, label: status === 'snapshot' ? '現價快照' : '收盤價', asOf: source.asOf || source.dataThrough || '' };
+        }
+        const close = Number(fallbackBar?.close);
+        return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
+      };
+      const priceSnapshotFor = (data, bars = data?.bars || []) => normalizePriceSnapshot(data?.priceSnapshot || data?.currentPriceSnapshot, bars.at(-1));
       const eligibleRuns = (ticker) => {
         const cutoff = chartDataCutoff(ticker);
         const runs = tickerRuns(ticker);
@@ -637,6 +648,7 @@
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
+          priceSnapshot: selectedRun.priceSnapshot || selectedRun.currentPriceSnapshot || null,
           sourceEvidence: selectedRun.sourceEvidence || [],
           missingFields: selectedRun.missingFields || [],
           recoveryTiming: selectedRun.recoveryTiming || null,
@@ -649,7 +661,22 @@
           bars: []
         };
       };
-      const activeCoverage = coverageRows().filter((item) => item.active !== false);
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
+      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
+      const twseTickers = new Set(['2330', '2646']);
+      const coverageSortRank = (item) => {
+        const ticker = normalizeTicker(item.ticker);
+        const market = String(item.marketGroup || item.MarketGroup || item.exchange || '').toLowerCase();
+        const group = String(item.coverageGroup || item.CoverageGroup || item.group || '').toLowerCase();
+        const isTwse = twseTickers.has(ticker) || ['twse', 'taiwan', 'taiwan stock exchange', 'taiwan-stock-exchange'].includes(market);
+        const isExploration = explorationTickers.has(ticker) || ['exploration', 'explore', 'exploratory'].includes(group);
+        return (isTwse ? 2 : 0) + (isExploration ? 1 : 0);
+      };
+      const activeCoverage = coverageRows()
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => item.active !== false)
+        .sort((a, b) => coverageSortRank(a.item) - coverageSortRank(b.item) || a.index - b.index)
+        .map(({ item }) => item);
       const requestedCoverage = activeCoverage.find((item) => normalizeTicker(item.ticker) === state.ticker);
       if (requestedCoverage) state.ticker = requestedCoverage.ticker;
       else if (!requestedTicker && activeCoverage.length) state.ticker = activeCoverage[0].ticker;
@@ -934,6 +961,32 @@
         };
       }
 
+      function patternDisplayLabel(pattern, data) {
+        const raw = pattern?.patternLabel || data?.patternLabel || pattern?.label || data?.pattern || '型態資料待補';
+        return String(raw).split(/[｜|]/)[0].trim();
+      }
+
+      function patternMarkerBar(bars) {
+        if (!bars.length) return null;
+        return bars[Math.max(0, Math.min(bars.length - 1, Math.floor(bars.length * 0.72)))];
+      }
+
+      function candidateButtonText(candidate, fallbackLabel = '候選') {
+        if (!candidate) return fallbackLabel;
+        const legacyStatus = String(candidate.status || '').trim();
+        if (legacyStatus) return legacyStatus;
+        const stateLabels = {
+          forming: '形成中',
+          breakout_candidate: '突破候選',
+          breakout_confirmed: '突破確認',
+          retest_held: '回測守住'
+        };
+        const label = candidate.label || fallbackLabel;
+        const state = stateLabels[candidate.coordinates?.state] || '';
+        const confidence = candidate.confidencePercent ?? candidate.confidence;
+        return [label, state, Number.isFinite(Number(confidence)) ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
+      }
+
       function weeklyPattern(data) {
         // Weekly view follows the same candidate-deduplication rule as daily:
         // use the primary thesis when the alternative is not materially
@@ -971,13 +1024,34 @@
           const data = patternGeometry(bars, ticker, pattern);
           return data.length ? [{ key: 'patternGeometry', data }] : [];
         }
-        const start = Math.max(0, Math.min(bars.length - 1, Number.isFinite(coordinates.start_index) ? coordinates.start_index : 0));
-        const rawEnd = Number.isFinite(coordinates.fit_end_index) ? coordinates.fit_end_index : start + (Number.isFinite(coordinates.span_bars) ? coordinates.span_bars : 0);
-        const end = Math.max(start, Math.min(bars.length - 1, rawEnd));
+        const nearestDateIndex = (date, fallback) => {
+          if (!date) return fallback;
+          const target = Date.parse(String(date));
+          if (!Number.isFinite(target)) return fallback;
+          let best = fallback;
+          let distance = Number.POSITIVE_INFINITY;
+          bars.forEach((bar, index) => {
+            const value = Number.isFinite(bar.time) ? bar.time * 1000 : Date.parse(String(bar.date || ''));
+            if (!Number.isFinite(value)) return;
+            const candidateDistance = Math.abs(value - target);
+            if (candidateDistance < distance) {
+              distance = candidateDistance;
+              best = index;
+            }
+          });
+          return best;
+        };
+        const rawStartIndex = Number.isFinite(coordinates.start_index) ? coordinates.start_index : 0;
+        const startFallback = Math.max(0, Math.min(bars.length - 1, rawStartIndex));
+        const start = nearestDateIndex(coordinates.start_date, startFallback);
+        const endDate = coordinates.fit_cutoff || coordinates.breakout_date || coordinates.retest_date || null;
+        const rawEnd = Number.isFinite(coordinates.fit_end_index) ? coordinates.fit_end_index : rawStartIndex + (Number.isFinite(coordinates.span_bars) ? coordinates.span_bars : 0);
+        const endFallback = Math.max(start, Math.min(bars.length - 1, rawEnd));
+        const end = endDate ? Math.max(start, nearestDateIndex(endDate, endFallback)) : endFallback;
         const lines = [];
         const addLinear = (key, line) => {
           if (!line || !Number.isFinite(line.slope_per_bar) || !Number.isFinite(line.intercept)) return;
-          const data = bars.slice(start, end + 1).map((bar, offset) => ({ time: bar.time, value: line.slope_per_bar * (start + offset) + line.intercept }));
+          const data = bars.slice(start, end + 1).map((bar, offset) => ({ time: bar.time, value: line.slope_per_bar * (rawStartIndex + offset) + line.intercept }));
           if (data.length > 1) lines.push({ key, data });
         };
         addLinear('patternGeometryUpper', coordinates.upper);
@@ -988,9 +1062,42 @@
           if (data.length) lines.push({ key: 'patternGeometry', data });
         }
         if (!lines.length && /double_(top|bottom)/i.test(String(coordinates.type || ''))) {
+          // Restore the original Elliott+ zig-zag treatment for double patterns:
+          // left extreme → middle pivot → right extreme → current close. This
+          // makes the yellow pattern line visibly match the pattern label and
+          // thesis instead of reducing it to an ambiguous horizontal range.
           const segment = bars.slice(start, end + 1);
-          const value = coordinates.type === 'double_top' ? Math.max(...segment.map((bar) => bar.high)) : Math.min(...segment.map((bar) => bar.low));
-          if (Number.isFinite(value)) lines.push({ key: 'patternGeometryRange', data: segment.map((bar) => ({ time: bar.time, value })) });
+          if (segment.length >= 6) {
+            const midpoint = Math.floor(segment.length / 2);
+            const leftSegment = segment.slice(0, midpoint);
+            const rightSegment = segment.slice(midpoint);
+            const isBottom = coordinates.type === 'double_bottom';
+            const extreme = (items, field, chooseMin) => items.reduce((best, bar) => {
+              if (!best) return bar;
+              return chooseMin ? (bar[field] < best[field] ? bar : best) : (bar[field] > best[field] ? bar : best);
+            }, null);
+            const left = extreme(leftSegment, isBottom ? 'low' : 'high', isBottom);
+            const right = extreme(rightSegment, isBottom ? 'low' : 'high', isBottom);
+            const leftIndex = segment.indexOf(left);
+            const rightIndex = segment.indexOf(right);
+            const between = segment.slice(Math.min(leftIndex, rightIndex) + 1, Math.max(leftIndex, rightIndex));
+            const middle = extreme(between.length ? between : segment, isBottom ? 'high' : 'low', !isBottom);
+            const value = (bar) => isBottom ? bar.low : bar.high;
+            const middleValue = isBottom ? middle.high : middle.low;
+            const data = [
+              { time: left.time, value: value(left) },
+              { time: middle.time, value: middleValue },
+              { time: right.time, value: value(right) },
+              { time: bars.at(-1).time, value: bars.at(-1).close }
+            ].filter((point, index, points) => index === 0 || point.time !== points[index - 1].time);
+            if (data.length >= 3 && data.every((point) => Number.isFinite(point.value))) {
+              lines.push({ key: 'patternGeometryDouble', data });
+            }
+          }
+          if (!lines.length) {
+            const value = coordinates.type === 'double_top' ? Math.max(...segment.map((bar) => bar.high)) : Math.min(...segment.map((bar) => bar.low));
+            if (Number.isFinite(value)) lines.push({ key: 'patternGeometryRange', data: segment.map((bar) => ({ time: bar.time, value })) });
+          }
         }
         return lines;
       }
@@ -1026,7 +1133,8 @@
       function freezePriceFrame(bars, data, pattern) {
         const values = bars.flatMap((bar) => [bar.low, bar.high]);
         const gex = gexView(data);
-        values.push(pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
+        const priceSnapshot = priceSnapshotFor(data, bars);
+        values.push(priceSnapshot?.value, pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
         const numericValues = values.map(Number).filter(Number.isFinite);
         const min = Math.min(...numericValues);
         const max = Math.max(...numericValues);
@@ -1263,8 +1371,9 @@
         const phases = phaseData(bars, state.ticker);
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
+        const patternMarker = patternMarkerBar(bars);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text },
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
@@ -1299,8 +1408,12 @@
         layerSeries.bbUpper = addLine('bbUpper', bb.map((item) => ({ time: item.time, value: item.upper })), colors.bollinger, 1);
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
+        const priceSnapshot = priceSnapshotFor(data, bars);
+        layerSeries.currentPrice = addLine('currentPrice', levelData(bars, priceSnapshot?.value), colors.currentPrice, 1, L.LineStyle.Dashed);
         patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
-          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.patternGuide, 3, L.LineStyle.Solid);
+          // Pattern geometry uses the same bright lime signal as the 型態組合
+          // control, so it remains visible above the candle and Bollinger layers.
+          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.pattern, 2, L.LineStyle.Solid);
         });
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
@@ -1337,8 +1450,9 @@
         if (phasePrimitive) phasePrimitive.setVisible(state.layers.wyckoff && state.view !== 'gex');
         const pattern = getPattern(datasets[state.ticker]);
         const bars = viewBars(datasets[state.ticker]);
+        const patternMarker = patternMarkerBar(bars);
         markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text },
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
@@ -1417,7 +1531,9 @@
           const active = button.dataset.candidate === state.candidate;
           const candidate = data.patternCandidates?.[button.dataset.candidate];
           button.hidden = button.dataset.candidate === 'secondary' ? !showSecondary : false;
-          button.textContent = deduplicated && button.dataset.candidate === 'primary' ? pattern.status : candidate ? candidate.status : button.dataset.candidate;
+          button.textContent = deduplicated && button.dataset.candidate === 'primary'
+            ? candidateButtonText(pattern, '主候選')
+            : candidateButtonText(candidate, button.dataset.candidate === 'primary' ? '主候選' : '次候選');
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
@@ -1507,12 +1623,19 @@
       document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.view === state.view) return;
         state.view = button.dataset.view;
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('view', state.view);
+        window.history.replaceState({}, '', nextUrl);
         render();
       }));
       document.querySelectorAll('[data-gex-expiry]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.gexExpiry === state.gexExpiry) return;
         state.gexExpiry = button.dataset.gexExpiry;
         if (state.view !== 'gex') state.view = 'gex';
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('view', state.view);
+        nextUrl.searchParams.set('expiry', state.gexExpiry);
+        window.history.replaceState({}, '', nextUrl);
         render();
       }));
       document.querySelectorAll('[data-candidate]').forEach((button) => button.addEventListener('click', () => {
