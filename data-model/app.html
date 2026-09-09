@@ -145,12 +145,19 @@
         ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
         ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
       ]);
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
       const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
       const twseTickers = new Set(['2330', '2646']);
-      const inferredCoverageGroup = (ticker) => explorationTickers.has(String(ticker || '').trim().toUpperCase()) ? 'exploration' : 'tracking';
+      const canonicalCoverageGroup = (ticker) => {
+        const symbol = String(ticker || '').trim().toUpperCase();
+        if (trackingTickers.has(symbol)) return 'tracking';
+        if (explorationTickers.has(symbol)) return 'exploration';
+        return null;
+      };
+      const inferredCoverageGroup = (ticker) => canonicalCoverageGroup(ticker) || 'tracking';
       const inferredMarketGroup = (ticker) => twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
       const baseCoverage = [
-        ...(contract.coverage || []).map((item) => ({ ...item, coverageGroup: item.coverageGroup || item.CoverageGroup || inferredCoverageGroup(item.ticker), marketGroup: item.marketGroup || item.MarketGroup || inferredMarketGroup(item.ticker) })),
+        ...(contract.coverage || []).map((item) => ({ ...item, coverageGroup: canonicalCoverageGroup(item.ticker) || item.coverageGroup || item.CoverageGroup || inferredCoverageGroup(item.ticker), marketGroup: item.marketGroup || item.MarketGroup || inferredMarketGroup(item.ticker) })),
         ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true, coverageGroup: inferredCoverageGroup(ticker), marketGroup: inferredMarketGroup(ticker) }))
       ].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
       let coverageOverrides = {};
