@@ -661,7 +661,22 @@
           bars: []
         };
       };
-      const activeCoverage = coverageRows().filter((item) => item.active !== false);
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
+      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
+      const twseTickers = new Set(['2330', '2646']);
+      const coverageSortRank = (item) => {
+        const ticker = normalizeTicker(item.ticker);
+        const market = String(item.marketGroup || item.MarketGroup || item.exchange || '').toLowerCase();
+        const group = String(item.coverageGroup || item.CoverageGroup || item.group || '').toLowerCase();
+        const isTwse = twseTickers.has(ticker) || ['twse', 'taiwan', 'taiwan stock exchange', 'taiwan-stock-exchange'].includes(market);
+        const isExploration = explorationTickers.has(ticker) || ['exploration', 'explore', 'exploratory'].includes(group);
+        return (isTwse ? 2 : 0) + (isExploration ? 1 : 0);
+      };
+      const activeCoverage = coverageRows()
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => item.active !== false)
+        .sort((a, b) => coverageSortRank(a.item) - coverageSortRank(b.item) || a.index - b.index)
+        .map(({ item }) => item);
       const requestedCoverage = activeCoverage.find((item) => normalizeTicker(item.ticker) === state.ticker);
       if (requestedCoverage) state.ticker = requestedCoverage.ticker;
       else if (!requestedTicker && activeCoverage.length) state.ticker = activeCoverage[0].ticker;
