@@ -133,7 +133,7 @@
     <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
-  <script src="../chart-surface/analysis-packets-v2.js?v=20260908-v2"></script>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v3"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (() => {
@@ -142,8 +142,8 @@
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
-        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
-        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
       ]);
       const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
       const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
@@ -191,7 +191,12 @@
       };
       const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
       const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
-      const latestRun = () => runs.filter((run) => run.ticker === state.ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
+      const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
+      const latestRun = () => {
+        const candidates = runs.filter((run) => run.ticker === state.ticker);
+        const rich = candidates.filter(isRichAnalysisRun);
+        return (rich.length ? rich : candidates).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
+      };
       const detail = () => contract.datasets?.analysisDetails?.[state.ticker] || {};
       function closeTickerSheet() {
         $('ticker-sheet').hidden = true;

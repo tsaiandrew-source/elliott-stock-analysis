@@ -443,7 +443,7 @@
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
-  <script src="analysis-packets-v2.js?v=20260908-v2"></script>
+  <script src="analysis-packets-v2.js?v=20260909-v3"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
@@ -480,7 +480,7 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v1';
+      const liveCacheKey = 'stock-analysis-live-contract-v2';
       let contract = bundledContract;
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
@@ -525,8 +525,8 @@
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
-        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
-        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
       ]);
       const analysisRunMap = new Map();
       [...(contract.analysisRuns || []), ...v2Runs].forEach((run) => {
@@ -580,8 +580,14 @@
         const runs = tickerRuns(ticker);
         return cutoff ? runs.filter((run) => run.schemaVersion === 'iris-analysis-contract-v2' || !runDate(run) || runDate(run) <= cutoff) : runs;
       };
-      const latestDailyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
-      const latestWeeklyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
+      const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
+      const preferredRuns = (ticker) => {
+        const candidates = eligibleRuns(ticker);
+        const rich = candidates.filter(isRichAnalysisRun);
+        return rich.length ? rich : candidates;
+      };
+      const latestDailyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
+      const latestWeeklyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
       const analysisOnlyDataset = (ticker) => {
         const dailyRun = latestDailyRun(ticker);
         const weeklyRun = latestWeeklyRun(ticker);

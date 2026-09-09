@@ -258,7 +258,7 @@
     <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
-  <script src="../chart-surface/analysis-packets-v2.js?v=20260908-v2"></script>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v3"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
@@ -294,7 +294,7 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v1';
+      const liveCacheKey = 'stock-analysis-live-contract-v2';
       let activeContract = contract;
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
@@ -319,8 +319,8 @@
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
-        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily })),
-        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly }))
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly }))
       ]);
       const runMap = new Map();
       [...(activeContract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
@@ -371,9 +371,15 @@
       const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
       const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
       const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
+      const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
       const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
       const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
-      const latestRun = (ticker) => runs.filter((run) => run.ticker === ticker && !isWeeklyRun(run)).sort(compareRuns)[0] || runs.filter((run) => run.ticker === ticker).sort(compareRuns)[0];
+      const preferredRuns = (ticker) => {
+        const candidates = runs.filter((run) => run.ticker === ticker);
+        const rich = candidates.filter(isRichAnalysisRun);
+        return (rich.length ? rich : candidates).sort(compareRuns);
+      };
+      const latestRun = (ticker) => preferredRuns(ticker).filter((run) => !isWeeklyRun(run))[0] || preferredRuns(ticker)[0];
       const list = document.getElementById('ticker-list');
       const coverage = rows().filter((item) => item.active !== false && item.hidden !== true);
       const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;
