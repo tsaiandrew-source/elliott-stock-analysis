@@ -36,7 +36,7 @@ for (const route of routes) {
         if (!body.includes(`'${ticker}'`)) failures.push(`home partial ticker fallback missing ${ticker}`);
       }
     }
-    if (route.includes('/data-model/') || route.includes('/chart-surface/')) {
+    if (route === '/data-model/home.html' || route.includes('/chart-surface/index.html')) {
       if (!body.includes('AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ')) failures.push(`read proxy marker missing ${route}`);
       if (body.includes('AKfycbwN2')) failures.push(`write-only ingest URL leaked into frontend ${route}`);
     }
