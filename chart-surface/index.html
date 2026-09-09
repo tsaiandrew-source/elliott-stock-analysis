@@ -934,6 +934,27 @@
         };
       }
 
+      function patternDisplayLabel(pattern, data) {
+        const raw = pattern?.patternLabel || data?.patternLabel || pattern?.label || data?.pattern || '型態資料待補';
+        return String(raw).split(/[｜|]/)[0].trim();
+      }
+
+      function candidateButtonText(candidate, fallbackLabel = '候選') {
+        if (!candidate) return fallbackLabel;
+        const legacyStatus = String(candidate.status || '').trim();
+        if (legacyStatus) return legacyStatus;
+        const stateLabels = {
+          forming: '形成中',
+          breakout_candidate: '突破候選',
+          breakout_confirmed: '突破確認',
+          retest_held: '回測守住'
+        };
+        const label = candidate.label || fallbackLabel;
+        const state = stateLabels[candidate.coordinates?.state] || '';
+        const confidence = candidate.confidencePercent ?? candidate.confidence;
+        return [label, state, Number.isFinite(Number(confidence)) ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
+      }
+
       function weeklyPattern(data) {
         // Weekly view follows the same candidate-deduplication rule as daily:
         // use the primary thesis when the alternative is not materially
@@ -1297,7 +1318,7 @@
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text },
+          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
@@ -1333,7 +1354,9 @@
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
         patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
-          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.patternGuide, 3, L.LineStyle.Solid);
+          // Pattern geometry uses the same bright lime signal as the 型態組合
+          // control, so it remains visible above the candle and Bollinger layers.
+          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.pattern, 4, L.LineStyle.Solid);
         });
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
@@ -1371,7 +1394,7 @@
         const pattern = getPattern(datasets[state.ticker]);
         const bars = viewBars(datasets[state.ticker]);
         markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text },
+          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
@@ -1450,7 +1473,9 @@
           const active = button.dataset.candidate === state.candidate;
           const candidate = data.patternCandidates?.[button.dataset.candidate];
           button.hidden = button.dataset.candidate === 'secondary' ? !showSecondary : false;
-          button.textContent = deduplicated && button.dataset.candidate === 'primary' ? pattern.status : candidate ? candidate.status : button.dataset.candidate;
+          button.textContent = deduplicated && button.dataset.candidate === 'primary'
+            ? candidateButtonText(pattern, '主候選')
+            : candidateButtonText(candidate, button.dataset.candidate === 'primary' ? '主候選' : '次候選');
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
