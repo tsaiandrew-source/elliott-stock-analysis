@@ -1167,7 +1167,7 @@
           ...analysisOverlay,
           bars: rawData.bars?.length ? rawData.bars : analysisOverlay.bars,
           gexViews: analysisOverlay.gexViews || {},
-          company: rawData.company || analysisOverlay.company,
+          company: analysisOverlay.company || rawData.company,
           exchange: rawData.exchange || analysisOverlay.exchange,
           chartSource: rawData.chartSource || analysisOverlay.chartSource,
           sourceUrl: rawData.sourceUrl || analysisOverlay.sourceUrl,
