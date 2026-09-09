@@ -1519,7 +1519,7 @@
           const normalized = validDirection(direction);
           const view = directionMap[normalized];
           const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '待定';
-          return { key: normalized || 'pending', text: `${view?.symbol || '—'} ${label}` };
+          return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label };
         };
         [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
           const element = $(id);
@@ -1527,6 +1527,7 @@
           const view = directionText(direction, kind);
           element.textContent = view.text;
           element.dataset.direction = view.key;
+          element.setAttribute('aria-label', view.ariaLabel);
         });
         $('thesis-refresh').textContent = '';
         $('business').textContent = overall?.businessSummary || data.business;
