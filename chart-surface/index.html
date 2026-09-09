@@ -87,6 +87,8 @@
     #structure-panel[hidden] { display: none !important; }
     .controls { display: flex; flex-wrap: wrap; gap: 8px 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px 0; margin-bottom: 10px; }
     .control { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; user-select: none; }
+    .control[data-tone="gex"] { display: none; }
+    .gex-view .control[data-tone="gex"] { display: inline-flex; }
     .control input { accent-color: var(--aqua); width: 16px; height: 16px; }
     .control[data-tone] { color: var(--signal-color); }
     .control[data-tone] input { accent-color: var(--signal-color); }
@@ -367,7 +369,7 @@
           </div>
           <label class="control" data-tone="bollinger"><input type="checkbox" data-layer="bollinger" checked> 布林通道</label>
           <label class="control" data-tone="wyckoff"><input type="checkbox" data-layer="wyckoff" checked> Wyckoff</label>
-          <label class="control" data-tone="gex"><input type="checkbox" data-layer="gex" checked> 選擇權／GEX</label>
+          <label class="control" data-tone="gex" id="gex-layer-control"><input type="checkbox" data-layer="gex" checked> 選擇權／GEX</label>
         </div>
         <div id="chart-legend" class="legend" aria-label="Candle state legend">
           <span><i class="swatch" style="background:var(--blue)"></i>強 Go</span>
@@ -1102,7 +1104,15 @@
         return lines;
       }
 
-      function phaseData() { return []; }
+      function phaseData(bars, ticker) {
+        if (!bars.length) return [];
+        const indices = ticker === 'NBIS' ? [0.16, 0.56, 0.80] : [0.16, 0.60, 0.86];
+        const descriptions = ticker === 'NBIS' ? ['啟動', '整理', 'UTAD候選'] : ['吸收', '整理', 'Spring候選'];
+        return indices.map((ratio, index) => ({
+          time: bars[Math.min(bars.length - 1, Math.round((bars.length - 1) * ratio))].time,
+          label: `Phase ${String.fromCharCode(65 + index)} | ${descriptions[index]}`
+        }));
+      }
 
       function drawPhaseOverlay(bars, phases = phaseData(bars, state.ticker)) {
         const overlay = $('phase-overlay');
@@ -1444,7 +1454,7 @@
         Object.entries(layerSeries).forEach(([name, series]) => {
           const primaryOnly = name === 'channelUpper' || name === 'channelLower';
           const isGex = name.startsWith('gex');
-          const visible = name.startsWith('bb') ? state.layers.bollinger && state.view !== 'gex' : name === 'wyckoffGate' ? state.layers.wyckoff && state.view !== 'gex' : isGex ? state.layers.gex : primaryOnly ? state.layers.technical && state.candidate === 'primary' && state.view !== 'gex' : state.layers.technical && state.view !== 'gex';
+          const visible = name.startsWith('bb') ? state.layers.bollinger && state.view !== 'gex' : name === 'wyckoffGate' ? state.layers.wyckoff && state.view !== 'gex' : isGex ? state.layers.gex && state.view === 'gex' : primaryOnly ? state.layers.technical && state.candidate === 'primary' && state.view !== 'gex' : state.layers.technical && state.view !== 'gex';
           series.applyOptions({ visible });
         });
         if (phasePrimitive) phasePrimitive.setVisible(state.layers.wyckoff && state.view !== 'gex');
@@ -1461,6 +1471,8 @@
       function updateText(data, pattern = getPattern(data)) {
         const gex = gexView(data);
         const isGex = state.view === 'gex';
+        document.body.classList.toggle('gex-view', isGex);
+        $('gex-layer-control').hidden = !isGex;
         $('title').textContent = state.ticker + ' · ' + data.company;
         $('chart-title').textContent = isGex ? 'GEX 壓力圖 · Top／Bottom' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
         const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
