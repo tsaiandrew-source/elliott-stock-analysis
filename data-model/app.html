@@ -249,7 +249,7 @@
         $('heading').textContent = `${state.ticker} · ${run?.company || data.company || state.ticker}`;
         $('subheading').textContent = `Latest · 資料截至 ${run?.dataThrough || data.dataThrough || '未標示'}`;
         const digest = isV2 ? (run.runType === 'weekly' ? run.weeklyDigest : run.dailyDigest?.endOfDay) : (detail().endOfDay || detail().weekly);
-        const digestSummary = run.runType === 'weekly' ? `${digest?.date || ''} · ${digest?.title || ''}` : `End of Day Digest · ${String(digest?.date || '').slice(0, 10)}`;
+        const digestSummary = run.runType === 'weekly' ? `${digest?.date || ''} · ${digest?.title || ''}` : `EoD Digest · ${String(digest?.date || '').slice(0, 10)}`;
         const digestPoints = digest?.sections ? digest.sections.flatMap((section) => section.points || []) : (digest?.points || []);
         const digestHtml = digest ? `<details><summary>${escapeHtml(digestSummary)}</summary><div class="digest"><h4>${escapeHtml(digest.title || '摘要')}</h4><ul>${digestPoints.slice(0, 12).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div></details>` : '';
         const pattern = isV2 ? run.patternLabel : (run?.pattern || data.pattern);
