@@ -407,7 +407,7 @@
       }).join('');
       const renderCoverageGroup = (group, items) => {
         const label = coverageGroupLabel(group);
-        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>型態</span><span title="未來方向預測">預測</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
+        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>日線型態</span><span title="未來方向預測">預測</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
         return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
       };
       const usCoverage = coverage.filter((item) => marketGroup(item) !== 'twse');
