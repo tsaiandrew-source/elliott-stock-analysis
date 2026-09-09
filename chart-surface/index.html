@@ -939,6 +939,11 @@
         return String(raw).split(/[｜|]/)[0].trim();
       }
 
+      function patternMarkerBar(bars) {
+        if (!bars.length) return null;
+        return bars[Math.max(0, Math.min(bars.length - 1, Math.floor(bars.length * 0.72)))];
+      }
+
       function candidateButtonText(candidate, fallbackLabel = '候選') {
         if (!candidate) return fallbackLabel;
         const legacyStatus = String(candidate.status || '').trim();
@@ -1338,8 +1343,9 @@
         const phases = phaseData(bars, state.ticker);
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
+        const patternMarker = patternMarkerBar(bars);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
@@ -1377,7 +1383,7 @@
         patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
           // Pattern geometry uses the same bright lime signal as the 型態組合
           // control, so it remains visible above the candle and Bollinger layers.
-          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.pattern, 4, L.LineStyle.Solid);
+          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.pattern, 2, L.LineStyle.Solid);
         });
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
@@ -1414,8 +1420,9 @@
         if (phasePrimitive) phasePrimitive.setVisible(state.layers.wyckoff && state.view !== 'gex');
         const pattern = getPattern(datasets[state.ticker]);
         const bars = viewBars(datasets[state.ticker]);
+        const patternMarker = patternMarkerBar(bars);
         markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
           { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
