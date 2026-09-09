@@ -992,13 +992,34 @@
           const data = patternGeometry(bars, ticker, pattern);
           return data.length ? [{ key: 'patternGeometry', data }] : [];
         }
-        const start = Math.max(0, Math.min(bars.length - 1, Number.isFinite(coordinates.start_index) ? coordinates.start_index : 0));
-        const rawEnd = Number.isFinite(coordinates.fit_end_index) ? coordinates.fit_end_index : start + (Number.isFinite(coordinates.span_bars) ? coordinates.span_bars : 0);
-        const end = Math.max(start, Math.min(bars.length - 1, rawEnd));
+        const nearestDateIndex = (date, fallback) => {
+          if (!date) return fallback;
+          const target = Date.parse(String(date));
+          if (!Number.isFinite(target)) return fallback;
+          let best = fallback;
+          let distance = Number.POSITIVE_INFINITY;
+          bars.forEach((bar, index) => {
+            const value = Number.isFinite(bar.time) ? bar.time * 1000 : Date.parse(String(bar.date || ''));
+            if (!Number.isFinite(value)) return;
+            const candidateDistance = Math.abs(value - target);
+            if (candidateDistance < distance) {
+              distance = candidateDistance;
+              best = index;
+            }
+          });
+          return best;
+        };
+        const rawStartIndex = Number.isFinite(coordinates.start_index) ? coordinates.start_index : 0;
+        const startFallback = Math.max(0, Math.min(bars.length - 1, rawStartIndex));
+        const start = nearestDateIndex(coordinates.start_date, startFallback);
+        const endDate = coordinates.fit_cutoff || coordinates.breakout_date || coordinates.retest_date || null;
+        const rawEnd = Number.isFinite(coordinates.fit_end_index) ? coordinates.fit_end_index : rawStartIndex + (Number.isFinite(coordinates.span_bars) ? coordinates.span_bars : 0);
+        const endFallback = Math.max(start, Math.min(bars.length - 1, rawEnd));
+        const end = endDate ? Math.max(start, nearestDateIndex(endDate, endFallback)) : endFallback;
         const lines = [];
         const addLinear = (key, line) => {
           if (!line || !Number.isFinite(line.slope_per_bar) || !Number.isFinite(line.intercept)) return;
-          const data = bars.slice(start, end + 1).map((bar, offset) => ({ time: bar.time, value: line.slope_per_bar * (start + offset) + line.intercept }));
+          const data = bars.slice(start, end + 1).map((bar, offset) => ({ time: bar.time, value: line.slope_per_bar * (rawStartIndex + offset) + line.intercept }));
           if (data.length > 1) lines.push({ key, data });
         };
         addLinear('patternGeometryUpper', coordinates.upper);
@@ -1565,12 +1586,19 @@
       document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.view === state.view) return;
         state.view = button.dataset.view;
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('view', state.view);
+        window.history.replaceState({}, '', nextUrl);
         render();
       }));
       document.querySelectorAll('[data-gex-expiry]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.gexExpiry === state.gexExpiry) return;
         state.gexExpiry = button.dataset.gexExpiry;
         if (state.view !== 'gex') state.view = 'gex';
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('view', state.view);
+        nextUrl.searchParams.set('expiry', state.gexExpiry);
+        window.history.replaceState({}, '', nextUrl);
         render();
       }));
       document.querySelectorAll('[data-candidate]').forEach((button) => button.addEventListener('click', () => {
