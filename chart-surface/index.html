@@ -988,9 +988,42 @@
           if (data.length) lines.push({ key: 'patternGeometry', data });
         }
         if (!lines.length && /double_(top|bottom)/i.test(String(coordinates.type || ''))) {
+          // Restore the original Elliott+ zig-zag treatment for double patterns:
+          // left extreme → middle pivot → right extreme → current close. This
+          // makes the yellow pattern line visibly match the pattern label and
+          // thesis instead of reducing it to an ambiguous horizontal range.
           const segment = bars.slice(start, end + 1);
-          const value = coordinates.type === 'double_top' ? Math.max(...segment.map((bar) => bar.high)) : Math.min(...segment.map((bar) => bar.low));
-          if (Number.isFinite(value)) lines.push({ key: 'patternGeometryRange', data: segment.map((bar) => ({ time: bar.time, value })) });
+          if (segment.length >= 6) {
+            const midpoint = Math.floor(segment.length / 2);
+            const leftSegment = segment.slice(0, midpoint);
+            const rightSegment = segment.slice(midpoint);
+            const isBottom = coordinates.type === 'double_bottom';
+            const extreme = (items, field, chooseMin) => items.reduce((best, bar) => {
+              if (!best) return bar;
+              return chooseMin ? (bar[field] < best[field] ? bar : best) : (bar[field] > best[field] ? bar : best);
+            }, null);
+            const left = extreme(leftSegment, isBottom ? 'low' : 'high', isBottom);
+            const right = extreme(rightSegment, isBottom ? 'low' : 'high', isBottom);
+            const leftIndex = segment.indexOf(left);
+            const rightIndex = segment.indexOf(right);
+            const between = segment.slice(Math.min(leftIndex, rightIndex) + 1, Math.max(leftIndex, rightIndex));
+            const middle = extreme(between.length ? between : segment, isBottom ? 'high' : 'low', !isBottom);
+            const value = (bar) => isBottom ? bar.low : bar.high;
+            const middleValue = isBottom ? middle.high : middle.low;
+            const data = [
+              { time: left.time, value: value(left) },
+              { time: middle.time, value: middleValue },
+              { time: right.time, value: value(right) },
+              { time: bars.at(-1).time, value: bars.at(-1).close }
+            ].filter((point, index, points) => index === 0 || point.time !== points[index - 1].time);
+            if (data.length >= 3 && data.every((point) => Number.isFinite(point.value))) {
+              lines.push({ key: 'patternGeometryDouble', data });
+            }
+          }
+          if (!lines.length) {
+            const value = coordinates.type === 'double_top' ? Math.max(...segment.map((bar) => bar.high)) : Math.min(...segment.map((bar) => bar.low));
+            if (Number.isFinite(value)) lines.push({ key: 'patternGeometryRange', data: segment.map((bar) => ({ time: bar.time, value })) });
+          }
         }
         return lines;
       }
