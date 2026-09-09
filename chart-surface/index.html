@@ -543,7 +543,12 @@
       const normalizeTicker = (value) => String(value ?? '').trim().toUpperCase();
       const requestedTicker = normalizeTicker(query.get('ticker'));
       const packetCoverage = [...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }));
-      const baseCoverage = [...(contract.coverage || []), ...packetCoverage].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
+      const baseCoverage = [...(contract.coverage || [])].map((item) => ({ ...item }));
+      packetCoverage.forEach((packet) => {
+        const index = baseCoverage.findIndex((item) => normalizeTicker(item.ticker) === normalizeTicker(packet.ticker));
+        if (index < 0) baseCoverage.push({ ...packet });
+        else if (packet.company && normalizeTicker(packet.company) !== normalizeTicker(packet.ticker)) baseCoverage[index] = { ...baseCoverage[index], company: packet.company };
+      });
       const defaultTicker = requestedTicker || baseCoverage.find((item) => item.active !== false)?.ticker || Object.keys(datasets)[0] || '';
       const state = { ticker: defaultTicker, view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
       $('ticker-menu-label').textContent = state.ticker;
