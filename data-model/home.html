@@ -259,6 +259,7 @@
   </nav>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v3"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
+  <script src="../coverage-order.js?v=20260909-v1"></script>
   <script>
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
@@ -411,15 +412,7 @@
       const latestWeeklyRun = (ticker) => preferredRuns(ticker).find(isWeeklyRun) || null;
       const priceSnapshotFor = (ticker, latest) => normalizePriceSnapshot(latest?.priceSnapshot || latest?.currentPriceSnapshot, priceDatasets[ticker]?.bars?.at(-1));
       const list = document.getElementById('ticker-list');
-      const coverageSortRank = (item) => {
-        const ticker = String(item.ticker || '').trim().toUpperCase();
-        const position = ['LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'].indexOf(ticker);
-        return position === -1 ? 1000 : position;
-      };
-      const orderCoverage = (items) => items.map((item, index) => ({ item, index }))
-        .sort((a, b) => coverageSortRank(a.item) - coverageSortRank(b.item) || a.index - b.index)
-        .map(({ item }) => item);
-      const coverage = orderCoverage(rows().filter((item) => item.active !== false && item.hidden !== true));
+      const coverage = window.PROTOTYPE_SORT_COVERAGE(rows().filter((item) => item.active !== false && item.hidden !== true));
       const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;
       const explorationCount = coverage.filter((item) => coverageGroup(item) === 'exploration').length;
       const twseCount = coverage.filter((item) => marketGroup(item) === 'twse').length;
