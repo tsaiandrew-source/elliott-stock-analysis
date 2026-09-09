@@ -174,11 +174,18 @@
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
     .value { font-weight: 700; }
     .thesis { font-size: 17px; line-height: 1.42; }
-    .prediction-badge { display: inline-flex; align-items: center; gap: 7px; margin-top: 9px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: rgba(17, 36, 51, .48); font-size: 12px; font-weight: 800; }
-    .prediction-badge[data-direction="up"] { color: var(--green); border-color: color-mix(in srgb, var(--green) 55%, transparent); }
-    .prediction-badge[data-direction="down"] { color: var(--red); border-color: color-mix(in srgb, var(--red) 55%, transparent); }
-    .prediction-badge[data-direction="flat"] { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 55%, transparent); }
-    .prediction-badge[hidden] { display: none; }
+    .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(17, 36, 51, .32); }
+    .direction-summary-head { color: var(--aqua); font-size: 11px; font-weight: 800; }
+    .direction-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .direction-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
+    .direction-item[data-kind="formal"] { border-color: rgba(145, 168, 183, .34); }
+    .direction-item[data-kind="watch"] { border-color: color-mix(in srgb, var(--pattern-family) 38%, transparent); }
+    .direction-item .direction-label { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .direction-value { color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .direction-value[data-direction="up"] { color: var(--green); }
+    .direction-value[data-direction="down"] { color: var(--red); }
+    .direction-value[data-direction="flat"] { color: var(--amber); }
+    .direction-value[data-direction="pending"] { color: var(--muted); }
     .business-summary { margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--line); }
     .business-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
     .business-context > div { min-width: 0; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .38); }
@@ -403,7 +410,15 @@
         <section class="panel summary" id="business-panel">
           <h3>核心論述</h3>
           <p class="thesis" id="thesis"></p>
-          <div class="prediction-badge" id="prediction-badge" data-direction="flat" hidden aria-label="預測方向"></div>
+          <div class="direction-summary" id="direction-summary" aria-label="正式預測與觀察方向">
+            <div class="direction-summary-head">方向區分</div>
+            <div class="direction-summary-grid">
+              <div class="direction-item" data-kind="formal"><span class="direction-label">正式預測 · 日線</span><span class="direction-value" id="formal-daily-direction"></span></div>
+              <div class="direction-item" data-kind="watch"><span class="direction-label">觀察方向 · 日線</span><span class="direction-value" id="watch-daily-direction"></span></div>
+              <div class="direction-item" data-kind="formal"><span class="direction-label">正式預測 · 週線</span><span class="direction-value" id="formal-weekly-direction"></span></div>
+              <div class="direction-item" data-kind="watch"><span class="direction-label">觀察方向 · 週線</span><span class="direction-value" id="watch-weekly-direction"></span></div>
+            </div>
+          </div>
           <p class="source-note cadence-note" id="thesis-refresh"></p>
           <div class="business-summary">
             <span class="label">基本面／新聞脈絡</span>
@@ -625,6 +640,13 @@
       };
       const latestDailyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
       const latestWeeklyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
+      const validDirection = (value) => ['up', 'flat', 'down'].includes(String(value || '').toLowerCase()) ? String(value).toLowerCase() : null;
+      const watchDirectionFor = (run, timeframe) => {
+        const direct = validDirection(run?.watchDirection?.[timeframe] || run?.[`${timeframe}WatchDirection`]);
+        if (direct) return direct;
+        const pattern = run?.technicalEvidence?.patterns?.[`${timeframe}Primary`];
+        return validDirection(pattern?.watch_direction);
+      };
       const analysisOnlyDataset = (ticker) => {
         const dailyRun = latestDailyRun(ticker);
         const weeklyRun = latestWeeklyRun(ticker);
@@ -655,6 +677,10 @@
           patternStatus: patternRun.status,
           patternCandidates,
           predictionDirection: selectedRun.predictionDirection ?? null,
+          dailyPredictionDirection: dailyRun?.predictionDirection ?? null,
+          weeklyPredictionDirection: weeklyRun?.predictionDirection ?? null,
+          dailyWatchDirection: watchDirectionFor(dailyRun, 'daily'),
+          weeklyWatchDirection: watchDirectionFor(weeklyRun || dailyRun, 'weekly'),
           thesis: selectedRun.thesis,
           wyckoff: patternRun.wyckoffPhase?.daily || '日線 Wyckoff 待補。',
           weeklyWyckoff: patternRun.wyckoffPhase?.weekly || '週線 Wyckoff 待補。',
@@ -1488,13 +1514,21 @@
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
         $('thesis').textContent = overall?.thesis || data.thesis;
-        const predictionBadge = $('prediction-badge');
-        const prediction = String(data.predictionDirection || '').toLowerCase();
-        const predictionMap = { up: { symbol: '↗', label: '向上', key: 'up' }, down: { symbol: '↘', label: '向下', key: 'down' }, flat: { symbol: '→', label: '盤整', key: 'flat' } };
-        const predictionView = predictionMap[prediction] || { symbol: '—', label: '待定', key: 'flat' };
-        predictionBadge.textContent = `預測方向 · ${predictionView.symbol} ${predictionView.label}`;
-        predictionBadge.dataset.direction = predictionView.key;
-        predictionBadge.hidden = !data.predictionDirection;
+        const directionMap = { up: { symbol: '↗', label: '上行' }, down: { symbol: '↘', label: '下行' }, flat: { symbol: '→', label: '盤整' } };
+        const directionText = (direction, kind) => {
+          const normalized = validDirection(direction);
+          const view = directionMap[normalized];
+          const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '待定';
+          return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label };
+        };
+        [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
+          const element = $(id);
+          const kind = id.startsWith('watch-') ? 'watch' : 'formal';
+          const view = directionText(direction, kind);
+          element.textContent = view.text;
+          element.dataset.direction = view.key;
+          element.setAttribute('aria-label', view.ariaLabel);
+        });
         $('thesis-refresh').textContent = '';
         $('business').textContent = overall?.businessSummary || data.business;
         [['business-unproved', overall?.unproved], ['business-next-test', overall?.nextTest]].forEach(([id, value]) => {
