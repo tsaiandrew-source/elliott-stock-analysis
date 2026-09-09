@@ -377,6 +377,7 @@
           const status = source.status === 'snapshot' ? 'snapshot' : 'close';
           return { value, status, label: status === 'snapshot' ? '現價快照' : '收盤價', asOf: source.asOf || source.dataThrough || '' };
         }
+        if (snapshot && ['pending', 'not_applicable'].includes(String(source.status || '').toLowerCase())) return null;
         const close = Number(fallbackBar?.close);
         return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
       };
@@ -410,7 +411,7 @@
       };
       const latestRun = (ticker) => preferredRuns(ticker).filter((run) => !isWeeklyRun(run))[0] || preferredRuns(ticker)[0];
       const latestWeeklyRun = (ticker) => preferredRuns(ticker).find(isWeeklyRun) || null;
-      const priceSnapshotFor = (ticker, latest) => normalizePriceSnapshot(latest?.priceSnapshot || latest?.currentPriceSnapshot, priceDatasets[ticker]?.bars?.at(-1));
+      const priceSnapshotFor = (ticker, latest, coverageItem) => normalizePriceSnapshot(coverageItem?.priceSnapshot || latest?.priceSnapshot || latest?.currentPriceSnapshot, priceDatasets[ticker]?.bars?.at(-1));
       const list = document.getElementById('ticker-list');
       const coverage = window.PROTOTYPE_SORT_COVERAGE(rows().filter((item) => item.active !== false && item.hidden !== true));
       const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;
@@ -436,7 +437,7 @@
           : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
         const confidence = latest?.confidencePercent == null ? '—' : `${latest.confidencePercent}%`;
         const confidenceTitle = latest?.confidenceBand ? `信心區間：${latest.confidenceBand}` : '';
-        const priceSnapshot = priceSnapshotFor(item.ticker, latest);
+        const priceSnapshot = priceSnapshotFor(item.ticker, latest, item);
         const price = priceSnapshot ? formatPrice(priceSnapshot.value) : '—';
         const priceTitle = priceSnapshot ? `${priceSnapshot.label}${priceSnapshot.asOf ? ` · ${priceSnapshot.asOf}` : ''}` : '尚無價格資料';
         return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-price" title="${escapeHtml(priceTitle)}">${escapeHtml(price)}</span>${directionCell(latest)}${directionCell(weekly)}<span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
