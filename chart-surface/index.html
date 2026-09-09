@@ -1498,7 +1498,7 @@
           endOfDay: runtimeDigests.endOfDay || null,
           weekly: runtimeDigests.weekly || null
         };
-        const endOfDayLabel = activeDigests.endOfDay?.date ? `End of Day Digest · ${String(activeDigests.endOfDay.date).slice(0, 10)}` : 'End of Day Digest';
+        const endOfDayLabel = activeDigests.endOfDay?.date ? `EoD Digest · ${String(activeDigests.endOfDay.date).slice(0, 10)}` : 'EoD Digest';
         businessDetails.innerHTML = renderDigest(activeDigests.endOfDay, 'endOfDay', endOfDayLabel) + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
         const historyPanel = $('analysis-history');
