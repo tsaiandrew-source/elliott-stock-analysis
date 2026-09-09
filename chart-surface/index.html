@@ -541,8 +541,10 @@
       }
       const query = new URLSearchParams(window.location.search);
       const normalizeTicker = (value) => String(value ?? '').trim().toUpperCase();
+      const companyDisplayAliases = { '2330': 'TSMC' };
+      const displayCompany = (ticker, company) => companyDisplayAliases[normalizeTicker(ticker)] || company;
       const requestedTicker = normalizeTicker(query.get('ticker'));
-      const packetCoverage = [...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }));
+      const packetCoverage = [...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: displayCompany(ticker, v2Runs.find((run) => run.ticker === ticker)?.company || ticker), active: true }));
       const baseCoverage = [...(contract.coverage || [])].map((item) => ({ ...item }));
       packetCoverage.forEach((packet) => {
         const index = baseCoverage.findIndex((item) => normalizeTicker(item.ticker) === normalizeTicker(packet.ticker));
