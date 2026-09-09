@@ -612,7 +612,7 @@
           invalidation: selectedRun.invalidation,
           options: gexSummary?.displayText || (gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
           business: selectedRun.fundamentalsNews,
-          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, proved: businessEvidence.proved || '—', unproved: businessEvidence.unproved || '—', nextTest: businessEvidence.nextTest || '—' },
+          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, proved: businessEvidence.proved || '', unproved: businessEvidence.unproved || '', nextTest: businessEvidence.nextTest || '' },
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
