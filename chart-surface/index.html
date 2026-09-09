@@ -1303,17 +1303,20 @@
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
         $('thesis').textContent = overall?.thesis || data.thesis;
-        $('thesis-refresh').textContent = hasOverall ? `整體 thesis 更新：${overall.updated} · 更新節奏：${overall.cadence}` : '';
+        $('thesis-refresh').textContent = '';
         $('business').textContent = overall?.businessSummary || data.business;
-        $('business-proved').textContent = overall?.proved || '—';
-        $('business-unproved').textContent = overall?.unproved || '—';
-        $('business-next-test').textContent = overall?.nextTest || '—';
+        [['business-proved', overall?.proved], ['business-unproved', overall?.unproved], ['business-next-test', overall?.nextTest]].forEach(([id, value]) => {
+          const element = $(id);
+          element.textContent = value || '';
+          if (element.parentElement) element.parentElement.hidden = !value;
+        });
         const renderDigest = (item, tone) => {
           if (!item) return '';
           const body = item.sections
             ? item.sections.map((section) => `<section class="digest-section"><h4>${section.heading}</h4><ul>${section.points.map((point) => `<li>${point}</li>`).join('')}</ul></section>`).join('')
             : `<ul>${item.points.map((point) => `<li>${point}</li>`).join('')}</ul>`;
-          return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p></article></div></details>`;
+          const next = item.next ? `<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p>` : '';
+          return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}${next}</article></div></details>`;
         };
         const runtimeDigests = data.digestDetails || {};
         const activeDigests = {

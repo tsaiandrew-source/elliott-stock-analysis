@@ -36,6 +36,11 @@
     .coverage-panel[hidden] { display:none; }
     .ticker-list { display:grid; gap:8px; margin-top:11px; overflow-x:auto; }
     .coverage-group + .coverage-group { margin-top:18px; }
+    .market-group { margin-top:18px; padding-top:14px; border-top:1px solid rgba(79,209,165,.3); }
+    .market-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 8px; padding-bottom:6px; border-bottom:1px solid rgba(79,209,165,.4); }
+    .market-group-head strong { color:var(--teal); font-size:13px; }
+    .market-group-head span { color:var(--muted); font-size:10px; }
+    .market-group .coverage-group { margin-top:12px; }
     .coverage-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 7px; padding-bottom:5px; border-bottom:1px solid rgba(85,217,213,.22); }
     .coverage-group-head strong { color:var(--aqua); font-size:12px; }
     .coverage-group-head span { color:var(--muted); font-size:10px; }
@@ -83,6 +88,7 @@
     .coverage-admin td:first-child { color:var(--aqua); }
     .coverage-admin .group-row td { padding-top:14px; padding-bottom:6px; border-bottom-color:rgba(85,217,213,.24); color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.04em; }
     .coverage-admin .group-row.exploration td { color:var(--amber); border-bottom-color:rgba(242,184,75,.32); }
+    .coverage-admin .group-row.twse td { color:var(--teal); border-bottom-color:rgba(79,209,165,.4); }
     .coverage-admin-wrap { overflow-x:auto; }
     .empty { padding:20px 0; color:var(--muted); }
     .foot { margin-top:13px; color:var(--muted); font-size:11px; }
@@ -232,7 +238,8 @@
         <form class="coverage-form" id="coverage-form">
           <input id="new-ticker" placeholder="搜尋／輸入 Ticker，例如：AMD" maxlength="12" autocomplete="off" required>
           <input id="new-company" placeholder="Company name" maxlength="48" autocomplete="organization">
-          <select id="new-group" aria-label="Coverage group"><option value="tracking">Tracking · 追蹤</option><option value="exploration">Exploration · 探索</option></select>
+          <select id="new-group" aria-label="Coverage group"><option value="tracking">Tracked · 追蹤</option><option value="exploration">Exploration · 探索</option></select>
+          <select id="new-market" aria-label="Market group"><option value="us">US Markets · 美國市場</option><option value="twse">Taiwan Stock Exchange · 台股</option></select>
           <button class="action" type="submit">Add</button>
         </form>
         <div class="coverage-admin-wrap">
@@ -318,7 +325,14 @@
       const runMap = new Map();
       [...(activeContract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
       const runs = [...runMap.values()];
-      const baseCoverage = [...(activeContract.coverage || []), ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }))].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
+      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
+      const twseTickers = new Set(['2330', '2646']);
+      const inferredCoverageGroup = (ticker) => explorationTickers.has(String(ticker || '').trim().toUpperCase()) ? 'exploration' : 'tracking';
+      const inferredMarketGroup = (ticker) => twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
+      const baseCoverage = [
+        ...(activeContract.coverage || []).map((item) => ({ ...item, coverageGroup: item.coverageGroup || item.CoverageGroup || inferredCoverageGroup(item.ticker), marketGroup: item.marketGroup || item.MarketGroup || inferredMarketGroup(item.ticker) })),
+        ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true, coverageGroup: inferredCoverageGroup(ticker), marketGroup: inferredMarketGroup(ticker) }))
+      ].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
       let overrides = {};
       try { overrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { overrides = {}; }
       const allRows = () => {
@@ -331,9 +345,24 @@
       const coverageMode = query.get('mode') === 'manage' ? 'manage' : 'view';
       const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || '';
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
-      const normalizeCoverageGroup = (value) => ['exploration', 'explore', 'exploratory'].includes(String(value ?? '').trim().toLowerCase()) ? 'exploration' : 'tracking';
-      const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracking · 追蹤';
-      const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group);
+      const normalizeCoverageGroup = (value, ticker = '') => {
+        const normalized = String(value ?? '').trim().toLowerCase();
+        if (['exploration', 'explore', 'exploratory'].includes(normalized)) return 'exploration';
+        if (['tracking', 'tracked', 'track'].includes(normalized)) return 'tracking';
+        return explorationTickers.has(String(ticker || '').trim().toUpperCase()) ? 'exploration' : 'tracking';
+      };
+      const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracked · 追蹤';
+      const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group, item.ticker);
+      const normalizeMarketGroup = (value, ticker = '') => {
+        const normalized = String(value ?? '').trim().toLowerCase();
+        if (['twse', 'taiwan', 'taiwan stock exchange', 'taiwan-stock-exchange'].includes(normalized)) return 'twse';
+        return twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
+      };
+      const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
+      const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
+      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
+      const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
+      const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
       const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
       const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
       const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
@@ -342,7 +371,8 @@
       const coverage = rows().filter((item) => item.active !== false && item.hidden !== true);
       const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;
       const explorationCount = coverage.filter((item) => coverageGroup(item) === 'exploration').length;
-      document.getElementById('coverage-count').textContent = `${coverage.length} 個 active ticker · 追蹤 ${trackingCount} · 探索 ${explorationCount}`;
+      const twseCount = coverage.filter((item) => marketGroup(item) === 'twse').length;
+      document.getElementById('coverage-count').textContent = `${coverage.length} 個 active ticker · Tracked ${trackingCount} · Exploration ${explorationCount} · TWSE ${twseCount}`;
       const currentAnalysis = document.getElementById('current-analysis');
       if (currentAnalysis) currentAnalysis.href = `../chart-surface/index.html?ticker=${encodeURIComponent(selectedTicker)}&view=daily`;
       const renderTickerRows = (items) => items.map((item) => {
@@ -353,7 +383,7 @@
         const directionMap = { up: { symbol: '↗', key: 'up', label: '趨勢向上' }, down: { symbol: '↘', key: 'down', label: '趨勢向下' }, flat: { symbol: '→', key: 'flat', label: '延續盤整' } };
         const forecast = directionMap[latest?.predictionDirection] || directionMap.flat;
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
-        const hasDetail = Boolean(latest);
+        const hasDetail = canOpenChart(item.ticker, latest);
         const rowAttributes = hasDetail
           ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
           : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
@@ -361,12 +391,18 @@
         const confidenceTitle = latest?.confidenceBand ? `信心區間：${latest.confidenceBand}` : '';
         return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-pattern" title="${escapeHtml(compactPattern)}">${escapeHtml(compactPattern)}</span><span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span><span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
       }).join('');
-      list.innerHTML = ['tracking', 'exploration'].map((group) => {
-        const items = coverage.filter((item) => coverageGroup(item) === group);
+      const renderCoverageGroup = (group, items) => {
         const label = coverageGroupLabel(group);
         const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>型態</span><span title="未來方向預測">預測</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
         return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
-      }).join('');
+      };
+      const usCoverage = coverage.filter((item) => marketGroup(item) !== 'twse');
+      const twseCoverage = coverage.filter((item) => marketGroup(item) === 'twse');
+      list.innerHTML = [
+        renderCoverageGroup('tracking', usCoverage.filter((item) => coverageGroup(item) === 'tracking')),
+        renderCoverageGroup('exploration', usCoverage.filter((item) => coverageGroup(item) === 'exploration')),
+        `<section class="market-group" data-market-group="twse"><div class="market-group-head"><strong>${marketGroupLabel('twse')}</strong><span>${twseCoverage.length} 個 ticker</span></div>${['tracking', 'exploration'].map((group) => renderCoverageGroup(group, twseCoverage.filter((item) => coverageGroup(item) === group))).join('')}</section>`
+      ].join('');
       list.querySelectorAll('.ticker-row.has-detail[data-ticker]').forEach((row) => {
         const open = () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(row.dataset.ticker)}&view=daily`; };
         row.addEventListener('click', (event) => { if (!event.target.closest('.ticker-history-toggle, .history-panel')) open(); });
@@ -387,10 +423,11 @@
         window.location.href = next.toString();
       };
       const renderCoverageAdmin = () => {
-        const adminRows = ['tracking', 'exploration'].map((group) => {
-          const groupRows = rows().filter((item) => coverageGroup(item) === group);
-          const groupHeader = `<tr class="group-row ${group}"><td colspan="6">${coverageGroupLabel(group)} · ${groupRows.length} 個 ticker</td></tr>`;
-          const body = groupRows.map((item) => { const statusClass = item.active === false ? 'status-inactive' : 'status-active'; const status = item.active === false ? 'Inactive' : 'Active'; const actions = `<button type="button" class="action" data-active="${item.active !== false}" data-toggle-ticker="${escapeHtml(item.ticker)}">${item.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(item.ticker)}">Remove</button>`; return `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(coverageGroupLabel(item))}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class="${statusClass}">${status}</td><td>${actions}</td></tr>`; }).join('');
+        const adminRows = ['tracking', 'exploration', 'twse'].map((group) => {
+          const groupRows = rows().filter((item) => group === 'twse' ? marketGroup(item) === 'twse' : marketGroup(item) !== 'twse' && coverageGroup(item) === group);
+          const label = group === 'twse' ? marketGroupLabel(group) : coverageGroupLabel(group);
+          const groupHeader = `<tr class="group-row ${group}"><td colspan="6">${label} · ${groupRows.length} 個 ticker</td></tr>`;
+          const body = groupRows.map((item) => { const statusClass = item.active === false ? 'status-inactive' : 'status-active'; const status = item.active === false ? 'Inactive' : 'Active'; const actions = `<button type="button" class="action" data-active="${item.active !== false}" data-toggle-ticker="${escapeHtml(item.ticker)}">${item.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(item.ticker)}">Remove</button>`; return `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(coverageGroupLabel(coverageGroup(item)))}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class="${statusClass}">${status}</td><td>${actions}</td></tr>`; }).join('');
           return groupHeader + body;
         }).join('');
         admin.innerHTML = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Group</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${adminRows}</tbody></table>`;
@@ -416,7 +453,7 @@
         const ticker = document.getElementById('new-ticker').value.trim().toUpperCase();
         if (!ticker) return;
         const current = allRows().find((item) => item.ticker === ticker) || { ticker };
-        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, coverageGroup: document.getElementById('new-group').value, active: true, hidden: false, removed: false, defaultView: current.defaultView || 'daily' };
+        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, coverageGroup: document.getElementById('new-group').value, marketGroup: document.getElementById('new-market').value, active: true, hidden: false, removed: false, defaultView: current.defaultView || 'daily' };
         saveCoverage();
         reloadInManagementMode();
       });
@@ -446,7 +483,7 @@
         const ticker = document.createElement('strong'); ticker.textContent = item.ticker;
         const company = document.createElement('span'); company.textContent = item.company || item.ticker;
         button.append(ticker, company);
-        const hasDetail = Boolean(latestRun(item.ticker));
+        const hasDetail = canOpenChart(item.ticker, latestRun(item.ticker));
         button.disabled = !hasDetail;
         if (!hasDetail) button.title = '尚無可用分析，暫不可開啟';
         if (hasDetail) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
