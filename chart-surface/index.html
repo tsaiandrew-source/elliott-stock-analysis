@@ -528,7 +528,7 @@
       const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
-      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternGuide: '#f2b84b', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
+      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternGuide: '#f2b84b', currentPrice: '#f2b84b', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
@@ -582,6 +582,17 @@
         const coverageDate = coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker))?.latestChartDate;
         return String(datasetDate || coverageDate || '').slice(0, 10);
       };
+      const normalizePriceSnapshot = (snapshot, fallbackBar) => {
+        const source = snapshot && typeof snapshot === 'object' ? snapshot : {};
+        const value = Number(source.value ?? source.price ?? source.last ?? source.close);
+        if (Number.isFinite(value)) {
+          const status = source.status === 'snapshot' ? 'snapshot' : 'close';
+          return { value, status, label: status === 'snapshot' ? '現價快照' : '收盤價', asOf: source.asOf || source.dataThrough || '' };
+        }
+        const close = Number(fallbackBar?.close);
+        return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
+      };
+      const priceSnapshotFor = (data, bars = data?.bars || []) => normalizePriceSnapshot(data?.priceSnapshot || data?.currentPriceSnapshot, bars.at(-1));
       const eligibleRuns = (ticker) => {
         const cutoff = chartDataCutoff(ticker);
         const runs = tickerRuns(ticker);
@@ -637,6 +648,7 @@
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
+          priceSnapshot: selectedRun.priceSnapshot || selectedRun.currentPriceSnapshot || null,
           sourceEvidence: selectedRun.sourceEvidence || [],
           missingFields: selectedRun.missingFields || [],
           recoveryTiming: selectedRun.recoveryTiming || null,
@@ -1106,7 +1118,8 @@
       function freezePriceFrame(bars, data, pattern) {
         const values = bars.flatMap((bar) => [bar.low, bar.high]);
         const gex = gexView(data);
-        values.push(pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
+        const priceSnapshot = priceSnapshotFor(data, bars);
+        values.push(priceSnapshot?.value, pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
         const numericValues = values.map(Number).filter(Number.isFinite);
         const min = Math.min(...numericValues);
         const max = Math.max(...numericValues);
@@ -1380,6 +1393,8 @@
         layerSeries.bbUpper = addLine('bbUpper', bb.map((item) => ({ time: item.time, value: item.upper })), colors.bollinger, 1);
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
+        const priceSnapshot = priceSnapshotFor(data, bars);
+        layerSeries.currentPrice = addLine('currentPrice', levelData(bars, priceSnapshot?.value), colors.currentPrice, 1, L.LineStyle.Dashed);
         patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
           // Pattern geometry uses the same bright lime signal as the 型態組合
           // control, so it remains visible above the candle and Bollinger layers.
