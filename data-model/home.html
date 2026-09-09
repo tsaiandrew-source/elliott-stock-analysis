@@ -61,6 +61,7 @@
     .latest-direction[data-direction="up"] { color:var(--green); }
     .latest-direction[data-direction="down"] { color:var(--rose); }
     .latest-direction[data-direction="flat"] { color:var(--amber); }
+    .latest-direction[data-direction="pending"] { color:var(--muted); }
     .latest-confidence { color:var(--lime); font-size:13px; font-weight:800; }
     .latest-date { color:var(--muted); font-size:11px; }
     .ticker-copy em { color:var(--muted); font-size:11px; font-style:normal; white-space:nowrap; }
@@ -393,8 +394,8 @@
         const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
         const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'weekly' ? '週線' : '日線')} · 信心 ${escapeHtml(run.confidencePercent == null ? '—' : `${run.confidencePercent}%`)} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
         const compactPattern = latest?.patternLabel || '尚無最新分析';
-        const directionMap = { up: { symbol: '↗', key: 'up', label: '趨勢向上' }, down: { symbol: '↘', key: 'down', label: '趨勢向下' }, flat: { symbol: '→', key: 'flat', label: '延續盤整' } };
-        const forecast = directionMap[latest?.predictionDirection] || directionMap.flat;
+        const directionMap = { up: { symbol: '↗', key: 'up', label: '趨勢向上' }, down: { symbol: '↘', key: 'down', label: '趨勢向下' }, flat: { symbol: '→', key: 'flat', label: '延續盤整' }, null: { symbol: '—', key: 'pending', label: '方向待定' } };
+        const forecast = directionMap[latest?.predictionDirection ?? 'null'] || directionMap.null;
         const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
         const hasDetail = canOpenChart(item.ticker, latest);
         const rowAttributes = hasDetail
@@ -406,7 +407,7 @@
       }).join('');
       const renderCoverageGroup = (group, items) => {
         const label = coverageGroupLabel(group);
-        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>型態</span><span title="未來方向預測">預測</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
+        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>日線型態</span><span title="未來方向預測">預測</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
         return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
       };
       const usCoverage = coverage.filter((item) => marketGroup(item) !== 'twse');

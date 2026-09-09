@@ -172,6 +172,11 @@
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
     .value { font-weight: 700; }
     .thesis { font-size: 17px; line-height: 1.42; }
+    .prediction-badge { display: inline-flex; align-items: center; gap: 7px; margin-top: 9px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: rgba(17, 36, 51, .48); font-size: 12px; font-weight: 800; }
+    .prediction-badge[data-direction="up"] { color: var(--green); border-color: color-mix(in srgb, var(--green) 55%, transparent); }
+    .prediction-badge[data-direction="down"] { color: var(--red); border-color: color-mix(in srgb, var(--red) 55%, transparent); }
+    .prediction-badge[data-direction="flat"] { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 55%, transparent); }
+    .prediction-badge[hidden] { display: none; }
     .business-summary { margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--line); }
     .business-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
     .business-context > div { min-width: 0; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .38); }
@@ -388,6 +393,7 @@
         <section class="panel summary" id="business-panel">
           <h3>核心論述</h3>
           <p class="thesis" id="thesis"></p>
+          <div class="prediction-badge" id="prediction-badge" data-direction="flat" hidden aria-label="預測方向"></div>
           <p class="source-note cadence-note" id="thesis-refresh"></p>
           <div class="business-summary">
             <span class="label">基本面／新聞脈絡</span>
@@ -442,6 +448,7 @@
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
+  <script src="analysis-geometry.js?v=20260909-1"></script>
   <script src="analysis-packets-v2.js?v=20260909-v3"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
@@ -521,7 +528,7 @@
       const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
-      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
+      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternGuide: '#f2b84b', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
@@ -597,7 +604,8 @@
         const patternRun = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
         const primary = patternRun.primaryCandidate || null;
         const secondary = patternRun.secondaryCandidate || null;
-        const patternCandidates = primary ? { primary: { ...primary, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
+        const sidecarCoordinates = window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null;
+        const patternCandidates = primary ? { primary: { ...primary, coordinates: primary.coordinates || sidecarCoordinates, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
         const dailyDigest = dailyRun?.dailyDigest || null;
         const weeklyDigest = weeklyRun?.weeklyDigest || dailyRun?.weeklyDigest || null;
         const digestDetails = {
@@ -616,6 +624,7 @@
           pattern: patternRun.patternLabel,
           patternStatus: patternRun.status,
           patternCandidates,
+          predictionDirection: selectedRun.predictionDirection ?? null,
           thesis: selectedRun.thesis,
           wyckoff: patternRun.wyckoffPhase?.daily || '日線 Wyckoff 待補。',
           weeklyWyckoff: patternRun.wyckoffPhase?.weekly || '週線 Wyckoff 待補。',
@@ -955,6 +964,37 @@
         return points.filter((point) => point && Number.isFinite(point.time) && Number.isFinite(point.value));
       }
 
+      function patternGeometryLines(bars, ticker, pattern) {
+        if (state.view === 'weekly' || !bars.length || !pattern) return [];
+        const coordinates = pattern.coordinates || window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null;
+        if (!coordinates) {
+          const data = patternGeometry(bars, ticker, pattern);
+          return data.length ? [{ key: 'patternGeometry', data }] : [];
+        }
+        const start = Math.max(0, Math.min(bars.length - 1, Number.isFinite(coordinates.start_index) ? coordinates.start_index : 0));
+        const rawEnd = Number.isFinite(coordinates.fit_end_index) ? coordinates.fit_end_index : start + (Number.isFinite(coordinates.span_bars) ? coordinates.span_bars : 0);
+        const end = Math.max(start, Math.min(bars.length - 1, rawEnd));
+        const lines = [];
+        const addLinear = (key, line) => {
+          if (!line || !Number.isFinite(line.slope_per_bar) || !Number.isFinite(line.intercept)) return;
+          const data = bars.slice(start, end + 1).map((bar, offset) => ({ time: bar.time, value: line.slope_per_bar * (start + offset) + line.intercept }));
+          if (data.length > 1) lines.push({ key, data });
+        };
+        addLinear('patternGeometryUpper', coordinates.upper);
+        addLinear('patternGeometryLower', coordinates.lower);
+        addLinear('patternGeometryNeckline', coordinates.neckline);
+        if (!lines.length && Array.isArray(pattern.points)) {
+          const data = patternGeometry(bars, ticker, pattern);
+          if (data.length) lines.push({ key: 'patternGeometry', data });
+        }
+        if (!lines.length && /double_(top|bottom)/i.test(String(coordinates.type || ''))) {
+          const segment = bars.slice(start, end + 1);
+          const value = coordinates.type === 'double_top' ? Math.max(...segment.map((bar) => bar.high)) : Math.min(...segment.map((bar) => bar.low));
+          if (Number.isFinite(value)) lines.push({ key: 'patternGeometryRange', data: segment.map((bar) => ({ time: bar.time, value })) });
+        }
+        return lines;
+      }
+
       function phaseData() { return []; }
 
       function drawPhaseOverlay(bars, phases = phaseData(bars, state.ticker)) {
@@ -1259,7 +1299,9 @@
         layerSeries.bbUpper = addLine('bbUpper', bb.map((item) => ({ time: item.time, value: item.upper })), colors.bollinger, 1);
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
-        layerSeries.patternGeometry = addLine('patternGeometry', patternGeometry(bars, state.ticker, pattern), colors.pattern, 3, L.LineStyle.Solid);
+        patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
+          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.patternGuide, 3, L.LineStyle.Solid);
+        });
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
         layerSeries.wyckoffGate = addLine('wyckoffGate', levelData(bars, data.wyckoffGate), colors.wyckoff, 2);
@@ -1315,6 +1357,13 @@
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
         $('thesis').textContent = overall?.thesis || data.thesis;
+        const predictionBadge = $('prediction-badge');
+        const prediction = String(data.predictionDirection || '').toLowerCase();
+        const predictionMap = { up: { symbol: '↗', label: '向上', key: 'up' }, down: { symbol: '↘', label: '向下', key: 'down' }, flat: { symbol: '→', label: '盤整', key: 'flat' } };
+        const predictionView = predictionMap[prediction] || { symbol: '—', label: '待定', key: 'flat' };
+        predictionBadge.textContent = `預測方向 · ${predictionView.symbol} ${predictionView.label}`;
+        predictionBadge.dataset.direction = predictionView.key;
+        predictionBadge.hidden = !data.predictionDirection;
         $('thesis-refresh').textContent = '';
         $('business').textContent = overall?.businessSummary || data.business;
         [['business-unproved', overall?.unproved], ['business-next-test', overall?.nextTest]].forEach(([id, value]) => {
