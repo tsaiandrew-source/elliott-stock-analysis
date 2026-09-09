@@ -134,6 +134,7 @@
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v3"></script>
+  <script src="../chart-surface/eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (() => {
@@ -247,8 +248,10 @@
         const isV2 = run?.schemaVersion === 'iris-analysis-contract-v2';
         $('heading').textContent = `${state.ticker} · ${run?.company || data.company || state.ticker}`;
         $('subheading').textContent = `Latest · 資料截至 ${run?.dataThrough || data.dataThrough || '未標示'}`;
-        const digest = isV2 ? (run.runType === 'weekly' ? run.weeklyDigest : run.dailyDigest?.endOfDay || run.dailyDigest?.midday) : (detail().endOfDay || detail().weekly);
-        const digestHtml = digest ? `<details><summary>${escapeHtml(digest.date)} · ${escapeHtml(digest.title)}</summary><div class="digest"><h4>可展開摘要</h4><ul>${(digest.points || []).slice(0, 5).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div></details>` : '';
+        const digest = isV2 ? (run.runType === 'weekly' ? run.weeklyDigest : run.dailyDigest?.endOfDay) : (detail().endOfDay || detail().weekly);
+        const digestSummary = run.runType === 'weekly' ? `${digest?.date || ''} · ${digest?.title || ''}` : `End of Day Digest · ${digest?.date || ''}`;
+        const digestPoints = digest?.sections ? digest.sections.flatMap((section) => section.points || []) : (digest?.points || []);
+        const digestHtml = digest ? `<details><summary>${escapeHtml(digestSummary)}</summary><div class="digest"><h4>${escapeHtml(digest.title || '摘要')}</h4><ul>${digestPoints.slice(0, 12).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div></details>` : '';
         const pattern = isV2 ? run.patternLabel : (run?.pattern || data.pattern);
         const wyckoff = isV2 ? (run.wyckoffPhase?.daily || '日線 Wyckoff 待補。') : (run?.wyckoff || data.wyckoff);
         const gex = isV2 ? (run.gexSummary?.displayText || (run.gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。')) : (run?.options || data.options);

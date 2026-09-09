@@ -173,7 +173,7 @@
     .value { font-weight: 700; }
     .thesis { font-size: 17px; line-height: 1.42; }
     .business-summary { margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--line); }
-    .business-context { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .business-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
     .business-context > div { min-width: 0; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .38); }
     .business-context p { color: var(--text); font-size: 12px; }
     .cadence-note { margin-top: 10px; }
@@ -393,7 +393,6 @@
             <span class="label">基本面／新聞脈絡</span>
             <p id="business"></p>
             <div class="business-context">
-              <div><span class="label">已證明</span><p id="business-proved"></p></div>
               <div><span class="label">待證明</span><p id="business-unproved"></p></div>
               <div><span class="label">下一個商業測試</span><p id="business-next-test"></p></div>
             </div>
@@ -444,6 +443,7 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script src="analysis-packets-v2.js?v=20260909-v3"></script>
+  <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
@@ -601,7 +601,6 @@
         const dailyDigest = dailyRun?.dailyDigest || null;
         const weeklyDigest = weeklyRun?.weeklyDigest || dailyRun?.weeklyDigest || null;
         const digestDetails = {
-          midday: dailyDigest?.midday || null,
           endOfDay: dailyDigest?.endOfDay || null,
           weekly: weeklyDigest || null
         };
@@ -625,7 +624,7 @@
           invalidation: selectedRun.invalidation,
           options: gexSummary?.displayText || (gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
           business: selectedRun.fundamentalsNews,
-          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, proved: businessEvidence.proved || '', unproved: businessEvidence.unproved || '', nextTest: businessEvidence.nextTest || '' },
+          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, unproved: businessEvidence.unproved || '', nextTest: businessEvidence.nextTest || '' },
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
@@ -1318,26 +1317,25 @@
         $('thesis').textContent = overall?.thesis || data.thesis;
         $('thesis-refresh').textContent = '';
         $('business').textContent = overall?.businessSummary || data.business;
-        [['business-proved', overall?.proved], ['business-unproved', overall?.unproved], ['business-next-test', overall?.nextTest]].forEach(([id, value]) => {
+        [['business-unproved', overall?.unproved], ['business-next-test', overall?.nextTest]].forEach(([id, value]) => {
           const element = $(id);
           element.textContent = value || '';
           if (element.parentElement) element.parentElement.hidden = !value;
         });
-        const renderDigest = (item, tone) => {
+        const renderDigest = (item, tone, label = '') => {
           if (!item) return '';
           const body = item.sections
             ? item.sections.map((section) => `<section class="digest-section"><h4>${section.heading}</h4><ul>${section.points.map((point) => `<li>${point}</li>`).join('')}</ul></section>`).join('')
             : `<ul>${item.points.map((point) => `<li>${point}</li>`).join('')}</ul>`;
           const next = item.next ? `<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p>` : '';
-          return `<details class="digest-details" data-tone="${tone}"><summary><span>${item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}${next}</article></div></details>`;
+          return `<details class="digest-details" data-tone="${tone}"><summary><span>${label || item.date}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}${next}</article></div></details>`;
         };
         const runtimeDigests = data.digestDetails || {};
         const activeDigests = {
-          midday: runtimeDigests.midday || null,
           endOfDay: runtimeDigests.endOfDay || null,
           weekly: runtimeDigests.weekly || null
         };
-        businessDetails.innerHTML = renderDigest(activeDigests.midday, 'midday') + renderDigest(activeDigests.endOfDay, 'endOfDay') + renderDigest(activeDigests.weekly, 'weekly');
+        businessDetails.innerHTML = renderDigest(activeDigests.endOfDay, 'endOfDay', 'End of Day Digest') + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
         const historyPanel = $('analysis-history');
         const history = data.analysisHistory || analysisRuns.filter((run) => run.ticker === state.ticker).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')));
