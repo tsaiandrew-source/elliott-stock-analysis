@@ -168,7 +168,16 @@
         Object.entries(coverageOverrides).forEach(([ticker, item]) => rows.set(ticker, { ...(rows.get(ticker) || { ticker }), ...item }));
         return [...rows.values()];
       };
-      const activeCoverage = () => coverageRows().filter((item) => item.removed !== true && item.active !== false && (datasets[item.ticker] || v2Runs.some((run) => run.ticker === item.ticker)));
+      const coverageSortRank = (item) => {
+        const ticker = String(item.ticker || '').trim().toUpperCase();
+        const position = ['LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'].indexOf(ticker);
+        return position === -1 ? 1000 : position;
+      };
+      const activeCoverage = () => coverageRows()
+        .filter((item) => item.removed !== true && item.active !== false && (datasets[item.ticker] || v2Runs.some((run) => run.ticker === item.ticker)))
+        .map((item, index) => ({ item, index }))
+        .sort((a, b) => coverageSortRank(a.item) - coverageSortRank(b.item) || a.index - b.index)
+        .map(({ item }) => item);
       const runMap = new Map();
       [...(contract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
       const runs = [...runMap.values()];
