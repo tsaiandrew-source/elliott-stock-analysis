@@ -459,7 +459,7 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script src="analysis-geometry.js?v=20260909-1"></script>
-  <script src="analysis-packets-v2.js?v=20260909-v3"></script>
+  <script src="analysis-packets-v2.js?v=20260909-v4"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script src="../coverage-order.js?v=20260909-v1"></script>
@@ -520,12 +520,12 @@
         }
       };
       const partialChartSources = {
-        '2330': 'partial-market-data/2330.json', '2646': 'partial-market-data/2646.json',
+        '2330': 'partial-market-data/2330.json', '2646': 'partial-market-data/2646.json', 'NBIS': 'partial-market-data/NBIS.json', 'IREN': 'partial-market-data/IREN.json',
         'ACHR': 'partial-market-data/ACHR.json', 'AMKR': 'partial-market-data/AMKR.json',
         'CSCO': 'partial-market-data/CSCO.json', 'LITE': 'partial-market-data/LITE.json',
         'MRVL': 'partial-market-data/MRVL.json', 'NOK': 'partial-market-data/NOK.json',
         'NVDA': 'partial-market-data/NVDA.json', 'ONDS': 'partial-market-data/ONDS.json',
-        'PLTR': 'partial-market-data/PLTR.json', 'SNDK': 'partial-market-data/SNDK.json'
+        'PLTR': 'partial-market-data/PLTR.json', 'SNDK': 'partial-market-data/SNDK.json', 'AVGO': 'partial-market-data/AVGO.json'
       };
       const partialDatasets = {};
       await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {

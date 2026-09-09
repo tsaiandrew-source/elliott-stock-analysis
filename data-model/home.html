@@ -257,7 +257,7 @@
     <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
-  <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v3"></script>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v4"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script src="../coverage-order.js?v=20260909-v1"></script>
   <script>
@@ -317,12 +317,12 @@
       };
       const datasets = activeContract.datasets?.benchmark || {};
       const partialChartSources = {
-        '2330': '../chart-surface/partial-market-data/2330.json', '2646': '../chart-surface/partial-market-data/2646.json',
+        '2330': '../chart-surface/partial-market-data/2330.json', '2646': '../chart-surface/partial-market-data/2646.json', 'NBIS': '../chart-surface/partial-market-data/NBIS.json', 'IREN': '../chart-surface/partial-market-data/IREN.json',
         'ACHR': '../chart-surface/partial-market-data/ACHR.json', 'AMKR': '../chart-surface/partial-market-data/AMKR.json',
         'CSCO': '../chart-surface/partial-market-data/CSCO.json', 'LITE': '../chart-surface/partial-market-data/LITE.json',
         'MRVL': '../chart-surface/partial-market-data/MRVL.json', 'NOK': '../chart-surface/partial-market-data/NOK.json',
         'NVDA': '../chart-surface/partial-market-data/NVDA.json', 'ONDS': '../chart-surface/partial-market-data/ONDS.json',
-        'PLTR': '../chart-surface/partial-market-data/PLTR.json', 'SNDK': '../chart-surface/partial-market-data/SNDK.json'
+        'PLTR': '../chart-surface/partial-market-data/PLTR.json', 'SNDK': '../chart-surface/partial-market-data/SNDK.json', 'AVGO': '../chart-surface/partial-market-data/AVGO.json'
       };
       const partialDatasets = {};
       await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
