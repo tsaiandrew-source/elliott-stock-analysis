@@ -58,6 +58,12 @@ for (const file of htmlFiles) {
     if (!html.includes('const compactReaderText')) failures.push(`${file}: compact reader text filter is missing`);
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
   }
+  if (file === 'data-model/home.html') {
+    if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
+  }
+  if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
+    failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
+  }
 }
 
 if (await exists('data-model/home.html')) {

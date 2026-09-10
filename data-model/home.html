@@ -73,24 +73,12 @@
     .history-panel[hidden] { display:none; }
     .history-entry { padding-top:6px; color:var(--muted); font-size:11px; white-space:normal; overflow-wrap:break-word; }
     .history-entry strong { color:var(--text); }
-    .coverage-form { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto; gap:8px; margin-top:12px; }
-    .coverage-form input, .coverage-form select { min-width:0; padding:9px 10px; border:1px solid var(--line); border-radius:7px; color:var(--text); background:var(--surface2); }
-    .coverage-form input::placeholder { color:var(--muted); }
     .action { border:1px solid var(--line); border-radius:6px; padding:6px 9px; color:var(--aqua); background:transparent; cursor:pointer; font-size:12px; font-weight:800; }
     .action:hover, .action:focus-visible { border-color:var(--aqua); background:rgba(85,217,213,.08); }
     .action[data-active="false"] { color:var(--amber); }
     .status-active { color:var(--green); font-weight:800; }
     .status-inactive { color:var(--amber); font-weight:800; }
     .status-removed { color:var(--muted); font-weight:800; }
-    .coverage-admin { margin-top:10px; }
-    .coverage-admin table { width:100%; min-width:620px; border-collapse:collapse; font-size:12px; }
-    .coverage-admin th, .coverage-admin td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
-    .coverage-admin th { color:var(--muted); font-size:11px; }
-    .coverage-admin td:first-child { color:var(--aqua); }
-    .coverage-admin .group-row td { padding-top:14px; padding-bottom:6px; border-bottom-color:rgba(85,217,213,.24); color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.04em; }
-    .coverage-admin .group-row.exploration td { color:var(--amber); border-bottom-color:rgba(242,184,75,.32); }
-    .coverage-admin .group-row.twse td { color:var(--teal); border-bottom-color:rgba(79,209,165,.4); }
-    .coverage-admin-wrap { overflow-x:auto; }
     .empty { padding:20px 0; color:var(--muted); }
     .foot { margin-top:13px; color:var(--muted); font-size:11px; }
     .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
@@ -123,7 +111,6 @@
       .home { padding:16px 12px 30px; }
       .top { display:block; }
       .section { padding:12px; }
-      .coverage-form { grid-template-columns:1fr; }
       .coverage-header, .ticker-row { min-width:0; }
       .floating-dock { right:12px; left:12px; justify-content:center; transform:none; }
       .dock-action { flex:1 1 0; min-width:0; }
@@ -146,8 +133,6 @@
       .latest-confidence { font-size:15px; }
       .latest-date, .history-entry, .foot { font-size:13px; }
       .action { font-size:14px; }
-      .coverage-admin table { font-size:14px; }
-      .coverage-admin th { font-size:13px; }
       .dock-action { height:46px; font-size:14px; }
       .dock-icon { font-size:22px; }
       .ticker-sheet-head strong { font-size:15px; }
@@ -225,27 +210,9 @@
         <strong id="coverage-heading">Coverage</strong>
         <div class="section-head-tools">
           <span id="coverage-count"></span>
-          <div class="coverage-tabs" role="tablist" aria-label="Coverage views">
-            <button type="button" class="coverage-tab" id="coverage-view-tab" role="tab" aria-selected="true" aria-controls="coverage-view-panel" aria-label="分析檢視" title="分析檢視"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 18V6M4 18h16"/><path d="m7 14 3-3 3 2 5-6"/><path d="M18 7h2v2"/></svg><span class="sr-only">分析檢視</span></button>
-            <button type="button" class="coverage-tab" id="coverage-manage-tab" role="tab" aria-selected="false" aria-controls="coverage-manage-panel" aria-label="管理" title="管理"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg><span class="sr-only">管理</span></button>
-          </div>
         </div>
       </div>
-      <div class="coverage-panel" id="coverage-view-panel" role="tabpanel" aria-labelledby="coverage-view-tab">
-        <div class="ticker-list" id="ticker-list"></div>
-      </div>
-      <div class="coverage-panel" id="coverage-manage-panel" role="tabpanel" aria-labelledby="coverage-manage-tab" hidden>
-        <form class="coverage-form" id="coverage-form">
-          <input id="new-ticker" placeholder="搜尋／輸入 Ticker，例如：AMD" maxlength="12" autocomplete="off" required>
-          <input id="new-company" placeholder="Company name" maxlength="48" autocomplete="organization">
-          <select id="new-group" aria-label="Coverage group"><option value="tracking">Tracked · 追蹤</option><option value="exploration">Exploration · 探索</option></select>
-          <select id="new-market" aria-label="Market group"><option value="us">US Markets · 美國市場</option><option value="twse">Taiwan Stock Exchange · 台股</option></select>
-          <button class="action" type="submit">Add</button>
-        </form>
-        <div class="coverage-admin-wrap">
-          <div class="coverage-admin" id="coverage-admin"></div>
-        </div>
-      </div>
+      <div class="ticker-list" id="ticker-list"></div>
     </section>
     <p class="foot">綠點表示有可用的新分析；歷史紀錄採 append-only 保存，點選每列右側「+」即可查看。</p>
   </main>
@@ -368,7 +335,6 @@
       };
       const rows = () => allRows().filter((item) => item.removed !== true);
       const query = new URLSearchParams(window.location.search);
-      const coverageMode = query.get('mode') === 'manage' ? 'manage' : 'view';
       const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || '';
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
       const normalizePriceSnapshot = (snapshot, fallbackBar) => {
@@ -473,58 +439,6 @@
         button.setAttribute('aria-expanded', String(!open));
         button.textContent = open ? '+' : '−';
       }));
-      const saveCoverage = () => localStorage.setItem('stock-analysis-coverage-overrides', JSON.stringify(overrides));
-      const admin = document.getElementById('coverage-admin');
-      const reloadInManagementMode = () => {
-        const next = new URL(window.location.href);
-        next.searchParams.set('mode', 'manage');
-        window.location.href = next.toString();
-      };
-      const renderCoverageAdmin = () => {
-        const adminRows = ['tracking', 'exploration', 'twse'].map((group) => {
-          const groupRows = rows().filter((item) => group === 'twse' ? marketGroup(item) === 'twse' : marketGroup(item) !== 'twse' && coverageGroup(item) === group);
-          const label = group === 'twse' ? marketGroupLabel(group) : coverageGroupLabel(group);
-          const groupHeader = `<tr class="group-row ${group}"><td colspan="6">${label} · ${groupRows.length} 個 ticker</td></tr>`;
-          const body = groupRows.map((item) => { const statusClass = item.active === false ? 'status-inactive' : 'status-active'; const status = item.active === false ? 'Inactive' : 'Active'; const actions = `<button type="button" class="action" data-active="${item.active !== false}" data-toggle-ticker="${escapeHtml(item.ticker)}">${item.active === false ? 'Reactivate' : 'Deactivate'}</button><button type="button" class="action" data-remove-ticker="${escapeHtml(item.ticker)}">Remove</button>`; return `<tr><td><strong>${escapeHtml(item.ticker)}</strong></td><td>${escapeHtml(item.company || item.ticker)}</td><td>${escapeHtml(coverageGroupLabel(coverageGroup(item)))}</td><td>${escapeHtml(item.defaultView || 'daily')}</td><td class="${statusClass}">${status}</td><td>${actions}</td></tr>`; }).join('');
-          return groupHeader + body;
-        }).join('');
-        admin.innerHTML = `<table><thead><tr><th>Ticker</th><th>Company</th><th>Group</th><th>Default view</th><th>Status</th><th>Action</th></tr></thead><tbody>${adminRows}</tbody></table>`;
-        admin.querySelectorAll('[data-toggle-ticker]').forEach((button) => button.addEventListener('click', () => {
-          const ticker = button.dataset.toggleTicker;
-          const current = rows().find((item) => item.ticker === ticker) || { ticker };
-          overrides[ticker] = { ...current, active: button.dataset.active !== 'true' };
-          saveCoverage();
-          reloadInManagementMode();
-        }));
-        admin.querySelectorAll('[data-remove-ticker]').forEach((button) => button.addEventListener('click', () => {
-          const ticker = button.dataset.removeTicker;
-          if (!window.confirm(`Remove ${ticker} from Coverage? Historical analyses will be preserved, but the ticker will disappear from Management and selection.`)) return;
-          const current = allRows().find((item) => item.ticker === ticker) || { ticker };
-          overrides[ticker] = { ...current, hidden: true, removed: true, active: false };
-          saveCoverage();
-          reloadInManagementMode();
-        }));
-      };
-      renderCoverageAdmin();
-      document.getElementById('coverage-form').addEventListener('submit', (event) => {
-        event.preventDefault();
-        const ticker = document.getElementById('new-ticker').value.trim().toUpperCase();
-        if (!ticker) return;
-        const current = allRows().find((item) => item.ticker === ticker) || { ticker };
-        overrides[ticker] = { ...current, ticker, company: document.getElementById('new-company').value.trim() || current.company || ticker, coverageGroup: document.getElementById('new-group').value, marketGroup: document.getElementById('new-market').value, active: true, hidden: false, removed: false, defaultView: current.defaultView || 'daily' };
-        saveCoverage();
-        reloadInManagementMode();
-      });
-      const setCoverageMode = (mode) => {
-        const manage = mode === 'manage';
-        document.getElementById('coverage-view-panel').hidden = manage;
-        document.getElementById('coverage-manage-panel').hidden = !manage;
-        document.getElementById('coverage-view-tab').setAttribute('aria-selected', String(!manage));
-        document.getElementById('coverage-manage-tab').setAttribute('aria-selected', String(manage));
-      };
-      document.getElementById('coverage-view-tab').addEventListener('click', () => setCoverageMode('view'));
-      document.getElementById('coverage-manage-tab').addEventListener('click', () => setCoverageMode('manage'));
-      setCoverageMode(coverageMode);
       const closeTickerSheet = () => {
         document.getElementById('ticker-sheet').hidden = true;
         document.getElementById('menu-backdrop').hidden = true;
