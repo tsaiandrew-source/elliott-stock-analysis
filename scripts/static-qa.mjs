@@ -104,6 +104,7 @@ if (await exists('data-model/home.html')) {
   for (const marker of ['calendar-menu', 'calendarWeeks()', "['close', 'midday', 'morning']", "query.get('date')", 'aria-pressed']) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
   }
+  if (!home.includes('.reader { overflow:visible; }') || !home.includes('.reader-toolbar { position:sticky;')) failures.push('data-model/home.html: persistent reader navigation is missing');
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
   if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
 }
