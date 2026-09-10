@@ -41,7 +41,7 @@
     .calendar-day[aria-pressed="true"]::after { background:#071018; box-shadow:none; }
     .calendar-day:not(.has-digest):not([aria-pressed="true"]) { opacity:.52; }
     .selected-date { margin:0 0 10px; color:var(--muted); font-size:12px; font-weight:800; }
-    .status-card, .group, .reader { border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.9); box-shadow:0 16px 40px rgba(0,0,0,.16); }
+    .status-card, .group { border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.9); box-shadow:0 16px 40px rgba(0,0,0,.16); }
     .status-card { padding:22px; color:var(--muted); }
     .status-card strong { display:block; margin-bottom:4px; color:var(--text); font-size:17px; }
     .digest-list { display:grid; gap:14px; }
@@ -55,22 +55,16 @@
     .edition-card:hover, .edition-card:focus-visible { background:rgba(85,217,213,.07); outline:0; }
     .edition-card.is-missing { cursor:default; opacity:.42; }
     .edition-card.is-missing:hover { background:transparent; }
+    .edition-card[aria-expanded="true"] { background:rgba(85,217,213,.08); box-shadow:inset 3px 0 var(--aqua); }
+    .edition-details { border-bottom:1px solid rgba(32,56,73,.72); background:rgba(7,16,24,.34); }
     .edition-badge { min-width:76px; padding:4px 7px; border:1px solid rgba(85,217,213,.35); border-radius:999px; color:var(--aqua); font-size:11px; font-weight:800; text-align:center; }
     .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { border-color:rgba(200,241,105,.36); color:var(--lime); }
     .edition-copy { min-width:0; }
     .edition-copy strong { display:block; font-size:14px; }
     .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted); font-size:12px; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
     .edition-time { color:var(--muted); font-size:11px; white-space:nowrap; }
-    .reader[hidden], .list-view[hidden] { display:none; }
-    .reader { overflow:visible; }
-    .reader-toolbar { position:sticky; top:calc(env(safe-area-inset-top) + 6px); z-index:50; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 13px; border:1px solid var(--line); border-radius:14px; background:rgba(13,26,37,.97); box-shadow:0 10px 28px rgba(0,0,0,.28); backdrop-filter:blur(12px); }
-    .back { display:inline-flex; min-height:44px; align-items:center; gap:7px; border:0; color:var(--aqua); background:transparent; font-weight:800; cursor:pointer; }
-    .reader-position { color:var(--muted); font-size:11px; }
+    .list-view[hidden] { display:none; }
     .article { width:min(720px,100%); margin:0 auto; padding:26px 22px 40px; overflow-wrap:anywhere; }
-    .article-kicker { display:flex; flex-wrap:wrap; align-items:center; gap:8px; color:var(--muted); font-size:12px; }
-    .article h2 { margin:9px 0 7px; font-size:clamp(24px,5vw,34px); line-height:1.2; }
-    .meta { margin:0 0 22px; color:var(--muted); font-size:12px; }
-    .summary { margin:0 0 24px; padding:16px 17px; border-left:3px solid var(--aqua); border-radius:0 12px 12px 0; background:rgba(85,217,213,.07); font-size:16px; line-height:1.75; }
     .article section { margin-top:28px; }
     .article h3 { margin:0 0 10px; color:var(--aqua); font-size:17px; }
     .article p { margin:0 0 12px; }
@@ -87,7 +81,6 @@
     @media (min-width:760px) {
       body { padding-bottom:24px; }
       .shell { padding:34px 28px 54px; }
-      .reader-toolbar { top:82px; }
       .article { padding:38px 42px 54px; }
     }
     @media (max-width:520px) {
@@ -98,7 +91,6 @@
       .edition-copy { grid-column:1 / -1; grid-row:2; }
       .edition-time { grid-column:2; grid-row:1; }
       .article { padding:22px 16px 36px; }
-      .summary { font-size:15px; }
     }
   </style>
 </head>
@@ -117,14 +109,10 @@
       </div>
     </div>
 
-    <article class="reader" id="reader" aria-live="polite" hidden>
-      <div class="reader-toolbar"><button class="back" id="reader-back" type="button">← 摘要列表</button><span class="reader-position" id="reader-position"></span></div>
-      <div class="article" id="article"></div>
-    </article>
   </main>
 
   <script src="../coverage-order.js?v=20260909-v1"></script>
-  <script src="../shared-menu.js?v=20260910-3"></script>
+  <script src="../shared-menu.js?v=20260910-4"></script>
   <elliott-shared-menu data-current="home" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-href="../chart-surface/index.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
 
   <script src="digest-model.js?v=20260910-2"></script>
@@ -137,9 +125,6 @@
       const list = document.getElementById('digest-list');
       const calendar = document.getElementById('calendar-menu');
       const selectedDateLabel = document.getElementById('selected-date');
-      const reader = document.getElementById('reader');
-      const article = document.getElementById('article');
-      const position = document.getElementById('reader-position');
       const query = new URLSearchParams(window.location.search);
       const dateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       const fromDateKey = (value) => new Date(`${value}T12:00:00`);
@@ -225,7 +210,6 @@
       }
 
       function renderList() {
-        reader.hidden = true;
         listView.hidden = false;
         selectedDateLabel.textContent = formatDate(selectedDate, { weekday:'long' });
         const records = dataset.records.filter((record) => record.cadence === 'daily' && record.marketDate === selectedDate);
@@ -251,6 +235,8 @@
               button.classList.add('is-missing');
               button.setAttribute('aria-label', `${model.EDITION_LABELS[record.edition]}尚未發布`);
             } else {
+            button.dataset.recordId = record.id;
+            button.setAttribute('aria-expanded', 'false');
             button.setAttribute('aria-label', `開啟 ${model.EDITION_LABELS[record.edition]}：${record.title}`);
             }
             button.append(text('span', model.EDITION_LABELS[record.edition], 'edition-badge'));
@@ -259,7 +245,10 @@
             copy.append(text('span', record.id ? (record.summary || '開啟閱讀完整摘要') : '這個時段目前沒有摘要'));
             button.append(copy);
             button.append(text('time', record.id ? formatTime(record.publishedAt) : '—', 'edition-time'));
-            if (record.id) button.addEventListener('click', () => openReader(record, true));
+            if (record.id) button.addEventListener('click', () => {
+              if (button.getAttribute('aria-expanded') === 'true') closeReader(true);
+              else openReader(record, true);
+            });
             editions.append(button);
           });
           section.append(editions);
@@ -303,17 +292,19 @@
       }
 
       function openReader(record, push) {
-        saveScroll();
-        listView.hidden = true;
-        reader.hidden = false;
-        article.replaceChildren();
-        const kicker = text('div', '', 'article-kicker');
-        kicker.append(text('span', model.EDITION_LABELS[record.edition], 'edition-badge'));
-        kicker.append(text('time', record.cadence === 'weekly' ? formatDate(record.weekStart) : formatDate(record.marketDate)));
-        article.append(kicker, text('h2', record.title));
-        const meta = [record.publishedAt ? `發布 ${formatTime(record.publishedAt)} PT` : '', record.sourceCutoff ? `資料截止 ${record.sourceCutoff}` : '', record.timezone].filter(Boolean).join(' · ');
-        article.append(text('p', meta, 'meta'));
-        if (record.summary) article.append(text('p', record.summary, 'summary'));
+        if (record.marketDate && record.marketDate !== selectedDate) {
+          selectedDate = record.marketDate;
+          renderCalendar();
+          renderList();
+        }
+        listView.hidden = false;
+        list.querySelectorAll('.edition-details').forEach((node) => node.remove());
+        list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
+        const button = list.querySelector(`[data-record-id="${CSS.escape(record.id)}"]`);
+        if (!button) return;
+        button.setAttribute('aria-expanded', 'true');
+        const article = text('div', '', 'article edition-details');
+        article.setAttribute('aria-label', record.title);
         record.sections.forEach((data) => {
           const section = document.createElement('section');
           if (data.heading) section.append(text('h3', data.heading));
@@ -336,31 +327,26 @@
           section.append(sources);
           article.append(section);
         }
-        const ordered = dataset.records.filter((item) => item.cadence === record.cadence);
-        position.textContent = `${ordered.findIndex((item) => item.id === record.id) + 1} / ${ordered.length}`;
+        button.after(article);
         if (record.marketDate) selectedDate = record.marketDate;
         if (push) updateUrl({ view:record.cadence, date:record.marketDate || selectedDate, digest:record.id });
         document.title = `${record.title} · 股市分析`;
-        window.scrollTo({ top:0, behavior:'auto' });
       }
 
       function closeReader(push) {
         if (push) updateUrl({ view:'daily', date:selectedDate, digest:null });
         document.title = '股市分析';
-        renderCalendar();
-        renderList();
-        restoreScroll();
+        list.querySelectorAll('.edition-details').forEach((node) => node.remove());
+        list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
       }
 
-      document.getElementById('reader-back').addEventListener('click', () => closeReader(true));
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !reader.hidden) closeReader(true);
-      });
       window.addEventListener('popstate', () => {
         const current = new URLSearchParams(window.location.search);
         selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(current.get('date') || '') ? current.get('date') : today;
+        renderCalendar();
+        renderList();
         const record = model.recordById(dataset.records, current.get('digest'));
-        if (record) openReader(record, false); else { renderCalendar(); closeReader(false); }
+        if (record) openReader(record, false); else closeReader(false);
       });
       const updateNetwork = () => {
         const node = document.getElementById('network-state');
@@ -375,6 +361,8 @@
       const initial = model.recordById(dataset.records, query.get('digest'));
       if (initial) {
         if (initial.marketDate) selectedDate = initial.marketDate;
+        renderCalendar();
+        renderList();
         openReader(initial, false);
       } else {
         updateUrl({ view:'daily', date:selectedDate, digest:null }, 'replace');

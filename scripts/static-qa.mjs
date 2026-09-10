@@ -104,14 +104,15 @@ if (await exists('data-model/home.html')) {
   for (const marker of ['calendar-menu', 'calendarWeeks()', "['close', 'midday', 'morning']", "query.get('date')", 'aria-pressed']) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
   }
-  if (!home.includes('.reader { overflow:visible; }') || !home.includes('.reader-toolbar { position:sticky;')) failures.push('data-model/home.html: persistent reader navigation is missing');
+  if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
+  if (home.includes('id="reader"') || home.includes('reader-toolbar')) failures.push('data-model/home.html: obsolete standalone digest reader remains');
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
   if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
 }
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'"]) {
+  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
