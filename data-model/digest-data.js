@@ -1,5 +1,197 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
-  schemaVersion: 'elliott-cross-market-digest-v1',
-  generatedAt: null,
-  records: []
+  "schemaVersion": "elliott-cross-market-digest-v1",
+  "generatedAt": "2026-09-10T22:10:41.896Z",
+  "records": [
+    {
+      "id": "daily-2026-09-10-midday-rewrite",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-10",
+      "publishedAt": "2026-09-10T11:30:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-10T11:30:00-07:00",
+      "retrievedAt": "2026-09-10T14:47:22-07:00",
+      "revision": 1,
+      "sourceTask": "June｜Naval Histories — Clean",
+      "sourceTaskId": "01a06dc0-641b-7130-adab-eebf3abd07ae",
+      "title": "午間訊號｜2026-09-10・重寫版",
+      "summary": "晨間主線未變，但市場已替它加上三個確認：油價續升、長債殖利率逼近5%、股票下跌卻未失序。新增的是紅海風險加入荷莫茲海峽、房貸利率再創階段高點，以及市場開始用實際價格確認「能源通膨延長、利率更高更久」的劇本。",
+      "sections": [
+        {
+          "heading": "1. 新變化：能源風險從一個咽喉擴大到兩個",
+          "paragraphs": [
+            "晨間之後：Brent漲幅擴大至約6.1%，維持105美元以上；WTI也守在100美元以上。更重要的是，胡塞武裝奪取也門戰略港口，使紅海及曼德海峽這條替代航線的安全風險升高。",
+            "這代表什麼：晨間的油價衝擊，正從短期價格問題轉向航運、保險、繞航及安全庫存問題。即使原油不再大漲，供應鏈成本仍可能繼續上升。",
+            "反證：航道恢復、保險費回落，而且Brent跌回100美元以下。"
+          ],
+          "links": [
+            {
+              "label": "AP市場更新",
+              "url": "https://apnews.com/article/stocks-markets-oil-trump-rates-7fbc77061abd778608068d3beb1bbbaf"
+            },
+            {
+              "label": "AP紅海報導",
+              "url": "https://apnews.com/article/e4e799701b382799a955969c212800ea"
+            }
+          ]
+        },
+        {
+          "heading": "2. 市變化：股市確認壓力，但沒有確認恐慌",
+          "paragraphs": [
+            "晨間之後：截至美東時間13:54，S&P 500約跌0.5%、Nasdaq約跌0.5%，道瓊跌幅擴大至約0.7%。",
+            "這代表什麼：市場接受了「油價更高、利率更久」的方向，卻沒有無差別拋售。這仍是估值與產業再分配，不是流動性事件。",
+            "目前讀法：",
+            "升級警報：信用利差、波動率與小型股若同步惡化，才代表問題正在跨入金融條件衝擊。"
+          ],
+          "points": [
+            "能源：相對贏家。",
+            "航空、運輸、零售：成本與消費力雙重壓力。",
+            "科技：折現率壓力大於基本面新變化。",
+            "房地產、公用事業：殖利率上升直接壓縮吸引力。"
+          ],
+          "links": [
+            {
+              "label": "AP",
+              "url": "https://apnews.com/article/stocks-markets-oil-trump-rates-7fbc77061abd778608068d3beb1bbbaf"
+            }
+          ]
+        },
+        {
+          "heading": "3. 新確認：長債沒有因政策回購而真正穩住",
+          "paragraphs": [
+            "晨間之後：美國10年期殖利率升至約4.92%，更接近5%的心理關卡。財政部擴大長債回購後，市場仍要求更高殖利率。",
+            "這代表什麼：市場擔心的不只是今天的PPI，而是通膨、債券供給與財政風險同時存在。回購可以改善交易流動性，卻不能消除結構性風險溢價。",
+            "資料界線：截稿時，美國財政部官方即時頁面尚未提供足夠可讀資料，無法可靠判定30年期標售的強弱；不先猜答案。"
+          ],
+          "links": [
+            {
+              "label": "Axios",
+              "url": "https://www.axios.com/2026/09/10/bessent-bonds-buyback-treasury"
+            },
+            {
+              "label": "市場數據整理",
+              "url": "https://cincodias.elpais.com/mercados-financieros/2026-09-10/la-bolsa-y-el-ibex-35.html"
+            },
+            {
+              "label": "TreasuryDirect",
+              "url": "https://www.treasuryauctions.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/"
+            }
+          ]
+        },
+        {
+          "heading": "4. 新資料：高殖利率已經更明確傳進住房",
+          "paragraphs": [
+            "晨間之後：美國30年期固定房貸平均利率升至6.76%，連續第三週上升，並創逾14個月新高；一年前為6.35%。",
+            "這代表什麼：債市壓力不再只是螢幕上的殖利率。它會直接降低購屋能力，影響成交、建商、房仲、貸款機構、建材及購屋後消費。",
+            "反證：長債殖利率回落後，房貸利率連續數週下降，而不只是單週波動。"
+          ],
+          "links": [
+            {
+              "label": "AP",
+              "url": "https://apnews.com/article/mortgages-interest-rates-economy-housing-real-estate-b0b8520fb475e712c400062658306cd4"
+            }
+          ]
+        },
+        {
+          "heading": "5. 沒變但值得確認：美元沒有配合演出",
+          "paragraphs": [
+            "午間確認：即使美國殖利率升高、地緣風險增加，美元仍未出現典型的強烈避險升勢。",
+            "這代表什麼：市場可能同時對美國通膨、財政供給與政策可信度收取風險溢價。因此，美債殖利率上升不一定自動等於美元大漲。",
+            "反證：美元指數突破近期區間，並與殖利率同步走強。"
+          ]
+        },
+        {
+          "heading": "跨資產變化表",
+          "table": {
+            "columns": [
+              "資產",
+              "相較晨間",
+              "午間判讀"
+            ],
+            "rows": [
+              [
+                "原油",
+                "更強",
+                "雙航道風險提高供應溢價"
+              ],
+              [
+                "美股大盤",
+                "轉弱",
+                "確認估值壓力，尚未失序"
+              ],
+              [
+                "能源股",
+                "相對更強",
+                "仍是最直接受益者"
+              ],
+              [
+                "長天期美債",
+                "更弱",
+                "10年期殖利率逼近5%"
+              ],
+              [
+                "信用債",
+                "尚待確認",
+                "未取得足夠訊號證明壓力全面擴散"
+              ],
+              [
+                "美元",
+                "未明顯轉強",
+                "沒有完整確認傳統避險劇本"
+              ],
+              [
+                "黃金",
+                "訊號號混合",
+                "通膨避險與高殖利率互相抵銷"
+              ],
+              [
+                "加密資產",
+                "無足夠新訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "收盤前看什麼",
+          "points": [
+            "30年期美債標售能否獲得足夠需求。",
+            "10年期殖利率是否突破5%，或在其前方止步。",
+            "能源以外產業能否改善市場寬度。",
+            "信用利差與波動率是否加入避險。",
+            "市場在明早CPI前是否繼續降低風險。"
+          ],
+          "paragraphs": [
+            "午間判斷：晨間劇本得到確認，但還沒有惡化成恐慌。若債券需求疲弱、油價維持三位數，而信用市場開始轉差，下午才會從「估值調整」升級為「金融條件衝擊」。"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP市場更新",
+          "url": "https://apnews.com/article/stocks-markets-oil-trump-rates-7fbc77061abd778608068d3beb1bbbaf"
+        },
+        {
+          "label": "AP紅海報導",
+          "url": "https://apnews.com/article/e4e799701b382799a955969c212800ea"
+        },
+        {
+          "label": "Axios",
+          "url": "https://www.axios.com/2026/09/10/bessent-bonds-buyback-treasury"
+        },
+        {
+          "label": "市場數據整理",
+          "url": "https://cincodias.elpais.com/mercados-financieros/2026-09-10/la-bolsa-y-el-ibex-35.html"
+        },
+        {
+          "label": "TreasuryDirect",
+          "url": "https://www.treasuryauctions.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/"
+        },
+        {
+          "label": "AP房貸利率",
+          "url": "https://apnews.com/article/mortgages-interest-rates-economy-housing-real-estate-b0b8520fb475e712c400062658306cd4"
+        }
+      ]
+    }
+  ]
 };
