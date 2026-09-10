@@ -1,5 +1,7 @@
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
 const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
+const expectedDigestId = process.env.EXPECTED_DIGEST_ID || '';
+const skipProxy = process.env.PUBLIC_SMOKE_SKIP_PROXY === '1';
 const tickers = ['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', '2330', 'AVGO'];
 const routes = [
   '/',
@@ -14,6 +16,7 @@ const routes = [
   '/assets/lightweight-charts-5.2.0.min.js',
   '/chart-surface/analysis-packets-v2.js',
   '/data-model/home.html',
+  ...(expectedDigestId ? [`/data-model/digest-data.js?expected=${encodeURIComponent(expectedDigestId)}&refresh=${Date.now()}`] : []),
   '/data-model/home.html?view=weekly',
   '/data-model/coverage.html',
   '/data-model/app.html',
@@ -40,15 +43,18 @@ for (const route of routes) {
     if (route === '/chart-surface/analysis-packets-v2.js' && !body.includes('window.PROTOTYPE_IRIS_V2')) {
       failures.push(`Iris packet asset marker missing ${route}`);
     }
-    if (route === '/data-model/home.html') {
+    if (expectedDigestId && route.startsWith('/data-model/digest-data.js') && !body.includes(expectedDigestId)) {
+      failures.push(`expected digest missing from public bundle: ${expectedDigestId}`);
+    }
+    if (route === '/data-model/coverage.html') {
       if (!body.includes('partialChartTickers') || !body.includes('hasChartData')) {
-        failures.push('home navigation fallback marker missing');
+        failures.push('coverage navigation fallback marker missing');
       }
       for (const ticker of ['2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK', '2330']) {
-        if (!body.includes(`'${ticker}'`)) failures.push(`home partial ticker fallback missing ${ticker}`);
+        if (!body.includes(`'${ticker}'`)) failures.push(`coverage partial ticker fallback missing ${ticker}`);
       }
     }
-    if (route === '/data-model/home.html' || route.includes('/chart-surface/index.html')) {
+    if (route === '/data-model/coverage.html' || route.includes('/chart-surface/index.html')) {
       if (!body.includes('AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ')) failures.push(`read proxy marker missing ${route}`);
       if (body.includes('AKfycbwN2')) failures.push(`write-only ingest URL leaked into frontend ${route}`);
     }
@@ -57,8 +63,9 @@ for (const route of routes) {
   }
 }
 
-let proxySummary = null;
+let proxySummary = skipProxy ? { skipped:true } : null;
 try {
+  if (skipProxy) throw Object.assign(new Error('proxy check skipped'), { skipProxy:true });
   const separator = proxyBaseUrl.includes('?') ? '&' : '?';
   const proxyUrl = `${proxyBaseUrl}${separator}format=json&health=1&refresh=${Date.now()}`;
   const response = await fetch(proxyUrl, {
@@ -83,7 +90,7 @@ try {
     }
   }
 } catch (error) {
-  failures.push(`proxy: ${error.message}`);
+  if (!error.skipProxy) failures.push(`proxy: ${error.message}`);
 }
 
 if (failures.length) {

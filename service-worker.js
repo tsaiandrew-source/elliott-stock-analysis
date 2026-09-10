@@ -3,6 +3,10 @@ const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
 const OFFLINE_URL = new URL('offline.html', APP_ROOT).href;
+const DIGEST_FRESH_PATHS = new Set([
+  new URL('data-model/digests.json', APP_ROOT).pathname,
+  new URL('data-model/digest-data.js', APP_ROOT).pathname
+]);
 
 const CORE_ASSETS = [
   './offline.html',
@@ -101,6 +105,19 @@ async function localAssetResponse(request) {
   return cached || (await refresh) || Response.error();
 }
 
+async function freshDigestResponse(request) {
+  try {
+    const response = await fetch(request, { cache:'no-store' });
+    if (response.ok) {
+      const cache = await caches.open(RUNTIME_CACHE);
+      await cache.put(cacheKey(request), response.clone());
+    }
+    return response;
+  } catch (_) {
+    return (await cachedResponse(request)) || Response.error();
+  }
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
@@ -111,6 +128,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (url.origin === APP_ROOT.origin && url.pathname.startsWith(APP_ROOT.pathname)) {
+    if (DIGEST_FRESH_PATHS.has(url.pathname)) {
+      event.respondWith(freshDigestResponse(request));
+      return;
+    }
     event.respondWith(localAssetResponse(request));
     return;
   }
