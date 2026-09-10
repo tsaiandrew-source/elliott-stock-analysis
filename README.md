@@ -3,6 +3,14 @@
 Public front-end prototype for the stock-analysis chart surface, deployed as a
 static GitHub Pages web app.
 
+The site is installable as a PWA on iPhone and iPad. The PWA shell includes
+opaque Apple touch icons, a maskable icon, safe-area-aware layouts, and an
+offline fallback. App documents use network-first navigation so an online open
+still receives current HTML, while versioned local assets use stale-while-
+revalidate. The live Apps Script analysis proxy is deliberately outside the
+service-worker cache; existing bundled-data fallback behavior remains the data
+availability boundary.
+
 - Home: `data-model/home.html`
 - Daily/Weekly/GEX charts: `chart-surface/index.html`
 - Representative tickers: NBIS and IREN
@@ -31,6 +39,7 @@ the browser.
 
 ```text
 node scripts/static-qa.mjs
+node scripts/pwa-qa.mjs
 node scripts/public-smoke.mjs
 ```
 

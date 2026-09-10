@@ -1,18 +1,36 @@
 {
+  "id": "./data-model/home.html",
   "name": "ELLIOTT+ STOCK ANALYSIS",
   "short_name": "ELLIOTT+",
   "description": "Elliott+ stock analysis dashboard",
+  "lang": "zh-Hant",
+  "dir": "ltr",
   "start_url": "./data-model/home.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#071018",
   "theme_color": "#071018",
+  "categories": ["finance", "business", "productivity"],
   "icons": [
     {
-      "src": "./assets/elliott-plus-icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any",
-      "purpose": "any maskable"
+      "src": "./assets/elliott-plus-icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/elliott-plus-icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/elliott-plus-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ]
 }
