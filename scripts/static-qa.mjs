@@ -101,7 +101,9 @@ if (await exists('data-model/home.html')) {
   const homeIndex = sharedMenu.indexOf("link('dock-home'");
   const coverageIndex = sharedMenu.indexOf("link('dock-coverage'");
   if (!home.includes('window.ELLIOTT_CROSS_MARKET_DIGESTS') && !home.includes('digest-data.js')) failures.push('data-model/home.html: digest dataset is not wired');
-  if (!home.includes('Daily · 每日') || !home.includes('Weekly · 每週')) failures.push('data-model/home.html: Daily/Weekly navigation is missing');
+  for (const marker of ['calendar-menu', 'calendarWeeks()', "['close', 'midday', 'morning']", "query.get('date')", 'aria-pressed']) {
+    if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
+  }
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
   if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
 }
@@ -137,7 +139,7 @@ if (await exists('data-model/digest-model.js')) {
   const dailyGroups = digestModel.groupRecords(fixture.records, 'daily');
   const weeklyGroups = digestModel.groupRecords(fixture.records, 'weekly');
   if (dailyGroups.map((group) => group.key).join(',') !== '2026-09-10,2026-09-09') failures.push('digest model: daily groups are not newest-first');
-  if (dailyGroups[1]?.items.map((item) => item.edition).join(',') !== 'morning,midday,close') failures.push('digest model: daily editions are not chronological');
+  if (dailyGroups[1]?.items.map((item) => item.edition).join(',') !== 'close,midday,morning') failures.push('digest model: daily editions are not newest-first');
   if (weeklyGroups.length !== 1 || weeklyGroups[0]?.items[0]?.id !== 'w-1') failures.push('digest model: weekly grouping failed');
   if (fixture.records.length !== 5) failures.push('digest model: invalid or duplicate records were not filtered');
 }

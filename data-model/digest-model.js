@@ -64,8 +64,8 @@
       .map(([key, items]) => ({
         key,
         items: items.sort((a, b) => {
-          const editionDelta = (EDITION_ORDER[a.edition] ?? 99) - (EDITION_ORDER[b.edition] ?? 99);
-          return editionDelta || timestamp(a.publishedAt) - timestamp(b.publishedAt);
+          const editionDelta = (EDITION_ORDER[b.edition] ?? -1) - (EDITION_ORDER[a.edition] ?? -1);
+          return editionDelta || timestamp(b.publishedAt) - timestamp(a.publishedAt);
         })
       }));
   }
