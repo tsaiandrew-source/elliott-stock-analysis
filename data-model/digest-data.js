@@ -1,7 +1,242 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-10T22:10:41.896Z",
+  "generatedAt": "2026-09-10T23:09:42.574Z",
   "records": [
+    {
+      "id": "daily-2026-09-10-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-10",
+      "publishedAt": "2026-09-10T16:01:00-07:00",
+      "updatedAt": "2026-09-10T16:01:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-10T16:00:00-07:00",
+      "retrievedAt": "2026-09-10T16:01:00-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-10",
+      "summary": "今天市場真正學到的是：能源衝擊已從原油價格擴散到通膨、利率與住房，但尚未演變成無差別恐慌。Brent收在107.63美元、10年期美債殖利率升至4.95%，使聯準會下週升息機率升至約73%；美股連跌第四日，小型股最弱。明早CPI將決定這套「高油價、利率更高更久」劇本是被確認，還是獲得短暫喘息。",
+      "sections": [
+        {
+          "heading": "1. 油價成為全日定價核心",
+          "paragraphs": [
+            "事實：Brent今日上漲6.3%，盤中突破108美元，收在107.63美元；自7月初低於72美元以來已大幅上升。美國汽油均價接近每加侖4.28美元，較一年前高約34%。",
+            "判斷：市場不再把能源視為短暫事件溢價，而是開始計入更長的供應受阻與二次通膨。最直接受益仍是能源生產商；航空、運輸、零售與消費可選品承受成本和需求雙重壓力。信心：高。",
+            "反證：Brent快速跌回100美元以下，且霍爾木茲與紅海兩條航線的實際通行、保險與運價同步改善。"
+          ],
+          "links": [
+            {
+              "label": "AP市場收盤",
+              "url": "https://apnews.com/article/stocks-markets-oil-trump-rates-7fbc77061abd778608068d3beb1bbbaf"
+            },
+            {
+              "label": "AP紅海風險",
+              "url": "https://apnews.com/article/yemen-iran-houthi-rebels-red-sea-mokha-e4e799701b382799a955969c212800ea"
+            }
+          ]
+        },
+        {
+          "heading": "2. 通膨壓力不只來自今日油價",
+          "paragraphs": [
+            "事實：8月PPI年增5.4%，高於7月的4.8%；月增0.4%。核心PPI月增0.2%、年增4.6%。柴油單月上漲24.1%，運輸服務價格月增2.3%，航空、醫療與電子零組件亦走高。",
+            "判斷：能源正在沿供應鏈傳導，而部分服務與AI基礎設施相關投入也偏熱。這使市場原先期待的通膨降溫路徑更窄；明早CPI若偏高，利率重定價可能再次跳升。信心：高。",
+            "反證：核心CPI明顯低於預期、通膨廣度下降，且能源以外的服務價格重新轉弱。"
+          ],
+          "links": [
+            {
+              "label": "AP美國PPI",
+              "url": "https://apnews.com/article/producer-prices-inflation-economy-iran-66d1591b979271ee7b79b113d715f6ef"
+            },
+            {
+              "label": "BLS發布時程",
+              "url": "https://www.bls.gov/schedule/2026/09_sched_list.htm"
+            }
+          ]
+        },
+        {
+          "heading": "3. 債市確認「更高更久」而非單純避險",
+          "paragraphs": [
+            "事實：10年期美債殖利率由週三的4.83%升至4.95%，距5%心理關卡僅一步；戰前約為3.97%。期貨定價顯示，下週升息機率由前一日約61%升至約73%。",
+            "判斷：長債同時承受通膨、政策與供給風險，沒有在股市下跌時提供典型避險。高估值成長股、房地產、公用事業與高槓桿企業因此面臨更高折現率。信心：高。",
+            "反證：明早CPI偏弱後10年期殖利率明確跌離5%，且升息機率快速回落。"
+          ],
+          "links": [
+            {
+              "label": "AP市場收盤",
+              "url": "https://apnews.com/article/stocks-markets-oil-trump-rates-7fbc77061abd778608068d3beb1bbbaf"
+            },
+            {
+              "label": "聯準會9月會議日程",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            }
+          ]
+        },
+        {
+          "heading": "4. 股市下跌有秩序，但市場寬度轉差",
+          "paragraphs": [
+            "事實：S&P 500跌0.6%至7,591.70，連跌第四日；道瓊跌0.6%，Nasdaq跌0.7%，Russell 2000跌1.0%。本週至今，道瓊跌2.5%、Russell 2000跌2.8%，弱於大型股。",
+            "判斷：這仍較像估值與產業再分配，而非流動性事件；但小型股更弱，顯示高融資成本已開始壓低風險承擔。信用利差沒有足夠可靠的新訊號，不能宣稱金融壓力已全面擴散。信心：中高。",
+            "反證：信用利差與波動率未再惡化、Russell 2000恢復相對強勢，且大盤在CPI後收復本週跌幅。"
+          ],
+          "links": [
+            {
+              "label": "AP主要指數收盤",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-0c547c6cc3e374a2c04f78a90e35e113"
+            }
+          ]
+        },
+        {
+          "heading": "5. 歐洲央行把能源衝擊正式寫入政策反應",
+          "paragraphs": [
+            "事實：ECB升息25個基點，存款利率升至2.50%，並表示中東衝突持續製造通膨壓力；其基準預測為2026年通膨3.0%、2027年2.5%、2028年2.1%。",
+            "判斷：這不是只有美國的問題。能源衝擊正在迫使主要央行維持偏緊反應，壓縮全球久期資產與利率敏感產業的估值空間。歐元方向仍取決於利差與成長擔憂哪一項占優。信心：高。",
+            "反證：能源回落、歐元區通膨預期下降，ECB重新轉向暫停並強調成長下行風險。"
+          ],
+          "links": [
+            {
+              "label": "ECB政策決議",
+              "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html"
+            }
+          ]
+        },
+        {
+          "heading": "6. 高殖利率已落到實體住房；就業仍提供政策空間",
+          "paragraphs": [
+            "事實：美國30年固定房貸利率升至6.76%，連升三週並創逾14個月高點；初領失業金降至20.6萬，四週均值同為20.6萬，裁員仍少。",
+            "判斷：住房是利率衝擊最清楚的實體傳導；但低裁員代表經濟尚未快速失速，也讓聯準會更有空間優先處理通膨。房建、房仲、貸款與耐久財消費偏逆風。信心：中高。",
+            "反證：長債與房貸利率連續數週回落，住房成交改善，同時失業申請快速上升。"
+          ],
+          "links": [
+            {
+              "label": "AP房貸利率",
+              "url": "https://apnews.com/article/mortgages-interest-rates-economy-housing-real-estate-b0b8520fb475e712c400062658306cd4"
+            },
+            {
+              "label": "AP初領失業金",
+              "url": "https://apnews.com/article/unemployment-benefits-jobless-claims-layoffs-labor-54d2e328e44f3cbe851a51426746e077"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "狀態",
+              "收盤判讀"
+            ],
+            "rows": [
+              [
+                "原油",
+                "強烈偏熱",
+                "供應與雙航道風險主導"
+              ],
+              [
+                "美股大盤",
+                "偏弱",
+                "四連跌，但未失序"
+              ],
+              [
+                "小型股",
+                "更弱",
+                "融資成本敏感度升高"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期殖利率逼近5%"
+              ],
+              [
+                "信用債",
+                "無足夠訊號",
+                "不判定全面壓力"
+              ],
+              [
+                "美元",
+                "無足夠訊號",
+                "利率與財政風險拉扯"
+              ],
+              [
+                "黃金",
+                "無足夠訊號",
+                "避險與高實質利率拉扯"
+              ],
+              [
+                "加密資產",
+                "無足夠訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "明日展望｜9月11日（週五）",
+          "paragraphs": [
+            "精確時間：05:30 PT／08:30 ET公布8月CPI、核心CPI與實質所得；07:00 PT／10:00 ET公布密西根大學9月消費者信心初值及通膨預期；11:00 PT／14:00 ET公布8月聯邦財政收支。Kroger預計盤前公布財報。",
+            "基準路徑：核心CPI大致符合預期，但能源使總體通膨偏黏；10年期在5%附近高檔震盪，股市維持產業分化。",
+            "偏強路徑：核心CPI與通膨預期均降溫，升息機率回落；長債殖利率下行，科技、房地產與小型股反彈。",
+            "偏弱路徑：核心CPI上行或通膨預期再升，加上油價續漲；10年期突破5%，金融條件收緊，非能源類股跌幅擴大。",
+            "隔夜風險：霍爾木茲海峽、紅海與曼德海峽任何船運或軍事升級，都可能在CPI前先改寫能源與利率定價。確認今日結論的指標是Brent、10年期殖利率、升息機率、Russell 2000相對表現與信用利差；若它們未同步惡化，仍應把行情視為有秩序的再定價。"
+          ],
+          "links": [
+            {
+              "label": "BLS 9月發布日程",
+              "url": "https://www.bls.gov/schedule/2026/09_sched_list.htm"
+            },
+            {
+              "label": "密西根大學消費者調查",
+              "url": "https://www.sca.isr.umich.edu/"
+            },
+            {
+              "label": "本週經濟行事曆",
+              "url": "https://www.kiplinger.com/investing/economy/this-weeks-economic-calendar"
+            },
+            {
+              "label": "本週財報行事曆",
+              "url": "https://www.kiplinger.com/investing/stocks/17494/next-week-earnings-calendar-stocks"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP市場收盤",
+          "url": "https://apnews.com/article/stocks-markets-oil-trump-rates-7fbc77061abd778608068d3beb1bbbaf"
+        },
+        {
+          "label": "AP主要指數收盤",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-0c547c6cc3e374a2c04f78a90e35e113"
+        },
+        {
+          "label": "AP美國PPI",
+          "url": "https://apnews.com/article/producer-prices-inflation-economy-iran-66d1591b979271ee7b79b113d715f6ef"
+        },
+        {
+          "label": "AP紅海風險",
+          "url": "https://apnews.com/article/yemen-iran-houthi-rebels-red-sea-mokha-e4e799701b382799a955969c212800ea"
+        },
+        {
+          "label": "ECB政策決議",
+          "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html"
+        },
+        {
+          "label": "AP房貸利率",
+          "url": "https://apnews.com/article/mortgages-interest-rates-economy-housing-real-estate-b0b8520fb475e712c400062658306cd4"
+        },
+        {
+          "label": "AP初領失業金",
+          "url": "https://apnews.com/article/unemployment-benefits-jobless-claims-layoffs-labor-54d2e328e44f3cbe851a51426746e077"
+        },
+        {
+          "label": "BLS 9月發布日程",
+          "url": "https://www.bls.gov/schedule/2026/09_sched_list.htm"
+        },
+        {
+          "label": "密西根大學消費者調查",
+          "url": "https://www.sca.isr.umich.edu/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-10-midday-rewrite",
       "cadence": "daily",
