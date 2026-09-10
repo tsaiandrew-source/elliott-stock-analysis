@@ -27,6 +27,7 @@ const requiredFiles = [
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
+  'data-model/digests.json',
   'data-model/digest-data.js'
 ];
 
@@ -145,6 +146,14 @@ if (await exists('data-model/digest-model.js')) {
   if (dailyGroups[1]?.items.map((item) => item.edition).join(',') !== 'close,midday,morning') failures.push('digest model: daily editions are not newest-first');
   if (weeklyGroups.length !== 1 || weeklyGroups[0]?.items[0]?.id !== 'w-1') failures.push('digest model: weekly grouping failed');
   if (fixture.records.length !== 5) failures.push('digest model: invalid or duplicate records were not filtered');
+}
+
+if (await exists('data-model/digests.json') && await exists('data-model/digest-data.js')) {
+  const canonicalDigests = JSON.parse(await read('data-model/digests.json'));
+  const context = { window:{} };
+  vm.createContext(context);
+  vm.runInContext(await read('data-model/digest-data.js'), context);
+  if (JSON.stringify(canonicalDigests) !== JSON.stringify(context.window.ELLIOTT_CROSS_MARKET_DIGESTS)) failures.push('digest data: canonical JSON and browser bundle have drifted');
 }
 
 for (const file of ['chart-surface/data-contract.js', 'chart-surface/benchmark-data.js', 'chart-surface/analysis-details.js', 'chart-surface/analysis-localization.js', 'chart-surface/analysis-geometry.js']) {

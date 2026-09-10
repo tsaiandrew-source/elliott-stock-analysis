@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "elliott-cross-market-digest-v1",
+  "records": [
+    {
+      "id": "invalid-fixture",
+      "cadence": "daily",
+      "edition": "weekly",
+      "marketDate": "not-a-date"
+    }
+  ]
+}
