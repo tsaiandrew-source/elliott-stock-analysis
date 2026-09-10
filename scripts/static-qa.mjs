@@ -54,6 +54,10 @@ for (const file of htmlFiles) {
     const resolved = path.normalize(path.join(path.dirname(file), clean));
     if (!(await exists(resolved))) failures.push(`${file}: referenced file not found: ${reference}`);
   }
+  if (file === 'chart-surface/index.html') {
+    if (!html.includes('const compactReaderText')) failures.push(`${file}: compact reader text filter is missing`);
+    if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
+  }
 }
 
 if (await exists('data-model/home.html')) {
