@@ -1006,9 +1006,29 @@
         if (!pattern) return pattern;
         return {
           ...pattern,
+          confirmationText: typeof pattern.confirmation === 'string' ? pattern.confirmation : pattern.confirmationText,
+          invalidationText: typeof pattern.invalidation === 'string' ? pattern.invalidation : pattern.invalidationText,
           confirmation: numericPatternLevel(pattern.confirmation),
           invalidation: numericPatternLevel(pattern.invalidation)
         };
+      }
+
+      function patternConditionText(pattern, key) {
+        const raw = pattern?.[`${key}Text`] || pattern?.[key];
+        if (typeof raw === 'number' && Number.isFinite(raw)) return '$' + raw.toFixed(2);
+        const text = String(raw || '').trim();
+        if (!text) return '—';
+        if (key === 'confirmation') {
+          return text
+            .replace(/^需完成/, '')
+            .replace(/，才升級方向判斷。?$/, '')
+            .replace(/型態邊界並出現接受/, '型態邊界並接受')
+            .trim();
+        }
+        return text
+          .replace(/^完成收盤破壞/, '收盤跌破')
+          .replace(/，主候選失效。?$/, '')
+          .trim();
       }
 
       function patternDisplayLabel(pattern, data) {
@@ -1616,8 +1636,8 @@
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         const wyckoffText = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
         $('wyckoff').textContent = wyckoffText;
-        $('pattern-gate').textContent = Number.isFinite(pattern.confirmation) ? '$' + pattern.confirmation.toFixed(2) : '—';
-        $('invalidation').textContent = Number.isFinite(pattern.invalidation) ? '$' + pattern.invalidation.toFixed(2) : '—';
+        $('pattern-gate').textContent = patternConditionText(pattern, 'confirmation');
+        $('invalidation').textContent = patternConditionText(pattern, 'invalidation');
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
         const secondary = data.patternCandidates?.secondary;
         const candidateSwitch = $('candidate-switch');
