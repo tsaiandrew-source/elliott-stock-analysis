@@ -19,11 +19,49 @@
     document.head.append(style);
   }
 
+  const installPageSwipe = (current, destinations) => {
+    if (window.__elliottPageSwipeInstalled) return;
+    const order = ['home', 'coverage', 'ticker'];
+    const currentIndex = order.indexOf(current);
+    if (currentIndex < 0) return;
+    window.__elliottPageSwipeInstalled = true;
+    let gesture = null;
+    const blockedTarget = (target) => target instanceof Element && Boolean(target.closest('.floating-dock, .ticker-sheet, .table-wrap, .view-switch, #chart-stack, .gex-profile-canvas, input, textarea, select, [contenteditable="true"]'));
+    document.addEventListener('touchstart', (event) => {
+      if (event.touches.length !== 1 || blockedTarget(event.target) || document.querySelector('.ticker-sheet:not([hidden])')) {
+        gesture = null;
+        return;
+      }
+      const touch = event.touches[0];
+      gesture = { x:touch.clientX, y:touch.clientY, at:Date.now() };
+    }, { passive:true });
+    document.addEventListener('touchcancel', () => { gesture = null; }, { passive:true });
+    document.addEventListener('touchend', (event) => {
+      if (!gesture || event.changedTouches.length !== 1) return;
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - gesture.x;
+      const dy = touch.clientY - gesture.y;
+      const elapsed = Date.now() - gesture.at;
+      gesture = null;
+      if (Math.abs(dx) < 72 || Math.abs(dx) < Math.abs(dy) * 1.35 || elapsed > 900) return;
+      const targetIndex = currentIndex + (dx < 0 ? 1 : -1);
+      const targetKey = order[targetIndex];
+      const href = destinations[targetKey];
+      if (!href) return;
+      window.location.assign(new URL(href, document.baseURI).href);
+    }, { passive:true });
+  };
+
   class ElliottSharedMenu extends HTMLElement {
     connectedCallback() {
       if (this.dataset.rendered === 'true') return;
       this.dataset.rendered = 'true';
       const current = this.dataset.current || '';
+      installPageSwipe(current, {
+        home:this.dataset.homeHref || 'home.html',
+        coverage:this.dataset.coverageHref || 'coverage.html',
+        ticker:this.dataset.tickerPageHref || this.dataset.tickerHref
+      });
       const nav = document.createElement('nav');
       nav.className = 'floating-dock';
       nav.setAttribute('aria-label', '快速導覽');
