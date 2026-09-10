@@ -212,8 +212,7 @@
       const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
       const latestRun = () => {
         const candidates = runs.filter((run) => run.ticker === state.ticker);
-        const rich = candidates.filter(isRichAnalysisRun);
-        return (rich.length ? rich : candidates).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
+        return candidates.sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)))[0];
       };
       const detail = () => contract.datasets?.analysisDetails?.[state.ticker] || {};
       function closeTickerSheet() {

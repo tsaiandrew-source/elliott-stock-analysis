@@ -373,8 +373,7 @@
       const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
       const preferredRuns = (ticker) => {
         const candidates = runs.filter((run) => run.ticker === ticker);
-        const rich = candidates.filter(isRichAnalysisRun);
-        return (rich.length ? rich : candidates).sort(compareRuns);
+        return candidates.sort((a, b) => compareRuns(a, b) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)));
       };
       const latestRun = (ticker) => preferredRuns(ticker).filter((run) => !isWeeklyRun(run))[0] || preferredRuns(ticker)[0];
       const latestWeeklyRun = (ticker) => preferredRuns(ticker).find(isWeeklyRun) || null;
