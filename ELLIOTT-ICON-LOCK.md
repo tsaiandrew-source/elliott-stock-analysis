@@ -1,5 +1,13 @@
 # Elliott identity icon lock
 
+## Naming convention
+
+- `+ icon` means `assets/elliott-plus-icon-locked.png`.
+- `* icon` means `assets/elliott-asterisk-icon-locked.png`.
+
+These short names always refer to the exact locked masters, not earlier
+concepts or derived delivery sizes.
+
 ## Official plus icon
 
 Canonical master:
@@ -24,14 +32,19 @@ later geometric or vector reconstructions are not official.
 Do not crop, translate, resize, recolor, redraw, or overwrite the canonical
 master. Derived delivery sizes must be generated from it and named separately.
 
-## Asterisk companion
+## Official asterisk icon
 
-Canonical companion master:
+Canonical master:
 
-- `assets/elliott-asterisk-icon-v1.png`
+- `assets/elliott-asterisk-icon-locked.png`
 
 SHA-256: `0526b1ae56458c7312802a0bc6c2236a402556361be70497192ee27dd47a4dfe`
 
-The asterisk replaces only the plus geometry. It preserves the official icon's
-canvas, white field, upper-right placement, approximate footprint, gradient
-direction, rounded treatment, highlight, and shadow.
+This file is an exact byte-for-byte copy of the user-selected
+`elliott-asterisk-icon-v1.png` and is the official asterisk source of truth.
+Do not crop, translate, resize, recolor, redraw, or overwrite it. Derived
+delivery sizes must be generated from it and named separately.
+
+The asterisk preserves the official icon system's canvas, white field,
+upper-right placement, gradient direction, rounded treatment, highlight, and
+shadow.
