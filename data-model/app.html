@@ -179,6 +179,22 @@
       const state = { view: initialView, ticker: query.get('ticker') || activeCoverage()[0]?.ticker || '' };
       const $ = (id) => document.getElementById(id);
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+      const publicGexText = (value) => String(value ?? '').trim()
+        .replace(/這些是延遲彙總鏈[^。]*。?/u, '')
+        .replace(/不能推定造市商方向[^。]*。?/u, '')
+        .trim();
+      const publicAnalysisText = (value) => String(value ?? '').trim()
+        .replace(/(?:；|。)\s*(?:日線|週線) Wyckoff (?:未分類|未辨識出可辯護交易區間)。?/gu, '')
+        .replace(/(?:日線|週線)主候選為(?:日線|週線)?無(?:合格|穩定)主型態/gu, '')
+        .replace(/本週尚未結束，週線判讀維持進行中，不以日線階段替代。?/gu, '')
+        .replace(/\b(?:Mason|Ely|Iris|Clara)\b|metadata-correction|artifact|runId|batchId|schemaVersion|presentationContract/gi, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+      const compactReaderText = (value) => {
+        const text = publicAnalysisText(value);
+        if (!text || /目前仍維持[「"]?partial-safe|仍維持[「"]?partial-safe|4:00\s*catch-up|16:30\s*(?:PDT|PT)|仍待補欄位|待補／待驗證/i.test(text)) return '';
+        return text.replace(/partial-safe/gi, '').trim();
+      };
       const normalizeCoverageGroup = (value, ticker = '') => {
         const normalized = String(value ?? '').trim().toLowerCase();
         if (['exploration', 'explore', 'exploratory'].includes(normalized)) return 'exploration';
@@ -197,8 +213,7 @@
       const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
       const latestRun = () => {
         const candidates = runs.filter((run) => run.ticker === state.ticker);
-        const rich = candidates.filter(isRichAnalysisRun);
-        return (rich.length ? rich : candidates).sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')))[0];
+        return candidates.sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)))[0];
       };
       const detail = () => contract.datasets?.analysisDetails?.[state.ticker] || {};
       function closeTickerSheet() {
@@ -254,19 +269,23 @@
         const digest = isV2 ? (run.runType === 'weekly' ? run.weeklyDigest : run.dailyDigest?.endOfDay) : (detail().endOfDay || detail().weekly);
         const digestSummary = run.runType === 'weekly' ? `${digest?.date || ''} · ${digest?.title || ''}` : `EoD Digest · ${String(digest?.date || '').slice(0, 10)}`;
         const digestPoints = digest?.sections ? digest.sections.flatMap((section) => section.points || []) : (digest?.points || []);
-        const digestHtml = digest ? `<details><summary>${escapeHtml(digestSummary)}</summary><div class="digest"><h4>${escapeHtml(digest.title || '摘要')}</h4><ul>${digestPoints.slice(0, 12).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div></details>` : '';
+        const publicDigestPoints = digestPoints.map(compactReaderText).filter(Boolean);
+        const digestHtml = digest && publicDigestPoints.length ? `<details><summary>${escapeHtml(digestSummary)}</summary><div class="digest"><h4>${escapeHtml(digest.title || '摘要')}</h4><ul>${publicDigestPoints.slice(0, 12).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></div></details>` : '';
         const pattern = isV2 ? run.patternLabel : (run?.pattern || data.pattern);
-        const wyckoff = isV2 ? (run.wyckoffPhase?.daily || '日線 Wyckoff 待補。') : (run?.wyckoff || data.wyckoff);
-        const gex = isV2 ? (run.gexSummary?.displayText || (run.gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。')) : (run?.options || data.options);
-        const thesis = isV2 ? run.thesis : (run?.thesis || data.thesis);
+        const wyckoffRaw = isV2 ? run.wyckoffPhase?.daily : (run?.wyckoff || data.wyckoff);
+        const wyckoff = /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(String(wyckoffRaw || '')) ? '' : String(wyckoffRaw || '');
+        const gex = isV2 ? (run.gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : publicGexText(run.gexSummary?.displayText)) : publicGexText(run?.options || data.options);
+        const thesis = publicAnalysisText(isV2 ? run.thesis : (run?.thesis || data.thesis));
         const business = isV2 ? run.fundamentalsNews : (run?.business || data.business);
-        $('content').innerHTML = `<section class="section"><h3>核心論述</h3><div class="thesis">${escapeHtml(thesis)}</div><div class="grid"><div class="metric" data-tone="pattern"><div class="label">型態組合</div><p>${escapeHtml(pattern)}</p></div><div class="metric" data-tone="wyckoff"><div class="label">Wyckoff 階段</div><p>${escapeHtml(wyckoff)}</p></div><div class="metric" data-tone="gex"><div class="label">選擇權／GEX</div><p>${escapeHtml(gex)}</p></div></div>${digestHtml}</section><section class="section"><h3>基本面／新聞</h3><p>${escapeHtml(business)}</p><p class="empty">完整內容依可用的日報／週報展開。</p></section>`;
+        const wyckoffMetric = wyckoff ? `<div class="metric" data-tone="wyckoff"><div class="label">Wyckoff 階段</div><p>${escapeHtml(wyckoff)}</p></div>` : '';
+        const gexMetric = gex ? `<div class="metric" data-tone="gex"><div class="label">選擇權／GEX</div><p>${escapeHtml(gex)}</p></div>` : '';
+        $('content').innerHTML = `<section class="section"><h3>核心論述</h3><div class="thesis">${escapeHtml(thesis)}</div><div class="grid"><div class="metric" data-tone="pattern"><div class="label">型態組合</div><p>${escapeHtml(pattern || '—')}</p></div>${wyckoffMetric}${gexMetric}</div>${digestHtml}</section><section class="section"><h3>基本面／新聞</h3><p>${escapeHtml(business)}</p></section>`;
       }
       function renderHistory() {
         const data = datasets[state.ticker]; const rows = runs.filter((run) => run.ticker === state.ticker).sort((a, b) => b.analysisDate.localeCompare(a.analysisDate));
         $('heading').textContent = `${state.ticker} · 分析歷史`;
         $('subheading').textContent = `${rows.length} 筆 append-only records · 不覆寫過往論述`;
-        $('content').innerHTML = `<section class="section"><h3>Historical analyses</h3><div class="table-wrap"><table><thead><tr><th>日期</th><th>類型</th><th>型態</th><th>信心</th><th>Wyckoff</th><th>論述</th></tr></thead><tbody>${rows.map((row) => `<tr><td><strong>${escapeHtml(row.analysisDate)}</strong></td><td>${escapeHtml(row.runType)}</td><td>${escapeHtml(row.pattern)}</td><td>${escapeHtml(row.confidence)}</td><td>${escapeHtml(row.wyckoff)}</td><td>${escapeHtml(row.thesis)}</td></tr>`).join('')}</tbody></table></div></section>`;
+        $('content').innerHTML = `<section class="section"><h3>Historical analyses</h3><div class="table-wrap"><table><thead><tr><th>日期</th><th>類型</th><th>型態</th><th>信心</th><th>Wyckoff</th><th>論述</th></tr></thead><tbody>${rows.map((row) => { const wyckoff = /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(String(row.wyckoff || '')) ? '' : row.wyckoff; return `<tr><td><strong>${escapeHtml(row.analysisDate)}</strong></td><td>${escapeHtml(row.runType)}</td><td>${escapeHtml(row.pattern)}</td><td>${escapeHtml(row.confidence)}</td><td>${escapeHtml(wyckoff)}</td><td>${escapeHtml(publicAnalysisText(row.thesis || row.pattern || '—'))}</td></tr>`; }).join('')}</tbody></table></div></section>`;
       }
       function renderSources() {
         const sources = contract.tables?.Sources || [];

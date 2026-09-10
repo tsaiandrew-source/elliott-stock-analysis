@@ -184,6 +184,7 @@
     .direction-item[data-state="active"][data-direction="up"] { --direction-color: var(--green); }
     .direction-item[data-state="active"][data-direction="down"] { --direction-color: var(--red); }
     .direction-item[data-state="active"][data-direction="flat"] { --direction-color: var(--amber); }
+    .direction-item[hidden] { display: none !important; }
     .direction-item .direction-label { color: var(--muted); font-size: 11px; white-space: nowrap; }
     .direction-value { color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
     .direction-value[data-direction="up"] { color: var(--green); }
@@ -630,6 +631,16 @@
       const latestDailyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
       const latestWeeklyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
       const validDirection = (value) => ['up', 'flat', 'down'].includes(String(value || '').toLowerCase()) ? String(value).toLowerCase() : null;
+      const publicGexText = (value) => String(value ?? '').trim()
+        .replace(/這些是延遲彙總鏈[^。]*。?$/u, '')
+        .replace(/不能推定造市商方向[^。]*。?$/u, '')
+        .trim();
+      const publicAnalysisText = (value) => String(value ?? '').trim()
+        .replace(/(?:；|。)\s*(?:日線|週線) Wyckoff (?:未分類|未辨識出可辯護交易區間)。?/gu, '')
+        .replace(/(?:日線|週線)主候選為(?:日線|週線)?無(?:合格|穩定)主型態/gu, '')
+        .replace(/本週尚未結束，週線判讀維持進行中，不以日線階段替代。?/gu, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
       const watchDirectionFor = (run, timeframe) => {
         const direct = validDirection(run?.watchDirection?.[timeframe] || run?.[`${timeframe}WatchDirection`]);
         if (direct) return direct;
@@ -675,15 +686,15 @@
           weeklyPredictionDirection: weeklyRun?.predictionDirection ?? null,
           dailyWatchDirection: watchDirectionFor(dailyRun, 'daily'),
           weeklyWatchDirection: watchDirectionFor(weeklyRun || dailyRun, 'weekly'),
-          thesis: selectedRun.thesis,
-          wyckoff: patternRun.wyckoffPhase?.daily || '日線 Wyckoff 待補。',
-          weeklyWyckoff: patternRun.wyckoffPhase?.weekly || '週線 Wyckoff 待補。',
+          thesis: publicAnalysisText(selectedRun.thesis),
+          wyckoff: patternRun.wyckoffPhase?.daily || '',
+          weeklyWyckoff: patternRun.wyckoffPhase?.weekly || '',
           wyckoffGate: null,
           patternGate: selectedRun.confirmation,
           invalidation: selectedRun.invalidation,
-          options: gexSummary?.displayText || (gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
+          options: gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : publicGexText(gexSummary?.displayText),
           business: selectedRun.fundamentalsNews,
-          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, unproved: businessEvidence.unproved || '', nextTest: businessEvidence.nextTest || '' },
+          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: publicAnalysisText(selectedRun.thesis), businessSummary: selectedRun.fundamentalsNews, unproved: '', nextTest: /recheck|T\+1|待補|待驗證|Next issuer-news/i.test(String(businessEvidence.nextTest || '')) ? '' : (businessEvidence.nextTest || '') },
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
@@ -978,7 +989,7 @@
           strikes: hasExplicitProfile ? expiry.strikes : unsignedProfile.map((node) => node.strike),
           exposure: hasExplicitProfile ? expiry.exposure : unsignedProfile.map((node) => node.exposure),
           profileKind: hasExplicitProfile ? 'benchmark' : unsignedProfile.length ? 'unsigned-pressure' : 'unavailable',
-          text: summary.displayText || (summary.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
+          text: summary.status === 'not_applicable' ? 'GEX 資料不適用。' : publicGexText(summary.displayText),
           freshness: summary.dataThrough || data.freshness,
           status: summary.status || 'pending'
         };
@@ -1011,7 +1022,7 @@
         const raw = pattern?.[`${key}Text`] || pattern?.[key];
         if (typeof raw === 'number' && Number.isFinite(raw)) return '$' + raw.toFixed(2);
         const text = String(raw || '').trim();
-        if (!text) return '—';
+        if (!text || /尚無可採用|待補|尚未提供|未分類|unclassified/i.test(text)) return '';
         if (key === 'confirmation') {
           return text
             .replace(/^需完成/, '')
@@ -1026,7 +1037,7 @@
       }
 
       function patternDisplayLabel(pattern, data) {
-        const raw = pattern?.patternLabel || data?.patternLabel || pattern?.label || data?.pattern || '型態資料待補';
+        const raw = pattern?.patternLabel || data?.patternLabel || pattern?.label || data?.pattern || '—';
         return String(raw).split(/[｜|]/)[0].trim();
       }
 
@@ -1316,9 +1327,8 @@
         const renderableProfiles = profiles.filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length);
         if (!renderableProfiles.length) {
           const summary = data.gexSummary || {};
-          const statusText = summary.status === 'not_applicable' ? 'GEX 資料不適用。' : summary.displayText || 'GEX 狀態待補。';
-          const slot = (label, item) => `<article class="gex-pending-card"><strong>${label}</strong><span>${escapeHtml(item?.expiry || '未標示')}</span><p>${escapeHtml(item?.status === 'not_applicable' ? 'GEX 資料不適用。' : statusText)}</p></article>`;
-          container.innerHTML = `<div class="chart-empty-message"><strong>GEX ${summary.status === 'not_applicable' ? 'not_applicable' : 'pending'}</strong><p>${slot('本週到期', summary.currentExpiration)}${slot('下週到期', summary.nextExpiration)}</p><p>${escapeHtml((summary.limitations || []).join('；') || '目前沒有可繪製的 currentExpiration／nextExpiration 數值。')}</p></div>`;
+          container.hidden = true;
+          container.innerHTML = '';
           return;
         }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
@@ -1380,7 +1390,7 @@
           const profileLegend = isUnsignedPressure ? '綠＝Call 敏感度　紅＝Put 敏感度　琥珀＝相對壓力差' : '綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線';
           return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>${profileTitle}</strong> · ${gex.label} · ${gex.expiry}</span><span>${profileLegend}</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma pressure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
         };
-        container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}<p class="gex-profile-disclaimer">資料限制：${escapeHtml((data.gexSummary?.limitations || []).join('；') || '目前僅顯示可追溯的 GEX 欄位，不將缺失資料推測為交易訊號。')}</p>`;
+        container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}`;
         } catch (error) {
           console.error('GEX profile render failed', error);
           container.innerHTML = '<div class="chart-error">GEX 圖層目前無法由明確欄位繪製。</div>';
@@ -1435,9 +1445,9 @@
           axisBars = [];
           $('phase-overlay').hidden = true;
           $('price-time-axis').hidden = true;
-          $('chart-empty-message').hidden = state.view === 'gex';
-          $('chart-empty-message').textContent = '部分分析已可用；K 線資料仍在等待下一次完成的市場資料 refresh。';
-          setChartNotice('此 ticker 的文字分析可先查看；圖表、指標與 GEX 會在資料完成後自動補上。');
+          $('chart-empty-message').hidden = true;
+          $('chart-empty-message').textContent = '';
+          setChartNotice('');
           return;
         }
         $('chart-empty-message').hidden = true;
@@ -1532,8 +1542,10 @@
         const pattern = getPattern(datasets[state.ticker]);
         const bars = viewBars(datasets[state.ticker]);
         const patternMarker = patternMarkerBar(bars);
-        markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) }
+        const markerText = patternDisplayLabel(pattern, data);
+        const markerUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(markerText);
+        markerApi.setMarkers(state.layers.technical && state.view !== 'gex' && !markerUnavailable ? [
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: markerText }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
       }
@@ -1552,13 +1564,13 @@
         const runtimeOverall = data.overall || {};
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
-        $('thesis').textContent = overall?.thesis || data.thesis;
+        $('thesis').textContent = publicAnalysisText(overall?.thesis || data.thesis);
         const directionMap = { up: { symbol: '↗', label: '上行' }, down: { symbol: '↘', label: '下行' }, flat: { symbol: '→', label: '盤整' } };
         const directionText = (direction, kind) => {
           const normalized = validDirection(direction);
           const view = directionMap[normalized];
-          const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '待定';
-          return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label };
+          const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '';
+          return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label || (kind === 'watch' ? '觀察方向' : '正式預測') };
         };
         [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
           const element = $(id);
@@ -1570,6 +1582,7 @@
           if (item) {
             item.dataset.state = view.key === 'pending' ? 'pending' : 'active';
             item.dataset.direction = view.key;
+            item.hidden = view.key === 'pending';
           }
           element.setAttribute('aria-label', view.ariaLabel);
         });
@@ -1584,9 +1597,8 @@
           const text = String(value ?? '').trim();
           if (!text) return '';
           if (/\b(?:Mason|Ely|Iris|Clara)\b|metadata-correction|artifact|runId|batchId|schemaVersion|presentationContract/i.test(text)) return '';
-          if (/目前仍維持[「"]?partial-safe|仍維持[「"]?partial-safe/i.test(text)) return '資料仍有部分欄位待確認；確認前不改寫方向或啟用型態投影。';
-          if (/4:00\s*catch-up|16:30\s*(?:PDT|PT)|仍待補欄位|待補／待驗證/i.test(text)) return '收盤後補充檢查已完成；選擇權方向與週線判讀仍採條件式。';
-          return text.replace(/partial-safe/gi, '部分資料可用').replace(/\s{2,}/g, ' ').trim();
+          if (/目前仍維持[「"]?partial-safe|仍維持[「"]?partial-safe|4:00\s*catch-up|16:30\s*(?:PDT|PT)|仍待補欄位|待補／待驗證/i.test(text)) return '';
+          return text.replace(/partial-safe/gi, '').replace(/\s{2,}/g, ' ').trim();
         };
         const publicEvidenceLabel = (value) => {
           const label = String(value || '來源');
@@ -1630,9 +1642,13 @@
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
         historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
+        const patternUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(String(pattern.text || ''));
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
-        const wyckoffText = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
+        const wyckoffMetric = $('wyckoff').closest('.metric');
+        const rawWyckoffText = state.view === 'weekly' ? data.weeklyWyckoff : data.wyckoff;
+        const wyckoffText = /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(String(rawWyckoffText || '')) ? '' : String(rawWyckoffText || '');
         $('wyckoff').textContent = wyckoffText;
+        if (wyckoffMetric) wyckoffMetric.hidden = !wyckoffText;
         $('pattern-gate').textContent = patternConditionText(pattern, 'confirmation');
         $('invalidation').textContent = patternConditionText(pattern, 'invalidation');
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
@@ -1643,7 +1659,7 @@
         // Keep the primary candidate visible whenever the dataset provides
         // one. The secondary candidate is optional and only appears when it
         // is explicitly called out and materially distinct.
-        candidateSwitch.hidden = isGex || !data.patternCandidates?.primary;
+        candidateSwitch.hidden = isGex || patternUnavailable || !data.patternCandidates?.primary;
         if (!showSecondary && state.candidate !== 'primary') state.candidate = 'primary';
         candidateSwitch.querySelectorAll('[data-candidate]').forEach((button) => {
           const active = button.dataset.candidate === state.candidate;
@@ -1665,11 +1681,11 @@
         if (isGex && gexSource) {
           sourceSummary.textContent = 'GEX 判讀使用延遲 aggregate options source；圖表價格沿用同一 ticker 的 completed-session market source。';
           sourceEvidence.hidden = false;
-          sourceEvidence.innerHTML = `<span class="label">GEX 證據與聲明依據</span><ul><li>選擇權來源：${gexSource.provider}；資料截止 ${gexSource.cutoff}。</li><li>計算方法：${gexSource.method}。</li><li>可聲稱：履約價附近的理論 gamma sensitivity concentration、相對位置與條件式價格路徑。</li><li>不可聲稱：${gexSource.limitations}。</li><li>圖表層：Lightweight Charts by TradingView；公開部署時須保留來源標示。</li></ul>`;
+          sourceEvidence.innerHTML = `<span class="label">GEX 證據來源</span><ul><li>選擇權來源：${gexSource.provider}；資料截止 ${gexSource.cutoff}。</li><li>計算方法：${gexSource.method}。</li><li>圖表層：Lightweight Charts by TradingView；公開部署時須保留來源標示。</li></ul>`;
           $('source-link').href = gexSource.url;
           $('source-link').textContent = '開啟 GEX 原始資料來源';
         } else {
-          const evidence = data.sourceEvidence || [];
+          const evidence = (data.sourceEvidence || []).filter((item) => !/catch-up|audit|reader redo/i.test(String(item.label || '')));
           sourceSummary.textContent = evidence.length ? '來源摘要 · 僅顯示公開來源與截止日期。' : '目前沒有可顯示的來源證據。';
           sourceEvidence.hidden = !evidence.length;
           sourceEvidence.innerHTML = evidence.length ? `<span class="label">來源證據</span><ul>${evidence.map((item) => `<li>${escapeHtml(publicEvidenceLabel(item.label))} · ${escapeHtml(item.cutoff || '未標示')}${item.url ? ` · <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">開啟來源</a>` : ''}</li>`).join('')}</ul>` : '';
@@ -1677,7 +1693,7 @@
           $('source-link').textContent = evidence.some((item) => item.url) ? '開啟市場資料來源' : '沒有公開來源連結';
           $('source-link').hidden = !evidence.some((item) => item.url);
         }
-        $('pattern-combo').hidden = isGex;
+        $('pattern-combo').hidden = isGex || patternUnavailable;
         $('structure-panel').hidden = isGex;
         document.querySelectorAll('.controls label[data-tone]').forEach((label) => {
           label.hidden = isGex && label.dataset.tone !== 'gex';
@@ -1698,7 +1714,7 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        setChartNotice(isGex ? (data.gexSummary?.displayText || 'GEX 狀態待補。') : data.status === 'partial-safe' ? '資料部分可用；完整度與限制已在摘要中整理。' : '');
+        setChartNotice(isGex ? publicGexText(data.gexSummary?.displayText) : '');
         $('price-time-axis').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
