@@ -46,6 +46,9 @@ the browser.
 node scripts/static-qa.mjs
 node scripts/pwa-qa.mjs
 node scripts/public-smoke.mjs
+node scripts/close-digest-consumer-qa.mjs
+node scripts/close-digest-release-qa.mjs
+node scripts/close-digest-cycle-qa.mjs
 ```
 
 The public smoke check covers the home page, chart modes, and all 15 covered
