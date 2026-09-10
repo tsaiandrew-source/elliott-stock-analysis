@@ -1360,7 +1360,14 @@
           ...rawData,
           ...analysisOverlay,
           bars: rawData.bars?.length ? rawData.bars : analysisOverlay.bars,
-          gexViews: analysisOverlay.gexViews || {},
+          // Keep the bundled unsigned benchmark profiles when the v2
+          // analysis overlay has no renderable GEX profile yet. A shallow
+          // `analysisOverlay.gexViews || {}` assignment used to erase those
+          // profiles and made the current/next GEX chart appear empty.
+          gexViews: {
+            current: { ...(rawData?.gexViews?.current || {}), ...(analysisOverlay.gexViews?.current || {}) },
+            next: { ...(rawData?.gexViews?.next || {}), ...(analysisOverlay.gexViews?.next || {}) }
+          },
           company: analysisOverlay.company || rawData.company,
           exchange: rawData.exchange || analysisOverlay.exchange,
           chartSource: rawData.chartSource || analysisOverlay.chartSource,
