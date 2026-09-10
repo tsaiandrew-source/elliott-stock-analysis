@@ -31,8 +31,7 @@
     .network::before { width:7px; height:7px; border-radius:50%; background:var(--lime); content:""; }
     .network.is-offline::before { background:var(--amber); }
     .calendar-menu { display:grid; gap:10px; margin:0 0 18px; padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.84); overflow-x:auto; }
-    .calendar-week { display:grid; grid-template-columns:42px repeat(7,minmax(34px,1fr)); align-items:center; gap:3px; min-width:298px; }
-    .calendar-week-label { color:var(--muted); font-size:10px; font-weight:850; letter-spacing:.08em; text-transform:uppercase; }
+    .calendar-week { display:grid; grid-template-columns:repeat(7,minmax(34px,1fr)); align-items:center; gap:3px; min-width:252px; }
     .calendar-day { position:relative; display:grid; place-items:center; gap:1px; min-height:58px; padding:5px 2px 10px; border:1px solid transparent; border-radius:11px; color:var(--muted); background:transparent; cursor:pointer; }
     .calendar-day:hover, .calendar-day:focus-visible { border-color:rgba(85,217,213,.45); outline:0; }
     .calendar-day[aria-pressed="true"] { color:#071018; background:var(--aqua); }
@@ -189,9 +188,8 @@
       function renderCalendar() {
         const daysWithDigests = new Set(dataset.records.filter((record) => record.cadence === 'daily').map((record) => record.marketDate));
         calendar.replaceChildren();
-        calendarWeeks().forEach((days, weekIndex) => {
+        calendarWeeks().forEach((days) => {
           const row = text('div', '', 'calendar-week');
-          row.append(text('span', weekIndex ? '本週' : '上週', 'calendar-week-label'));
           days.forEach((value) => {
             const date = fromDateKey(value);
             const button = text('button', '', 'calendar-day');
