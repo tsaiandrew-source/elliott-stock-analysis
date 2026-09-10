@@ -115,7 +115,6 @@
         <button type="button" data-view="latest" aria-pressed="true">Latest</button>
         <button type="button" data-view="history" aria-pressed="false">History</button>
         <button type="button" data-view="sources" aria-pressed="false">Sources</button>
-        <button type="button" data-view="coverage" aria-pressed="false">Coverage</button>
       </nav>
       <div class="ticker" id="ticker-list" aria-label="Coverage"></div>
     </aside>
@@ -175,7 +174,7 @@
       [...(contract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
       const runs = [...runMap.values()];
       const query = new URLSearchParams(window.location.search);
-      const initialView = ['history', 'sources', 'coverage'].includes(query.get('view')) ? query.get('view') : 'latest';
+      const initialView = ['history', 'sources'].includes(query.get('view')) ? query.get('view') : 'latest';
       const state = { view: initialView, ticker: query.get('ticker') || activeCoverage()[0]?.ticker || '' };
       const $ = (id) => document.getElementById(id);
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
@@ -298,7 +297,7 @@
         }));
       }
       function field(row, name) { const key = Object.keys(row || {}).find((candidate) => candidate.toLowerCase() === name.toLowerCase()); return key ? row[key] : ''; }
-      function render() { renderDock(); renderRail(); renderLinks(); if (state.view === 'history') renderHistory(); else if (state.view === 'sources') renderSources(); else if (state.view === 'coverage') renderCoverage(); else if (datasets[state.ticker] || runs.some((run) => run.ticker === state.ticker)) renderLatest(); else { $('heading').textContent = `${state.ticker} · 尚未有資料`; $('subheading').textContent = 'Coverage 已加入；等待下一次 Sheets／市場資料 refresh。'; $('content').innerHTML = '<section class="section"><p class="empty">此 ticker 已加入 Coverage，但目前尚未有圖表或分析資料。歷史資料不會因停用而刪除。</p></section>'; } }
+      function render() { renderDock(); renderRail(); renderLinks(); if (state.view === 'history') renderHistory(); else if (state.view === 'sources') renderSources(); else if (datasets[state.ticker] || runs.some((run) => run.ticker === state.ticker)) renderLatest(); else { $('heading').textContent = `${state.ticker} · 尚未有資料`; $('subheading').textContent = 'Coverage 已加入；等待下一次 Sheets／市場資料 refresh。'; $('content').innerHTML = '<section class="section"><p class="empty">此 ticker 已加入 Coverage，但目前尚未有圖表或分析資料。歷史資料不會因停用而刪除。</p></section>'; } }
       document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.view === 'latest') {
           window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(state.ticker)}&view=daily`;
