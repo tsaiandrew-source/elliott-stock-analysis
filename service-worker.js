@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v3';
+const CACHE_VERSION = 'elliott-pwa-v4';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
