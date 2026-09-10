@@ -36,3 +36,5 @@ The command upserts `data-model/digests.json` and regenerates `data-model/digest
 ## Heartbeat boundary
 
 The app-owned heartbeat may discover a completed Universe Refresh packet and invoke the consumer command. It must remain quiet when there is no new packet. It reports only an ingestion, validation failure, or required user action. The producer must never write the store directly.
+
+The implemented weekday close-edition consumer and its scheduler/release boundary are documented in [CLOSE-DIGEST-AUTOMATION.md](CLOSE-DIGEST-AUTOMATION.md).
