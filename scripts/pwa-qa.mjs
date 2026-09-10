@@ -46,6 +46,7 @@ for (const field of ['id', 'name', 'short_name', 'start_url', 'scope', 'display'
   if (!manifest[field]) failures.push(`manifest missing ${field}`);
 }
 if (manifest.display !== 'standalone') failures.push('manifest display must be standalone');
+if (manifest.short_name !== 'E+') failures.push('manifest short_name must be E+');
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-192.png') && icon.sizes === '192x192' && icon.purpose === 'any')) failures.push('manifest missing official * 192x192 any icon');
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-512.png') && icon.sizes === '512x512' && icon.purpose === 'any')) failures.push('manifest missing official * 512x512 any icon');
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-maskable-512.png') && icon.sizes === '512x512' && icon.purpose === 'maskable')) failures.push('manifest missing official * 512x512 maskable icon');
@@ -56,10 +57,13 @@ for (const file of htmlFiles) {
   for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register.js']) {
     if (!html.includes(marker)) failures.push(`${file}: missing ${marker}`);
   }
+  if (!html.includes('apple-mobile-web-app-title" content="E+"')) failures.push(`${file}: installed iOS title must be E+`);
   if (!html.includes('elliott-asterisk-icon-32.png')) failures.push(`${file}: official * favicon is missing`);
   if (/elliott-plus-(?:icon|apple-touch|maskable)/.test(html)) failures.push(`${file}: inactive + delivery icon is still referenced`);
   if (html.includes('elliott-plus-icon.svg')) failures.push(`${file}: legacy E-shaped icon is still referenced`);
 }
+
+if (!(await read('data-model/home.html')).includes('<title>股市分析</title>')) failures.push('home document title must be 股市分析');
 
 for (const file of ['data-model/home.html', 'data-model/app.html', 'chart-surface/index.html', 'offline.html']) {
   const html = await read(file);
