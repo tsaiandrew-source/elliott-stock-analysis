@@ -656,7 +656,7 @@
         const patternRun = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
         const primary = patternRun.primaryCandidate || null;
         const secondary = patternRun.secondaryCandidate || null;
-        const sidecarCoordinates = window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null;
+        const sidecarCoordinates = state.view === 'weekly' ? null : (window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null);
         const structuredCoordinates = patternRun.technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary'] || null;
         // Prefer the coordinates emitted with the selected Iris packet. The
         // legacy sidecar is only a fallback for older partial packets; using it
@@ -1094,7 +1094,7 @@
 
       function patternGeometryLines(bars, ticker, pattern) {
         if (!bars.length || !pattern) return [];
-        const coordinates = pattern.coordinates || window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null;
+        const coordinates = pattern.coordinates || (state.view === 'weekly' ? null : window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates) || null;
         if (!coordinates) {
           const data = patternGeometry(bars, ticker, pattern);
           return data.length ? [{ key: 'patternGeometry', data }] : [];
