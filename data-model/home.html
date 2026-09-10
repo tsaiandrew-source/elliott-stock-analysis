@@ -77,8 +77,8 @@
     th, td { padding:10px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
     th { color:var(--aqua); background:var(--surface2); }
     tr:last-child td { border-bottom:0; }
-    .source-list { display:grid; gap:8px; padding:0; list-style:none; }
-    .source-list a { display:inline-block; min-height:44px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; text-decoration:none; }
+    .source-list { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; padding:0; list-style:none; }
+    .source-list a { display:inline-flex; min-height:30px; align-items:center; padding:4px 9px; border:1px solid var(--line); border-radius:8px; font-size:12px; line-height:1.2; text-decoration:none; }
     .source-list a:hover, .source-list a:focus-visible { border-color:var(--aqua); }
     @media (min-width:760px) {
       body { padding-bottom:24px; }
