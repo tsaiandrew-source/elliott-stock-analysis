@@ -166,8 +166,9 @@
     @media (max-width:560px) and (orientation: portrait) {
       .ticker-list { overflow-x:visible; }
       .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
-      .ticker-row { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
+      .coverage-header { grid-template-columns:9px 58px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .ticker-row { grid-template-columns:9px 58px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
+      .coverage-header .price-column, .ticker-row .latest-price { display:none; }
       .ticker-history { grid-column:8; }
       .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
       .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
@@ -450,7 +451,7 @@
       }).join('');
       const renderCoverageGroup = (group, items) => {
         const label = coverageGroupLabel(group);
-        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span>收盤價</span><span title="觀察方向 · 日線" aria-label="觀察方向 · 日線">日方向</span><span title="觀察方向 · 週線" aria-label="觀察方向 · 週線">週方向</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
+        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span class="price-column">收盤價</span><span title="觀察方向 · 日線" aria-label="觀察方向 · 日線">日方向</span><span title="觀察方向 · 週線" aria-label="觀察方向 · 週線">週方向</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
         return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
       };
       const usCoverage = coverage.filter((item) => marketGroup(item) !== 'twse');
