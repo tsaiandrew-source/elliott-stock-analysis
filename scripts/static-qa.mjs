@@ -57,6 +57,7 @@ for (const file of htmlFiles) {
   if (file === 'chart-surface/index.html') {
     if (!html.includes('const compactReaderText')) failures.push(`${file}: compact reader text filter is missing`);
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
+    if (/shape:\s*'arrowUp'\s*,\s*text:\s*'watch'/i.test(html)) failures.push(`${file}: generic watch arrow marker must not be rendered on candle charts`);
   }
   if (file === 'data-model/home.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);

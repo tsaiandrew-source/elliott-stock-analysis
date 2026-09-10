@@ -1461,8 +1461,7 @@
         candleSeries.attachPrimitive(phasePrimitive);
         const patternMarker = patternMarkerBar(bars);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
-          { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
         dateAxisSeries.setData([{ time: bars[0].time, value: 0 }, { time: bars.at(-1).time, value: 0 }]);
@@ -1540,8 +1539,7 @@
         const bars = viewBars(datasets[state.ticker]);
         const patternMarker = patternMarkerBar(bars);
         markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) },
-          { time: bars[Math.max(0, bars.length - 8)].time, position: 'belowBar', color: colors.aqua, shape: 'arrowUp', text: 'watch' }
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
       }
