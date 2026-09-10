@@ -657,7 +657,12 @@
         const primary = patternRun.primaryCandidate || null;
         const secondary = patternRun.secondaryCandidate || null;
         const sidecarCoordinates = window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null;
-        const patternCandidates = primary ? { primary: { ...primary, coordinates: primary.coordinates || sidecarCoordinates, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
+        const structuredCoordinates = patternRun.technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary'] || null;
+        // Prefer the coordinates emitted with the selected Iris packet. The
+        // legacy sidecar is only a fallback for older partial packets; using it
+        // first can draw a stale daily shape over a newer weekly thesis.
+        const primaryCoordinates = primary?.coordinates || structuredCoordinates || sidecarCoordinates;
+        const patternCandidates = primary ? { primary: { ...primary, coordinates: primaryCoordinates, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || structuredCoordinates?.type || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
         const dailyDigest = dailyRun?.dailyDigest || null;
         const weeklyDigest = weeklyRun?.weeklyDigest || dailyRun?.weeklyDigest || null;
         const digestDetails = {
@@ -1088,7 +1093,7 @@
       }
 
       function patternGeometryLines(bars, ticker, pattern) {
-        if (state.view === 'weekly' || !bars.length || !pattern) return [];
+        if (!bars.length || !pattern) return [];
         const coordinates = pattern.coordinates || window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null;
         if (!coordinates) {
           const data = patternGeometry(bars, ticker, pattern);
