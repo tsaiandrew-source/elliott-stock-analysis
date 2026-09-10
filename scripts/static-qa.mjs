@@ -56,6 +56,11 @@ for (const file of htmlFiles) {
   }
   if (file === 'chart-surface/index.html') {
     if (!html.includes('const compactReaderText')) failures.push(`${file}: compact reader text filter is missing`);
+    if (!html.includes('const publicGexText')) failures.push(`${file}: public GEX text filter is missing`);
+    if (!html.includes('const publicAnalysisText')) failures.push(`${file}: public analysis text filter is missing`);
+    if (!html.includes('.direction-item[hidden]')) failures.push(`${file}: incomplete direction rows are not hidden`);
+    if (html.includes('資料部分可用；完整度與限制已在摘要中整理。')) failures.push(`${file}: partial-status uncertainty notice is still public`);
+    if (html.includes('資料限制：${escapeHtml')) failures.push(`${file}: GEX limitation disclaimer is still public`);
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
     if (/shape:\s*'arrowUp'\s*,\s*text:\s*'watch'/i.test(html)) failures.push(`${file}: generic watch arrow marker must not be rendered on candle charts`);
     if (!html.includes("technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary']")) failures.push(`${file}: selected daily/weekly pattern coordinates are not wired to the chart`);

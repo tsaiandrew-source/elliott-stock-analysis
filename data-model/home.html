@@ -398,7 +398,7 @@
         const weekly = latestWeeklyRun(item.ticker);
         const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
         const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'weekly' ? '週線' : '日線')} · 信心 ${escapeHtml(run.confidencePercent == null ? '—' : `${run.confidencePercent}%`)} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
-        const directionMap = { up: { symbol: '↗', key: 'up', label: '上行觀察' }, down: { symbol: '↘', key: 'down', label: '下行觀察' }, flat: { symbol: '→', key: 'flat', label: '盤整觀察' }, null: { symbol: '—', key: 'pending', label: '觀察方向待定' } };
+        const directionMap = { up: { symbol: '↗', key: 'up', label: '上行觀察' }, down: { symbol: '↘', key: 'down', label: '下行觀察' }, flat: { symbol: '→', key: 'flat', label: '盤整觀察' }, null: { symbol: '—', key: 'pending', label: '' } };
         const directionCell = (run, timeframe) => {
           const forecast = directionMap[watchDirectionFor(run, timeframe) ?? 'null'] || directionMap.null;
           return `<span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span>`;
