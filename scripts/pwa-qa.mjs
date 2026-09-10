@@ -63,6 +63,11 @@ for (const file of htmlFiles) {
   if (html.includes('elliott-plus-icon.svg')) failures.push(`${file}: legacy E-shaped icon is still referenced`);
 }
 
+for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
+  const html = await read(file);
+  if (!html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu module is missing`);
+}
+
 if (!(await read('data-model/home.html')).includes('<title>股市分析</title>')) failures.push('home document title must be 股市分析');
 
 for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'offline.html']) {

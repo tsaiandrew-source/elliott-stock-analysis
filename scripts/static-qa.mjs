@@ -9,6 +9,7 @@ const requiredFiles = [
   'manifest.webmanifest',
   'service-worker.js',
   'pwa-register.js',
+  'shared-menu.js',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
   'assets/elliott-asterisk-icon-512.png',
@@ -96,12 +97,24 @@ if (await exists('data-model/coverage.html')) {
 
 if (await exists('data-model/home.html')) {
   const home = await read('data-model/home.html');
-  const homeIndex = home.indexOf('<span>Home</span>');
-  const coverageIndex = home.indexOf('<span>Coverage</span>');
+  const sharedMenu = await read('shared-menu.js');
+  const homeIndex = sharedMenu.indexOf("link('dock-home'");
+  const coverageIndex = sharedMenu.indexOf("link('dock-coverage'");
   if (!home.includes('window.ELLIOTT_CROSS_MARKET_DIGESTS') && !home.includes('digest-data.js')) failures.push('data-model/home.html: digest dataset is not wired');
   if (!home.includes('Daily · 每日') || !home.includes('Weekly · 每週')) failures.push('data-model/home.html: Daily/Weekly navigation is missing');
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
-  if (!home.includes('aria-current="page"')) failures.push('data-model/home.html: active Home navigation state is missing');
+  if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
+}
+
+if (await exists('shared-menu.js')) {
+  const sharedMenu = await read('shared-menu.js');
+  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'aria-current', 'safe-area-inset-bottom']) {
+    if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
+  }
+  for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
+    const html = await read(file);
+    if (!html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted`);
+  }
 }
 
 if (await exists('data-model/digest-model.js')) {

@@ -89,11 +89,6 @@
     .foot { margin-top:13px; color:var(--muted); font-size:11px; }
     .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
     .menu-backdrop[hidden], .ticker-sheet[hidden] { display:none; }
-    .floating-dock { position:fixed; z-index:60; top:14px; right:50%; display:flex; align-items:center; gap:7px; transform:translateX(50%); padding:7px; border:1px solid rgba(85,217,213,.38); border-radius:17px; background:rgba(85,217,213,.06); box-shadow:0 14px 38px rgba(0,0,0,.34),0 0 0 1px rgba(85,217,213,.06) inset; backdrop-filter:blur(3px); }
-    .dock-action { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-width:102px; height:42px; padding:7px 12px; border:0; border-radius:11px; color:var(--muted); background:transparent; text-decoration:none; font-size:12px; font-weight:800; cursor:pointer; }
-    .dock-action:hover, .dock-action:focus-visible { color:var(--text); background:var(--surface2); }
-    .dock-action[aria-current="page"] { color:var(--aqua); background:rgba(85,217,213,.1); box-shadow:inset 0 -2px var(--aqua); }
-    .dock-icon { color:var(--aqua); font-size:20px; line-height:1; }
     .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(460px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
     .ticker-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
     .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
@@ -110,7 +105,6 @@
     .ticker-wheel-item:disabled strong { color:var(--muted); }
     @media (min-width:1000px) {
       body { padding-top:0; padding-bottom:0; }
-      .floating-dock { top:14px; bottom:auto; }
       .ticker-sheet { top:73px; bottom:auto; }
     }
     @media (max-width:560px) {
@@ -119,13 +113,9 @@
       .top { display:block; }
       .section { padding:12px; }
       .coverage-header, .ticker-row { min-width:0; }
-      .floating-dock { right:12px; left:12px; justify-content:center; transform:none; }
-      .dock-action { flex:1 1 0; min-width:0; }
       .ticker-sheet { width:calc(100vw - 24px); }
     }
     @media (min-width:561px) and (max-width:999px) and (min-height:600px) {
-      .floating-dock { right:50%; left:auto; width:max-content; max-width:calc(100vw - 32px); transform:translateX(50%); }
-      .dock-action { flex:0 0 auto; min-width:96px; }
       .ticker-sheet { top:73px; }
       body { font-size:16px; }
       .home { padding:24px; }
@@ -140,16 +130,11 @@
       .latest-confidence { font-size:15px; }
       .latest-date, .history-entry, .foot { font-size:13px; }
       .action { font-size:14px; }
-      .dock-action { height:46px; font-size:14px; }
-      .dock-icon { font-size:22px; }
       .ticker-sheet-head strong { font-size:15px; }
       .ticker-sheet-head span, .ticker-wheel-item span { font-size:13px; }
       .ticker-wheel-item strong { font-size:15px; }
     }
     @media (max-width:560px) {
-      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
-      .dock-action { height:44px; padding:7px 10px; font-size:12px; }
-      .dock-icon { font-size:20px; }
       .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
       .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
     }
@@ -179,9 +164,6 @@
       .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
       .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
       .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
-      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
-      .dock-action { height:44px; padding:7px 10px; font-size:12px; }
-      .dock-icon { font-size:20px; }
       .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
       .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
     }
@@ -199,9 +181,6 @@
       .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
       .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
       .history-entry { font-size:11px; line-height:1.45; overflow-wrap:break-word; word-break:normal; }
-      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
-      .dock-action { height:44px; padding:7px 10px; font-size:12px; }
-      .dock-icon { font-size:20px; }
       .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
       .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
     }
@@ -228,11 +207,8 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <nav class="floating-dock" aria-label="快速導覽">
-    <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟 Digest 首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
-    <a class="dock-action" href="coverage.html" aria-current="page" aria-label="目前位於 Coverage"><span class="dock-icon" aria-hidden="true">◎</span><span>Coverage</span></a>
-    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
-  </nav>
+  <script src="../shared-menu.js?v=20260910-1"></script>
+  <elliott-shared-menu data-current="coverage" data-home-href="home.html" data-coverage-href="coverage.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260909-rich-reader-v1"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script src="../coverage-order.js?v=20260909-v1"></script>
