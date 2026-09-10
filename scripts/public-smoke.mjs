@@ -14,6 +14,8 @@ const routes = [
   '/assets/lightweight-charts-5.2.0.min.js',
   '/chart-surface/analysis-packets-v2.js',
   '/data-model/home.html',
+  '/data-model/home.html?view=weekly',
+  '/data-model/coverage.html',
   '/data-model/app.html',
   '/chart-surface/index.html?ticker=NBIS&view=daily',
   '/chart-surface/index.html?ticker=NBIS&view=weekly',

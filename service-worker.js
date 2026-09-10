@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v4';
+const CACHE_VERSION = 'elliott-pwa-v18';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -16,7 +16,12 @@ const CORE_ASSETS = [
   './assets/lightweight-charts-5.2.0.min.js',
   './pwa-register.js',
   './coverage-order.js',
+  './shared-menu.js',
   './data-model/home.html',
+  './data-model/coverage.html',
+  './data-model/digest-model.js',
+  './data-model/digests.json',
+  './data-model/digest-data.js',
   './data-model/app.html',
   './chart-surface/index.html',
   './chart-surface/data-contract.js',

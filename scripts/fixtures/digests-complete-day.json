@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "elliott-cross-market-digest-v1",
+  "generatedAt": "2026-01-15T16:10:00-08:00",
+  "records": [
+    {
+      "id": "daily-2026-01-15-morning-fixture",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-01-15",
+      "publishedAt": "2026-01-15T06:30:00-08:00",
+      "timezone": "America/Los_Angeles",
+      "title": "Morning fixture",
+      "summary": "Start-of-day fixture used only for ingestion QA.",
+      "sections": [{ "heading": "Setup", "paragraphs": ["Fixture content."] }],
+      "sources": []
+    },
+    {
+      "id": "daily-2026-01-15-midday-fixture",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-01-15",
+      "publishedAt": "2026-01-15T11:30:00-08:00",
+      "timezone": "America/Los_Angeles",
+      "title": "Midday fixture",
+      "summary": "Midday fixture used only for ingestion QA.",
+      "sections": [{ "heading": "Update", "paragraphs": ["Fixture content."] }],
+      "sources": []
+    },
+    {
+      "id": "daily-2026-01-15-close-fixture",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-01-15",
+      "publishedAt": "2026-01-15T16:05:00-08:00",
+      "timezone": "America/Los_Angeles",
+      "title": "Close fixture",
+      "summary": "End-of-day fixture used only for ingestion QA.",
+      "sections": [{ "heading": "Close", "paragraphs": ["Fixture content."] }],
+      "sources": []
+    }
+  ]
+}

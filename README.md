@@ -13,6 +13,11 @@ availability boundary.
 
 - Home: `data-model/home.html`
 - Daily/Weekly/GEX charts: `chart-surface/index.html`
+- Cross-market Digest home: `data-model/home.html`
+- Coverage browser: `data-model/coverage.html`
+- Digest source of truth: `data-model/digests.json`
+- Static digest bundle/model: `data-model/digest-data.js` and `data-model/digest-model.js`
+- Digest ingestion contract and command: `data-model/DIGEST-INGESTION.md` and `scripts/ingest-digests.mjs`
 - Representative tickers: NBIS and IREN
 - Data: contract based on the Google Sheets / GOOGLEFINANCE model, refreshed
   from the read-only Apps Script proxy when a page opens

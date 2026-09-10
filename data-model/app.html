@@ -76,10 +76,6 @@
     .empty { color:var(--muted); padding:20px 0; }
     .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
     .menu-backdrop[hidden], .ticker-sheet[hidden] { display:none; }
-    .floating-dock { position:fixed; z-index:60; top:14px; right:50%; display:flex; align-items:center; gap:7px; transform:translateX(50%); padding:7px; border:1px solid rgba(85,217,213,.38); border-radius:17px; background:rgba(85,217,213,.06); box-shadow:0 14px 38px rgba(0,0,0,.34),0 0 0 1px rgba(85,217,213,.06) inset; backdrop-filter:blur(3px); }
-    .dock-action { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-width:102px; height:42px; padding:7px 12px; border:0; border-radius:11px; color:var(--muted); background:transparent; text-decoration:none; font-size:12px; font-weight:800; cursor:pointer; }
-    .dock-action:hover, .dock-action:focus-visible { color:var(--text); background:var(--surface2); }
-    .dock-icon { color:var(--aqua); font-size:20px; line-height:1; }
     .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(460px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
     .ticker-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
     .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
@@ -94,7 +90,6 @@
     .ticker-wheel-item.is-current strong { color:var(--aqua); }
     @media (min-width:1000px) {
       body { padding-top:0; padding-bottom:0; }
-      .floating-dock { top:14px; bottom:auto; }
       .ticker-sheet { top:73px; bottom:auto; }
     }
     @media (max-width:760px) {
@@ -111,8 +106,6 @@
       .links { justify-content:flex-start; margin-top:12px; }
       .grid { grid-template-columns:1fr; }
       .thesis { font-size:17px; }
-      .floating-dock { right:12px; left:12px; justify-content:center; transform:none; }
-      .dock-action { flex:1 1 0; min-width:0; }
       .ticker-sheet { width:calc(100vw - 24px); }
     }
   </style>
@@ -138,10 +131,8 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <nav class="floating-dock" aria-label="快速導覽">
-    <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
-    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
-  </nav>
+  <script src="../shared-menu.js?v=20260910-4"></script>
+  <elliott-shared-menu data-current="ticker" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v4"></script>
   <script src="../chart-surface/eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
@@ -217,7 +208,8 @@
       }
       function renderDock() {
         const coverage = activeCoverage();
-        $('dock-home').href = `home.html?ticker=${encodeURIComponent(state.ticker)}`;
+        $('dock-home').href = 'home.html';
+        $('dock-coverage').href = `coverage.html?ticker=${encodeURIComponent(state.ticker)}`;
         const wheel = $('ticker-wheel');
         wheel.replaceChildren(...coverage.map((item) => {
           const button = document.createElement('button');
