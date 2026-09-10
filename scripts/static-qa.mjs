@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import vm from 'node:vm';
 
 const root = process.cwd();
 const failures = [];
@@ -22,7 +23,10 @@ const requiredFiles = [
   'chart-surface/data-contract.js',
   'chart-surface/analysis-localization.js',
   'chart-surface/analysis-geometry.js',
-  'data-model/home.html'
+  'data-model/home.html',
+  'data-model/coverage.html',
+  'data-model/digest-model.js',
+  'data-model/digest-data.js'
 ];
 
 const exists = async (relative) => {
@@ -48,7 +52,7 @@ if (await exists('manifest.webmanifest')) {
   }
 }
 
-const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/app.html'];
+const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html'];
 for (const file of htmlFiles) {
   if (!(await exists(file))) continue;
   const html = await read(file);
@@ -73,7 +77,7 @@ for (const file of htmlFiles) {
     if (/if \(state\.view === 'weekly' \|\| !bars\.length \|\| !pattern\) return \[\]/.test(html)) failures.push(`${file}: weekly pattern geometry is still disabled`);
     if (!html.includes("state.view === 'weekly' ? null")) failures.push(`${file}: weekly charts can still fall back to daily geometry sidecars`);
   }
-  if (file === 'data-model/home.html') {
+  if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
   }
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
@@ -81,13 +85,48 @@ for (const file of htmlFiles) {
   }
 }
 
+if (await exists('data-model/coverage.html')) {
+  const home = await read('data-model/coverage.html');
+  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
+  if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/coverage.html: partial-safe chart navigation gate is missing');
+  for (const ticker of requiredPartialTickers) {
+    if (!home.includes(`'${ticker}'`)) failures.push(`data-model/coverage.html: partial chart ticker missing from navigation fallback: ${ticker}`);
+  }
+}
+
 if (await exists('data-model/home.html')) {
   const home = await read('data-model/home.html');
-  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
-  if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/home.html: partial-safe chart navigation gate is missing');
-  for (const ticker of requiredPartialTickers) {
-    if (!home.includes(`'${ticker}'`)) failures.push(`data-model/home.html: partial chart ticker missing from navigation fallback: ${ticker}`);
-  }
+  const homeIndex = home.indexOf('<span>Home</span>');
+  const coverageIndex = home.indexOf('<span>Coverage</span>');
+  if (!home.includes('window.ELLIOTT_CROSS_MARKET_DIGESTS') && !home.includes('digest-data.js')) failures.push('data-model/home.html: digest dataset is not wired');
+  if (!home.includes('Daily · 每日') || !home.includes('Weekly · 每週')) failures.push('data-model/home.html: Daily/Weekly navigation is missing');
+  if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
+  if (!home.includes('aria-current="page"')) failures.push('data-model/home.html: active Home navigation state is missing');
+}
+
+if (await exists('data-model/digest-model.js')) {
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(await read('data-model/digest-model.js'), context);
+  const digestModel = context.ELLIOTT_DIGEST_MODEL;
+  const fixture = digestModel.normalizeDataset({
+    schemaVersion: 'elliott-cross-market-digest-v1',
+    records: [
+      { id:'d-close', cadence:'daily', edition:'close', marketDate:'2026-09-09' },
+      { id:'d-morning', cadence:'daily', edition:'morning', marketDate:'2026-09-09' },
+      { id:'d-midday', cadence:'daily', edition:'midday', marketDate:'2026-09-09' },
+      { id:'d-new', cadence:'daily', edition:'morning', marketDate:'2026-09-10' },
+      { id:'w-1', cadence:'weekly', edition:'weekly', weekStart:'2026-09-07' },
+      { id:'invalid', cadence:'weekly', edition:'morning', weekStart:'2026-09-07' },
+      { id:'d-new', cadence:'daily', edition:'morning', marketDate:'2026-09-10' }
+    ]
+  });
+  const dailyGroups = digestModel.groupRecords(fixture.records, 'daily');
+  const weeklyGroups = digestModel.groupRecords(fixture.records, 'weekly');
+  if (dailyGroups.map((group) => group.key).join(',') !== '2026-09-10,2026-09-09') failures.push('digest model: daily groups are not newest-first');
+  if (dailyGroups[1]?.items.map((item) => item.edition).join(',') !== 'morning,midday,close') failures.push('digest model: daily editions are not chronological');
+  if (weeklyGroups.length !== 1 || weeklyGroups[0]?.items[0]?.id !== 'w-1') failures.push('digest model: weekly grouping failed');
+  if (fixture.records.length !== 5) failures.push('digest model: invalid or duplicate records were not filtered');
 }
 
 for (const file of ['chart-surface/data-contract.js', 'chart-surface/benchmark-data.js', 'chart-surface/analysis-details.js', 'chart-surface/analysis-localization.js', 'chart-surface/analysis-geometry.js']) {

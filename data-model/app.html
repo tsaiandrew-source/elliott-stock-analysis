@@ -139,7 +139,8 @@
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
   <nav class="floating-dock" aria-label="快速導覽">
-    <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
+    <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟 Digest 首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
+    <a class="dock-action" id="dock-coverage" href="coverage.html" aria-label="開啟 Coverage"><span class="dock-icon" aria-hidden="true">◎</span><span>Coverage</span></a>
     <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
   </nav>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v4"></script>
@@ -217,7 +218,8 @@
       }
       function renderDock() {
         const coverage = activeCoverage();
-        $('dock-home').href = `home.html?ticker=${encodeURIComponent(state.ticker)}`;
+        $('dock-home').href = 'home.html';
+        $('dock-coverage').href = `coverage.html?ticker=${encodeURIComponent(state.ticker)}`;
         const wheel = $('ticker-wheel');
         wheel.replaceChildren(...coverage.map((item) => {
           const button = document.createElement('button');
