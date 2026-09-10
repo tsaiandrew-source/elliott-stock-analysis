@@ -4,475 +4,375 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="E+">
+  <meta name="format-detection" content="telephone=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <link rel="manifest" href="../manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="../assets/elliott-plus-icon.svg">
-  <link rel="mask-icon" href="../assets/elliott-plus-icon.svg" color="#55d9d5">
-  <title>股票分析首頁</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/elliott-asterisk-icon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/elliott-asterisk-apple-touch-icon.png">
+  <script src="../pwa-register.js" defer></script>
+  <title>股市分析</title>
   <style>
-    :root { color-scheme: dark; --bg:#071018; --surface:#0d1a25; --surface2:#112433; --line:#203849; --text:#edf6fb; --muted:#91a8b7; --aqua:#55d9d5; --green:#7ee787; --lime:#c8f169; --amber:#f2b84b; --rose:#ff7e8f; }
+    :root { color-scheme:dark; --bg:#071018; --surface:#0d1a25; --surface2:#112433; --line:#203849; --text:#edf6fb; --muted:#91a8b7; --aqua:#55d9d5; --lime:#c8f169; --amber:#f2b84b; --rose:#ff7e8f; }
     * { box-sizing:border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    html { min-height:100%; background:var(--bg); }
+    body { min-height:100vh; min-height:100dvh; margin:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(82px + env(safe-area-inset-bottom)) env(safe-area-inset-left); overflow-x:hidden; background:radial-gradient(circle at 90% -10%,rgba(85,217,213,.12),transparent 34%),var(--bg); color:var(--text); font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-text-size-adjust:100%; }
     button, a { font:inherit; }
-    .home { width:min(760px,100%); margin:0 auto; padding:24px 20px 38px; }
-    .top { display:flex; align-items:start; justify-content:space-between; gap:16px; margin-bottom:22px; }
-    .eyebrow { color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.1em; }
-    h1 { margin:4px 0 0; color:var(--aqua); font-size:24px; }
-    .subtitle { margin-top:5px; color:var(--muted); font-size:13px; }
-    .section { padding:15px; border:1px solid var(--line); border-radius:13px; background:var(--surface); }
-    .section-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
-    .section-head strong { color:var(--aqua); font-size:13px; }
-    .section-head span { color:var(--muted); font-size:11px; }
-    .section-head-tools { display:flex; align-items:center; justify-content:flex-end; gap:9px; }
-    .coverage-tabs { display:flex; gap:5px; }
-    .coverage-tab { display:inline-flex; align-items:center; justify-content:center; width:36px; height:32px; border:1px solid var(--line); border-radius:8px; padding:5px; color:var(--muted); background:transparent; cursor:pointer; }
-    .coverage-tab svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-    .coverage-tab[aria-selected="true"] { border-color:var(--aqua); color:#071018; background:var(--aqua); }
-    .coverage-tab:hover, .coverage-tab:focus-visible { border-color:var(--aqua); color:var(--text); }
-    .coverage-tab[aria-selected="true"]:hover, .coverage-tab[aria-selected="true"]:focus-visible { color:#071018; }
-    .coverage-panel[hidden] { display:none; }
-    .ticker-list { display:grid; gap:8px; margin-top:11px; overflow-x:auto; }
-    .coverage-group + .coverage-group { margin-top:18px; }
-    .market-group { margin-top:18px; padding-top:14px; border-top:1px solid rgba(79,209,165,.3); }
-    .market-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 8px; padding-bottom:6px; border-bottom:1px solid rgba(79,209,165,.4); }
-    .market-group-head strong { color:var(--teal); font-size:13px; }
-    .market-group-head span { color:var(--muted); font-size:10px; }
-    .market-group .coverage-group { margin-top:12px; }
-    .coverage-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 7px; padding-bottom:5px; border-bottom:1px solid rgba(85,217,213,.22); }
-    .coverage-group-head strong { color:var(--aqua); font-size:12px; }
-    .coverage-group-head span { color:var(--muted); font-size:10px; }
-    .coverage-group[data-group="exploration"] .coverage-group-head { border-bottom-color:rgba(242,184,75,.32); }
-    .coverage-group[data-group="exploration"] .coverage-group-head strong { color:var(--amber); }
-    .coverage-group-empty { margin:0; padding:8px 3px 2px; color:var(--muted); font-size:11px; }
-    .coverage-header, .ticker-row { min-width:0; }
-    .coverage-header { display:grid; grid-template-columns:9px 74px 72px 42px 42px 72px 62px 26px; gap:8px; padding:0 11px 6px; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
-    .ticker-row { display:grid; grid-template-columns:9px 74px 72px 42px 42px 72px 62px 26px; align-items:center; gap:8px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:rgba(17,36,51,.42); }
-    .ticker-row.has-detail { cursor:pointer; }
-    .ticker-row.has-detail:hover { border-color:rgba(85,217,213,.6); background:rgba(17,36,51,.7); }
-    .ticker-row.has-detail:focus-visible { outline:2px solid var(--aqua); outline-offset:2px; }
-    .ticker-row.is-disabled { color:var(--muted); cursor:not-allowed; }
-    .ticker-copy strong { display:block; font-size:14px; }
-    .ticker-copy, .latest-price, .latest-direction, .latest-confidence, .latest-date { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .latest-price { color:var(--text); font-size:12px; font-variant-numeric:tabular-nums; }
-    .latest-direction { color:var(--aqua); font-size:18px; font-weight:800; line-height:1; text-align:center; }
-    .latest-direction[data-direction="up"] { color:var(--green); }
-    .latest-direction[data-direction="down"] { color:var(--rose); }
-    .latest-direction[data-direction="flat"] { color:var(--amber); }
-    .latest-direction[data-direction="pending"] { color:var(--muted); }
-    .latest-confidence { color:var(--lime); font-size:13px; font-weight:800; }
-    .latest-date { color:var(--muted); font-size:11px; }
-    .ticker-copy em { color:var(--muted); font-size:11px; font-style:normal; white-space:nowrap; }
-    .new-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(126,231,135,.13); }
-    .new-dot[hidden] { display:none; }
-    .ticker-history-toggle { grid-column:8; grid-row:1; align-self:center; justify-self:center; width:auto; height:auto; padding:0; border:0; color:var(--aqua); background:transparent; font-size:18px; font-weight:500; line-height:1; text-align:center; cursor:pointer; }
-    .ticker-history-toggle:hover, .ticker-history-toggle:focus-visible { color:var(--text); }
-    .history-panel { grid-column:1 / -1; grid-row:2; width:100%; min-width:640px; margin:9px 0 0 18px; padding-top:6px; border-top:1px solid rgba(32,56,73,.7); }
-    .history-panel[hidden] { display:none; }
-    .history-entry { padding-top:6px; color:var(--muted); font-size:11px; white-space:normal; overflow-wrap:break-word; }
-    .history-entry strong { color:var(--text); }
-    .action { border:1px solid var(--line); border-radius:6px; padding:6px 9px; color:var(--aqua); background:transparent; cursor:pointer; font-size:12px; font-weight:800; }
-    .action:hover, .action:focus-visible { border-color:var(--aqua); background:rgba(85,217,213,.08); }
-    .action[data-active="false"] { color:var(--amber); }
-    .status-active { color:var(--green); font-weight:800; }
-    .status-inactive { color:var(--amber); font-weight:800; }
-    .status-removed { color:var(--muted); font-weight:800; }
-    .empty { padding:20px 0; color:var(--muted); }
-    .foot { margin-top:13px; color:var(--muted); font-size:11px; }
-    .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
-    .menu-backdrop[hidden], .ticker-sheet[hidden] { display:none; }
-    .floating-dock { position:fixed; z-index:60; top:14px; right:50%; display:flex; align-items:center; gap:7px; transform:translateX(50%); padding:7px; border:1px solid rgba(85,217,213,.38); border-radius:17px; background:rgba(85,217,213,.06); box-shadow:0 14px 38px rgba(0,0,0,.34),0 0 0 1px rgba(85,217,213,.06) inset; backdrop-filter:blur(3px); }
-    .dock-action { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-width:102px; height:42px; padding:7px 12px; border:0; border-radius:11px; color:var(--muted); background:transparent; text-decoration:none; font-size:12px; font-weight:800; cursor:pointer; }
-    .dock-action:hover, .dock-action:focus-visible { color:var(--text); background:var(--surface2); }
-    .dock-icon { color:var(--aqua); font-size:20px; line-height:1; }
-    .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(460px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
-    .ticker-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
-    .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
-    .ticker-sheet-head span { display:block; color:var(--muted); font-size:11px; font-weight:400; }
-    .ticker-sheet-close { border:0; color:var(--muted); background:transparent; font-size:22px; line-height:1; cursor:pointer; }
-    .ticker-wheel { display:flex; flex-direction:column; height:calc(44vh - 100px); overflow-y:auto; scroll-snap-type:y mandatory; border:1px solid var(--line); border-radius:11px; background:rgba(7,16,24,.52); }
-    .ticker-wheel-item { display:flex; flex:0 0 42px; align-items:center; justify-content:space-between; gap:10px; scroll-snap-align:center; padding:6px 13px; border:0; border-bottom:1px solid rgba(32,56,73,.55); color:var(--muted); background:transparent; text-align:left; cursor:pointer; }
-    .ticker-wheel-item:last-child { border-bottom:0; }
-    .ticker-wheel-item strong { font-size:13px; }
-    .ticker-wheel-item span { overflow:hidden; color:var(--muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
-    .ticker-wheel-item.is-current { color:var(--text); background:rgba(85,217,213,.13); box-shadow:inset 3px 0 var(--aqua); }
-    .ticker-wheel-item.is-current strong { color:var(--aqua); }
-    .ticker-wheel-item:disabled { opacity:.62; cursor:not-allowed; }
-    .ticker-wheel-item:disabled strong { color:var(--muted); }
-    @media (min-width:1000px) {
-      body { padding-top:0; padding-bottom:0; }
-      .floating-dock { top:14px; bottom:auto; }
-      .ticker-sheet { top:73px; bottom:auto; }
+    button { -webkit-tap-highlight-color:transparent; }
+    a { color:var(--aqua); }
+    .shell { width:min(920px,100%); margin:0 auto; padding:24px 18px 44px; }
+    .masthead { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:22px; }
+    .eyebrow { color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.11em; }
+    h1 { margin:3px 0 2px; font-size:clamp(27px,5vw,38px); line-height:1.15; }
+    .dek { margin:0; color:var(--muted); font-size:13px; }
+    .network { display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; color:var(--muted); font-size:11px; }
+    .network::before { width:7px; height:7px; border-radius:50%; background:var(--lime); content:""; }
+    .network.is-offline::before { background:var(--amber); }
+    .calendar-menu { display:grid; gap:10px; margin:0 0 18px; padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.84); overflow-x:auto; }
+    .calendar-week { display:grid; grid-template-columns:repeat(7,minmax(34px,1fr)); align-items:center; gap:3px; min-width:252px; }
+    .calendar-day { position:relative; display:grid; place-items:center; gap:1px; min-height:58px; padding:5px 2px 10px; border:1px solid transparent; border-radius:11px; color:var(--muted); background:transparent; cursor:pointer; }
+    .calendar-day:hover, .calendar-day:focus-visible { border-color:rgba(85,217,213,.45); outline:0; }
+    .calendar-day[aria-pressed="true"] { color:#071018; background:var(--aqua); }
+    .calendar-day-name { font-size:10px; font-weight:750; }
+    .calendar-day-number { font-size:16px; font-weight:900; line-height:1.15; }
+    .calendar-day.has-digest::after { position:absolute; bottom:5px; width:5px; height:5px; border-radius:50%; background:var(--lime); content:""; box-shadow:0 0 8px rgba(200,241,105,.6); }
+    .calendar-day[aria-pressed="true"]::after { background:#071018; box-shadow:none; }
+    .calendar-day:not(.has-digest):not([aria-pressed="true"]) { opacity:.52; }
+    .selected-date { margin:0 0 10px; color:var(--muted); font-size:12px; font-weight:800; }
+    .status-card, .group { border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.9); box-shadow:0 16px 40px rgba(0,0,0,.16); }
+    .status-card { padding:22px; color:var(--muted); }
+    .status-card strong { display:block; margin-bottom:4px; color:var(--text); font-size:17px; }
+    .digest-list { display:grid; gap:14px; }
+    .group { overflow:hidden; }
+    .group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:13px 15px; border-bottom:1px solid var(--line); }
+    .group-head time { color:var(--text); font-weight:850; }
+    .group-head span { color:var(--muted); font-size:11px; }
+    .edition-list { display:grid; }
+    .edition-card { display:grid; grid-template-columns:auto 1fr auto; align-items:start; gap:12px; width:100%; min-height:66px; padding:14px 15px; border:0; border-bottom:1px solid rgba(32,56,73,.72); color:var(--text); background:transparent; text-align:left; cursor:pointer; }
+    .edition-card:last-child { border-bottom:0; }
+    .edition-card:hover, .edition-card:focus-visible { background:rgba(85,217,213,.07); outline:0; }
+    .edition-card.is-missing { cursor:default; opacity:.42; }
+    .edition-card.is-missing:hover { background:transparent; }
+    .edition-card[aria-expanded="true"] { background:rgba(85,217,213,.08); box-shadow:inset 3px 0 var(--aqua); }
+    .edition-details { border-bottom:1px solid rgba(32,56,73,.72); background:rgba(7,16,24,.34); }
+    .article.edition-details { padding-top:16px; }
+    .edition-details > section:first-child { margin-top:0; }
+    .edition-badge { min-width:76px; padding:4px 7px; border:1px solid rgba(85,217,213,.35); border-radius:999px; color:var(--aqua); font-size:11px; font-weight:800; text-align:center; }
+    .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { border-color:rgba(200,241,105,.36); color:var(--lime); }
+    .edition-copy { min-width:0; }
+    .edition-copy strong { display:block; font-size:14px; }
+    .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted); font-size:12px; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .edition-time { color:var(--muted); font-size:11px; white-space:nowrap; }
+    .list-view[hidden] { display:none; }
+    .article { width:min(720px,100%); margin:0 auto; padding:26px 22px 40px; overflow-wrap:anywhere; }
+    .article section { margin-top:28px; }
+    .article h3 { margin:0 0 10px; color:var(--aqua); font-size:17px; }
+    .article p { margin:0 0 12px; }
+    .article ul { margin:0; padding-left:1.3em; }
+    .article li + li { margin-top:8px; }
+    .table-wrap { width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:11px; }
+    table { width:100%; min-width:520px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:10px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:var(--aqua); background:var(--surface2); }
+    tr:last-child td { border-bottom:0; }
+    .article .source-list { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:8px 0 0; padding:0; list-style:none; }
+    .article .source-list li, .article .source-list li + li { display:flex; align-items:center; margin:0; }
+    .source-list a { display:inline-flex; height:30px; align-items:center; padding:0 9px; border:1px solid var(--line); border-radius:8px; font-size:12px; line-height:1; text-decoration:none; }
+    .source-list a:hover, .source-list a:focus-visible { border-color:var(--aqua); }
+    @media (min-width:760px) {
+      body { padding-bottom:24px; }
+      .shell { padding:34px 28px 54px; }
+      .article { padding:38px 42px 54px; }
     }
-    @media (max-width:560px) {
-      body { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
-      .home { padding:16px 12px 30px; }
-      .top { display:block; }
-      .section { padding:12px; }
-      .coverage-header, .ticker-row { min-width:0; }
-      .floating-dock { right:12px; left:12px; justify-content:center; transform:none; }
-      .dock-action { flex:1 1 0; min-width:0; }
-      .ticker-sheet { width:calc(100vw - 24px); }
-    }
-    @media (min-width:561px) and (max-width:999px) and (min-height:600px) {
-      .floating-dock { right:50%; left:auto; width:max-content; max-width:calc(100vw - 32px); transform:translateX(50%); }
-      .dock-action { flex:0 0 auto; min-width:96px; }
-      .ticker-sheet { top:73px; }
-      body { font-size:16px; }
-      .home { padding:24px; }
-      h1 { font-size:28px; }
-      .subtitle { font-size:15px; }
-      .section { padding:18px; }
-      .section-head strong { font-size:15px; }
-      .section-head span, .coverage-tab { font-size:13px; }
-      .coverage-tab { padding:8px 12px; }
-      .coverage-header { font-size:12px; }
-      .ticker-copy strong { font-size:16px; }
-      .latest-confidence { font-size:15px; }
-      .latest-date, .history-entry, .foot { font-size:13px; }
-      .action { font-size:14px; }
-      .dock-action { height:46px; font-size:14px; }
-      .dock-icon { font-size:22px; }
-      .ticker-sheet-head strong { font-size:15px; }
-      .ticker-sheet-head span, .ticker-wheel-item span { font-size:13px; }
-      .ticker-wheel-item strong { font-size:15px; }
-    }
-    @media (max-width:560px) {
-      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
-      .dock-action { height:44px; padding:7px 10px; font-size:12px; }
-      .dock-icon { font-size:20px; }
-      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
-      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
-    }
-    /* Portrait phones keep the analysis scan line compact: ticker, price,
-       confidence, updated date, and the inline history affordance. */
-    @media (max-width:560px) and (orientation: portrait) {
-      .ticker-list { overflow-x:visible; }
-      .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
-      .ticker-row { grid-template-columns:9px 58px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
-      .coverage-header .price-column, .ticker-row .latest-price { display:none; }
-      .ticker-history { grid-column:8; }
-      .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
-      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
-      .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
-    }
-    /* Small landscape phones still use a compact scan row; do not let the
-       tablet sizing rules make the history panel oversized. */
-    @media (max-width:700px) and (orientation: landscape) {
-      body { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
-      .home { padding:16px 12px 30px; }
-      .section { padding:12px; }
-      .ticker-list { overflow-x:visible; }
-      .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
-      .ticker-row { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
-      .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
-      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
-      .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
-      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
-      .dock-action { height:44px; padding:7px 10px; font-size:12px; }
-      .dock-icon { font-size:20px; }
-      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
-      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
-    }
-    /* iPhone landscape is wider than 700px. Use the viewport height to keep
-       it in the compact phone treatment instead of the larger tablet rules. */
-    @media (max-width:999px) and (orientation: landscape) and (max-height:500px) {
-      body { font-size:15px; padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
-      .home { width:min(760px,100%); padding:16px 12px 30px; }
-      .section { padding:12px; }
-      .coverage-header, .ticker-row { min-width:0; }
-      .coverage-header { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; font-size:10px; }
-      .ticker-row { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
-      .latest-confidence { font-size:13px; }
-      .latest-date { font-size:11px; }
-      .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
-      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
-      .history-entry { font-size:11px; line-height:1.45; overflow-wrap:break-word; word-break:normal; }
-      .floating-dock { top:auto; bottom:calc(12px + env(safe-area-inset-bottom)); left:12px; right:12px; width:auto; transform:none; padding:5px; border-radius:15px; background:rgba(30,89,99,.18); backdrop-filter:blur(1px); }
-      .dock-action { height:44px; padding:7px 10px; font-size:12px; }
-      .dock-icon { font-size:20px; }
-      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
-      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
+    @media (max-width:520px) {
+      .shell { padding:18px 12px 36px; }
+      .masthead { align-items:flex-start; }
+      .edition-card { grid-template-columns:1fr auto; gap:7px 10px; }
+      .edition-badge { grid-column:1; justify-self:start; min-width:0; }
+      .edition-copy { grid-column:1 / -1; grid-row:2; }
+      .edition-time { grid-column:2; grid-row:1; }
+      .article { padding:22px 16px 36px; }
     }
   </style>
 </head>
 <body>
-  <main class="home">
-    <header class="top">
-      <div><div class="eyebrow">ELLIOTT+ STOCK ANALYSIS</div><h1>分析首頁</h1><p class="subtitle">Covered tickers · 點選代號開啟日線分析</p></div>
+  <main class="shell">
+    <header class="masthead">
+      <div><div class="eyebrow">ELLIOTT+ · MARKET BRIEF</div><h1>跨市場摘要</h1><p class="dek">每日訊號與每週展望，集中閱讀。</p></div>
+      <span class="network" id="network-state" role="status">已連線</span>
     </header>
-    <section class="section" aria-labelledby="coverage-heading">
-      <div class="section-head">
-        <strong id="coverage-heading">Coverage</strong>
-        <div class="section-head-tools">
-          <span id="coverage-count"></span>
-        </div>
+
+    <div class="list-view" id="list-view">
+      <div class="calendar-menu" id="calendar-menu" aria-label="最近兩週摘要日期"></div>
+      <p class="selected-date" id="selected-date"></p>
+      <div class="digest-list" id="digest-list" aria-live="polite">
+        <div class="status-card"><strong>正在整理摘要</strong>請稍候。</div>
       </div>
-      <div class="ticker-list" id="ticker-list"></div>
-    </section>
-    <p class="foot">綠點表示有可用的新分析；歷史紀錄採 append-only 保存，點選每列右側「+」即可查看。</p>
+    </div>
+
   </main>
-  <button type="button" class="menu-backdrop" id="menu-backdrop" aria-label="關閉代號選單" hidden></button>
-  <section class="ticker-sheet" id="ticker-sheet" aria-label="Ticker selections" hidden>
-    <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
-    <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
-  </section>
-  <nav class="floating-dock" aria-label="快速導覽">
-    <a class="dock-action" id="dock-home" href="home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
-    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span>Ticker</span></button>
-  </nav>
-  <script src="../chart-surface/analysis-packets-v2.js?v=20260909-rich-reader-v1"></script>
-  <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
+
   <script src="../coverage-order.js?v=20260909-v1"></script>
+  <script src="../shared-menu.js?v=20260910-4"></script>
+  <elliott-shared-menu data-current="home" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-href="../chart-surface/index.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
+
+  <script src="digest-model.js?v=20260910-2"></script>
+  <script src="digest-data.js?v=20260910-2"></script>
   <script>
-    (async () => {
-      const contract = window.PROTOTYPE_DATA_CONTRACT || {};
-      const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
-      const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), timeoutMs);
-        try {
-          const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
-          return response.ok ? response.json() : null;
-        } finally {
-          clearTimeout(timeout);
-        }
-      };
-      const mergeRuntimeContract = (fallback, live) => {
-        if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
-        const uniqueRuns = new Map();
-        const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
-        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
-        return {
-          ...fallback,
-          ...live,
-          coverage: live.coverage.length ? live.coverage : fallback.coverage,
-          analysisRuns: [...uniqueRuns.values()],
-          tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
-          datasets: {
-            ...(fallback.datasets || {}),
-            ...(live.datasets || {}),
-            benchmark: { ...(fallback.datasets?.benchmark || {}), ...(live.datasets?.benchmark || {}) },
-            weeklyHistory: { ...(fallback.datasets?.weeklyHistory || {}), ...(live.datasets?.weeklyHistory || {}) },
-            analysisDetails: { ...(fallback.datasets?.analysisDetails || {}), ...(live.datasets?.analysisDetails || {}) }
-          }
-        };
-      };
-      const liveCacheKey = 'stock-analysis-live-contract-v2';
-      let activeContract = contract;
-      try {
-        const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
-        if (cached && Array.isArray(cached.coverage)) activeContract = mergeRuntimeContract(contract, cached);
-      } catch (_) { /* Ignore an unavailable or malformed browser cache. */ }
-      const liveSignature = (live) => JSON.stringify({ coverage: live.coverage || [], analysisRuns: live.analysisRuns || [], tables: live.tables || {} });
-      const refreshLiveInBackground = async () => {
-        if (window.location.protocol === 'file:') return;
-        try {
-          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 15000);
-          if (!live || !Array.isArray(live.coverage)) return;
-          const nextSignature = liveSignature(live);
-          const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
-          sessionStorage.setItem(liveCacheKey, JSON.stringify(live));
-          sessionStorage.setItem(`${liveCacheKey}-signature`, nextSignature);
-          if (nextSignature !== previousSignature) window.location.reload();
-        } catch (_) {
-          // The already-rendered bundled or cached contract remains usable.
-        }
-      };
-      const datasets = activeContract.datasets?.benchmark || {};
-      const partialChartSources = {
-        '2330': '../chart-surface/partial-market-data/2330.json', '2646': '../chart-surface/partial-market-data/2646.json', 'NBIS': '../chart-surface/partial-market-data/NBIS.json', 'IREN': '../chart-surface/partial-market-data/IREN.json',
-        'ACHR': '../chart-surface/partial-market-data/ACHR.json', 'AMKR': '../chart-surface/partial-market-data/AMKR.json',
-        'CSCO': '../chart-surface/partial-market-data/CSCO.json', 'LITE': '../chart-surface/partial-market-data/LITE.json',
-        'MRVL': '../chart-surface/partial-market-data/MRVL.json', 'NOK': '../chart-surface/partial-market-data/NOK.json',
-        'NVDA': '../chart-surface/partial-market-data/NVDA.json', 'ONDS': '../chart-surface/partial-market-data/ONDS.json',
-        'PLTR': '../chart-surface/partial-market-data/PLTR.json', 'SNDK': '../chart-surface/partial-market-data/SNDK.json', 'AVGO': '../chart-surface/partial-market-data/AVGO.json'
-      };
-      const partialDatasets = {};
-      await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
-        try {
-          const data = await fetchJsonWithTimeout(source, 1200);
-          if (data) partialDatasets[ticker] = data;
-        } catch (_) {
-          // The contract and explicit packet snapshot remain usable when a chart seed is unavailable.
-        }
-      }));
-      const priceDatasets = { ...datasets, ...partialDatasets };
-      const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
-      const v2Batches = Object.values(irisV2.batches || {});
-      const v2Runs = v2Batches.flatMap((batch) => [
-        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily })),
-        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly }))
-      ]);
-      const runMap = new Map();
-      [...(activeContract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
-      const runs = [...runMap.values()];
-      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
-      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
-      const twseTickers = new Set(['2330', '2646']);
-      const canonicalCoverageGroup = (ticker) => {
-        const symbol = String(ticker || '').trim().toUpperCase();
-        if (trackingTickers.has(symbol)) return 'tracking';
-        if (explorationTickers.has(symbol)) return 'exploration';
-        return null;
-      };
-      const inferredCoverageGroup = (ticker) => canonicalCoverageGroup(ticker) || 'tracking';
-      const inferredMarketGroup = (ticker) => twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
-      const baseCoverage = [
-        ...(activeContract.coverage || []).map((item) => ({ ...item, coverageGroup: canonicalCoverageGroup(item.ticker) || item.coverageGroup || item.CoverageGroup || inferredCoverageGroup(item.ticker), marketGroup: item.marketGroup || item.MarketGroup || inferredMarketGroup(item.ticker) })),
-        ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true, coverageGroup: inferredCoverageGroup(ticker), marketGroup: inferredMarketGroup(ticker) }))
-      ].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
-      let overrides = {};
-      try { overrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { overrides = {}; }
-      const allRows = () => {
-        const merged = new Map(baseCoverage.map((item) => [item.ticker, { ...item }]));
-        Object.entries(overrides).forEach(([ticker, item]) => merged.set(ticker, { ...(merged.get(ticker) || { ticker }), ...item }));
-        return [...merged.values()];
-      };
-      const rows = () => allRows().filter((item) => item.removed !== true);
+    (() => {
+      const model = window.ELLIOTT_DIGEST_MODEL;
+      const dataset = model.normalizeDataset(window.ELLIOTT_CROSS_MARKET_DIGESTS);
+      const listView = document.getElementById('list-view');
+      const list = document.getElementById('digest-list');
+      const calendar = document.getElementById('calendar-menu');
+      const selectedDateLabel = document.getElementById('selected-date');
       const query = new URLSearchParams(window.location.search);
-      const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || '';
-      const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
-      const normalizePriceSnapshot = (snapshot, fallbackBar) => {
-        const source = snapshot && typeof snapshot === 'object' ? snapshot : {};
-        const value = Number(source.value ?? source.price ?? source.last ?? source.close);
-        if (Number.isFinite(value)) {
-          const status = source.status === 'snapshot' ? 'snapshot' : 'close';
-          return { value, status, label: status === 'snapshot' ? '現價快照' : '收盤價', asOf: source.asOf || source.dataThrough || '' };
+      const dateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const fromDateKey = (value) => new Date(`${value}T12:00:00`);
+      const today = dateKey(new Date());
+      let selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(query.get('date') || '') ? query.get('date') : today;
+
+      const text = (tag, value, className) => {
+        const element = document.createElement(tag);
+        element.textContent = value ?? '';
+        if (className) element.className = className;
+        return element;
+      };
+      const validLink = (value) => {
+        try { const url = new URL(value, window.location.href); return ['http:', 'https:'].includes(url.protocol) ? url.href : null; } catch (_) { return null; }
+      };
+      const formatDate = (value, options = {}) => {
+        const date = new Date(`${value}T12:00:00`);
+        return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'long', day:'numeric', ...options }).format(date);
+      };
+      const formatTime = (value) => {
+        const date = new Date(value || '');
+        return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('zh-TW', { hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Los_Angeles' }).format(date);
+      };
+      const updateUrl = (changes, mode = 'push') => {
+        const url = new URL(window.location.href);
+        Object.entries(changes).forEach(([key, value]) => value ? url.searchParams.set(key, value) : url.searchParams.delete(key));
+        history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', url);
+      };
+      const saveScroll = () => sessionStorage.setItem(`digest-scroll-${selectedDate}`, String(window.scrollY));
+      const restoreScroll = () => requestAnimationFrame(() => window.scrollTo({ top:Number(sessionStorage.getItem(`digest-scroll-${selectedDate}`) || 0), behavior:'auto' }));
+
+      function calendarWeeks() {
+        const current = fromDateKey(today);
+        const thisSunday = new Date(current);
+        thisSunday.setDate(current.getDate() - current.getDay());
+        return [-7, 0].map((offset) => {
+          const start = new Date(thisSunday);
+          start.setDate(thisSunday.getDate() + offset);
+          return Array.from({ length:7 }, (_, index) => {
+            const day = new Date(start);
+            day.setDate(start.getDate() + index);
+            return dateKey(day);
+          });
+        });
+      }
+
+      function renderCalendar() {
+        const daysWithDigests = new Set(dataset.records.filter((record) => record.cadence === 'daily').map((record) => record.marketDate));
+        calendar.replaceChildren();
+        calendarWeeks().forEach((days) => {
+          const row = text('div', '', 'calendar-week');
+          days.forEach((value) => {
+            const date = fromDateKey(value);
+            const button = text('button', '', 'calendar-day');
+            button.type = 'button';
+            button.dataset.date = value;
+            button.classList.toggle('has-digest', daysWithDigests.has(value));
+            button.setAttribute('aria-pressed', String(value === selectedDate));
+            button.setAttribute('aria-label', `${formatDate(value, { weekday:'long' })}${daysWithDigests.has(value) ? '，有摘要' : '，尚無摘要'}`);
+            button.append(text('span', new Intl.DateTimeFormat('en-US', { weekday:'short' }).format(date), 'calendar-day-name'));
+            button.append(text('span', String(date.getDate()), 'calendar-day-number'));
+            button.addEventListener('click', () => {
+              if (value === selectedDate) return;
+              saveScroll();
+              selectedDate = value;
+              updateUrl({ view:'daily', date:selectedDate, digest:null });
+              renderCalendar();
+              renderList();
+              restoreScroll();
+            });
+            row.append(button);
+          });
+          calendar.append(row);
+        });
+      }
+
+      function emptyState() {
+        list.replaceChildren();
+        const card = text('div', '', 'status-card');
+        card.append(text('strong', dataset.error ? '摘要資料暫時無法讀取' : '尚未有摘要'));
+        card.append(document.createTextNode(dataset.error ? '請稍後重新整理；Coverage 與既有分析仍可使用。' : '這一天尚未發布摘要。上方亮點標記代表已有內容的日期。'));
+        list.append(card);
+      }
+
+      function renderList() {
+        listView.hidden = false;
+        selectedDateLabel.textContent = formatDate(selectedDate, { weekday:'long' });
+        const records = dataset.records.filter((record) => record.cadence === 'daily' && record.marketDate === selectedDate);
+        list.replaceChildren();
+        const byEdition = new Map(records.map((record) => [record.edition, record]));
+        if (!records.length) { emptyState(); return; }
+        const editionOrder = ['close', 'midday', 'morning'];
+        const available = editionOrder.map((edition) => byEdition.get(edition)).filter(Boolean);
+        const missing = editionOrder.filter((edition) => !byEdition.has(edition)).map((edition) => ({ edition }));
+        [{ key:selectedDate, items:[...available, ...missing] }].forEach((group) => {
+          const section = text('section', '', 'group');
+          const head = text('div', '', 'group-head');
+          head.append(text('time', 'Daily · 每日摘要'));
+          head.append(text('span', `${records.length} / 3 篇`));
+          section.append(head);
+          const editions = text('div', '', 'edition-list');
+          group.items.forEach((record) => {
+            const button = text('button', '', 'edition-card');
+            button.type = 'button';
+            button.dataset.edition = record.edition;
+            if (!record.id) {
+              button.disabled = true;
+              button.classList.add('is-missing');
+              button.setAttribute('aria-label', `${model.EDITION_LABELS[record.edition]}尚未發布`);
+            } else {
+            button.dataset.recordId = record.id;
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-label', `開啟 ${model.EDITION_LABELS[record.edition]}：${record.title}`);
+            }
+            button.append(text('span', model.EDITION_LABELS[record.edition], 'edition-badge'));
+            const copy = text('span', '', 'edition-copy');
+            copy.append(text('strong', record.title || '尚未發布'));
+            copy.append(text('span', record.id ? (record.summary || '開啟閱讀完整摘要') : '這個時段目前沒有摘要'));
+            button.append(copy);
+            button.append(text('time', record.id ? formatTime(record.publishedAt) : '—', 'edition-time'));
+            if (record.id) button.addEventListener('click', () => {
+              if (button.getAttribute('aria-expanded') === 'true') closeReader(true);
+              else openReader(record, true);
+            });
+            editions.append(button);
+          });
+          section.append(editions);
+          list.append(section);
+        });
+      }
+
+      function renderTable(table) {
+        if (!table || !Array.isArray(table.columns) || !Array.isArray(table.rows)) return null;
+        const wrap = text('div', '', 'table-wrap');
+        const node = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        table.columns.forEach((column) => headRow.append(text('th', column)));
+        thead.append(headRow);
+        const tbody = document.createElement('tbody');
+        table.rows.forEach((row) => {
+          const tr = document.createElement('tr');
+          table.columns.forEach((_, index) => tr.append(text('td', Array.isArray(row) ? row[index] : '')));
+          tbody.append(tr);
+        });
+        node.append(thead, tbody);
+        wrap.append(node);
+        return wrap;
+      }
+
+      function renderLinks(links) {
+        const valid = (links || []).map((item) => ({ ...item, href:validLink(item.url) })).filter((item) => item.href);
+        if (!valid.length) return null;
+        const ul = text('ul', '', 'source-list');
+        valid.forEach((item) => {
+          const li = document.createElement('li');
+          const anchor = text('a', item.label || item.href);
+          anchor.href = item.href;
+          anchor.target = '_blank';
+          anchor.rel = 'noopener noreferrer';
+          li.append(anchor);
+          ul.append(li);
+        });
+        return ul;
+      }
+
+      function openReader(record, push) {
+        if (record.marketDate && record.marketDate !== selectedDate) {
+          selectedDate = record.marketDate;
+          renderCalendar();
+          renderList();
         }
-        if (snapshot && ['pending', 'not_applicable'].includes(String(source.status || '').toLowerCase())) return null;
-        const close = Number(fallbackBar?.close);
-        return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
-      };
-      const formatPrice = (value) => Number.isFinite(Number(value)) ? Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
-      const normalizeCoverageGroup = (value, ticker = '') => {
-        const normalized = String(value ?? '').trim().toLowerCase();
-        if (['exploration', 'explore', 'exploratory'].includes(normalized)) return 'exploration';
-        if (['tracking', 'tracked', 'track'].includes(normalized)) return 'tracking';
-        return explorationTickers.has(String(ticker || '').trim().toUpperCase()) ? 'exploration' : 'tracking';
-      };
-      const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracked · 追蹤';
-      const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group, item.ticker);
-      const normalizeMarketGroup = (value, ticker = '') => {
-        const normalized = String(value ?? '').trim().toLowerCase();
-        if (['twse', 'taiwan', 'taiwan stock exchange', 'taiwan-stock-exchange'].includes(normalized)) return 'twse';
-        return twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
-      };
-      const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
-      const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
-      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
-      const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
-      const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
-      const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
-      const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
-      const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
-      const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
-      const preferredRuns = (ticker) => {
-        const candidates = runs.filter((run) => run.ticker === ticker);
-        return candidates.sort((a, b) => compareRuns(a, b) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)));
-      };
-      const latestRun = (ticker) => preferredRuns(ticker).filter((run) => !isWeeklyRun(run))[0] || preferredRuns(ticker)[0];
-      const latestWeeklyRun = (ticker) => preferredRuns(ticker).find(isWeeklyRun) || null;
-      const validDirection = (value) => ['up', 'flat', 'down'].includes(String(value || '').toLowerCase()) ? String(value).toLowerCase() : null;
-      const watchDirectionFor = (run, timeframe) => {
-        const direct = validDirection(run?.watchDirection?.[timeframe] || run?.[`${timeframe}WatchDirection`]);
-        if (direct) return direct;
-        return validDirection(run?.technicalEvidence?.patterns?.[`${timeframe}Primary`]?.watch_direction);
-      };
-      const priceSnapshotFor = (ticker, latest, coverageItem) => normalizePriceSnapshot(coverageItem?.priceSnapshot || latest?.priceSnapshot || latest?.currentPriceSnapshot, priceDatasets[ticker]?.bars?.at(-1));
-      const list = document.getElementById('ticker-list');
-      const coverage = window.PROTOTYPE_SORT_COVERAGE(rows().filter((item) => item.active !== false && item.hidden !== true));
-      const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;
-      const explorationCount = coverage.filter((item) => coverageGroup(item) === 'exploration').length;
-      const twseCount = coverage.filter((item) => marketGroup(item) === 'twse').length;
-      document.getElementById('coverage-count').textContent = `${coverage.length} 個 active ticker · Tracked ${trackingCount} · Exploration ${explorationCount} · TWSE ${twseCount}`;
-      const currentAnalysis = document.getElementById('current-analysis');
-      if (currentAnalysis) currentAnalysis.href = `../chart-surface/index.html?ticker=${encodeURIComponent(selectedTicker)}&view=daily`;
-      const renderTickerRows = (items) => items.map((item) => {
-        const latest = latestRun(item.ticker);
-        const weekly = latestWeeklyRun(item.ticker);
-        const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
-        const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'weekly' ? '週線' : '日線')} · 信心 ${escapeHtml(run.confidencePercent == null ? '—' : `${run.confidencePercent}%`)} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
-        const directionMap = { up: { symbol: '↗', key: 'up', label: '上行觀察' }, down: { symbol: '↘', key: 'down', label: '下行觀察' }, flat: { symbol: '→', key: 'flat', label: '盤整觀察' }, null: { symbol: '—', key: 'pending', label: '' } };
-        const directionCell = (run, timeframe) => {
-          const forecast = directionMap[watchDirectionFor(run, timeframe) ?? 'null'] || directionMap.null;
-          return `<span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span>`;
-        };
-        const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
-        const hasDetail = canOpenChart(item.ticker, latest);
-        const rowAttributes = hasDetail
-          ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
-          : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
-        const confidence = latest?.confidencePercent == null ? '—' : `${latest.confidencePercent}%`;
-        const confidenceTitle = latest?.confidenceBand ? `信心區間：${latest.confidenceBand}` : '';
-        const priceSnapshot = priceSnapshotFor(item.ticker, latest, item);
-        const price = priceSnapshot ? formatPrice(priceSnapshot.value) : '—';
-        const priceTitle = priceSnapshot ? `${priceSnapshot.label}${priceSnapshot.asOf ? ` · ${priceSnapshot.asOf}` : ''}` : '尚無價格資料';
-        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-price" title="${escapeHtml(priceTitle)}">${escapeHtml(price)}</span>${directionCell(latest, 'daily')}${directionCell(weekly, 'weekly')}<span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
-      }).join('');
-      const renderCoverageGroup = (group, items) => {
-        const label = coverageGroupLabel(group);
-        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span class="price-column">收盤價</span><span title="觀察方向 · 日線" aria-label="觀察方向 · 日線">日方向</span><span title="觀察方向 · 週線" aria-label="觀察方向 · 週線">週方向</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
-        return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
-      };
-      const usCoverage = coverage.filter((item) => marketGroup(item) !== 'twse');
-      const twseCoverage = coverage.filter((item) => marketGroup(item) === 'twse');
-      list.innerHTML = [
-        renderCoverageGroup('tracking', usCoverage.filter((item) => coverageGroup(item) === 'tracking')),
-        renderCoverageGroup('exploration', usCoverage.filter((item) => coverageGroup(item) === 'exploration')),
-        `<section class="market-group" data-market-group="twse"><div class="market-group-head"><strong>${marketGroupLabel('twse')}</strong><span>${twseCoverage.length} 個 ticker</span></div>${['tracking', 'exploration'].map((group) => renderCoverageGroup(group, twseCoverage.filter((item) => coverageGroup(item) === group))).join('')}</section>`
-      ].join('');
-      list.querySelectorAll('.ticker-row.has-detail[data-ticker]').forEach((row) => {
-        const open = () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(row.dataset.ticker)}&view=daily`; };
-        row.addEventListener('click', (event) => { if (!event.target.closest('.ticker-history-toggle, .history-panel')) open(); });
-        row.addEventListener('keydown', (event) => { if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('.ticker-history-toggle, .history-panel')) { event.preventDefault(); open(); } });
+        listView.hidden = false;
+        list.querySelectorAll('.edition-details').forEach((node) => node.remove());
+        list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
+        const button = list.querySelector(`[data-record-id="${CSS.escape(record.id)}"]`);
+        if (!button) return;
+        button.setAttribute('aria-expanded', 'true');
+        const article = text('div', '', 'article edition-details');
+        article.setAttribute('aria-label', record.title);
+        record.sections.forEach((data) => {
+          const section = document.createElement('section');
+          if (data.heading) section.append(text('h3', data.heading));
+          (data.paragraphs || []).forEach((paragraph) => section.append(text('p', paragraph)));
+          if (Array.isArray(data.points) && data.points.length) {
+            const ul = document.createElement('ul');
+            data.points.forEach((point) => ul.append(text('li', point)));
+            section.append(ul);
+          }
+          const table = renderTable(data.table);
+          if (table) section.append(table);
+          const links = renderLinks(data.links);
+          if (links) section.append(links);
+          article.append(section);
+        });
+        const sources = renderLinks(record.sources);
+        if (sources) {
+          const section = document.createElement('section');
+          section.append(text('h3', '來源'));
+          section.append(sources);
+          article.append(section);
+        }
+        button.after(article);
+        if (record.marketDate) selectedDate = record.marketDate;
+        if (push) updateUrl({ view:record.cadence, date:record.marketDate || selectedDate, digest:record.id });
+        document.title = `${record.title} · 股市分析`;
+      }
+
+      function closeReader(push) {
+        if (push) updateUrl({ view:'daily', date:selectedDate, digest:null });
+        document.title = '股市分析';
+        list.querySelectorAll('.edition-details').forEach((node) => node.remove());
+        list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
+      }
+
+      window.addEventListener('popstate', () => {
+        const current = new URLSearchParams(window.location.search);
+        selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(current.get('date') || '') ? current.get('date') : today;
+        renderCalendar();
+        renderList();
+        const record = model.recordById(dataset.records, current.get('digest'));
+        if (record) openReader(record, false); else closeReader(false);
       });
-      list.querySelectorAll('.ticker-history-toggle').forEach((button) => button.addEventListener('click', () => {
-        const panel = button.nextElementSibling;
-        const open = panel && !panel.hidden;
-        if (panel) panel.hidden = open;
-        button.setAttribute('aria-expanded', String(!open));
-        button.textContent = open ? '+' : '−';
-      }));
-      const closeTickerSheet = () => {
-        document.getElementById('ticker-sheet').hidden = true;
-        document.getElementById('menu-backdrop').hidden = true;
-        document.getElementById('ticker-menu-toggle').setAttribute('aria-expanded', 'false');
+      const updateNetwork = () => {
+        const node = document.getElementById('network-state');
+        const online = navigator.onLine;
+        node.textContent = online ? '已連線' : '離線閱讀';
+        node.classList.toggle('is-offline', !online);
       };
-      const wheel = document.getElementById('ticker-wheel');
-      wheel.replaceChildren(...coverage.map((item) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'ticker-wheel-item' + (item.ticker === selectedTicker ? ' is-current' : '');
-        button.dataset.ticker = item.ticker;
-        button.setAttribute('role', 'option');
-        button.setAttribute('aria-selected', String(item.ticker === selectedTicker));
-        const ticker = document.createElement('strong'); ticker.textContent = item.ticker;
-        const company = document.createElement('span'); company.textContent = item.company || item.ticker;
-        button.append(ticker, company);
-        const hasDetail = canOpenChart(item.ticker, latestRun(item.ticker));
-        button.disabled = !hasDetail;
-        if (!hasDetail) button.title = '尚無可用分析，暫不可開啟';
-        if (hasDetail) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
-        return button;
-      }));
-      const currentItem = wheel.querySelector('.is-current');
-      if (currentItem) wheel.scrollTop = Math.max(0, currentItem.offsetTop - wheel.clientHeight / 2 + currentItem.offsetHeight / 2);
-      document.getElementById('ticker-menu-toggle').addEventListener('click', () => {
-        const sheet = document.getElementById('ticker-sheet');
-        const open = sheet.hidden;
-        sheet.hidden = !open;
-        document.getElementById('menu-backdrop').hidden = !open;
-        document.getElementById('ticker-menu-toggle').setAttribute('aria-expanded', String(open));
-      });
-      document.getElementById('ticker-sheet-close').addEventListener('click', closeTickerSheet);
-      document.getElementById('menu-backdrop').addEventListener('click', closeTickerSheet);
-      document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !document.getElementById('ticker-sheet').hidden) closeTickerSheet(); });
-      void refreshLiveInBackground();
+      window.addEventListener('online', updateNetwork);
+      window.addEventListener('offline', updateNetwork);
+      updateNetwork();
+
+      const initial = model.recordById(dataset.records, query.get('digest'));
+      if (initial) {
+        if (initial.marketDate) selectedDate = initial.marketDate;
+        renderCalendar();
+        renderList();
+        openReader(initial, false);
+      } else {
+        updateUrl({ view:'daily', date:selectedDate, digest:null }, 'replace');
+        renderCalendar();
+        renderList();
+        restoreScroll();
+      }
     })();
   </script>
 </body>
