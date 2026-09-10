@@ -10,11 +10,11 @@ const exists = async (relative) => {
 };
 
 const expectedIcons = [
-  ['assets/elliott-plus-icon-32.png', 32],
-  ['assets/elliott-plus-icon-192.png', 192],
-  ['assets/elliott-plus-icon-512.png', 512],
-  ['assets/elliott-plus-maskable-512.png', 512],
-  ['assets/elliott-plus-apple-touch-icon.png', 180]
+  ['assets/elliott-asterisk-icon-32.png', 32],
+  ['assets/elliott-asterisk-icon-192.png', 192],
+  ['assets/elliott-asterisk-icon-512.png', 512],
+  ['assets/elliott-asterisk-maskable-512.png', 512],
+  ['assets/elliott-asterisk-apple-touch-icon.png', 180]
 ];
 
 const OFFICIAL_PLUS_SHA256 = '7d71b53bf0e369a768878752cc7e8f710712218da2dc02b6ee2f8f96373f3346';
@@ -46,9 +46,9 @@ for (const field of ['id', 'name', 'short_name', 'start_url', 'scope', 'display'
   if (!manifest[field]) failures.push(`manifest missing ${field}`);
 }
 if (manifest.display !== 'standalone') failures.push('manifest display must be standalone');
-if (!manifest.icons?.some((icon) => icon.sizes === '192x192' && icon.purpose === 'any')) failures.push('manifest missing 192x192 any icon');
-if (!manifest.icons?.some((icon) => icon.sizes === '512x512' && icon.purpose === 'any')) failures.push('manifest missing 512x512 any icon');
-if (!manifest.icons?.some((icon) => icon.sizes === '512x512' && icon.purpose === 'maskable')) failures.push('manifest missing 512x512 maskable icon');
+if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-192.png') && icon.sizes === '192x192' && icon.purpose === 'any')) failures.push('manifest missing official * 192x192 any icon');
+if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-512.png') && icon.sizes === '512x512' && icon.purpose === 'any')) failures.push('manifest missing official * 512x512 any icon');
+if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-maskable-512.png') && icon.sizes === '512x512' && icon.purpose === 'maskable')) failures.push('manifest missing official * 512x512 maskable icon');
 
 const htmlFiles = ['index.html', 'data-model/home.html', 'data-model/app.html', 'chart-surface/index.html'];
 for (const file of htmlFiles) {
@@ -56,7 +56,8 @@ for (const file of htmlFiles) {
   for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register.js']) {
     if (!html.includes(marker)) failures.push(`${file}: missing ${marker}`);
   }
-  if (!html.includes('elliott-plus-icon-32.png')) failures.push(`${file}: official plus favicon is missing`);
+  if (!html.includes('elliott-asterisk-icon-32.png')) failures.push(`${file}: official * favicon is missing`);
+  if (/elliott-plus-(?:icon|apple-touch|maskable)/.test(html)) failures.push(`${file}: inactive + delivery icon is still referenced`);
   if (html.includes('elliott-plus-icon.svg')) failures.push(`${file}: legacy E-shaped icon is still referenced`);
 }
 
