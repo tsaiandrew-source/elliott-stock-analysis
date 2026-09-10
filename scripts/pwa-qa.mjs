@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 
 const root = process.cwd();
 const failures = [];
@@ -9,17 +10,25 @@ const exists = async (relative) => {
 };
 
 const expectedIcons = [
+  ['assets/elliott-plus-icon-32.png', 32],
   ['assets/elliott-plus-icon-192.png', 192],
   ['assets/elliott-plus-icon-512.png', 512],
   ['assets/elliott-plus-maskable-512.png', 512],
   ['assets/elliott-plus-apple-touch-icon.png', 180]
 ];
 
+const OFFICIAL_PLUS_SHA256 = '7d71b53bf0e369a768878752cc7e8f710712218da2dc02b6ee2f8f96373f3346';
+const OFFICIAL_ASTERISK_SHA256 = '0526b1ae56458c7312802a0bc6c2236a402556361be70497192ee27dd47a4dfe';
+
 const pngSize = async (relative) => {
   const bytes = await fs.readFile(path.join(root, relative));
   if (bytes.toString('ascii', 1, 4) !== 'PNG') return null;
   return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)];
 };
+const sha256 = async (relative) => createHash('sha256').update(await fs.readFile(path.join(root, relative))).digest('hex');
+
+if (await sha256('assets/elliott-plus-icon-locked.png') !== OFFICIAL_PLUS_SHA256) failures.push('official + icon no longer matches its locked checksum');
+if (await sha256('assets/elliott-asterisk-icon-locked.png') !== OFFICIAL_ASTERISK_SHA256) failures.push('official * icon no longer matches its locked checksum');
 
 for (const [file, size] of expectedIcons) {
   if (!(await exists(file))) {
@@ -47,6 +56,8 @@ for (const file of htmlFiles) {
   for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register.js']) {
     if (!html.includes(marker)) failures.push(`${file}: missing ${marker}`);
   }
+  if (!html.includes('elliott-plus-icon-32.png')) failures.push(`${file}: official plus favicon is missing`);
+  if (html.includes('elliott-plus-icon.svg')) failures.push(`${file}: legacy E-shaped icon is still referenced`);
 }
 
 for (const file of ['data-model/home.html', 'data-model/app.html', 'chart-surface/index.html', 'offline.html']) {

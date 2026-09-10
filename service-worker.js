@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v1';
+const CACHE_VERSION = 'elliott-pwa-v2';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -8,7 +8,7 @@ const CORE_ASSETS = [
   './offline.html',
   './index.html',
   './manifest.webmanifest',
-  './assets/elliott-plus-icon.svg',
+  './assets/elliott-plus-icon-32.png',
   './assets/elliott-plus-icon-192.png',
   './assets/elliott-plus-icon-512.png',
   './assets/elliott-plus-maskable-512.png',
