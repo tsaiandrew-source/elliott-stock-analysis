@@ -955,18 +955,35 @@
 
       function viewBars(data) { return state.view === 'weekly' ? weeklyBars(data.bars, state.ticker) : data.bars; }
 
-      function gexView(data) {
+      function gexView(data, expiryKey = state.gexExpiry) {
         const summary = data.gexSummary || {};
-        const expiry = state.gexExpiry === 'next' ? summary.nextExpiration : summary.currentExpiration;
+        const expiry = expiryKey === 'next' ? summary.nextExpiration : summary.currentExpiration;
+        const aggregateExpiry = summary.aggregateEvidence?.[expiryKey === 'next' ? 'nextExpiration' : 'currentExpiration'];
+        const unsignedSensitivity = aggregateExpiry?.unsignedGammaSensitivity || {};
+        const unsignedNodes = [
+          ...(unsignedSensitivity.C?.dominantUnsignedNodes || []).map((node) => ({ strike: Number(node.strike), value: Number(node.dollarPerOnePercentMove), side: 'call' })),
+          ...(unsignedSensitivity.P?.dominantUnsignedNodes || []).map((node) => ({ strike: Number(node.strike), value: Number(node.dollarPerOnePercentMove), side: 'put' }))
+        ].filter((node) => Number.isFinite(node.strike) && Number.isFinite(node.value) && node.value >= 0);
+        const unsignedByStrike = new Map();
+        unsignedNodes.forEach((node) => {
+          const current = unsignedByStrike.get(node.strike) || { call: 0, put: 0 };
+          current[node.side] += node.value;
+          unsignedByStrike.set(node.strike, current);
+        });
+        const unsignedProfile = [...unsignedByStrike.entries()]
+          .sort(([a], [b]) => a - b)
+          .map(([strike, values]) => ({ strike, exposure: values.call - values.put }));
+        const hasExplicitProfile = Array.isArray(expiry?.strikes) && expiry.strikes.length === expiry.exposure?.length && expiry.strikes.length > 0;
         return {
-          label: state.gexExpiry === 'next' ? '下週到期' : '本週到期',
+          label: expiryKey === 'next' ? '下週到期' : '本週到期',
           expiry: expiry?.expiry || '未標示',
           magnet: expiry?.magnet ?? null,
           flip: expiry?.gammaFlip ?? null,
           callWall: expiry?.callWall ?? null,
           putWall: expiry?.putWall ?? null,
-          strikes: expiry?.strikes || [],
-          exposure: expiry?.exposure || [],
+          strikes: hasExplicitProfile ? expiry.strikes : unsignedProfile.map((node) => node.strike),
+          exposure: hasExplicitProfile ? expiry.exposure : unsignedProfile.map((node) => node.exposure),
+          profileKind: hasExplicitProfile ? 'benchmark' : unsignedProfile.length ? 'unsigned-pressure' : 'unavailable',
           text: summary.displayText || (summary.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
           freshness: summary.dataThrough || data.freshness,
           status: summary.status || 'pending'
@@ -1279,8 +1296,8 @@
         const labelSize = compactGex ? 16 : 20;
         const valueSize = compactGex ? 14 : 18;
         const profiles = [
-          { ...gexView(data), ...data.gexViews?.current },
-          { ...gexView(data), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
+          { ...gexView(data, 'current'), ...data.gexViews?.current },
+          { ...gexView(data, 'next'), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
         ];
         const renderableProfiles = profiles.filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length);
         if (!renderableProfiles.length) {
@@ -1337,14 +1354,17 @@
             return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${color}" opacity=".9"/><text x="${xFor(strike).toFixed(1)}" y="${valueY.toFixed(1)}" fill="${valueColor}" text-anchor="middle" font-size="${valueSize}" font-weight="${valueInside ? '700' : '400'}">${exposure[index].toFixed(2)}</text>`;
           }).join('');
           const xGrid = domain.ticks.map((strike) => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="#162b39" stroke-width="1"/><text x="${xFor(strike).toFixed(1)}" y="${height - 18}" fill="#edf6fb" text-anchor="middle" font-size="${labelSize}" font-weight="700">$${strike}</text>`).join('');
-          const vline = (strike, color, label, row, dash = '7 5') => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} $${strike}</text>`;
+          const vline = (strike, color, label, row, dash = '7 5') => Number.isFinite(Number(strike)) ? `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} $${strike}</text>` : '';
           const magnetIsFlip = gex.magnet === gex.flip;
           const magnetLine = vline(gex.magnet, '#65b7d6', magnetIsFlip ? 'Magnet／Flip' : 'Magnet', 1);
           const flipLine = magnetIsFlip ? '' : vline(gex.flip, '#9a66c7', 'Flip', 2);
           const levelTags = insight?.levels?.map((level) => `<span class="gex-level-tag" data-role="${level.role}">${level.label} $${level.value}</span>`).join('') || '';
           const detailList = insight?.detail?.map((item) => `<li>${item}</li>`).join('') || '';
           const rail = insight ? `<div class="gex-analysis-rail"><div class="gex-analysis-head"><strong>${gex.label} · 讀法</strong><span>${insight.confidence}</span></div><p>${insight.plain}</p><div class="gex-level-tags">${levelTags}</div><div class="gex-analysis-row"><span class="label">路徑</span><p>${insight.path}</p></div><div class="gex-analysis-row"><span class="label">確認</span><p>${insight.confirm}</p></div><div class="gex-analysis-row"><span class="label">失效</span><p>${insight.invalidate}</p></div><details class="gex-analysis-detail"><summary>判讀依據</summary><ul>${detailList}</ul></details></div>` : '';
-          return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>Gamma exposure profile</strong> · ${gex.label} · ${gex.expiry}</span><span>綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma exposure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
+          const isUnsignedPressure = gex.profileKind === 'unsigned-pressure';
+          const profileTitle = isUnsignedPressure ? 'Unsigned gamma-pressure profile' : 'Gamma exposure profile';
+          const profileLegend = isUnsignedPressure ? '綠＝Call 敏感度　紅＝Put 敏感度　琥珀＝相對壓力差' : '綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線';
+          return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>${profileTitle}</strong> · ${gex.label} · ${gex.expiry}</span><span>${profileLegend}</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma pressure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
         };
         container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}<p class="gex-profile-disclaimer">資料限制：${escapeHtml((data.gexSummary?.limitations || []).join('；') || '目前僅顯示可追溯的 GEX 欄位，不將缺失資料推測為交易訊號。')}</p>`;
         } catch (error) {
