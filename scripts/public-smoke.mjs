@@ -25,8 +25,11 @@ for (const route of routes) {
     }
     const body = await response.text();
     if (!body.trim()) failures.push(`empty response ${route}`);
-    if (route.includes('/chart-surface/') && !body.includes('Stock analysis chart surface')) {
+    if (route.includes('/chart-surface/index.html') && !body.includes('Stock analysis chart surface')) {
       failures.push(`chart shell marker missing ${route}`);
+    }
+    if (route === '/chart-surface/analysis-packets-v2.js' && !body.includes('window.PROTOTYPE_IRIS_V2')) {
+      failures.push(`Iris packet asset marker missing ${route}`);
     }
     if (route === '/data-model/home.html') {
       if (!body.includes('partialChartTickers') || !body.includes('hasChartData')) {
