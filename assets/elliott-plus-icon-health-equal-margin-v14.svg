@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254" viewBox="0 0 1254 1254" role="img" aria-labelledby="title desc">
+  <title id="title">Elliott+ app icon</title>
+  <desc id="desc">White app icon with a blue, aqua, and lime gradient plus positioned with equal top and right margins</desc>
+  <defs>
+    <linearGradient id="identity" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#126080"/>
+      <stop offset="0.52" stop-color="#55D9D5"/>
+      <stop offset="1" stop-color="#D8FF67"/>
+    </linearGradient>
+    <linearGradient id="highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/>
+      <stop offset="0.12" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#174B64" flood-opacity="0.2"/>
+    </filter>
+    <path id="plus" d="M725 214H854Q889 214 889 249V365H1005Q1040 365 1040 400V512Q1040 547 1005 547H889V663Q889 698 854 698H725Q690 698 690 663V547H574Q539 547 539 512V400Q539 365 574 365H690V249Q690 214 725 214Z"/>
+  </defs>
+  <rect width="1254" height="1254" fill="#FFFFFF"/>
+  <use href="#plus" fill="url(#identity)" filter="url(#shadow)"/>
+  <use href="#plus" fill="url(#highlight)"/>
+</svg>
