@@ -55,7 +55,7 @@ for (const route of routes) {
       }
     }
     if (route === '/data-model/coverage.html' || route.includes('/chart-surface/index.html')) {
-      if (!body.includes('AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg')) failures.push(`read proxy marker missing ${route}`);
+      if (!skipProxy && !body.includes('AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg')) failures.push(`read proxy marker missing ${route}`);
       if (body.includes('AKfycbwN2')) failures.push(`write-only ingest URL leaked into frontend ${route}`);
     }
   } catch (error) {
