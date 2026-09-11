@@ -1404,7 +1404,7 @@
         if (!renderableProfiles.length) {
           const summary = data.gexSummary || {};
           container.hidden = true;
-          container.innerHTML = '';
+          container.hidden = false; container.innerHTML = '<div class="chart-error">此代號目前沒有可用的 GEX 曲線；已隱藏 K 線圖，待選擇權資料補齊後再顯示。</div>'; 
           return;
         }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
@@ -1468,7 +1468,7 @@
         };
         container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}`;
         } catch (error) {
-          console.error('GEX profile render failed', error);
+          console.error('GEX profile render failed', error); container.hidden = false;
           container.innerHTML = '<div class="chart-error">GEX 圖層目前無法由明確欄位繪製。</div>';
         }
       }
@@ -1501,7 +1501,7 @@
         // prevents a GEX overlay from remaining in front of the candle chart
         // if a later text-panel update is interrupted during a view switch.
         const isGex = state.view === 'gex';
-        $('gex-profile').hidden = !isGex;
+        $('gex-profile').hidden = !isGex; $('chart-stack').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
         $('price-time-axis').hidden = isGex;
