@@ -29,10 +29,10 @@
       .ticker-wheel-item.is-current{color:var(--text,#edf6fb);background:rgba(85,217,213,.13);box-shadow:inset 3px 0 var(--aqua,#55d9d5)}
       .ticker-wheel-item.is-current strong{color:var(--aqua,#55d9d5)}
       @media(max-width:760px){.floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px;background:rgba(18,40,52,.94)}.dock-action,.ticker-menu-trigger{flex:1 1 0;min-width:0;height:44px}.dock-action,.ticker-menu-trigger{padding:7px 10px}}
-      @media(max-width:760px){.shared-ticker-sheet,.ticker-sheet{top:auto;bottom:calc(69px + env(safe-area-inset-bottom));height:min(720px,calc(100dvh - 96px));max-height:min(720px,calc(100dvh - 96px))}.shared-ticker-item,.ticker-wheel-item{flex-basis:40px}}
+      @media(max-width:760px){.shared-ticker-sheet,.ticker-sheet{top:auto;bottom:calc(69px + env(safe-area-inset-bottom));height:min(440px,62vh);max-height:min(440px,62vh)}}
       html.force-phone-portrait .floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px}
       html.force-phone-portrait .dock-action,.force-phone-portrait .ticker-menu-trigger{flex:1 1 0;min-width:0;height:44px}.force-phone-portrait .dock-action,.force-phone-portrait .ticker-menu-trigger{padding:7px 10px}
-      .force-phone-portrait .shared-ticker-sheet,.force-phone-portrait .ticker-sheet{top:auto;bottom:calc(69px + env(safe-area-inset-bottom));height:min(720px,calc(100dvh - 96px));max-height:min(720px,calc(100dvh - 96px))}.force-phone-portrait .shared-ticker-item,.force-phone-portrait .ticker-wheel-item{flex-basis:40px}
+      .force-phone-portrait .shared-ticker-sheet,.force-phone-portrait .ticker-sheet{top:auto;bottom:calc(69px + env(safe-area-inset-bottom));height:min(440px,62vh);max-height:min(440px,62vh)}
       @media(max-width:999px) and (orientation:landscape) and (max-height:500px){.floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px}.dock-action,.ticker-menu-trigger{flex:1 1 0;min-width:0;height:44px}.dock-action,.ticker-menu-trigger{padding:7px 10px}}
     `;
     document.head.append(style);
