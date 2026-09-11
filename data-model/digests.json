@@ -1,7 +1,207 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-10T23:09:42.574Z",
+  "generatedAt": "2026-09-11T16:00:37.686Z",
   "records": [
+    {
+      "id": "daily-2026-09-11-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-11",
+      "publishedAt": "2026-09-11T05:31:50-07:00",
+      "updatedAt": "2026-09-11T05:31:50-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-11T05:31:00-07:00",
+      "retrievedAt": "2026-09-11T05:31:50-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "晨間設定｜2026-09-11",
+      "summary": "今天不是一般的反彈嘗試，而是CPI能否阻止能源衝擊轉成升息的判決日。隔夜油價從高點回落、美股期貨微升，暫時緩和風險；但10年期殖利率仍約4.94%，亞洲科技與高貝塔市場明顯走弱，紅海安全風險反而升級。05:30 PT的CPI剛進入發布窗口；官方結果在本版截稿時尚未可靠更新，因此不先猜數字。",
+      "sections": [
+        {
+          "heading": "1. CPI是今日第一個分水嶺",
+          "paragraphs": [
+            "事實：市場預期8月CPI月增約0.4%、年增3.3%至3.4%；核心月增約0.2%、年增2.4%。昨日PPI已加速至年增5.4%。",
+            "判斷：核心月增0.2%附近只代表底層通膨暫未惡化，不能消除9月能源再加速。若核心達0.3%或以上，10年期突破5%、Fed升息機率上升和成長股估值壓縮可能同時發生。信心：高。",
+            "反證：核心低於0.2%，住房與服務廣度同步降溫，且債券市場願意把10年期殖利率壓回4.85%以下。"
+          ],
+          "links": [
+            {
+              "label": "BLS CPI",
+              "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+            },
+            {
+              "label": "AP CPI前瞻",
+              "url": "https://apnews.com/article/consumer-prices-inflation-fed-interest-rates-c76f53f7a53def0c464ca44ac637f203"
+            }
+          ]
+        },
+        {
+          "heading": "2. 油價回落是喘息，不是趨勢反轉",
+          "paragraphs": [
+            "事實：Brent早盤由108美元以上回落約3.3%至104.09美元；WTI跌破100美元至99.63美元。但Brent戰前約72美元，美國柴油均價已升破每加侖6美元。",
+            "判斷：油價回落足以支撐期貨反彈，卻不足以解除運輸、航空、零售與工業成本壓力。能源生產商的相對優勢仍在。信心：高。",
+            "反證：Brent跌破100美元，且航運量、保險費與成品油價格同步改善。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "3. 紅海風險在霍爾木茲略有改善時升級",
+          "paragraphs": [
+            "事實：美方護航使非伊朗原油通過霍爾木茲的流量回升至戰前約三分之二以上；但胡塞武裝奪取曼德海峽內的Mayun島，沙烏地隨即空襲Mokha機場。該海峽平時承載約12%的全球商品貿易。",
+            "判斷：能源風險不是消失，而是從單一咽喉轉成雙航道博弈。任何沙烏地與胡塞衝突擴大都可能迅速推翻今早油價回落。信心：高。",
+            "反證：Mayun與Mokha局勢降溫、紅海航運恢復，且沒有新的能源設施或商船受襲。"
+          ],
+          "links": [
+            {
+              "label": "AP霍爾木茲",
+              "url": "https://apnews.com/article/iran-us-war-hormuz-trump-yemen-houthis-2b126da67b09de2f328846eb656abe0e"
+            },
+            {
+              "label": "AP紅海最新",
+              "url": "https://apnews.com/article/mideast-yemen-iran-saudi-houthis-476237dd3bf568d946d2b16c7b45a687"
+            }
+          ]
+        },
+        {
+          "heading": "4. 債市仍是風險資產的真正門檻",
+          "paragraphs": [
+            "事實：10年期美債殖利率早盤約4.94%，仍遠高於週三前的4.83%，並緊貼5%心理關卡。",
+            "判斷：股票期貨能否守住反彈，取決於CPI後殖利率，而非油價單獨回落。科技、房地產、公用事業與小型股對5%最敏感。信心：高。",
+            "反證：CPI後長債價格上升、殖利率回落，同時市場寬度改善。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "5. 亞洲先反映高油價與高利率組合",
+          "paragraphs": [
+            "事實：日經跌1.9%、韓國Kospi跌1.8%、台股跌1.6%、上證跌1.2%；Samsung跌3.5%、SK Hynix跌2.2%。歐洲開盤則因油價回落與英國成長數據優於預期而上漲約0.5%至0.6%。",
+            "判斷：亞洲科技下跌顯示久期與景氣敏感資產仍缺乏安全墊；歐股上升較像短線喘息，而非全球風險偏好重新轉強。信心：中高。",
+            "反證：美股開盤後半導體領先、Russell 2000轉強，而且歐亞市場寬度同步改善。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "6. 匯率沒有提供強烈避險確認",
+          "paragraphs": [
+            "事實：美元兌日圓由154.42回落至約154.11；歐元約1.1596美元，變化有限。",
+            "判斷：目前主要壓力集中在能源與利率，尚未形成全面美元搶購。黃金、信用利差與加密資產均無足夠可靠的新訊號。",
+            "反證：美元指數與美債殖利率同步突破近期區間，且信用與波動率同時惡化。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "狀態",
+              "晨間判讀"
+            ],
+            "rows": [
+              [
+                "原油",
+                "仍偏熱但降溫",
+                "高位回落，供應風險未解除"
+              ],
+              [
+                "美股期貨",
+                "小幅偏強",
+                "CPI前的技術性喘息"
+              ],
+              [
+                "亞洲股票",
+                "偏弱",
+                "科技與高貝塔承壓"
+              ],
+              [
+                "歐股",
+                "短線改善",
+                "油價回落與英國數據支撐"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期殖利率約4.94%"
+              ],
+              [
+                "美元",
+                "中性",
+                "未確認全面避險"
+              ],
+              [
+                "信用債",
+                "無足夠訊號",
+                "不硬補方向"
+              ],
+              [
+                "黃金與加密",
+                "無足夠訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "今日催化劑",
+          "paragraphs": [
+            "05:30 PT公布CPI、核心CPI與實質所得；07:00 PT公布密西根大學消費者信心與通膨預期；Kroger盤前財報；11:00 PT公布聯邦財政收支。",
+            "CPI第一讀法看核心月增率，第二看住房與服務廣度，第三才看總體年增率。若10年期突破5%、油價重回108美元以上且小型股再度領跌，晨間基準情境失效並轉向更明確的金融條件衝擊。"
+          ],
+          "links": [
+            {
+              "label": "BLS CPI",
+              "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+            },
+            {
+              "label": "AP CPI前瞻",
+              "url": "https://apnews.com/article/consumer-prices-inflation-fed-interest-rates-c76f53f7a53def0c464ca44ac637f203"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "BLS CPI",
+          "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+        },
+        {
+          "label": "AP CPI前瞻",
+          "url": "https://apnews.com/article/consumer-prices-inflation-fed-interest-rates-c76f53f7a53def0c464ca44ac637f203"
+        },
+        {
+          "label": "AP全球市場",
+          "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+        },
+        {
+          "label": "AP霍爾木茲",
+          "url": "https://apnews.com/article/iran-us-war-hormuz-trump-yemen-houthis-2b126da67b09de2f328846eb656abe0e"
+        },
+        {
+          "label": "AP紅海最新",
+          "url": "https://apnews.com/article/mideast-yemen-iran-saudi-houthis-476237dd3bf568d946d2b16c7b45a687"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-10-close",
       "cadence": "daily",
