@@ -764,7 +764,7 @@
       if (requestedCoverage) state.ticker = requestedCoverage.ticker;
       else if (!requestedTicker && activeCoverage.length) state.ticker = activeCoverage[0].ticker;
       if (query.get('candidate') === 'secondary') state.candidate = 'secondary';
-      let renderedData = null;
+      let renderedData = null;      let tickerSelectionLock = false;      let suppressTickerScrollUntil = 0;
       let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, layerSeries = {}, phaseMarkers = [], axisBars = [];
 
       function closeMainMenu() {
@@ -776,7 +776,7 @@
       function selectTicker(ticker) {
         const selected = activeCoverage.find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker));
         if (!selected) return;
-        if (selected.ticker === state.ticker) return;
+        if (selected.ticker === state.ticker) return;        tickerSelectionLock = true;        suppressTickerScrollUntil = Date.now() + 650;        clearTimeout(wheelScrollTimer);        closeMainMenu();
         state.ticker = selected.ticker;
         state.candidate = 'primary';
         const nextUrl = new URL(window.location.href);
@@ -785,7 +785,7 @@
         nextUrl.searchParams.delete('candidate');
         window.history.pushState({}, '', nextUrl);
         render();
-        window.dispatchEvent(new CustomEvent('elliott:ticker-updated', { detail: { ticker: state.ticker } }));
+        window.dispatchEvent(new CustomEvent('elliott:ticker-updated', { detail: { ticker: state.ticker } }));        window.setTimeout(() => { tickerSelectionLock = false; }, 700);
       }
 
       window.__elliottSelectTicker = selectTicker;
@@ -1817,7 +1817,7 @@
       $('ticker-sheet-close').addEventListener('click', closeMainMenu);
       $('menu-backdrop').addEventListener('click', closeMainMenu);
       let wheelScrollTimer;
-      $('ticker-wheel').addEventListener('scroll', () => {
+      $('ticker-wheel').addEventListener('scroll', () => {        if (tickerSelectionLock || Date.now() < suppressTickerScrollUntil) return;
         clearTimeout(wheelScrollTimer);
         wheelScrollTimer = setTimeout(() => {
           if ($('ticker-sheet').hidden) return;
