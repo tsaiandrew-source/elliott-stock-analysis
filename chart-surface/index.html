@@ -647,6 +647,35 @@
         const pattern = run?.technicalEvidence?.patterns?.[`${timeframe}Primary`];
         return validDirection(pattern?.watch_direction);
       };
+      const digestContent = (digest) => digest?.endOfDay || digest || {};
+      const digestSections = (digest) => Array.isArray(digestContent(digest).sections) ? digestContent(digest).sections : [];
+      const digestSection = (digest, heading) => digestSections(digest).find((section) => section.heading === heading) || null;
+      const digestPatternLabel = (digest, timeframe) => {
+        const point = digestSection(digest, 'Pattern 與 Wyckoff')?.points?.find((value) => String(value).includes(timeframe === 'weekly' ? '週線：' : '日線：'));
+        const marker = timeframe === 'weekly' ? '週線：' : '日線：';
+        const text = String(point || '');
+        const start = text.indexOf(marker);
+        if (start < 0) return '';
+        return text.slice(start + marker.length).split(/[；。]/u)[0].trim();
+      };
+      const usefulPatternLabel = (value) => {
+        const text = String(value || '').trim();
+        return text && !/^(?:日線|週線)?主候選$|^主候選$|^日線主候選$|^週線主候選$/u.test(text) ? text : '';
+      };
+      const patternLabelFor = (run, digest, timeframe) => usefulPatternLabel(run?.primaryCandidate?.patternLabel || run?.patternLabel || run?.pattern) || digestPatternLabel(digest, timeframe) || (timeframe === 'weekly' ? '週線主候選' : '日線主候選');
+      const structuredWyckoffText = (value) => {
+        if (value && typeof value === 'object') return String(value.currentPhase || value.pendingPhase || value.structure || '').trim();
+        return String(value || '').trim();
+      };
+      const wyckoffTextFor = (run, timeframe) => {
+        const phase = run?.wyckoffPhase?.[timeframe];
+        return structuredWyckoffText(phase || run?.[timeframe === 'weekly' ? 'weeklyWyckoff' : 'wyckoff']);
+      };
+      const digestOptionText = (digest) => ['本週戰場', '下週接力']
+        .flatMap((heading) => digestSection(digest, heading)?.points || [])
+        .map((value) => String(value || '').trim())
+        .filter(Boolean)
+        .join(' ');
       const analysisOnlyDataset = (ticker) => {
         const dailyRun = latestDailyRun(ticker);
         const weeklyRun = latestWeeklyRun(ticker);
@@ -662,7 +691,6 @@
         // legacy sidecar is only a fallback for older partial packets; using it
         // first can draw a stale daily shape over a newer weekly thesis.
         const primaryCoordinates = primary?.coordinates || structuredCoordinates || sidecarCoordinates;
-        const patternCandidates = primary ? { primary: { ...primary, coordinates: primaryCoordinates, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || structuredCoordinates?.type || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
         const dailyDigest = dailyRun?.dailyDigest || null;
         const weeklyDigest = weeklyRun?.weeklyDigest || dailyRun?.weeklyDigest || null;
         const digestDetails = {
@@ -671,14 +699,20 @@
         };
         const gexSummary = dailyRun?.gexSummary || selectedRun?.gexSummary || null;
         const businessEvidence = selectedRun.businessEvidence || {};
+        const selectedDigest = state.view === 'weekly' ? (weeklyDigest || dailyDigest) : dailyDigest;
+        const patternLabel = patternLabelFor(patternRun, selectedDigest, state.view === 'weekly' ? 'weekly' : 'daily');
+        const patternCandidates = primary ? { primary: { ...primary, patternLabel, coordinates: primaryCoordinates, text: patternLabel, geometry: primary.geometry || structuredCoordinates?.type || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
+        const optionText = publicGexText(gexSummary?.displayText || selectedRun.options || digestOptionText(dailyDigest));
+        const businessText = selectedRun.fundamentalsNews || selectedRun.business || digestSection(dailyDigest, '摘要與市場脈絡')?.points?.[1] || '';
+        const sourceEvidence = (selectedRun.sourceEvidence?.length ? selectedRun.sourceEvidence : (dailyDigest?.sourceEvidence || weeklyDigest?.sourceEvidence || []));
         return {
           company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
           exchange: coverageRows().find((item) => item.ticker === ticker)?.exchange || '',
           dataThrough: selectedRun.dataThrough || selectedRun.analysisDate || '',
           sourceCutoff: selectedRun.dataThrough || selectedRun.analysisDate || '',
           chartSource: '',
-          sourceUrl: selectedRun.sourceEvidence?.find((item) => item.url)?.url || '',
-          pattern: patternRun.patternLabel,
+          sourceUrl: sourceEvidence.find((item) => item.url)?.url || '',
+          pattern: patternLabel,
           patternStatus: patternRun.status,
           patternCandidates,
           predictionDirection: selectedRun.predictionDirection ?? null,
@@ -687,19 +721,19 @@
           dailyWatchDirection: watchDirectionFor(dailyRun, 'daily'),
           weeklyWatchDirection: watchDirectionFor(weeklyRun || dailyRun, 'weekly'),
           thesis: publicAnalysisText(selectedRun.thesis),
-          wyckoff: patternRun.wyckoffPhase?.daily || '',
-          weeklyWyckoff: patternRun.wyckoffPhase?.weekly || '',
+          wyckoff: wyckoffTextFor(patternRun, 'daily'),
+          weeklyWyckoff: wyckoffTextFor(patternRun, 'weekly'),
           wyckoffGate: null,
           patternGate: selectedRun.confirmation,
           invalidation: selectedRun.invalidation,
-          options: gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : publicGexText(gexSummary?.displayText),
-          business: selectedRun.fundamentalsNews,
-          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: publicAnalysisText(selectedRun.thesis), businessSummary: selectedRun.fundamentalsNews, unproved: '', nextTest: /recheck|T\+1|待補|待驗證|Next issuer-news/i.test(String(businessEvidence.nextTest || '')) ? '' : (businessEvidence.nextTest || '') },
+          options: gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : optionText,
+          business: businessText,
+          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: publicAnalysisText(selectedRun.thesis), businessSummary: businessText, unproved: '', nextTest: /recheck|T\+1|待補|待驗證|Next issuer-news/i.test(String(businessEvidence.nextTest || '')) ? '' : (businessEvidence.nextTest || '') },
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
           priceSnapshot: selectedRun.priceSnapshot || selectedRun.currentPriceSnapshot || null,
-          sourceEvidence: selectedRun.sourceEvidence || [],
+          sourceEvidence,
           missingFields: selectedRun.missingFields || [],
           recoveryTiming: selectedRun.recoveryTiming || null,
           dataStatus: selectedRun.dataStatus,
