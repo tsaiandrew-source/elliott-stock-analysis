@@ -73,6 +73,7 @@
 
   const installFallbackTickerMenu = (toggle, chartHref) => {
     const tickers = window.PROTOTYPE_COVERAGE_ORDER || ['LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'];
+    const companies = window.PROTOTYPE_COVERAGE_COMPANIES || {};
     const backdrop = document.createElement('button');
     backdrop.type = 'button';
     backdrop.className = 'shared-ticker-backdrop';
@@ -102,7 +103,11 @@
       item.type = 'button';
       item.className = 'shared-ticker-item';
       item.setAttribute('role', 'option');
-      item.textContent = symbol;
+      const ticker = document.createElement('strong');
+      ticker.textContent = symbol;
+      const company = document.createElement('span');
+      company.textContent = companies[symbol] || symbol;
+      item.append(ticker, company);
       item.addEventListener('click', () => {
         const url = new URL(chartHref, document.baseURI);
         url.searchParams.set('ticker', symbol);
