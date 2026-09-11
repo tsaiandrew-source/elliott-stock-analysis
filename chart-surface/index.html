@@ -753,6 +753,7 @@
       if (requestedCoverage) state.ticker = requestedCoverage.ticker;
       else if (!requestedTicker && activeCoverage.length) state.ticker = activeCoverage[0].ticker;
       if (query.get('candidate') === 'secondary') state.candidate = 'secondary';
+      let renderedData = null;
       let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, layerSeries = {}, phaseMarkers = [], axisBars = [];
 
       function closeMainMenu() {
@@ -1453,6 +1454,7 @@
           gexSource: rawData.gexSource || analysisOverlay.gexSource
         } : rawData || analysisOverlay;
         if (!data) return;
+        renderedData = data;
         renderMenu();
         // Synchronize the view shell before rebuilding chart series. This
         // prevents a GEX overlay from remaining in front of the candle chart
@@ -1558,13 +1560,13 @@
           syncIndicatorRanges();
         });
         drawPhaseOverlay(bars, phases);
-        updateLayerVisibility();
+        updateLayerVisibility(data);
         updateText(data, pattern);
         if (state.view !== 'gex') renderGexProfile(data);
         requestAnimationFrame(() => setPaneLayout());
       }
 
-      function updateLayerVisibility() {
+      function updateLayerVisibility(data) {
         if (!chart) return;
         Object.entries(layerSeries).forEach(([name, series]) => {
           const primaryOnly = name === 'channelUpper' || name === 'channelLower';
@@ -1573,8 +1575,8 @@
           series.applyOptions({ visible });
         });
         if (phasePrimitive) phasePrimitive.setVisible(state.layers.wyckoff && state.view !== 'gex');
-        const pattern = getPattern(datasets[state.ticker]);
-        const bars = viewBars(datasets[state.ticker]);
+        const pattern = getPattern(data);
+        const bars = viewBars(data);
         const patternMarker = patternMarkerBar(bars);
         const markerText = patternDisplayLabel(pattern, data);
         const markerUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(markerText);
@@ -1814,7 +1816,7 @@
         state.candidate = button.dataset.candidate;
         render();
       }));
-      document.querySelectorAll('[data-layer]').forEach((input) => input.addEventListener('change', (event) => { state.layers[event.target.dataset.layer] = event.target.checked; updateLayerVisibility(); }));
+      document.querySelectorAll('[data-layer]').forEach((input) => input.addEventListener('change', (event) => { state.layers[event.target.dataset.layer] = event.target.checked; updateLayerVisibility(renderedData); }));
       window.addEventListener('storage', (event) => {
         if (event.key === 'stock-analysis-coverage-overrides') window.location.reload();
       });
