@@ -83,6 +83,10 @@ for (const file of htmlFiles) {
     if (!html.includes("technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary']")) failures.push(`${file}: selected daily/weekly pattern coordinates are not wired to the chart`);
     if (/if \(state\.view === 'weekly' \|\| !bars\.length \|\| !pattern\) return \[\]/.test(html)) failures.push(`${file}: weekly pattern geometry is still disabled`);
     if (!html.includes("state.view === 'weekly' ? null")) failures.push(`${file}: weekly charts can still fall back to daily geometry sidecars`);
+    if (!html.includes('const coveragePrice = coverageItem && Number.isFinite(Number(coverageItem.price))')) failures.push(`${file}: chart price snapshot is not wired to the canonical coverage price`);
+    if (!html.includes('function aggregateWeeklyBars(bars)')) failures.push(`${file}: weekly chart is not wired to refresh from the latest daily bars`);
+    if (!html.includes('lastValueVisible: false });')) failures.push(`${file}: stale candle last-value label is still exposed`);
+    if (!html.includes('colors.currentPrice, 1, L.LineStyle.Dashed, true')) failures.push(`${file}: current price line does not expose the canonical price label`);
   }
   if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);

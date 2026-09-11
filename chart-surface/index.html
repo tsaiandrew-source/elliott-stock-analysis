@@ -616,7 +616,12 @@
         const close = Number(fallbackBar?.close);
         return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
       };
-      const priceSnapshotFor = (data, bars = data?.bars || [], coverageItem) => normalizePriceSnapshot(coverageItem?.priceSnapshot || data?.priceSnapshot || data?.currentPriceSnapshot, bars.at(-1));
+      const priceSnapshotFor = (data, bars = data?.bars || [], coverageItem) => {
+        const coveragePrice = coverageItem && Number.isFinite(Number(coverageItem.price))
+          ? { value: coverageItem.price, status: coverageItem.priceStatus || 'close', asOf: coverageItem.priceAsOf || coverageItem.latestPriceDate || coverageItem.updatedAt || coverageItem.latestChartDate || '' }
+          : null;
+        return normalizePriceSnapshot(coverageItem?.priceSnapshot || data?.priceSnapshot || data?.currentPriceSnapshot || coveragePrice, bars.at(-1));
+      };
       const eligibleRuns = (ticker) => {
         const cutoff = chartDataCutoff(ticker);
         const runs = tickerRuns(ticker);
@@ -962,8 +967,8 @@
         return instance;
       }
 
-      function addLine(name, data, color, width = 1, style = L.LineStyle.Dashed) {
-        const series = chart.addSeries(L.LineSeries, { color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' });
+      function addLine(name, data, color, width = 1, style = L.LineStyle.Dashed, lastValueVisible = false) {
+        const series = chart.addSeries(L.LineSeries, { color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible, priceScaleId: 'right' });
         series.setData(data);
         layerSeries[name] = series;
         return series;
@@ -974,8 +979,7 @@
         return Number.isFinite(numeric) ? bars.map((bar) => ({ time: bar.time, value: numeric })) : [];
       }
 
-      function weeklyBars(bars, ticker) {
-        if (weeklyHistory[ticker]?.length >= 20) return weeklyHistory[ticker];
+      function aggregateWeeklyBars(bars) {
         const groups = new Map();
         bars.forEach((bar) => {
           const date = new Date(bar.time * 1000);
@@ -991,6 +995,14 @@
           groups.set(key, group);
         });
         return [...groups.values()];
+      }
+
+      function weeklyBars(bars, ticker) {
+        const history = weeklyHistory[ticker]?.length >= 20 ? weeklyHistory[ticker] : [];
+        if (!history.length) return aggregateWeeklyBars(bars);
+        const merged = new Map(history.map((bar) => [Number(bar.time), { ...bar }]));
+        aggregateWeeklyBars(bars).forEach((bar) => merged.set(Number(bar.time), bar));
+        return [...merged.values()].sort((a, b) => Number(a.time) - Number(b.time));
       }
 
       function viewBars(data) { return state.view === 'weekly' ? weeklyBars(data.bars, state.ticker) : data.bars; }
@@ -1367,7 +1379,7 @@
           return;
         }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
-        const currentPrice = data.bars.at(-1)?.close || sharedTicks[0];
+        const currentPrice = priceSnapshotFor(data, data.bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)))?.value || data.bars.at(-1)?.close || sharedTicks[0];
         const sharedDomain = { min: Math.min(...sharedTicks, currentPrice), max: Math.max(...sharedTicks, currentPrice), ticks: sharedTicks };
         const renderPanel = (gex, key, domain) => {
           const strikes = gex.strikes || [];
@@ -1494,7 +1506,7 @@
         const bars = classifyBars(barsForView);
         axisBars = bars;
         const candleData = bars.map(({ time, open, high, low, close, color, borderColor, wickColor }) => ({ time, open, high, low, close, color, borderColor, wickColor }));
-        candleSeries = chart.addSeries(L.CandlestickSeries, { upColor: colors.weakGo, downColor: colors.weakNoGo, borderVisible: true, wickUpColor: colors.weakGo, wickDownColor: colors.weakNoGo });
+        candleSeries = chart.addSeries(L.CandlestickSeries, { upColor: colors.weakGo, downColor: colors.weakNoGo, borderVisible: true, wickUpColor: colors.weakGo, wickDownColor: colors.weakNoGo, lastValueVisible: false });
         candleSeries.setData(candleData);
         const phases = phaseData(bars, state.ticker);
         phasePrimitive = new VerticalPhasePrimitive(phases);
@@ -1536,7 +1548,7 @@
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
         const priceSnapshot = priceSnapshotFor(data, bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)));
-        layerSeries.currentPrice = addLine('currentPrice', levelData(bars, priceSnapshot?.value), colors.currentPrice, 1, L.LineStyle.Dashed);
+        layerSeries.currentPrice = addLine('currentPrice', levelData(bars, priceSnapshot?.value), colors.currentPrice, 1, L.LineStyle.Dashed, true);
         patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
           // Pattern geometry uses the same bright lime signal as the 型態組合
           // control, so it remains visible above the candle and Bollinger layers.
