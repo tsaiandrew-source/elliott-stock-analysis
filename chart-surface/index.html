@@ -1038,9 +1038,31 @@
         });
       }
 
+      const universalGexRecordFor = (ticker) => {
+        const records = window.UNIVERSAL_REFRESH_GEX?.records;
+        return Array.isArray(records) ? records.find((record) => normalizeTicker(record.ticker) === normalizeTicker(ticker)) || null : null;
+      };
       function gexView(data, expiryKey = state.gexExpiry) {
         const summary = data.gexSummary || {};
         const expiry = expiryKey === 'next' ? summary.nextExpiration : summary.currentExpiration;
+        const universalRecord = universalGexRecordFor(state.ticker);
+        if (universalRecord) {
+          const resolved = window.UniversalRefreshGex?.resolveExpiration(universalRecord, expiryKey) || { renderChart: false, status: expiry?.status || universalRecord.status || 'not_available', reason: expiry?.displayText || universalRecord.displayText || 'GEX 資料尚不可用。', profile: null };
+          return {
+            label: expiryKey === 'next' ? '下週到期' : '本週到期',
+            expiry: expiry?.expiry || '未標示',
+            magnet: resolved.profile?.magnet ?? null,
+            flip: resolved.profile?.gammaFlip ?? null,
+            callWall: resolved.profile?.dealerCallWall ?? null,
+            putWall: resolved.profile?.dealerPutWall ?? null,
+            strikes: resolved.profile?.strikes || [],
+            exposure: resolved.profile?.exposure || [],
+            profileKind: resolved.renderChart ? 'signed-dealer-gex' : 'unavailable',
+            text: resolved.reason || publicGexText(expiry?.displayText || universalRecord.displayText),
+            freshness: expiry?.dataThrough || universalRecord.dataThrough || data.freshness,
+            status: resolved.status
+          };
+        }
         const aggregateExpiry = summary.aggregateEvidence?.[expiryKey === 'next' ? 'nextExpiration' : 'currentExpiration'];
         const unsignedSensitivity = aggregateExpiry?.unsignedGammaSensitivity || {};
         const unsignedNodes = [
@@ -1398,7 +1420,11 @@
         const height = 390;
         const labelSize = compactGex ? 16 : 20;
         const valueSize = compactGex ? 14 : 18;
-        const profiles = [
+        const universalGex = universalGexRecordFor(state.ticker);
+        const profiles = universalGex ? [
+          { ...gexView(data, 'current') },
+          { ...gexView(data, 'next'), label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || '未標示' }
+        ] : [
           { ...gexView(data, 'current'), ...data.gexViews?.current },
           { ...gexView(data, 'next'), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
         ];
@@ -1406,7 +1432,7 @@
         if (!renderableProfiles.length) {
           const summary = data.gexSummary || {};
           container.hidden = true;
-          container.hidden = false; container.innerHTML = '<div class="chart-error">此代號目前沒有可用的 GEX 曲線；已隱藏 K 線圖，待選擇權資料補齊後再顯示。</div>'; 
+          container.hidden = false; container.innerHTML = `<div class="chart-error">${escapeHtml(publicGexText(data.gexSummary?.displayText || profiles.find((profile) => profile.text)?.text || '此代號目前沒有可用的 GEX 曲線。'))}</div>`;
           return;
         }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
