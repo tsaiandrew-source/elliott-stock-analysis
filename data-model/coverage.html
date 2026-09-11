@@ -66,7 +66,7 @@
       let activeContract = mergeRuntimeContract(contract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
-        if (cached && Array.isArray(cached.coverage)) activeContract = mergeRuntimeContract(activeContract, cached);
+        if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(activeContract) || latestAnalysisDate(cached) >= latestAnalysisDate(activeContract))) activeContract = mergeRuntimeContract(activeContract, cached);
       } catch (_) { /* Ignore an unavailable or malformed browser cache. */ }
       const liveSignature = (live) => JSON.stringify({ coverage: live.coverage || [], analysisRuns: live.analysisRuns || [], tables: live.tables || {} });
       const refreshLiveInBackground = async () => {
