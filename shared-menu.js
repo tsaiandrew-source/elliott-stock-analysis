@@ -11,17 +11,12 @@
       .dock-action:hover,.dock-action:focus-visible{color:var(--text,#e8f1f5);background:var(--surface2,var(--surface-2,#112433))}
       .dock-action[aria-current="page"],.dock-action.is-active{color:var(--aqua,#55d9d5);background:rgba(85,217,213,.1);box-shadow:inset 0 -2px var(--aqua,#55d9d5)}
       .dock-icon{color:var(--aqua,#55d9d5);font-size:20px;line-height:1}
-      .shared-ticker-navigator{position:fixed;z-index:55;top:70px;left:50%;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;width:min(720px,calc(100vw - 24px));transform:translateX(-50%);padding:5px;border:1px solid rgba(85,217,213,.32);border-radius:13px;background:rgba(13,26,37,.96);box-shadow:0 12px 30px rgba(0,0,0,.3);backdrop-filter:blur(10px)}
-      .shared-ticker-navigator[hidden]{display:none}
-      .shared-ticker-nav-button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0;border:1px solid var(--line,#203849);border-radius:9px;color:var(--aqua,#55d9d5);background:rgba(17,36,51,.7);font:800 20px/1 system-ui,-apple-system,sans-serif;cursor:pointer;touch-action:manipulation}
-      .shared-ticker-nav-button:hover,.shared-ticker-nav-button:focus-visible{border-color:var(--aqua,#55d9d5);color:var(--text,#edf6fb);outline:0}
-      .shared-ticker-nav-button:disabled{color:var(--muted,#91a8b7);opacity:.45;cursor:not-allowed}
-      .shared-ticker-rail{display:flex;min-width:0;align-items:stretch;gap:4px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--aqua,#55d9d5) transparent;touch-action:pan-x;border:1px solid var(--line,#203849);border-radius:9px;background:rgba(7,16,24,.5)}
-      .shared-ticker-item{flex:0 0 auto;min-width:70px;min-height:44px;padding:7px 9px;border:0;border-right:1px solid rgba(32,56,73,.55);color:var(--muted,#91a8b7);background:transparent;font:800 12px/1 system-ui,-apple-system,sans-serif;cursor:pointer;scroll-snap-align:center;touch-action:pan-x}
-      .shared-ticker-item:last-child{border-right:0}
-      .shared-ticker-item:hover,.shared-ticker-item:focus-visible{color:var(--text,#edf6fb);background:rgba(85,217,213,.1);outline:0}
-      .shared-ticker-item[aria-current="page"]{color:var(--aqua,#55d9d5);background:rgba(85,217,213,.14);box-shadow:inset 0 -3px var(--aqua,#55d9d5)}
-      .shared-ticker-item:active{background:rgba(85,217,213,.2)}
+      .ticker-control{display:grid;grid-template-columns:36px minmax(64px,1fr) 36px;align-items:center;gap:2px;min-width:140px;height:42px;padding:2px;border:1px solid rgba(85,217,213,.28);border-radius:11px;background:rgba(7,16,24,.28)}
+      .ticker-step,.ticker-menu-trigger{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0;border:0;border-radius:8px;color:var(--muted,#91a5b4);background:transparent;font:800 19px/1 system-ui,-apple-system,sans-serif;cursor:pointer;touch-action:manipulation}
+      .ticker-menu-trigger{color:var(--aqua,#55d9d5);font-size:12px}
+      .ticker-step:hover,.ticker-step:focus-visible,.ticker-menu-trigger:hover,.ticker-menu-trigger:focus-visible{color:var(--text,#edf6fb);background:rgba(85,217,213,.12);outline:0}
+      .ticker-step:disabled{color:var(--muted,#91a5b7);opacity:.45;cursor:not-allowed}
+      .ticker-control[aria-current="page"]{border-color:rgba(85,217,213,.52);box-shadow:inset 0 -2px var(--aqua,#55d9d5)}
       .shared-ticker-backdrop[hidden],.shared-ticker-sheet[hidden]{display:none}
       .shared-ticker-backdrop{position:fixed;z-index:68;inset:0;border:0;background:rgba(3,10,15,.62);backdrop-filter:blur(2px)}
       .shared-ticker-sheet{position:fixed;z-index:70;top:82px;right:50%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;width:min(420px,calc(100vw - 28px));height:min(520px,70vh);max-height:min(520px,70vh);overflow:hidden;transform:translateX(50%);padding:13px;border:1px solid rgba(85,217,213,.4);border-radius:16px;background:rgba(13,26,37,.98);box-shadow:0 18px 46px rgba(0,0,0,.45)}
@@ -126,36 +121,11 @@
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !sheet.hidden) setOpen(false); });
   };
 
-  const installInlineTickerNavigator = (nav, tickerHref, currentPage) => {
+  const installTickerStepper = (group, toggle, tickerHref, currentPage) => {
     const tickers = [...(window.PROTOTYPE_COVERAGE_ORDER || ['LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'])];
-    if (!tickers.length) return;
-    const query = new URLSearchParams(window.location.search);
     const normalize = (value) => String(value || '').trim().toUpperCase();
-    let activeTicker = normalize(query.get('ticker')) || tickers[0];
+    let activeTicker = normalize(new URLSearchParams(window.location.search).get('ticker')) || tickers[0];
     if (!tickers.includes(activeTicker)) activeTicker = tickers[0];
-    const wrapper = document.createElement('div');
-    wrapper.className = 'shared-ticker-navigator';
-    wrapper.setAttribute('aria-label', '代號快速切換');
-
-    const createNavButton = (label, ariaLabel) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'shared-ticker-nav-button';
-      button.textContent = label;
-      button.setAttribute('aria-label', ariaLabel);
-      return button;
-    };
-    const previous = createNavButton('‹', '上一個代號');
-    const next = createNavButton('›', '下一個代號');
-    const rail = document.createElement('div');
-    rail.className = 'shared-ticker-rail';
-    rail.setAttribute('role', 'listbox');
-    rail.setAttribute('aria-label', 'Coverage 代號，左右滑動或點選');
-    wrapper.append(previous, rail, next);
-    document.body.append(wrapper);
-
-    let suppressClick = false;
-    let pointerStart = null;
     const navigate = (ticker) => {
       const symbol = normalize(ticker);
       if (!tickers.includes(symbol) || symbol === activeTicker) return;
@@ -163,66 +133,22 @@
         window.__elliottSelectTicker(symbol);
         return;
       }
-      const url = new URL(tickerHref || window.location.href, document.baseURI);
+      const url = currentPage === 'ticker'
+        ? new URL(window.location.href)
+        : new URL(tickerHref || window.location.href, document.baseURI);
       url.searchParams.set('ticker', symbol);
-      if (!url.searchParams.has('view')) url.searchParams.set('view', 'daily');
+      if (currentPage !== 'ticker' && !url.searchParams.has('view')) url.searchParams.set('view', 'daily');
       window.location.assign(url.href);
     };
-    const render = (ensureVisible = true) => {
+    const render = () => {
       const index = Math.max(0, tickers.indexOf(activeTicker));
-      previous.disabled = index === 0;
-      next.disabled = index === tickers.length - 1;
-      previous.setAttribute('aria-disabled', String(previous.disabled));
-      next.setAttribute('aria-disabled', String(next.disabled));
-      rail.replaceChildren(...tickers.map((ticker, position) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'shared-ticker-item';
-        button.textContent = ticker;
-        button.dataset.ticker = ticker;
-        button.setAttribute('role', 'option');
-        button.setAttribute('aria-selected', String(ticker === activeTicker));
-        button.setAttribute('aria-label', `${ticker}，第 ${position + 1} 個，共 ${tickers.length} 個`);
-        if (ticker === activeTicker) button.setAttribute('aria-current', 'page');
-        button.addEventListener('click', () => {
-          if (suppressClick) return;
-          navigate(ticker);
-        });
-        button.addEventListener('keydown', (event) => {
-          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-            event.preventDefault();
-            const target = tickers[Math.min(tickers.length - 1, Math.max(0, position + (event.key === 'ArrowRight' ? 1 : -1)))];
-            rail.querySelector(`[data-ticker="${target}"]`)?.focus();
-          }
-        });
-        return button;
-      }));
-      const current = rail.querySelector('[aria-current="page"]');
-      if (ensureVisible) current?.scrollIntoView({ block:'nearest', inline:'center', behavior:'auto' });
+      group.querySelector('[data-step="previous"]').disabled = index === 0;
+      group.querySelector('[data-step="next"]').disabled = index === tickers.length - 1;
+      toggle.textContent = activeTicker;
+      toggle.setAttribute('aria-label', `選擇代號，目前為 ${activeTicker}，第 ${index + 1} 個，共 ${tickers.length} 個`);
     };
-    const move = (delta) => {
-      const index = tickers.indexOf(activeTicker);
-      const target = tickers[index + delta];
-      if (target) navigate(target);
-    };
-    previous.addEventListener('click', () => move(-1));
-    next.addEventListener('click', () => move(1));
-    rail.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse' && event.button !== 0) return;
-      pointerStart = { x:event.clientX, y:event.clientY };
-      suppressClick = false;
-      rail.setPointerCapture?.(event.pointerId);
-    });
-    rail.addEventListener('pointermove', (event) => {
-      if (!pointerStart) return;
-      if (Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) > 8) suppressClick = true;
-    });
-    const clearPointer = () => {
-      pointerStart = null;
-      if (suppressClick) window.setTimeout(() => { suppressClick = false; }, 0);
-    };
-    rail.addEventListener('pointerup', clearPointer);
-    rail.addEventListener('pointercancel', clearPointer);
+    group.querySelector('[data-step="previous"]').addEventListener('click', () => navigate(tickers[tickers.indexOf(activeTicker) - 1]));
+    group.querySelector('[data-step="next"]').addEventListener('click', () => navigate(tickers[tickers.indexOf(activeTicker) + 1]));
     window.addEventListener('elliott:ticker-updated', (event) => {
       const nextTicker = normalize(event.detail?.ticker);
       if (tickers.includes(nextTicker)) { activeTicker = nextTicker; render(); }
@@ -263,19 +189,35 @@
       nav.append(link('dock-coverage', 'Coverage', '◎', this.dataset.coverageHref || 'coverage.html', 'coverage', current === 'coverage' ? '目前位於 Coverage' : '開啟 Coverage'));
 
       const tickerHref = this.dataset.tickerHref;
+      const tickerControl = document.createElement('div');
+      tickerControl.className = 'ticker-control';
+      tickerControl.setAttribute('aria-label', '代號快速切換');
+      if (current === 'ticker') tickerControl.setAttribute('aria-current', 'page');
+      const previous = document.createElement('button');
+      previous.type = 'button';
+      previous.className = 'ticker-step';
+      previous.dataset.step = 'previous';
+      previous.textContent = '‹';
+      previous.setAttribute('aria-label', '上一個代號');
       const ticker = document.createElement('button');
-      ticker.className = 'dock-action';
+      ticker.className = 'ticker-menu-trigger';
       ticker.id = 'ticker-menu-toggle';
       ticker.type = 'button';
       ticker.setAttribute('aria-expanded', 'false');
       ticker.setAttribute('aria-controls', tickerHref ? 'shared-ticker-sheet' : (this.dataset.tickerControls || 'ticker-sheet'));
-      if (current === 'ticker') ticker.setAttribute('aria-current', 'page');
       ticker.setAttribute('aria-label', '選擇代號');
-      ticker.innerHTML = `<span class="dock-icon" aria-hidden="true">⌁</span><span id="ticker-menu-label">${this.dataset.tickerLabel || 'Ticker'}</span>`;
-      nav.append(ticker);
+      ticker.innerHTML = `<span id="ticker-menu-label">${this.dataset.tickerLabel || 'Ticker'}</span>`;
+      const next = document.createElement('button');
+      next.type = 'button';
+      next.className = 'ticker-step';
+      next.dataset.step = 'next';
+      next.textContent = '›';
+      next.setAttribute('aria-label', '下一個代號');
+      tickerControl.append(previous, ticker, next);
+      nav.append(tickerControl);
 
       this.replaceWith(nav);
-      installInlineTickerNavigator(nav, this.dataset.tickerHref || this.dataset.tickerPageHref, current);
+      installTickerStepper(tickerControl, ticker, this.dataset.tickerHref || this.dataset.tickerPageHref, current);
       if (tickerHref) installFallbackTickerMenu(ticker, tickerHref);
     }
   }
