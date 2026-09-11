@@ -1,3 +1,4 @@
+document.documentElement.dataset.liveFallbackDate = '2026-09-10';
 // Sanitized same-origin fallback for browsers that block Apps Script refreshes.
 // It contains only the latest completed analysis content; source URLs, paths,
 // hashes, and source metadata are intentionally excluded.
