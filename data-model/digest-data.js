@@ -1,7 +1,231 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-11T18:51:10.887Z",
+  "generatedAt": "2026-09-11T23:22:04.713Z",
   "records": [
+    {
+      "id": "daily-2026-09-11-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-11",
+      "publishedAt": "2026-09-11T16:02:00-07:00",
+      "updatedAt": "2026-09-11T16:02:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-11T16:01:30-07:00",
+      "retrievedAt": "2026-09-11T16:01:47-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-11",
+      "summary": "今天市場學到的不是通膨風險消失，而是油價只要停止加速，股票就仍有反彈能力。CPI大致貼近預期、Brent自近110美元回落至104.61美元，推動S&P 500結束四連跌；但總體通膨月增0.4%、能源年增16.3%，10年期殖利率仍約4.9%，使下週Fed升息風險保持在核心位置。這是一場有條件的喘息反彈，不是金融條件全面轉鬆。",
+      "sections": [
+        {
+          "heading": "1. 股票反彈確認市場未失序，但週線仍偏弱",
+          "paragraphs": [
+            "事實：S&P 500收漲0.9%至7,656.98，道瓊漲1%至52,573.29，Nasdaq漲1%至26,333.04，結束四日連跌；Russell 2000僅漲0.4%。本週S&P 500仍跌0.8%，Russell 2000跌2.4%。",
+            "判斷：大型股反彈強於小型股，代表風險偏好回來了一部分，但高融資成本仍壓住資產負債表較脆弱的公司。今天是估值壓力暫停，不是景氣與信用疑慮消失。信心：高。",
+            "反證：下週小型股與市場寬度持續領先、信用利差收窄，而且10年期殖利率明確跌破4.85%。"
+          ],
+          "links": [
+            {
+              "label": "AP收盤",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            },
+            {
+              "label": "AP指數表",
+              "url": "https://apnews.com/article/67a463295d9ea178d7802ca4338a6eb5"
+            }
+          ]
+        },
+        {
+          "heading": "2. CPI沒有製造意外，但也沒有提供真正的降溫證據",
+          "paragraphs": [
+            "事實：8月CPI月增0.4%、年增3.4%；核心月增0.3%、年增2.4%。汽油月增3.9%，占總體月增幅逾三分之一；能源年增16.3%，住房月增0.3%，航空票價月增2.7%。",
+            "判斷：市場鬆一口氣是因結果接近預期，而非通膨回到舒適區。能源衝擊已進入消費端，服務與住房也沒有同步快速降溫，Fed下週升息的理由因此比今早更完整。信心：高。",
+            "反證：9月高頻油價與汽油價格迅速回落，服務通膨廣度收窄，且後續薪資與通膨預期同步下降。"
+          ],
+          "links": [
+            {
+              "label": "BLS CPI",
+              "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+            },
+            {
+              "label": "AP通膨解讀",
+              "url": "https://apnews.com/article/consumer-prices-inflation-fed-interest-rates-c76f53f7a53def0c464ca44ac637f203"
+            }
+          ]
+        },
+        {
+          "heading": "3. 油價回落是今天最重要的邊際改善",
+          "paragraphs": [
+            "事實：Brent一度接近110美元，終場下跌2.8%至104.61美元。它仍遠高於戰前約72美元，且中東衝突沒有可靠的結束訊號。",
+            "判斷：今天股票真正交易的是油價二階導數轉弱，而不是能源風險解除。航空、運輸、零售與消費可暫時喘息，但只要Brent維持三位數，成本壓力仍會逐步穿透毛利與家庭預算。信心：高。",
+            "反證：Brent重新突破110美元，霍爾木茲或紅海航道再受重大干擾，或成品油與航運保險費持續上升。"
+          ],
+          "links": [
+            {
+              "label": "AP收盤",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            },
+            {
+              "label": "Nasdaq能源與利率背景",
+              "url": "https://www.nasdaq.com/economic-institute/chartstopper-091126"
+            }
+          ]
+        },
+        {
+          "heading": "4. 債市沒有跟著股票宣告勝利",
+          "paragraphs": [
+            "事實：10年期美債殖利率週四曾升近5%，週五仍在約4.9%的高位；市場對下週Fed升息的預期在CPI後進一步增強。",
+            "判斷：股票可以因油價回落反彈，但房貸、企業融資與長久期估值仍面對接近5%的無風險利率。若Fed升息同時無法壓低長端殖利率，金融條件會從估值問題轉為實體需求問題。信心：高。",
+            "反證：Fed溝通比市場預期溫和，殖利率曲線整體下移，且房貸與信用成本隨之改善。"
+          ],
+          "links": [
+            {
+              "label": "AP通膨與債市",
+              "url": "https://apnews.com/article/consumer-prices-inflation-fed-interest-rates-c76f53f7a53def0c464ca44ac637f203"
+            },
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            }
+          ]
+        },
+        {
+          "heading": "5. 生產端壓力顯示能源衝擊仍在供應鏈擴散",
+          "paragraphs": [
+            "事實：8月PPI月增0.4%、年增5.4%；最終需求商品月增1.1%，能源增4.2%，柴油跳升24.1%，運輸與倉儲服務增2.3%。",
+            "判斷：即使今天原油下跌，企業已承受的柴油、貨運與化工投入成本不會立刻逆轉。能源生產商仍具相對優勢；運輸、工業與低毛利零售的獲利風險將延後顯現。信心：中高。",
+            "反證：未來數週柴油、貨運與中間需求價格同步回落，企業也沒有在財報或指引中下修毛利。"
+          ],
+          "links": [
+            {
+              "label": "BLS PPI",
+              "url": "https://www.bls.gov/news.release/ppi.nr0.htm"
+            }
+          ]
+        },
+        {
+          "heading": "6. 跨資產訊號仍是分裂，而非典型避險",
+          "paragraphs": [
+            "事實：股票回升、油價回落，但長債殖利率仍高。美元、信用利差、波動率與加密資產沒有足夠一致的新訊號可證明全面risk-on；黃金亦同時受到避險需求與高實質利率拉扯。",
+            "判斷：這種組合較接近事件風險下的部位調整。市場願意承擔股票風險，卻仍要求很高的期限與通膨補償。信心：中。",
+            "反證：美元、信用利差、VIX與小型股在下週同方向確認風險偏好改善或惡化。"
+          ],
+          "links": [
+            {
+              "label": "AP收盤",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "收盤狀態",
+              "判讀"
+            ],
+            "rows": [
+              [
+                "美股大型股",
+                "改善",
+                "結束四連跌，但仍是條件式反彈"
+              ],
+              [
+                "美股小型股",
+                "落後",
+                "高融資成本仍壓抑風險偏好"
+              ],
+              [
+                "原油",
+                "高位降溫",
+                "Brent回落至104.61美元，供應溢價仍大"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期殖利率仍約4.9%"
+              ],
+              [
+                "能源股",
+                "相對支撐",
+                "價格中樞仍高，但單日油價回落削弱動能"
+              ],
+              [
+                "運輸與零售",
+                "壓力暫緩",
+                "投入成本尚未真正逆轉"
+              ],
+              [
+                "美元與信用",
+                "無足夠訊號",
+                "未確認全面risk-on或避險"
+              ],
+              [
+                "黃金與加密",
+                "訊號混合",
+                "避險需求與高殖利率互相抵銷"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "明日展望",
+          "paragraphs": [
+            "週末至週一：美國週一沒有同等級的核心通膨數據，焦點將直接轉向9月15–16日FOMC。Fed於週三11:00 PT公布決策與經濟預測，11:30 PT舉行記者會。週一較重要的公司事件包括Hain Celestial盤前與Dave & Buster's盤後財報，但對大盤的權重有限。",
+            "隔夜風險：伊朗戰爭、霍爾木茲與紅海航運是最大跳空來源。任何能源設施、油輪或替代管線受損，都可能讓今天的油價回落在週一開盤前完全逆轉。",
+            "基準路徑：Brent維持100至110美元、10年期在4.85%至5%附近，股票震盪等待Fed；能源相對強，小型股與利率敏感產業落後。",
+            "偏強路徑：週末地緣風險降溫、Brent跌破100美元且10年期回到4.85%以下，今天的反彈可擴散至小型股、運輸與房地產。",
+            "偏弱路徑：Brent突破110美元、10年期突破5%，或Fed升息預期再上修；屆時科技估值、小型股、住房與消費將同步受壓。",
+            "確認指標：先看週日晚間油價與航運消息，再看週一10年期殖利率、Russell 2000相對表現、市場寬度、信用利差與波動率。"
+          ],
+          "links": [
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "週一財報日曆",
+              "url": "https://www.marketbeat.com/earnings/2026-09-14/"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "BLS CPI",
+          "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+        },
+        {
+          "label": "BLS PPI",
+          "url": "https://www.bls.gov/news.release/ppi.nr0.htm"
+        },
+        {
+          "label": "AP收盤",
+          "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+        },
+        {
+          "label": "AP指數表",
+          "url": "https://apnews.com/article/67a463295d9ea178d7802ca4338a6eb5"
+        },
+        {
+          "label": "AP通膨解讀",
+          "url": "https://apnews.com/article/consumer-prices-inflation-fed-interest-rates-c76f53f7a53def0c464ca44ac637f203"
+        },
+        {
+          "label": "Fed九月行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Nasdaq能源與利率背景",
+          "url": "https://www.nasdaq.com/economic-institute/chartstopper-091126"
+        },
+        {
+          "label": "週一財報日曆",
+          "url": "https://www.marketbeat.com/earnings/2026-09-14/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-11-midday",
       "cadence": "daily",
