@@ -1,7 +1,184 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-11T16:00:37.686Z",
+  "generatedAt": "2026-09-11T18:51:10.887Z",
   "records": [
+    {
+      "id": "daily-2026-09-11-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-11",
+      "publishedAt": "2026-09-11T11:30:46-07:00",
+      "updatedAt": "2026-09-11T11:30:46-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-11T11:30:30-07:00",
+      "retrievedAt": "2026-09-11T11:30:40-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "午間訊號｜2026-09-11",
+      "summary": "晨間主線被部分確認：核心通膨踩到警戒線、Fed升息機率上升；但油價回落讓股票先交易「壓力沒有再惡化」。這不是通膨風險解除，而是能源降溫暫時抵銷利率壓力。債市仍是下午真正的裁判。",
+      "sections": [
+        {
+          "heading": "1. CPI確認底層通膨仍有黏性",
+          "paragraphs": [
+            "事實：8月CPI月增0.4%、年增3.4%；核心月增0.3%、年增2.4%。核心月增高於晨間約0.2%的基準情境。",
+            "判斷：晨間設定的鷹派風險已實現，但不是全面失控。能源推高總體通膨，核心年增率仍略降；問題在於服務與商品價格尚未安靜到足以讓Fed繼續觀望。",
+            "反證：後續核心服務放緩、油價持續下降，且短端殖利率回吐今日升幅。"
+          ],
+          "links": [
+            {
+              "label": "美國勞工統計局",
+              "url": "https://www.bls.gov/cpi/"
+            }
+          ]
+        },
+        {
+          "heading": "2. 市場把下週升息視為主要劇本",
+          "paragraphs": [
+            "事實：升息一碼的市場機率升至約80%至85%。2年期殖利率升至約4.63%至4.66%；10年期一度觸及4.9915%，其後回到約4.95%。",
+            "判斷：壓力集中到政策敏感的短端；長端暫未突破5%，因此股票仍能反彈。若10年期重新越過5%，科技、房地產、公用事業與小型股會再次面臨估值壓縮。"
+          ],
+          "links": [
+            {
+              "label": "AP市場更新",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            },
+            {
+              "label": "Reuters市場整理",
+              "url": "https://in.marketscreener.com/news/bonds-buckle-stocks-fall-as-surging-oil-prices-inflame-inflation-risks-ce785bdfdb8af12d"
+            }
+          ]
+        },
+        {
+          "heading": "3. 油價回落提供喘息，但沒有消除供應風險",
+          "paragraphs": [
+            "事實：Brent由接近110美元回落約3%，至104美元附近，但本週仍上漲逾8%；霍爾木茲運輸仍受限制。",
+            "判斷：今天的股市反彈高度依賴油價沒有再上衝。能源通膨只是從「加速」降為「維持高位」，航運、航空、零售與工業成本壓力仍在。",
+            "反證：Brent跌破100美元，且航運量、保險費與柴油價格同步改善。"
+          ],
+          "links": [
+            {
+              "label": "Reuters市場整理",
+              "url": "https://in.marketscreener.com/news/bonds-buckle-stocks-fall-as-surging-oil-prices-inflame-inflation-risks-ce785bdfdb8af12d"
+            }
+          ]
+        },
+        {
+          "heading": "4. 股票反彈否定恐慌，沒有否定高利率",
+          "paragraphs": [
+            "事實：美東時間13:49，S&P 500、道瓊約升1.1%，Nasdaq約升1.2%。",
+            "判斷：市場正在交易油價回落與先前跌勢後的反彈，而不是重新定價為寬鬆。若殖利率保持高位但股票仍維持廣泛上漲，才算風險承受力得到較強確認。"
+          ],
+          "links": [
+            {
+              "label": "AP市場更新",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "5. 消費者同時感到成長弱、通膨高",
+          "paragraphs": [
+            "事實：密西根大學初值顯示消費者信心下降；一年期通膨預期由4.0%升至4.6%。",
+            "判斷：這是今天最不舒服的組合：信心轉弱，通膨預期卻上升。若延續，Fed面對的將不是單純過熱，而是成長承壓下仍需緊縮。"
+          ],
+          "links": [
+            {
+              "label": "AP",
+              "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "午間狀態",
+              "相較晨間"
+            ],
+            "rows": [
+              [
+                "美股",
+                "明顯反彈",
+                "改善，但主要由油價回落支撐"
+              ],
+              [
+                "原油",
+                "高位降溫",
+                "改善，供應風險未解除"
+              ],
+              [
+                "2年期美債",
+                "更弱",
+                "升息預期升高"
+              ],
+              [
+                "10年期美債",
+                "仍偏弱",
+                "曾逼近5%，暫未突破"
+              ],
+              [
+                "美元",
+                "中性偏強",
+                "未形成全面避險"
+              ],
+              [
+                "黃金",
+                "反彈",
+                "通膨與地緣避險重新取得支撐"
+              ],
+              [
+                "信用債",
+                "無足夠訊號",
+                "不硬補方向"
+              ],
+              [
+                "加密資產",
+                "無足夠訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "相較晨間的新變化",
+          "points": [
+            "核心CPI月增0.3%，觸發晨間設定的鷹派警戒。",
+            "Fed下週升息成為更明確的基準情境。",
+            "10年期逼近但未突破5%，避免金融條件進一步失序。",
+            "油價從近110美元回落，令股票由防守轉為反彈。",
+            "消費者短期通膨預期升至4.6%，新增信心與物價同時惡化的風險。"
+          ]
+        },
+        {
+          "heading": "收盤前催化劑",
+          "points": [
+            "10年期殖利率是否再次挑戰5%。",
+            "Brent能否守在104美元附近，或重返108美元以上。",
+            "股票漲勢能否擴展至小型股與利率敏感產業。",
+            "信用利差與波動率是否確認今天只是估值調整。",
+            "聯邦財政收支的官方結果；截稿時尚未取得可靠更新。"
+          ],
+          "paragraphs": [
+            "午間判斷：晨間的通膨警報得到確認，但油價回落阻止它立刻升級為全面避險。下午若「10年期破5%＋油價反彈＋市場寬度惡化」同時出現，今天的股票反彈才會被推翻。"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "美國勞工統計局",
+          "url": "https://www.bls.gov/cpi/"
+        },
+        {
+          "label": "AP市場更新",
+          "url": "https://apnews.com/article/financial-markets-stocks-oil-iran-war-bonds-rates-8c3272812f5e9b9238c6a3301921c17a"
+        },
+        {
+          "label": "Reuters市場整理",
+          "url": "https://in.marketscreener.com/news/bonds-buckle-stocks-fall-as-surging-oil-prices-inflame-inflation-risks-ce785bdfdb8af12d"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-11-morning",
       "cadence": "daily",
