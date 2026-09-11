@@ -6,7 +6,7 @@
   const scope = new URL('./', workerUrl);
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register(workerUrl, { scope: scope.pathname }).catch((error) => {
+    navigator.serviceWorker.register(workerUrl, { scope: scope.pathname, updateViaCache: 'none' }).catch((error) => {
       console.warn('ELLIOTT+ offline support could not start.', error);
     });
   }, { once: true });

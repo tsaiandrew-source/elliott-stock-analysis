@@ -11,12 +11,9 @@
       .dock-action:hover,.dock-action:focus-visible{color:var(--text,#e8f1f5);background:var(--surface2,var(--surface-2,#112433))}
       .dock-action[aria-current="page"],.dock-action.is-active{color:var(--aqua,#55d9d5);background:rgba(85,217,213,.1);box-shadow:inset 0 -2px var(--aqua,#55d9d5)}
       .dock-icon{color:var(--aqua,#55d9d5);font-size:20px;line-height:1}
-      .ticker-control{display:grid;grid-template-columns:36px minmax(64px,1fr) 36px;align-items:center;gap:2px;min-width:140px;height:42px;padding:2px;border:1px solid rgba(85,217,213,.28);border-radius:11px;background:rgba(7,16,24,.28)}
-      .ticker-step,.ticker-menu-trigger{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0;border:0;border-radius:8px;color:var(--muted,#91a5b4);background:transparent;font:800 19px/1 system-ui,-apple-system,sans-serif;cursor:pointer;touch-action:manipulation}
-      .ticker-menu-trigger{color:var(--aqua,#55d9d5);font-size:12px}
-      .ticker-step:hover,.ticker-step:focus-visible,.ticker-menu-trigger:hover,.ticker-menu-trigger:focus-visible{color:var(--text,#edf6fb);background:rgba(85,217,213,.12);outline:0}
-      .ticker-step:disabled{color:var(--muted,#91a5b7);opacity:.45;cursor:not-allowed}
-      .ticker-control[aria-current="page"]{border-color:rgba(85,217,213,.52);box-shadow:inset 0 -2px var(--aqua,#55d9d5)}
+      .ticker-menu-trigger{display:inline-flex;align-items:center;justify-content:center;min-width:102px;height:42px;padding:7px 12px;border:0;border-radius:11px;color:var(--muted,#91a5b4);background:transparent;font:800 12px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+      .ticker-menu-trigger:hover,.ticker-menu-trigger:focus-visible{color:var(--text,#edf6fb);background:var(--surface2,var(--surface-2,#112433));outline:0}
+      .ticker-menu-trigger[aria-current="page"]{color:var(--aqua,#55d9d5);background:rgba(85,217,213,.1);box-shadow:inset 0 -2px var(--aqua,#55d9d5)}
       .shared-ticker-backdrop[hidden],.shared-ticker-sheet[hidden],.ticker-sheet[hidden]{display:none}
       .shared-ticker-backdrop{position:fixed;z-index:68;inset:0;border:0;background:rgba(3,10,15,.62);backdrop-filter:blur(2px)}
       .shared-ticker-sheet,.ticker-sheet{position:fixed;z-index:70;top:82px;right:50%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;width:min(360px,calc(100vw - 28px));height:min(520px,70vh);max-height:min(520px,70vh);overflow:hidden;transform:translateX(50%);padding:13px;border:1px solid rgba(85,217,213,.4);border-radius:16px;background:rgba(13,26,37,.98);box-shadow:0 18px 46px rgba(0,0,0,.45)}
@@ -31,12 +28,12 @@
       .shared-ticker-item:hover,.shared-ticker-item:focus-visible,.ticker-wheel-item:hover,.ticker-wheel-item:focus-visible{color:var(--aqua,#55d9d5);background:rgba(85,217,213,.1);outline:0}
       .ticker-wheel-item.is-current{color:var(--text,#edf6fb);background:rgba(85,217,213,.13);box-shadow:inset 3px 0 var(--aqua,#55d9d5)}
       .ticker-wheel-item.is-current strong{color:var(--aqua,#55d9d5)}
-      @media(max-width:760px){.floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px;background:rgba(18,40,52,.94)}.dock-action,.ticker-control{flex:1 1 0;min-width:0;height:44px}.dock-action{padding:7px 10px}.ticker-control{height:44px}}
+      @media(max-width:760px){.floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px;background:rgba(18,40,52,.94)}.dock-action,.ticker-menu-trigger{flex:1 1 0;min-width:0;height:44px}.dock-action,.ticker-menu-trigger{padding:7px 10px}}
       @media(max-width:760px){.shared-ticker-sheet,.ticker-sheet{top:auto;bottom:calc(69px + env(safe-area-inset-bottom));height:min(440px,62vh);max-height:min(440px,62vh)}}
       html.force-phone-portrait .floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px}
-      html.force-phone-portrait .dock-action,.force-phone-portrait .ticker-control{flex:1 1 0;min-width:0;height:44px}.force-phone-portrait .dock-action{padding:7px 10px}.force-phone-portrait .ticker-control{height:44px}
+      html.force-phone-portrait .dock-action,.force-phone-portrait .ticker-menu-trigger{flex:1 1 0;min-width:0;height:44px}.force-phone-portrait .dock-action,.force-phone-portrait .ticker-menu-trigger{padding:7px 10px}
       .force-phone-portrait .shared-ticker-sheet,.force-phone-portrait .ticker-sheet{top:auto;bottom:calc(69px + env(safe-area-inset-bottom));height:min(440px,62vh);max-height:min(440px,62vh)}
-      @media(max-width:999px) and (orientation:landscape) and (max-height:500px){.floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px}.dock-action,.ticker-control{flex:1 1 0;min-width:0;height:44px}.dock-action{padding:7px 10px}.ticker-control{height:44px}}
+      @media(max-width:999px) and (orientation:landscape) and (max-height:500px){.floating-dock{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;width:auto;max-width:none;transform:none;padding:5px;border-radius:15px}.dock-action,.ticker-menu-trigger{flex:1 1 0;min-width:0;height:44px}.dock-action,.ticker-menu-trigger{padding:7px 10px}}
     `;
     document.head.append(style);
   }
@@ -128,45 +125,6 @@
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !sheet.hidden) setOpen(false); });
   };
 
-  const installTickerStepper = (group, toggle, tickerHref, currentPage) => {
-    const tickers = [...(window.PROTOTYPE_COVERAGE_ORDER || ['LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'])];
-    const normalize = (value) => String(value || '').trim().toUpperCase();
-    let activeTicker = normalize(new URLSearchParams(window.location.search).get('ticker')) || tickers[0];
-    if (!tickers.includes(activeTicker)) activeTicker = tickers[0];
-    const navigate = (ticker) => {
-      const symbol = normalize(ticker);
-      if (!tickers.includes(symbol) || symbol === activeTicker) return;
-      if (currentPage === 'ticker' && typeof window.__elliottSelectTicker === 'function') {
-        window.__elliottSelectTicker(symbol);
-        return;
-      }
-      const url = currentPage === 'ticker'
-        ? new URL(window.location.href)
-        : new URL(tickerHref || window.location.href, document.baseURI);
-      url.searchParams.set('ticker', symbol);
-      if (currentPage !== 'ticker' && !url.searchParams.has('view')) url.searchParams.set('view', 'daily');
-      window.location.assign(url.href);
-    };
-    const render = () => {
-      const index = Math.max(0, tickers.indexOf(activeTicker));
-      group.querySelector('[data-step="previous"]').disabled = index === 0;
-      group.querySelector('[data-step="next"]').disabled = index === tickers.length - 1;
-      toggle.textContent = activeTicker;
-      toggle.setAttribute('aria-label', `選擇代號，目前為 ${activeTicker}，第 ${index + 1} 個，共 ${tickers.length} 個`);
-    };
-    group.querySelector('[data-step="previous"]').addEventListener('click', () => navigate(tickers[tickers.indexOf(activeTicker) - 1]));
-    group.querySelector('[data-step="next"]').addEventListener('click', () => navigate(tickers[tickers.indexOf(activeTicker) + 1]));
-    window.addEventListener('elliott:ticker-updated', (event) => {
-      const nextTicker = normalize(event.detail?.ticker);
-      if (tickers.includes(nextTicker)) { activeTicker = nextTicker; render(); }
-    });
-    window.addEventListener('popstate', () => {
-      const nextTicker = normalize(new URLSearchParams(window.location.search).get('ticker'));
-      if (tickers.includes(nextTicker)) { activeTicker = nextTicker; render(); }
-    });
-    render();
-  };
-
   class ElliottSharedMenu extends HTMLElement {
     connectedCallback() {
       if (this.dataset.rendered === 'true') return;
@@ -196,35 +154,18 @@
       nav.append(link('dock-coverage', 'Coverage', '◎', this.dataset.coverageHref || 'coverage.html', 'coverage', current === 'coverage' ? '目前位於 Coverage' : '開啟 Coverage'));
 
       const tickerHref = this.dataset.tickerHref;
-      const tickerControl = document.createElement('div');
-      tickerControl.className = 'ticker-control';
-      tickerControl.setAttribute('aria-label', '代號快速切換');
-      if (current === 'ticker') tickerControl.setAttribute('aria-current', 'page');
-      const previous = document.createElement('button');
-      previous.type = 'button';
-      previous.className = 'ticker-step';
-      previous.dataset.step = 'previous';
-      previous.textContent = '‹';
-      previous.setAttribute('aria-label', '上一個代號');
       const ticker = document.createElement('button');
       ticker.className = 'ticker-menu-trigger';
       ticker.id = 'ticker-menu-toggle';
       ticker.type = 'button';
       ticker.setAttribute('aria-expanded', 'false');
       ticker.setAttribute('aria-controls', tickerHref ? 'shared-ticker-sheet' : (this.dataset.tickerControls || 'ticker-sheet'));
+      if (current === 'ticker') ticker.setAttribute('aria-current', 'page');
       ticker.setAttribute('aria-label', '選擇代號');
-      ticker.innerHTML = `<span id="ticker-menu-label">${this.dataset.tickerLabel || 'Ticker'}</span>`;
-      const next = document.createElement('button');
-      next.type = 'button';
-      next.className = 'ticker-step';
-      next.dataset.step = 'next';
-      next.textContent = '›';
-      next.setAttribute('aria-label', '下一個代號');
-      tickerControl.append(previous, ticker, next);
-      nav.append(tickerControl);
+      ticker.innerHTML = `<span class="dock-icon" aria-hidden="true">⌁</span><span id="ticker-menu-label">${this.dataset.tickerLabel || 'Ticker'}</span>`;
+      nav.append(ticker);
 
       this.replaceWith(nav);
-      installTickerStepper(tickerControl, ticker, this.dataset.tickerHref || this.dataset.tickerPageHref, current);
       if (tickerHref) installFallbackTickerMenu(ticker, tickerHref);
     }
   }

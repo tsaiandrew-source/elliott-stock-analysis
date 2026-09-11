@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v20';
+const CACHE_VERSION = 'elliott-pwa-v21';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -6,6 +6,14 @@ const OFFLINE_URL = new URL('offline.html', APP_ROOT).href;
 const DIGEST_FRESH_PATHS = new Set([
   new URL('data-model/digests.json', APP_ROOT).pathname,
   new URL('data-model/digest-data.js', APP_ROOT).pathname
+]);
+const LIVE_DATA_PATHS = new Set([
+  ...DIGEST_FRESH_PATHS,
+  new URL('chart-surface/analysis-packets-v2.js', APP_ROOT).pathname,
+  new URL('chart-surface/analysis-details.js', APP_ROOT).pathname,
+  new URL('chart-surface/benchmark-data.js', APP_ROOT).pathname,
+  new URL('chart-surface/weekly-history.js', APP_ROOT).pathname,
+  new URL('chart-surface/eod-digest-20260908.js', APP_ROOT).pathname
 ]);
 
 const CORE_ASSETS = [
@@ -24,33 +32,11 @@ const CORE_ASSETS = [
   './data-model/home.html',
   './data-model/coverage.html',
   './data-model/digest-model.js',
-  './data-model/digests.json',
-  './data-model/digest-data.js',
   './data-model/app.html',
   './chart-surface/index.html',
   './chart-surface/data-contract.js',
   './chart-surface/analysis-localization.js',
   './chart-surface/analysis-geometry.js',
-  './chart-surface/analysis-packets-v2.js',
-  './chart-surface/analysis-details.js',
-  './chart-surface/benchmark-data.js',
-  './chart-surface/weekly-history.js',
-  './chart-surface/eod-digest-20260908.js',
-  './chart-surface/partial-market-data/2330.json',
-  './chart-surface/partial-market-data/2646.json',
-  './chart-surface/partial-market-data/ACHR.json',
-  './chart-surface/partial-market-data/AMKR.json',
-  './chart-surface/partial-market-data/AVGO.json',
-  './chart-surface/partial-market-data/CSCO.json',
-  './chart-surface/partial-market-data/IREN.json',
-  './chart-surface/partial-market-data/LITE.json',
-  './chart-surface/partial-market-data/MRVL.json',
-  './chart-surface/partial-market-data/NBIS.json',
-  './chart-surface/partial-market-data/NOK.json',
-  './chart-surface/partial-market-data/NVDA.json',
-  './chart-surface/partial-market-data/ONDS.json',
-  './chart-surface/partial-market-data/PLTR.json',
-  './chart-surface/partial-market-data/SNDK.json'
 ].map((path) => new URL(path, APP_ROOT).href);
 
 self.addEventListener('install', (event) => {
@@ -128,7 +114,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (url.origin === APP_ROOT.origin && url.pathname.startsWith(APP_ROOT.pathname)) {
-    if (DIGEST_FRESH_PATHS.has(url.pathname)) {
+    if (LIVE_DATA_PATHS.has(url.pathname) || url.pathname.includes('/chart-surface/partial-market-data/')) {
       event.respondWith(freshDigestResponse(request));
       return;
     }
