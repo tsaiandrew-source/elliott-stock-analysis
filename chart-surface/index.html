@@ -465,7 +465,7 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script src="analysis-geometry.js?v=20260909-1"></script>
-  <script src="analysis-packets-v2.js?v=20260909-rich-reader-v1"></script>
+  <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
@@ -622,11 +622,10 @@
           : null;
         return normalizePriceSnapshot(coverageItem?.priceSnapshot || data?.priceSnapshot || data?.currentPriceSnapshot || coveragePrice, bars.at(-1));
       };
-      const eligibleRuns = (ticker) => {
-        const cutoff = chartDataCutoff(ticker);
-        const runs = tickerRuns(ticker);
-        return cutoff ? runs.filter((run) => run.schemaVersion === 'iris-analysis-contract-v2' || !runDate(run) || runDate(run) <= cutoff) : runs;
-      };
+      // Analysis freshness and chart-bar freshness are separate contracts.
+      // Do not hide a newer partial-safe analysis just because OHLCV bars are
+      // still one or more sessions behind it.
+      const eligibleRuns = (ticker) => tickerRuns(ticker);
       const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
       const preferredRuns = (ticker) => {
         const candidates = eligibleRuns(ticker);
@@ -710,11 +709,18 @@
         const optionText = publicGexText(gexSummary?.displayText || selectedRun.options || digestOptionText(dailyDigest));
         const businessText = selectedRun.fundamentalsNews || selectedRun.business || digestSection(dailyDigest, '摘要與市場脈絡')?.points?.[1] || '';
         const sourceEvidence = (selectedRun.sourceEvidence?.length ? selectedRun.sourceEvidence : (dailyDigest?.sourceEvidence || weeklyDigest?.sourceEvidence || []));
+        const analysisThrough = String(selectedRun.dataThrough || selectedRun.analysisDate || '').slice(0, 10);
+        const chartThrough = chartDataCutoff(ticker);
+        const freshness = analysisThrough && chartThrough && analysisThrough !== chartThrough
+          ? `分析截至 ${analysisThrough} · K線截至 ${chartThrough}`
+          : `分析截至 ${analysisThrough || chartThrough || '—'}`;
         return {
           company: coverageRows().find((item) => item.ticker === ticker)?.company || ticker,
           exchange: coverageRows().find((item) => item.ticker === ticker)?.exchange || '',
-          dataThrough: selectedRun.dataThrough || selectedRun.analysisDate || '',
-          sourceCutoff: selectedRun.dataThrough || selectedRun.analysisDate || '',
+          dataThrough: chartThrough || analysisThrough,
+          analysisThrough,
+          chartThrough,
+          sourceCutoff: analysisThrough,
           chartSource: '',
           sourceUrl: sourceEvidence.find((item) => item.url)?.url || '',
           pattern: patternLabel,
@@ -744,7 +750,7 @@
           dataStatus: selectedRun.dataStatus,
           status: selectedRun.status,
           chartRenderable: selectedRun.chartRenderable === true,
-          freshness: `分析截至 ${run.dataThrough || run.analysisDate || '—'}`,
+          freshness,
           gexSource: null,
           gexViews: {},
           bars: []
@@ -1629,7 +1635,11 @@
         $('title').textContent = state.ticker + ' · ' + data.company;
         $('chart-title').textContent = isGex ? 'GEX 壓力圖 · Top／Bottom' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
         const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
-        $('chart-meta').textContent = isGex ? `GEX · 本週／下週到期 · ${gex.freshness}` : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + '資料截至 ' + data.dataThrough + ' · ' + data.sourceCutoff;
+        const analysisMeta = data.analysisThrough || data.sourceCutoff || data.dataThrough || '—';
+        const chartMeta = data.chartThrough || data.dataThrough || '—';
+        $('chart-meta').textContent = isGex
+          ? `GEX · 本週／下週到期 · ${gex.freshness}`
+          : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + `分析截至 ${analysisMeta} · K線截至 ${chartMeta}`;
         const detail = analysisDetails[state.ticker] || {};
         const businessDetails = $('business-details');
         const runtimeOverall = data.overall || {};
@@ -1657,7 +1667,9 @@
           }
           element.setAttribute('aria-label', view.ariaLabel);
         });
-        $('thesis-refresh').textContent = '';
+        $('thesis-refresh').textContent = data.analysisThrough && data.chartThrough && data.analysisThrough !== data.chartThrough
+          ? `分析已更新至 ${data.analysisThrough}；K線資料截至 ${data.chartThrough}，等待下一個完成交易時段補齊。`
+          : (data.analysisThrough ? `分析截至 ${data.analysisThrough}` : '');
         $('business').textContent = overall?.businessSummary || data.business;
         [['business-unproved', overall?.unproved], ['business-next-test', overall?.nextTest]].forEach(([id, value]) => {
           const element = $(id);
