@@ -210,11 +210,11 @@
   <script src="../coverage-order.js?v=20260911-labels-v1"></script>
   <script src="../shared-menu.js?v=20260911-single-ticker-v2"></script>
   <elliott-shared-menu data-current="coverage" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
-  <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script><script src="../chart-surface/analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
-      const contract = window.PROTOTYPE_DATA_CONTRACT || {};
+      const contract = window.PROTOTYPE_DATA_CONTRACT || {}; const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
       const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
@@ -227,14 +227,14 @@
         }
       };
       const mergeRuntimeContract = (fallback, live) => {
-        if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
+        if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
         [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
         return {
           ...fallback,
           ...live,
-          coverage: live.coverage.length ? live.coverage : fallback.coverage,
+          coverage: live.coverage?.length ? live.coverage : fallback.coverage,
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -246,8 +246,8 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v2';
-      let activeContract = contract;
+      const latestAnalysisDate = (live) => (live?.analysisRuns || []).map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10)).filter(Boolean).sort().at(-1) || ''; const liveCacheKey = 'stock-analysis-live-contract-v3';
+      let activeContract = mergeRuntimeContract(contract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
         if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(activeContract) || latestAnalysisDate(cached) >= latestAnalysisDate(activeContract))) activeContract = mergeRuntimeContract(activeContract, cached);
