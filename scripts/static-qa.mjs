@@ -119,7 +119,7 @@ if (await exists('data-model/home.html')) {
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain']) {
+  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'shared-ticker-navigator', 'shared-ticker-rail', 'shared-ticker-nav-button', 'elliott:ticker-updated', 'scrollIntoView', 'pointerdown']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
@@ -127,6 +127,12 @@ if (await exists('shared-menu.js')) {
     if (!html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted`);
     if (!html.includes('data-ticker-page-href=')) failures.push(`${file}: shared swipe navigation destinations are incomplete`);
   }
+}
+
+if (await exists('chart-surface/index.html')) {
+  const chart = await read('chart-surface/index.html');
+  if (!chart.includes('window.__elliottSelectTicker = selectTicker')) failures.push('chart-surface/index.html: inline ticker rail does not have an in-place selector hook');
+  if (!chart.includes('window.history.pushState({}, \'\', nextUrl)')) failures.push('chart-surface/index.html: ticker switching does not update browser history');
 }
 
 if (await exists('data-model/digest-model.js')) {
