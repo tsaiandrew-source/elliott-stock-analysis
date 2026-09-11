@@ -215,7 +215,10 @@
   <script>
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
-      const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
+      const liveProxyUrls = [
+        'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec',
+        'https://script.google.com/macros/s/AKfycbxNVxg0LVUZVMafRyQ0aYkMy8z5GXj3Cbkk1XmidPKjeiixNJswqJNHhmZ7jsIm2holHw/exec'
+      ];
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -246,7 +249,30 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v2';
+      const latestAnalysisDate = (live) => (live?.analysisRuns || [])
+        .map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10))
+        .filter(Boolean)
+        .sort()
+        .at(-1) || '';
+      const freshestLiveContract = (payloads) => payloads.filter(Boolean).sort((a, b) => {
+        const dateCompare = latestAnalysisDate(b).localeCompare(latestAnalysisDate(a));
+        if (dateCompare) return dateCompare;
+        const generatedCompare = String(b.generatedAt || '').localeCompare(String(a.generatedAt || ''));
+        if (generatedCompare) return generatedCompare;
+        return (b.analysisRuns || []).length - (a.analysisRuns || []).length;
+      })[0] || null;
+      const fetchLiveContract = async () => {
+        const payloads = await Promise.all(liveProxyUrls.map(async (url) => {
+          try {
+            const live = await fetchJsonWithTimeout(`${url}?format=json&refresh=${Date.now()}`, 60000);
+            return live && !live.error && Array.isArray(live.coverage) ? live : null;
+          } catch (_) {
+            return null;
+          }
+        }));
+        return freshestLiveContract(payloads);
+      };
+      const liveCacheKey = 'stock-analysis-live-contract-v3';
       let activeContract = contract;
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
@@ -256,7 +282,7 @@
       const refreshLiveInBackground = async () => {
         if (window.location.protocol === 'file:') return;
         try {
-          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 60000);
+          const live = await fetchLiveContract();
           if (!live || !Array.isArray(live.coverage)) return;
           const nextSignature = liveSignature(live);
           const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
