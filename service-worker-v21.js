@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v21';
+const CACHE_VERSION = 'elliott-pwa-v22';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -34,23 +34,3 @@ self.addEventListener('activate', (event) => {
 const cacheKey = (request) => { const url = new URL(request.url); url.search = ''; return new Request(url, { method: 'GET' }); };
 const cachedResponse = (request) => caches.match(cacheKey(request));
 async function navigationResponse(request) {
-  try { const response = await fetch(request); if (response.ok) { const cache = await caches.open(RUNTIME_CACHE); await cache.put(cacheKey(request), response.clone()); } return response; }
-  catch (_) { return (await cachedResponse(request)) || (await caches.match(OFFLINE_URL)); }
-}
-async function localAssetResponse(request) {
-  const cached = await cachedResponse(request);
-  const refresh = fetch(request).then(async (response) => { if (response.ok) { const cache = await caches.open(RUNTIME_CACHE); await cache.put(cacheKey(request), response.clone()); } return response; }).catch(() => null);
-  return cached || (await refresh) || Response.error();
-}
-async function freshDigestResponse(request) {
-  try { const response = await fetch(request, { cache: 'no-store' }); if (response.ok) { const cache = await caches.open(RUNTIME_CACHE); await cache.put(cacheKey(request), response.clone()); } return response; }
-  catch (_) { return (await cachedResponse(request)) || Response.error(); }
-}
-self.addEventListener('fetch', (event) => {
-  const { request } = event; if (request.method !== 'GET') return;
-  const url = new URL(request.url);
-  if (request.mode === 'navigate') { event.respondWith(navigationResponse(request)); return; }
-  if (url.origin === APP_ROOT.origin && url.pathname.startsWith(APP_ROOT.pathname)) {
-    event.respondWith(LIVE_DATA_PATHS.has(url.pathname) || url.pathname.includes('/chart-surface/partial-market-data/') ? freshDigestResponse(request) : localAssetResponse(request));
-  }
-});
