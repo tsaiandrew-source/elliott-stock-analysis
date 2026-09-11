@@ -38,7 +38,7 @@ const stateDir = path.join(temporary, 'state');
 const packetPath = path.join(temporary, 'packet.json');
 const ackPath = path.join(temporary, 'ack.json');
 await fs.mkdir(path.join(repoRoot, 'data-model'), { recursive:true });
-const storeText = '{"schemaVersion":"elliott-cross-market-digest-v1","records":[]}\n';
+const storeText = `${JSON.stringify({ schemaVersion:'elliott-cross-market-digest-v1', records:[record] })}\n`;
 const browserText = 'window.ELLIOTT_CROSS_MARKET_DIGESTS = {};\n';
 await fs.writeFile(path.join(repoRoot, 'data-model/digests.json'), storeText);
 await fs.writeFile(path.join(repoRoot, 'data-model/digest-data.js'), browserText);
@@ -54,6 +54,18 @@ assert.throws(() => validateConsumerAck({ ...ack, qa:qa.slice(1) }, record, pack
 
 const worktree = path.join(stateDir, 'release-worktrees', `${record.id}-r1`);
 await fs.mkdir(path.join(worktree, 'data-model'), { recursive:true });
+const concurrentMorning = {
+  ...record,
+  id:`daily-${marketDate}-morning`,
+  edition:'morning',
+  publishedAt:`${marketDate}T05:31:00-07:00`,
+  updatedAt:`${marketDate}T05:31:00-07:00`,
+  sourceCutoffAt:`${marketDate}T05:30:00-07:00`,
+  retrievedAt:`${marketDate}T05:31:00-07:00`
+};
+const baseStoreText = `${JSON.stringify({ schemaVersion:'elliott-cross-market-digest-v1', records:[concurrentMorning] })}\n`;
+await fs.writeFile(path.join(worktree, 'data-model/digests.json'), baseStoreText);
+await fs.writeFile(path.join(worktree, 'data-model/digest-data.js'), browserText);
 let worktreeRevParseCount = 0;
 let prViewCount = 0;
 const calls = [];
@@ -86,6 +98,8 @@ const result = await releaseCloseDigest({
 }, { run:fakeRun });
 assert.equal(result.status, 'PUBLISHED');
 assert.equal(result.publicSmokeDigestId, record.id);
+const releasedRecords = JSON.parse(await fs.readFile(path.join(worktree, 'data-model/digests.json'), 'utf8')).records;
+assert.deepEqual(new Set(releasedRecords.map((item) => item.id)), new Set([concurrentMorning.id, record.id]));
 assert.equal(calls.filter((call) => call.command === 'gh' && call.args[1] === 'create').length, 1);
 assert.equal(calls.filter((call) => call.command === 'gh' && call.args[1] === 'merge').length, 1);
 const smoke = calls.find((call) => call.command === process.execPath && call.args[0] === 'scripts/public-smoke.mjs');
@@ -101,5 +115,6 @@ assert.equal(calls.filter((call) => call.command === 'gh' && call.args[1] === 'c
 
 console.log(JSON.stringify({
   status:'PASS', allowedDiff:true, deterministicMetadata:true, ackBinding:true,
-  mockedGitHubBoundary:true, exactPublicSmoke:true, duplicateSafeRecovery:true
+  mockedGitHubBoundary:true, latestBaseReplay:true, concurrentDigestPreserved:true,
+  exactPublicSmoke:true, duplicateSafeRecovery:true
 }, null, 2));
