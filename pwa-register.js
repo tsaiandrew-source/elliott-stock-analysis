@@ -2,7 +2,7 @@
   if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
 
   const script = document.currentScript;
-  const workerUrl = new URL('./service-worker.js', script?.src || document.baseURI);
+  const workerUrl = new URL('./service-worker-v21.js', script?.src || document.baseURI);
   const scope = new URL('./', workerUrl);
 
   window.addEventListener('load', () => {
