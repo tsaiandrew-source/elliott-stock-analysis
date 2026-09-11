@@ -10,6 +10,11 @@ import { ingestPayload, renderBrowserDataset, validateDataset, validateRecord } 
 const execFileAsync = promisify(execFile);
 const DEFAULT_TIMEZONE = 'America/Los_Angeles';
 const DEFAULT_MAX_AGE_MINUTES = 180;
+export const DAILY_EDITIONS = Object.freeze({
+  morning:{ hour:5, minute:30 },
+  midday:{ hour:11, minute:30 },
+  close:{ hour:16, minute:0 }
+});
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const timestamp = (value, label) => {
@@ -39,14 +44,21 @@ const appendJsonLine = async (target, value) => {
   await fs.appendFile(target, `${JSON.stringify(value)}\n`, 'utf8');
 };
 
-export function validateClosePacket(payload, { marketDate, now = new Date(), maxAgeMinutes = DEFAULT_MAX_AGE_MINUTES } = {}) {
+const editionConfig = (edition) => {
+  const config = DAILY_EDITIONS[edition];
+  if (!config) throw new Error(`unsupported daily edition: ${edition}`);
+  return config;
+};
+
+export function validateDailyPacket(payload, { edition, marketDate, now = new Date(), maxAgeMinutes = DEFAULT_MAX_AGE_MINUTES } = {}) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(marketDate || '')) throw new Error('marketDate is required');
+  const schedule = editionConfig(edition);
   const records = payload?.schemaVersion ? validateDataset(payload, 'packet').records : [validateRecord(payload, 'packet')];
   if (records.length !== 1) throw new Error('packet must contain exactly one record');
   const record = records[0];
-  if (record.cadence !== 'daily' || record.edition !== 'close') throw new Error('packet must be the daily close edition');
+  if (record.cadence !== 'daily' || record.edition !== edition) throw new Error(`packet must be the daily ${edition} edition`);
   if (record.marketDate !== marketDate) throw new Error(`packet marketDate must be ${marketDate}`);
-  if (record.id !== `daily-${marketDate}-close`) throw new Error(`packet id must be daily-${marketDate}-close`);
+  if (record.id !== `daily-${marketDate}-${edition}`) throw new Error(`packet id must be daily-${marketDate}-${edition}`);
   if (record.timezone !== DEFAULT_TIMEZONE) throw new Error(`packet timezone must be ${DEFAULT_TIMEZONE}`);
   if (record.status !== 'complete') throw new Error('packet status must be complete');
   if (!Number.isInteger(record.revision) || record.revision < 1) throw new Error('packet revision must be a positive integer');
@@ -56,8 +68,11 @@ export function validateClosePacket(payload, { marketDate, now = new Date(), max
   const retrievedAt = timestamp(record.retrievedAt, 'packet.retrievedAt');
   const nowAt = timestamp(now, 'now');
   const publishedLocal = localParts(record.publishedAt, record.timezone);
-  if (localDate(record.publishedAt, record.timezone) !== marketDate || Number(publishedLocal.hour) < 16) {
-    throw new Error('packet.publishedAt must be on the market date at or after 16:00 PT');
+  const publishedMinute = Number(publishedLocal.hour) * 60 + Number(publishedLocal.minute);
+  const earliestMinute = schedule.hour * 60 + schedule.minute;
+  if (localDate(record.publishedAt, record.timezone) !== marketDate || publishedMinute < earliestMinute) {
+    const earliest = `${String(schedule.hour).padStart(2, '0')}:${String(schedule.minute).padStart(2, '0')}`;
+    throw new Error(`packet.publishedAt must be on the market date at or after ${earliest} PT`);
   }
   if (localDate(record.sourceCutoffAt, record.timezone) !== marketDate) throw new Error('packet.sourceCutoffAt must match the market date');
   if (sourceCutoffAt > retrievedAt) throw new Error('packet retrieval cannot precede its source cutoff');
@@ -68,13 +83,16 @@ export function validateClosePacket(payload, { marketDate, now = new Date(), max
   return record;
 }
 
+export const validateClosePacket = (payload, options = {}) => validateDailyPacket(payload, { ...options, edition:'close' });
+
 const parsePayload = (text) => JSON.parse(text);
 const packetRecords = (payload) => payload?.schemaVersion ? payload.records : [payload];
-const looksLikeSlot = (payload, marketDate) => packetRecords(payload).some(
-  (record) => record?.cadence === 'daily' && record?.edition === 'close' && record?.marketDate === marketDate
+const looksLikeSlot = (payload, marketDate, edition) => packetRecords(payload).some(
+  (record) => record?.cadence === 'daily' && record?.edition === edition && record?.marketDate === marketDate
 );
 
-export async function discoverClosePacket(outbox, marketDate) {
+export async function discoverDailyPacket(outbox, marketDate, edition) {
+  editionConfig(edition);
   let names = [];
   try { names = await fs.readdir(outbox); } catch (error) {
     if (error.code === 'ENOENT') return { matches:[], malformed:[] };
@@ -93,10 +111,12 @@ export async function discoverClosePacket(outbox, marketDate) {
       malformed.push({ file, error:error.message });
       continue;
     }
-    if (looksLikeSlot(payload, marketDate)) matches.push({ file, text, payload, hash:sha256(text) });
+    if (looksLikeSlot(payload, marketDate, edition)) matches.push({ file, text, payload, hash:sha256(text) });
   }
   return { matches, malformed };
 }
+
+export const discoverClosePacket = (outbox, marketDate) => discoverDailyPacket(outbox, marketDate, 'close');
 
 async function runQa(repoRoot) {
   const scripts = ['scripts/digest-ingest-qa.mjs', 'scripts/static-qa.mjs', 'scripts/pwa-qa.mjs'];
@@ -108,15 +128,17 @@ async function runQa(repoRoot) {
   return results;
 }
 
-export async function consumeCloseDigest(options) {
+export async function consumeDailyDigest(options) {
   const repoRoot = path.resolve(options.repoRoot || process.cwd());
   const outbox = path.resolve(options.outbox);
   const stateDir = path.resolve(options.stateDir);
+  const edition = options.edition || 'close';
+  editionConfig(edition);
   const now = options.now ? new Date(options.now) : new Date();
   const marketDate = options.marketDate || dateInZone(now);
-  const runId = `close-${marketDate}-${now.toISOString().replace(/[:.]/g, '-')}`;
-  const baseResult = { runId, marketDate, edition:'close', checkedAt:now.toISOString() };
-  const lockPath = path.join(stateDir, 'locks', `${marketDate}-close.lock`);
+  const runId = `${edition}-${marketDate}-${now.toISOString().replace(/[:.]/g, '-')}`;
+  const baseResult = { runId, marketDate, edition, checkedAt:now.toISOString() };
+  const lockPath = path.join(stateDir, 'locks', `${marketDate}-${edition}.lock`);
   let lock;
   let candidate;
   if (!options.dryRun) {
@@ -127,16 +149,16 @@ export async function consumeCloseDigest(options) {
     }
   }
   try {
-    const discovered = await discoverClosePacket(outbox, marketDate);
+    const discovered = await discoverDailyPacket(outbox, marketDate, edition);
     if (discovered.matches.length === 0) {
       const result = { ...baseResult, status:options.requirePresent ? 'FAILED_GATE' : 'NOOP', reason:'packet_missing', malformed:discovered.malformed };
       if (!options.dryRun) await appendJsonLine(path.join(stateDir, 'runs.ndjson'), result);
-      if (options.requirePresent) throw Object.assign(new Error('required close packet is missing'), { result });
+      if (options.requirePresent) throw Object.assign(new Error(`required ${edition} packet is missing`), { result });
       return result;
     }
-    if (discovered.matches.length > 1) throw new Error('multiple packets claim the same close slot');
+    if (discovered.matches.length > 1) throw new Error(`multiple packets claim the same ${edition} slot`);
     candidate = discovered.matches[0];
-    const record = validateClosePacket(candidate.payload, { marketDate, now, maxAgeMinutes:options.maxAgeMinutes });
+    const record = validateDailyPacket(candidate.payload, { edition, marketDate, now, maxAgeMinutes:options.maxAgeMinutes });
     const storePath = path.join(repoRoot, 'data-model/digests.json');
     const browserPath = path.join(repoRoot, 'data-model/digest-data.js');
     const existingText = await fs.readFile(storePath, 'utf8');
@@ -207,11 +229,14 @@ export async function consumeCloseDigest(options) {
   }
 }
 
+export const consumeCloseDigest = (options) => consumeDailyDigest({ ...options, edition:'close' });
+
 function parseArgs(argv) {
-  const options = { maxAgeMinutes:DEFAULT_MAX_AGE_MINUTES, dryRun:false, requirePresent:false };
+  const options = { edition:'close', maxAgeMinutes:DEFAULT_MAX_AGE_MINUTES, dryRun:false, requirePresent:false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--outbox') options.outbox = argv[++index];
+    else if (arg === '--edition') options.edition = argv[++index];
     else if (arg === '--state-dir') options.stateDir = argv[++index];
     else if (arg === '--repo-root') options.repoRoot = argv[++index];
     else if (arg === '--market-date') options.marketDate = argv[++index];
@@ -221,13 +246,14 @@ function parseArgs(argv) {
     else if (arg === '--require-present') options.requirePresent = true;
     else throw new Error(`unknown argument ${arg}`);
   }
-  if (!options.outbox || !options.stateDir) throw new Error('usage: consume-close-digest.mjs --outbox <dir> --state-dir <dir> [--market-date YYYY-MM-DD] [--dry-run] [--require-present]');
+  editionConfig(options.edition);
+  if (!options.outbox || !options.stateDir) throw new Error('usage: consume-close-digest.mjs --edition morning|midday|close --outbox <dir> --state-dir <dir> [--market-date YYYY-MM-DD] [--dry-run] [--require-present]');
   if (!Number.isFinite(options.maxAgeMinutes) || options.maxAgeMinutes <= 0) throw new Error('--max-age-minutes must be positive');
   return options;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  consumeCloseDigest(parseArgs(process.argv.slice(2))).then((result) => {
+  consumeDailyDigest(parseArgs(process.argv.slice(2))).then((result) => {
     console.log(JSON.stringify(result, null, 2));
   }).catch((error) => {
     console.error(JSON.stringify(error.result || { status:'FAILED_GATE', reason:error.message }, null, 2));
