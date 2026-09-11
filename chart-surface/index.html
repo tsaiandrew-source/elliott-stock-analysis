@@ -4,14 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071018">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="E+">
+  <meta name="format-detection" content="telephone=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="manifest" href="../manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="../assets/elliott-plus-icon.svg">
-  <link rel="mask-icon" href="../assets/elliott-plus-icon.svg" color="#55d9d5">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/elliott-asterisk-icon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/elliott-asterisk-apple-touch-icon.png">
+  <script src="../pwa-register.js" defer></script>
   <title>股票分析圖表層</title>
-  <script src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="../assets/lightweight-charts-5.2.0.min.js"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -33,7 +38,8 @@
       --pattern-family-invalid: #4fd1a5;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    html { min-height: 100%; background: var(--bg); }
+    body { min-height: 100vh; min-height: 100dvh; margin: 0; padding-top: env(safe-area-inset-top); padding-right: env(safe-area-inset-right); padding-left: env(safe-area-inset-left); background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
     button, select { font: inherit; }
     .shell { max-width: 1280px; margin: 0 auto; padding: 20px; }
     .topbar { position: relative; display: flex; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 18px; }
@@ -44,13 +50,7 @@
     h3 { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
     .menu-backdrop { position: fixed; z-index: 49; inset: 0; border: 0; background: rgba(3, 9, 14, .48); cursor: pointer; }
     .menu-backdrop[hidden], .ticker-sheet[hidden] { display: none; }
-    .floating-dock { position: fixed; z-index: 60; top: 14px; right: 50%; display: flex; align-items: center; gap: 7px; transform: translateX(50%); padding: 7px; border: 1px solid rgba(85, 217, 213, .38); border-radius: 17px; background: rgba(85, 217, 213, .06); box-shadow: 0 14px 38px rgba(0, 0, 0, .34), 0 0 0 1px rgba(85,217,213,.06) inset; backdrop-filter: blur(3px); }
-    .dock-action { display: inline-flex; align-items: center; gap: 7px; min-width: 102px; height: 42px; padding: 7px 12px; border: 0; border-radius: 11px; color: var(--muted); background: transparent; text-decoration: none; font-size: 12px; font-weight: 800; cursor: pointer; }
-    .dock-action:hover, .dock-action:focus-visible, .dock-action.is-active { color: var(--text); background: var(--surface-2); }
-    .dock-action.is-active { color: var(--aqua); box-shadow: inset 0 -2px var(--aqua); }
-    .dock-icon { display: grid; place-items: center; width: 24px; height: 24px; color: var(--aqua); font-size: 20px; line-height: 1; }
-    .dock-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .ticker-sheet { position: fixed; z-index: 50; top: 73px; right: 50%; width: min(460px, calc(100vw - 28px)); height: 44vh; max-height: 44vh; overflow: hidden; transform: translateX(50%); padding: 13px; border: 1px solid rgba(85, 217, 213, .35); border-radius: 16px; background: rgba(13, 26, 37, .98); box-shadow: 0 18px 46px rgba(0,0,0,.42); }
+    .ticker-sheet { position: fixed; z-index: 50; top: 73px; right: 50%; width: min(360px, calc(100vw - 28px)); height: 44vh; max-height: 44vh; overflow: hidden; transform: translateX(50%); padding: 13px; border: 1px solid rgba(85, 217, 213, .35); border-radius: 16px; background: rgba(13, 26, 37, .98); box-shadow: 0 18px 46px rgba(0,0,0,.42); }
     .ticker-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
     .ticker-sheet-head strong { color: var(--aqua); font-size: 13px; }
     .ticker-sheet-head span { color: var(--muted); font-size: 11px; }
@@ -65,7 +65,6 @@
     .ticker-wheel-item.is-current strong { color: var(--aqua); }
     @media (min-width:1000px) {
       body { padding-top: 0; padding-bottom: 0; }
-      .floating-dock { top: 14px; bottom: auto; }
       .ticker-sheet { top: 73px; bottom: auto; }
     }
     select { background: var(--surface-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px 30px 10px 12px; min-width: 130px; }
@@ -74,7 +73,6 @@
     .chart-panel { padding: 14px; }
     .chart-head { display: flex; gap: 12px; justify-content: space-between; align-items: start; margin-bottom: 12px; }
     .chart-head .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
-    .chart-head .price-meta { color: var(--pattern-family); font-size: 14px; font-weight: 800; margin: 5px 0 0; }
     .view-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
     .view-switch, .gex-expiry-switch { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 3px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .72); white-space: nowrap; }
     .view-switch { flex-shrink: 0; }
@@ -175,6 +173,24 @@
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
     .value { font-weight: 700; }
     .thesis { font-size: 17px; line-height: 1.42; }
+    .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(17, 36, 51, .32); }
+    .direction-summary-head { color: var(--aqua); font-size: 11px; font-weight: 800; }
+    .direction-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .direction-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
+    .direction-item[data-kind="formal"] { border-color: rgba(145, 168, 183, .34); }
+    .direction-item[data-kind="watch"] { border-color: color-mix(in srgb, var(--pattern-family) 38%, transparent); }
+    .direction-item[data-state="pending"] { border-color: rgba(145, 168, 183, .34); }
+    .direction-item[data-state="active"] { border-color: color-mix(in srgb, var(--direction-color) 82%, white 8%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--direction-color) 26%, transparent), 0 0 10px color-mix(in srgb, var(--direction-color) 14%, transparent); }
+    .direction-item[data-state="active"][data-direction="up"] { --direction-color: var(--green); }
+    .direction-item[data-state="active"][data-direction="down"] { --direction-color: var(--red); }
+    .direction-item[data-state="active"][data-direction="flat"] { --direction-color: var(--amber); }
+    .direction-item[hidden] { display: none !important; }
+    .direction-item .direction-label { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .direction-value { color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .direction-value[data-direction="up"] { color: var(--green); }
+    .direction-value[data-direction="down"] { color: var(--red); }
+    .direction-value[data-direction="flat"] { color: var(--amber); }
+    .direction-value[data-direction="pending"] { color: var(--muted); }
     .business-summary { margin-top: 14px; padding-top: 11px; border-top: 1px solid var(--line); }
     .business-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
     .business-context > div { min-width: 0; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: rgba(17, 36, 51, .38); }
@@ -233,6 +249,11 @@
     .source-note { color: var(--muted); font-size: 12px; }
     .source-note a { color: var(--aqua); }
     .notice { color: var(--amber); font-size: 12px; margin-top: 10px; }
+    .notice-details { margin-top: 10px; border-top: 1px solid rgba(242,184,75,.25); border-bottom: 1px solid rgba(242,184,75,.25); }
+    .notice-details[hidden] { display: none; }
+    .notice-details summary { padding: 7px 0; color: var(--amber); font-size: 11px; font-weight: 800; cursor: pointer; list-style-position: inside; }
+    .notice-details[open] { padding-bottom: 8px; }
+    .notice-details[open] .notice { margin-top: 4px; }
     .footer { color: var(--muted); font-size: 12px; padding: 16px 2px 4px; }
     @media (max-width: 780px) {
       .shell { padding: 14px; }
@@ -242,14 +263,10 @@
       #chart-stack { height: 780px; }
       .combo-grid { grid-template-columns: 1fr; gap: 10px; }
       .combo-grid .metric:not(:last-child)::after { content: none; }
-      .floating-dock { right: 12px; left: 12px; justify-content: center; transform: none; }
-      .dock-action { flex: 1 1 0; justify-content: center; }
     }
     /* Tablet keeps the dock as a compact top overlay; phone moves it to the
        thumb zone and reserves only the space needed for the dock itself. */
     @media (min-width: 561px) and (max-width: 999px) and (min-height: 600px) {
-      .floating-dock { right: 50%; left: auto; width: max-content; max-width: calc(100vw - 32px); transform: translateX(50%); }
-      .dock-action { flex: 0 0 auto; min-width: 96px; }
       .ticker-sheet { top: 73px; }
       .layout { gap: 14px; }
       .gex-expiry-panel { grid-template-columns: minmax(0, 1fr) minmax(230px, .5fr); gap: 10px; }
@@ -298,9 +315,6 @@
       .gex-profile-canvas { height: 270px; }
       .gex-analysis-row { grid-template-columns: 1fr; gap: 2px; }
       .digest-head { align-items: start; flex-direction: column; gap: 2px; }
-      .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; background: rgba(30, 89, 99, .18); backdrop-filter: blur(1px); }
-      .dock-action { height: 44px; min-width: 0; padding: 7px 10px; font-size: 12px; }
-      .dock-icon { width: 21px; height: 21px; font-size: 20px; }
       .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
       .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
       .gex-profile-head { line-height: 1.35; }
@@ -313,18 +327,12 @@
     html.force-phone-portrait .view-tools { width: 100%; justify-content: flex-start; }
     html.force-phone-portrait .view-switch { flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
     html.force-phone-portrait #chart-stack { height: 690px; }
-    html.force-phone-portrait .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; }
-    html.force-phone-portrait .dock-action { height: 44px; min-width: 0; padding: 7px 10px; font-size: 12px; }
-    html.force-phone-portrait .dock-icon { width: 21px; height: 21px; font-size: 20px; }
     html.force-phone-portrait .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
     html.force-phone-portrait .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
     /* iPhone landscape is wider than the normal phone breakpoint. Keep the
        dock in the thumb zone and retain compact sizing without affecting iPad. */
     @media (max-width: 999px) and (orientation: landscape) and (max-height: 500px) {
       body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
-      .floating-dock { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; right: 12px; width: auto; transform: none; padding: 5px; border-radius: 15px; }
-      .dock-action { height: 44px; min-width: 0; padding: 7px 10px; font-size: 12px; }
-      .dock-icon { width: 21px; height: 21px; font-size: 20px; }
       .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
       .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
     }
@@ -344,7 +352,6 @@
           <div>
           <h2 id="chart-title">GoNoGo 風格 K 線</h2>
           <p class="meta" id="chart-meta">日線 · 資料截至 2026-08-28</p>
-          <p class="price-meta" id="current-price" aria-live="polite">價格待補</p>
           </div>
           <div class="view-tools" aria-label="分析視圖切換">
             <div id="view-switch" class="view-switch" role="tablist" aria-label="分析視圖">
@@ -385,13 +392,25 @@
           <div id="rsi-pane-label" class="pane-label">RSI (14)</div>
           <div id="macd-pane-label" class="pane-label">MACD (12, 26, 9)</div>
         </div>
-        <div class="notice" id="chart-notice"></div>
+        <details class="notice-details" id="chart-notice-details" hidden>
+          <summary>資料狀態</summary>
+          <div class="notice" id="chart-notice"></div>
+        </details>
       </section>
 
       <aside class="stack" aria-label="目前分析">
         <section class="panel summary" id="business-panel">
           <h3>核心論述</h3>
           <p class="thesis" id="thesis"></p>
+          <div class="direction-summary" id="direction-summary" aria-label="正式預測與觀察方向">
+            <div class="direction-summary-head">方向區分</div>
+            <div class="direction-summary-grid">
+              <div class="direction-item" data-kind="formal"><span class="direction-label">正式預測 · 日線</span><span class="direction-value" id="formal-daily-direction"></span></div>
+              <div class="direction-item" data-kind="watch"><span class="direction-label">觀察方向 · 日線</span><span class="direction-value" id="watch-daily-direction"></span></div>
+              <div class="direction-item" data-kind="formal"><span class="direction-label">正式預測 · 週線</span><span class="direction-value" id="formal-weekly-direction"></span></div>
+              <div class="direction-item" data-kind="watch"><span class="direction-label">觀察方向 · 週線</span><span class="direction-value" id="watch-weekly-direction"></span></div>
+            </div>
+          </div>
           <p class="source-note cadence-note" id="thesis-refresh"></p>
           <div class="business-summary">
             <span class="label">基本面／新聞脈絡</span>
@@ -439,23 +458,21 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <nav class="floating-dock" aria-label="快速導覽">
-    <a class="dock-action" id="dock-home" href="../data-model/home.html" aria-label="開啟分析首頁"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a>
-    <button type="button" class="dock-action" id="ticker-menu-toggle" aria-expanded="false" aria-controls="ticker-sheet"><span class="dock-icon" aria-hidden="true">⌁</span><span id="ticker-menu-label">Ticker</span></button>
-  </nav>
+  <script src="../coverage-order.js?v=20260911-labels-v1"></script>
+  <script src="../shared-menu.js?v=20260911-single-ticker-v2"></script>
+  <elliott-shared-menu data-current="ticker" data-home-href="../data-model/home.html" data-coverage-href="../data-model/coverage.html" data-ticker-page-href="index.html"></elliott-shared-menu>
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
-  <script src="universal-refresh-gex-consumer.js?v=20260911-2"></script>
-  <script src="universal-refresh-gex-data.js?v=20260911-2"></script>
-  <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script>
+  <script src="analysis-geometry.js?v=20260909-1"></script>
+  <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script><script src="analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
-      const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {};
-      const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
+      const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {}; const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
+      const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -467,14 +484,14 @@
         }
       };
       const mergeRuntimeContract = (fallback, live) => {
-        if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
+        if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
         [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
         return {
           ...fallback,
           ...live,
-          coverage: live.coverage.length ? live.coverage : fallback.coverage,
+          coverage: live.coverage?.length ? live.coverage : fallback.coverage,
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -486,17 +503,17 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v2';
-      let contract = bundledContract;
+      const latestAnalysisDate = (live) => (live?.analysisRuns || []).map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10)).filter(Boolean).sort().at(-1) || ''; const liveCacheKey = 'stock-analysis-live-contract-v3';
+      let contract = mergeRuntimeContract(bundledContract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
-        if (cached && Array.isArray(cached.coverage)) contract = mergeRuntimeContract(bundledContract, cached);
+        if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(contract) || latestAnalysisDate(cached) >= latestAnalysisDate(contract))) contract = mergeRuntimeContract(contract, cached);
       } catch (_) { /* Ignore an unavailable or malformed browser cache. */ }
       const liveSignature = (live) => JSON.stringify({ coverage: live.coverage || [], analysisRuns: live.analysisRuns || [], tables: live.tables || {} });
       const refreshLiveInBackground = async () => {
         if (window.location.protocol === 'file:') return;
         try {
-          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 15000);
+          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 60000);
           if (!live || !Array.isArray(live.coverage)) return;
           const nextSignature = liveSignature(live);
           const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
@@ -527,35 +544,12 @@
       const datasets = { ...(contract.datasets?.benchmark || window.BENCHMARK_DATA || {}), ...partialDatasets };
       const weeklyHistory = contract.datasets?.weeklyHistory || window.BENCHMARK_WEEKLY_HISTORY || {};
       const analysisDetails = contract.datasets?.analysisDetails || window.BENCHMARK_ANALYSIS_DETAILS || {};
-      const universalGexExpected = window.UNIVERSAL_REFRESH_GEX?.schemaVersion === 'universal-refresh-gex-v1';
-      const universalGexRecords = new Map((window.UNIVERSAL_REFRESH_GEX?.records || []).map((record) => [record.ticker, record]));
-      const unavailableUniversalGex = (ticker) => {
-        const expiry = {
-          expiry: null,
-          status: 'not_available',
-          dataThrough: '',
-          sourceCutoff: null,
-          strikes: [],
-          exposure: [],
-          exposureType: 'not_available',
-          magnet: null,
-          gammaFlip: null,
-          dealerCallWall: null,
-          dealerPutWall: null,
-          sourceProvider: null,
-          sourceUrl: null,
-          calculationMethod: '未取得通過 Universal Refresh GEX 合約的資料。',
-          limitations: ['Universal Refresh GEX 記錄缺漏；禁止回退至舊資料或 K 線替代。'],
-          displayText: 'GEX 資料尚不可用；未顯示舊資料或替代圖。'
-        };
-        return {ticker, status: 'not_available', dataThrough: '', currentExpiration: {...expiry}, nextExpiration: {...expiry}, displayText: expiry.displayText, limitations: expiry.limitations};
-      };
-      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
+      const colors = { strongGo: '#2d9cff', weakGo: '#55d9d5', transition: '#f2b84b', weakNoGo: '#ef83a8', strongNoGo: '#9a66c7', pattern: '#c8f169', patternGuide: '#f2b84b', currentPrice: '#f2b84b', patternConfirmation: '#7ee787', patternInvalidation: '#4fd1a5', indicator: '#2d9cff', volumeUp: '#2d9cff', volumeDown: '#ff4d6d', macdPositive: '#24d17a', macdNegative: '#ff4d6d', bollinger: '#65b7d6', wyckoff: '#55d9d5', confirmation: '#f2b84b', invalidation: '#ff7e8f', gex: '#9a66c7' };
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
       const v2Batches = Object.values(irisV2.batches || {});
       const v2Runs = v2Batches.flatMap((batch) => [
-        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
-        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, weeklyWyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
       ]);
       const analysisRunMap = new Map();
       [...(contract.analysisRuns || []), ...v2Runs].forEach((run) => {
@@ -564,15 +558,29 @@
       });
       const analysisRuns = [...analysisRunMap.values()];
       const $ = (id) => document.getElementById(id);
+      const setChartNotice = (value) => {
+        const details = $('chart-notice-details');
+        const notice = $('chart-notice');
+        notice.textContent = value || '';
+        details.hidden = !value;
+        details.open = false;
+      };
       const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
       function getViewportWidth() {
         return Math.round(window.visualViewport?.width || document.documentElement.clientWidth || window.innerWidth);
       }
       const query = new URLSearchParams(window.location.search);
       const normalizeTicker = (value) => String(value ?? '').trim().toUpperCase();
+      const companyDisplayAliases = { '2330': 'TSMC' };
+      const displayCompany = (ticker, company) => companyDisplayAliases[normalizeTicker(ticker)] || company;
       const requestedTicker = normalizeTicker(query.get('ticker'));
-      const packetCoverage = [...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true }));
-      const baseCoverage = [...(contract.coverage || []), ...packetCoverage].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
+      const packetCoverage = [...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: displayCompany(ticker, v2Runs.find((run) => run.ticker === ticker)?.company || ticker), active: true }));
+      const baseCoverage = [...(contract.coverage || [])].map((item) => ({ ...item }));
+      packetCoverage.forEach((packet) => {
+        const index = baseCoverage.findIndex((item) => normalizeTicker(item.ticker) === normalizeTicker(packet.ticker));
+        if (index < 0) baseCoverage.push({ ...packet });
+        else if (packet.company && normalizeTicker(packet.company) !== normalizeTicker(packet.ticker)) baseCoverage[index] = { ...baseCoverage[index], company: packet.company };
+      });
       const defaultTicker = requestedTicker || baseCoverage.find((item) => item.active !== false)?.ticker || Object.keys(datasets)[0] || '';
       const state = { ticker: defaultTicker, view: ['daily', 'weekly', 'gex'].includes(query.get('view')) ? query.get('view') : 'daily', gexExpiry: query.get('expiry') === 'next' ? 'next' : 'current', candidate: 'primary', layers: { technical: true, bollinger: true, wyckoff: true, gex: true } };
       $('ticker-menu-label').textContent = state.ticker;
@@ -597,18 +605,81 @@
         const coverageDate = coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker))?.latestChartDate;
         return String(datasetDate || coverageDate || '').slice(0, 10);
       };
-      // Analysis freshness and chart-bar freshness are separate contracts.
-      // A newer partial-safe analysis must remain visible even when its OHLCV
-      // bars have not arrived yet; filtering it by the bar cutoff made the UI
-      // silently fall back to 9/9-era rows and look permanently pending.
-      const eligibleRuns = (ticker) => tickerRuns(ticker);
-      const latestDailyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
-      const latestWeeklyRun = (ticker) => sortRuns(eligibleRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
-      const wyckoffDisplay = (value, fallback) => {
-        if (!value) return fallback;
-        if (typeof value === 'string') return value;
-        return [value.structure, value.currentPhase, value.classificationStatus].filter(Boolean).join(' · ') || fallback;
+      const normalizePriceSnapshot = (snapshot, fallbackBar) => {
+        const source = snapshot && typeof snapshot === 'object' ? snapshot : {};
+        const value = Number(source.value ?? source.price ?? source.last ?? source.close);
+        if (Number.isFinite(value)) {
+          const status = source.status === 'snapshot' ? 'snapshot' : 'close';
+          return { value, status, label: status === 'snapshot' ? '現價快照' : '收盤價', asOf: source.asOf || source.dataThrough || '' };
+        }
+        if (snapshot && ['pending', 'not_applicable'].includes(String(source.status || '').toLowerCase())) return null;
+        const close = Number(fallbackBar?.close);
+        return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
       };
+      const priceSnapshotFor = (data, bars = data?.bars || [], coverageItem) => {
+        const coveragePrice = coverageItem && Number.isFinite(Number(coverageItem.price))
+          ? { value: coverageItem.price, status: coverageItem.priceStatus || 'close', asOf: coverageItem.priceAsOf || coverageItem.latestPriceDate || coverageItem.updatedAt || coverageItem.latestChartDate || '' }
+          : null;
+        return normalizePriceSnapshot(coverageItem?.priceSnapshot || data?.priceSnapshot || data?.currentPriceSnapshot || coveragePrice, bars.at(-1));
+      };
+      // Analysis freshness and chart-bar freshness are separate contracts.
+      // Do not hide a newer partial-safe analysis just because OHLCV bars are
+      // still one or more sessions behind it.
+      const eligibleRuns = (ticker) => tickerRuns(ticker);
+      const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
+      const preferredRuns = (ticker) => {
+        const candidates = eligibleRuns(ticker);
+        const rich = candidates.filter(isRichAnalysisRun);
+        return rich.length ? rich : candidates;
+      };
+      const latestDailyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
+      const latestWeeklyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
+      const validDirection = (value) => ['up', 'flat', 'down'].includes(String(value || '').toLowerCase()) ? String(value).toLowerCase() : null;
+      const publicGexText = (value) => String(value ?? '').trim()
+        .replace(/這些是延遲彙總鏈[^。]*。?$/u, '')
+        .replace(/不能推定造市商方向[^。]*。?$/u, '')
+        .trim();
+      const publicAnalysisText = (value) => String(value ?? '').trim()
+        .replace(/(?:；|。)\s*(?:日線|週線) Wyckoff (?:未分類|未辨識出可辯護交易區間)。?/gu, '')
+        .replace(/(?:日線|週線)主候選為(?:日線|週線)?無(?:合格|穩定)主型態/gu, '')
+        .replace(/本週尚未結束，週線判讀維持進行中，不以日線階段替代。?/gu, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+      const watchDirectionFor = (run, timeframe) => {
+        const direct = validDirection(run?.watchDirection?.[timeframe] || run?.[`${timeframe}WatchDirection`]);
+        if (direct) return direct;
+        const pattern = run?.technicalEvidence?.patterns?.[`${timeframe}Primary`];
+        return validDirection(pattern?.watch_direction);
+      };
+      const digestContent = (digest) => digest?.endOfDay || digest || {};
+      const digestSections = (digest) => Array.isArray(digestContent(digest).sections) ? digestContent(digest).sections : [];
+      const digestSection = (digest, heading) => digestSections(digest).find((section) => section.heading === heading) || null;
+      const digestPatternLabel = (digest, timeframe) => {
+        const point = digestSection(digest, 'Pattern 與 Wyckoff')?.points?.find((value) => String(value).includes(timeframe === 'weekly' ? '週線：' : '日線：'));
+        const marker = timeframe === 'weekly' ? '週線：' : '日線：';
+        const text = String(point || '');
+        const start = text.indexOf(marker);
+        if (start < 0) return '';
+        return text.slice(start + marker.length).split(/[；。]/u)[0].trim();
+      };
+      const usefulPatternLabel = (value) => {
+        const text = String(value || '').trim();
+        return text && !/^(?:日線|週線)?主候選$|^主候選$|^日線主候選$|^週線主候選$/u.test(text) ? text : '';
+      };
+      const patternLabelFor = (run, digest, timeframe) => usefulPatternLabel(run?.primaryCandidate?.patternLabel || run?.patternLabel || run?.pattern) || digestPatternLabel(digest, timeframe) || (timeframe === 'weekly' ? '週線主候選' : '日線主候選');
+      const structuredWyckoffText = (value) => {
+        if (value && typeof value === 'object') return String(value.currentPhase || value.pendingPhase || value.structure || '').trim();
+        return String(value || '').trim();
+      };
+      const wyckoffTextFor = (run, timeframe) => {
+        const phase = run?.wyckoffPhase?.[timeframe];
+        return structuredWyckoffText(phase || run?.[timeframe === 'weekly' ? 'weeklyWyckoff' : 'wyckoff']);
+      };
+      const digestOptionText = (digest) => ['本週戰場', '下週接力']
+        .flatMap((heading) => digestSection(digest, heading)?.points || [])
+        .map((value) => String(value || '').trim())
+        .filter(Boolean)
+        .join(' ');
       const analysisOnlyDataset = (ticker) => {
         const dailyRun = latestDailyRun(ticker);
         const weeklyRun = latestWeeklyRun(ticker);
@@ -618,17 +689,26 @@
         const patternRun = state.view === 'weekly' ? (weeklyRun || dailyRun) : dailyRun;
         const primary = patternRun.primaryCandidate || null;
         const secondary = patternRun.secondaryCandidate || null;
-        const patternCandidates = primary ? { primary: { ...primary, text: primary.patternLabel || patternRun.patternLabel, geometry: primary.geometry || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternRun.patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
+        const sidecarCoordinates = state.view === 'weekly' ? null : (window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates || null);
+        const structuredCoordinates = patternRun.technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary'] || null;
+        // Prefer the coordinates emitted with the selected Iris packet. The
+        // legacy sidecar is only a fallback for older partial packets; using it
+        // first can draw a stale daily shape over a newer weekly thesis.
+        const primaryCoordinates = primary?.coordinates || structuredCoordinates || sidecarCoordinates;
         const dailyDigest = dailyRun?.dailyDigest || null;
         const weeklyDigest = weeklyRun?.weeklyDigest || dailyRun?.weeklyDigest || null;
         const digestDetails = {
           endOfDay: dailyDigest?.endOfDay || null,
           weekly: weeklyDigest || null
         };
-        const gexSummary = universalGexExpected
-          ? (universalGexRecords.get(ticker) || unavailableUniversalGex(ticker))
-          : (dailyRun?.gexSummary || selectedRun?.gexSummary || null);
+        const gexSummary = dailyRun?.gexSummary || selectedRun?.gexSummary || null;
         const businessEvidence = selectedRun.businessEvidence || {};
+        const selectedDigest = state.view === 'weekly' ? (weeklyDigest || dailyDigest) : dailyDigest;
+        const patternLabel = patternLabelFor(patternRun, selectedDigest, state.view === 'weekly' ? 'weekly' : 'daily');
+        const patternCandidates = primary ? { primary: { ...primary, patternLabel, coordinates: primaryCoordinates, text: patternLabel, geometry: primary.geometry || structuredCoordinates?.type || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
+        const optionText = publicGexText(gexSummary?.displayText || selectedRun.options || digestOptionText(dailyDigest));
+        const businessText = selectedRun.fundamentalsNews || selectedRun.business || digestSection(dailyDigest, '摘要與市場脈絡')?.points?.[1] || '';
+        const sourceEvidence = (selectedRun.sourceEvidence?.length ? selectedRun.sourceEvidence : (dailyDigest?.sourceEvidence || weeklyDigest?.sourceEvidence || []));
         const analysisThrough = String(selectedRun.dataThrough || selectedRun.analysisDate || '').slice(0, 10);
         const chartThrough = chartDataCutoff(ticker);
         const freshness = analysisThrough && chartThrough && analysisThrough !== chartThrough
@@ -642,54 +722,50 @@
           chartThrough,
           sourceCutoff: analysisThrough,
           chartSource: '',
-          sourceUrl: selectedRun.sourceEvidence?.find((item) => item.url)?.url || '',
-          pattern: patternRun.patternLabel,
-          patternStatus: patternRun.patternStatus || patternRun.status,
+          sourceUrl: sourceEvidence.find((item) => item.url)?.url || '',
+          pattern: patternLabel,
+          patternStatus: patternRun.status,
           patternCandidates,
-          thesis: selectedRun.thesis,
-          wyckoff: wyckoffDisplay(patternRun.wyckoffPhase?.daily || patternRun.wyckoff, '日線 Wyckoff 待補。'),
-          weeklyWyckoff: wyckoffDisplay(patternRun.wyckoffPhase?.weekly || patternRun.weeklyWyckoff, '週線 Wyckoff 待補。'),
+          predictionDirection: selectedRun.predictionDirection ?? null,
+          dailyPredictionDirection: dailyRun?.predictionDirection ?? null,
+          weeklyPredictionDirection: weeklyRun?.predictionDirection ?? null,
+          dailyWatchDirection: watchDirectionFor(dailyRun, 'daily'),
+          weeklyWatchDirection: watchDirectionFor(weeklyRun || dailyRun, 'weekly'),
+          thesis: publicAnalysisText(selectedRun.thesis),
+          wyckoff: wyckoffTextFor(patternRun, 'daily'),
+          weeklyWyckoff: wyckoffTextFor(patternRun, 'weekly'),
           wyckoffGate: null,
           patternGate: selectedRun.confirmation,
           invalidation: selectedRun.invalidation,
-          options: gexSummary?.displayText || (gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
-          business: selectedRun.fundamentalsNews,
-          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: selectedRun.thesis, businessSummary: selectedRun.fundamentalsNews, unproved: businessEvidence.unproved || '', nextTest: businessEvidence.nextTest || '' },
+          options: gexSummary?.status === 'not_applicable' ? 'GEX 資料不適用。' : optionText,
+          business: businessText,
+          overall: { updated: selectedRun.analysisDate || selectedRun.dataThrough || '', cadence: '每次收盤／重大事件', thesis: publicAnalysisText(selectedRun.thesis), businessSummary: businessText, unproved: '', nextTest: /recheck|T\+1|待補|待驗證|Next issuer-news/i.test(String(businessEvidence.nextTest || '')) ? '' : (businessEvidence.nextTest || '') },
           analysisHistory: tickerRuns(ticker),
           digestDetails,
           gexSummary,
-          sourceEvidence: selectedRun.sourceEvidence || [],
+          priceSnapshot: selectedRun.priceSnapshot || selectedRun.currentPriceSnapshot || null,
+          sourceEvidence,
           missingFields: selectedRun.missingFields || [],
           recoveryTiming: selectedRun.recoveryTiming || null,
           dataStatus: selectedRun.dataStatus,
           status: selectedRun.status,
           chartRenderable: selectedRun.chartRenderable === true,
           freshness,
-          priceSnapshot: selectedRun.priceSnapshot || dailyRun?.priceSnapshot || weeklyRun?.priceSnapshot || null,
           gexSource: null,
           gexViews: {},
           bars: []
         };
       };
-      const coverageSortRank = (item) => {
-        const position = ['LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'].indexOf(normalizeTicker(item.ticker));
-        return position === -1 ? 1000 : position;
-      };
-      const activeCoverage = coverageRows().filter((item) => item.active !== false).map((item, index) => ({ item, index }))
-        .sort((a, b) => coverageSortRank(a.item) - coverageSortRank(b.item) || a.index - b.index)
-        .map(({ item }) => item);
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
+      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
+      const twseTickers = new Set(['2330', '2646']);
+      const activeCoverage = window.PROTOTYPE_SORT_COVERAGE(coverageRows().filter((item) => item.active !== false));
       const requestedCoverage = activeCoverage.find((item) => normalizeTicker(item.ticker) === state.ticker);
       if (requestedCoverage) state.ticker = requestedCoverage.ticker;
       else if (!requestedTicker && activeCoverage.length) state.ticker = activeCoverage[0].ticker;
       if (query.get('candidate') === 'secondary') state.candidate = 'secondary';
-      const normalizePriceSnapshot = (snapshot) => {
-        if (!snapshot || !['snapshot', 'close'].includes(String(snapshot.status || ''))) return null;
-        const value = Number(snapshot.value);
-        return Number.isFinite(value) ? { ...snapshot, value } : null;
-      };
-      const priceSnapshotFor = (data) => normalizePriceSnapshot(data?.priceSnapshot);
-      const formatPrice = (value) => Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, currentPriceLine, layerSeries = {}, phaseMarkers = [], axisBars = [];
+      let renderedData = null;      let tickerSelectionLock = false;      let suppressTickerScrollUntil = 0;
+      let chart, candleSeries, dateAxisSeries, volumeSeries, rsiSeries, macdSeries = {}, markerApi, phasePrimitive, layerSeries = {}, phaseMarkers = [], axisBars = [];
 
       function closeMainMenu() {
         $('ticker-sheet').hidden = true;
@@ -700,13 +776,19 @@
       function selectTicker(ticker) {
         const selected = activeCoverage.find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker));
         if (!selected) return;
+        if (selected.ticker === state.ticker) return;        tickerSelectionLock = true;        suppressTickerScrollUntil = Date.now() + 650;        clearTimeout(wheelScrollTimer);        closeMainMenu();
         state.ticker = selected.ticker;
         state.candidate = 'primary';
-        const nextUrl = new URL('./index.html', window.location.href);
+        const nextUrl = new URL(window.location.href);
         nextUrl.searchParams.set('ticker', state.ticker);
         nextUrl.searchParams.set('view', state.view);
-        window.location.assign(nextUrl.href);
+        nextUrl.searchParams.delete('candidate');
+        window.history.pushState({}, '', nextUrl);
+        render();
+        window.dispatchEvent(new CustomEvent('elliott:ticker-updated', { detail: { ticker: state.ticker } }));        window.setTimeout(() => { tickerSelectionLock = false; }, 700);
       }
+
+      window.__elliottSelectTicker = selectTicker;
 
       function renderMenu() {
         $('ticker-menu-label').textContent = state.ticker;
@@ -897,8 +979,8 @@
         return instance;
       }
 
-      function addLine(name, data, color, width = 1, style = L.LineStyle.Dashed) {
-        const series = chart.addSeries(L.LineSeries, { color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' });
+      function addLine(name, data, color, width = 1, style = L.LineStyle.Dashed, lastValueVisible = false) {
+        const series = chart.addSeries(L.LineSeries, { color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible, priceScaleId: 'right' });
         series.setData(data);
         layerSeries[name] = series;
         return series;
@@ -909,8 +991,7 @@
         return Number.isFinite(numeric) ? bars.map((bar) => ({ time: bar.time, value: numeric })) : [];
       }
 
-      function weeklyBars(bars, ticker) {
-        if (weeklyHistory[ticker]?.length >= 20) return weeklyHistory[ticker];
+      function aggregateWeeklyBars(bars) {
         const groups = new Map();
         bars.forEach((bar) => {
           const date = new Date(bar.time * 1000);
@@ -928,26 +1009,65 @@
         return [...groups.values()];
       }
 
+      function weeklyBars(bars, ticker) {
+        const history = weeklyHistory[ticker]?.length >= 20 ? weeklyHistory[ticker] : [];
+        if (!history.length) return aggregateWeeklyBars(bars);
+        const merged = new Map(history.map((bar) => [Number(bar.time), { ...bar }]));
+        aggregateWeeklyBars(bars).forEach((bar) => merged.set(Number(bar.time), bar));
+        return [...merged.values()].sort((a, b) => Number(a.time) - Number(b.time));
+      }
+
+      const DAILY_VISIBLE_MONTHS = 4;
+      const DAILY_VISIBLE_RIGHT_OFFSET = 3;
       function viewBars(data) { return state.view === 'weekly' ? weeklyBars(data.bars, state.ticker) : data.bars; }
 
-      function gexView(data) {
+      function setDefaultChartWindow(bars) {
+        chart.timeScale().fitContent();
+        if (!['daily', 'gex'].includes(state.view) || bars.length < 2) return;
+        const lastTime = Number(bars.at(-1)?.time);
+        if (!Number.isFinite(lastTime)) return;
+        const cutoff = new Date(lastTime * 1000);
+        cutoff.setUTCMonth(cutoff.getUTCMonth() - DAILY_VISIBLE_MONTHS);
+        const cutoffTime = cutoff.getTime() / 1000;
+        const firstVisible = Math.max(0, bars.findIndex((bar) => Number(bar.time) >= cutoffTime));
+        chart.timeScale().setVisibleLogicalRange({
+          from: firstVisible,
+          to: bars.length - 1 + DAILY_VISIBLE_RIGHT_OFFSET
+        });
+      }
+
+      function gexView(data, expiryKey = state.gexExpiry) {
         const summary = data.gexSummary || {};
-        const expiry = state.gexExpiry === 'next' ? summary.nextExpiration : summary.currentExpiration;
-        const universal = window.UniversalRefreshGex?.resolveExpiration(summary, state.gexExpiry);
-        const usesUniversalContract = ['renderable', 'aggregate_only', 'not_available', 'not_applicable'].includes(expiry?.status);
+        const expiry = expiryKey === 'next' ? summary.nextExpiration : summary.currentExpiration;
+        const aggregateExpiry = summary.aggregateEvidence?.[expiryKey === 'next' ? 'nextExpiration' : 'currentExpiration'];
+        const unsignedSensitivity = aggregateExpiry?.unsignedGammaSensitivity || {};
+        const unsignedNodes = [
+          ...(unsignedSensitivity.C?.dominantUnsignedNodes || []).map((node) => ({ strike: Number(node.strike), value: Number(node.dollarPerOnePercentMove), side: 'call' })),
+          ...(unsignedSensitivity.P?.dominantUnsignedNodes || []).map((node) => ({ strike: Number(node.strike), value: Number(node.dollarPerOnePercentMove), side: 'put' }))
+        ].filter((node) => Number.isFinite(node.strike) && Number.isFinite(node.value) && node.value >= 0);
+        const unsignedByStrike = new Map();
+        unsignedNodes.forEach((node) => {
+          const current = unsignedByStrike.get(node.strike) || { call: 0, put: 0 };
+          current[node.side] += node.value;
+          unsignedByStrike.set(node.strike, current);
+        });
+        const unsignedProfile = [...unsignedByStrike.entries()]
+          .sort(([a], [b]) => a - b)
+          .map(([strike, values]) => ({ strike, exposure: values.call - values.put }));
+        const hasExplicitProfile = Array.isArray(expiry?.strikes) && expiry.strikes.length === expiry.exposure?.length && expiry.strikes.length > 0;
         return {
-          label: state.gexExpiry === 'next' ? '下週到期' : '本週到期',
+          label: expiryKey === 'next' ? '下週到期' : '本週到期',
           expiry: expiry?.expiry || '未標示',
           magnet: expiry?.magnet ?? null,
           flip: expiry?.gammaFlip ?? null,
-          callWall: expiry?.dealerCallWall ?? expiry?.callWall ?? null,
-          putWall: expiry?.dealerPutWall ?? expiry?.putWall ?? null,
-          strikes: usesUniversalContract ? (universal?.profile?.strikes || []) : (expiry?.strikes || []),
-          exposure: usesUniversalContract ? (universal?.profile?.exposure || []) : (expiry?.exposure || []),
-          text: summary.displayText || (summary.status === 'not_applicable' ? 'GEX 資料不適用。' : 'GEX 狀態待補。'),
+          callWall: expiry?.callWall ?? null,
+          putWall: expiry?.putWall ?? null,
+          strikes: hasExplicitProfile ? expiry.strikes : unsignedProfile.map((node) => node.strike),
+          exposure: hasExplicitProfile ? expiry.exposure : unsignedProfile.map((node) => node.exposure),
+          profileKind: hasExplicitProfile ? 'benchmark' : unsignedProfile.length ? 'unsigned-pressure' : 'unavailable',
+          text: summary.status === 'not_applicable' ? 'GEX 資料不適用。' : publicGexText(summary.displayText),
           freshness: summary.dataThrough || data.freshness,
-          status: usesUniversalContract ? universal.status : (summary.status || 'pending'),
-          renderChart: usesUniversalContract ? universal.renderChart : undefined
+          status: summary.status || 'pending'
         };
       }
 
@@ -967,9 +1087,55 @@
         if (!pattern) return pattern;
         return {
           ...pattern,
+          confirmationText: typeof pattern.confirmation === 'string' ? pattern.confirmation : pattern.confirmationText,
+          invalidationText: typeof pattern.invalidation === 'string' ? pattern.invalidation : pattern.invalidationText,
           confirmation: numericPatternLevel(pattern.confirmation),
           invalidation: numericPatternLevel(pattern.invalidation)
         };
+      }
+
+      function patternConditionText(pattern, key) {
+        const raw = pattern?.[`${key}Text`] || pattern?.[key];
+        if (typeof raw === 'number' && Number.isFinite(raw)) return '$' + raw.toFixed(2);
+        const text = String(raw || '').trim();
+        if (!text || /尚無可採用|待補|尚未提供|未分類|unclassified/i.test(text)) return '';
+        if (key === 'confirmation') {
+          return text
+            .replace(/^需完成/, '')
+            .replace(/，才升級方向判斷。?$/, '')
+            .replace(/型態邊界並出現接受/, '型態邊界並接受')
+            .trim();
+        }
+        return text
+          .replace(/^完成收盤破壞/, '收盤跌破')
+          .replace(/，主候選失效。?$/, '')
+          .trim();
+      }
+
+      function patternDisplayLabel(pattern, data) {
+        const raw = pattern?.patternLabel || data?.patternLabel || pattern?.label || data?.pattern || '—';
+        return String(raw).split(/[｜|]/)[0].trim();
+      }
+
+      function patternMarkerBar(bars) {
+        if (!bars.length) return null;
+        return bars[Math.max(0, Math.min(bars.length - 1, Math.floor(bars.length * 0.72)))];
+      }
+
+      function candidateButtonText(candidate, fallbackLabel = '候選') {
+        if (!candidate) return fallbackLabel;
+        const legacyStatus = String(candidate.status || '').trim();
+        if (legacyStatus) return legacyStatus;
+        const stateLabels = {
+          forming: '形成中',
+          breakout_candidate: '突破候選',
+          breakout_confirmed: '突破確認',
+          retest_held: '回測守住'
+        };
+        const label = candidate.label || fallbackLabel;
+        const state = stateLabels[candidate.coordinates?.state] || '';
+        const confidence = candidate.confidencePercent ?? candidate.confidence;
+        return [label, state, Number.isFinite(Number(confidence)) ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
       }
 
       function weeklyPattern(data) {
@@ -1000,6 +1166,91 @@
       function patternGeometry(bars, ticker, pattern) {
         const points = Array.isArray(pattern?.points) ? pattern.points : [];
         return points.filter((point) => point && Number.isFinite(point.time) && Number.isFinite(point.value));
+      }
+
+      function patternGeometryLines(bars, ticker, pattern) {
+        if (!bars.length || !pattern) return [];
+        const coordinates = pattern.coordinates || (state.view === 'weekly' ? null : window.PROTOTYPE_ANALYSIS_GEOMETRY?.[ticker]?.coordinates) || null;
+        if (!coordinates) {
+          const data = patternGeometry(bars, ticker, pattern);
+          return data.length ? [{ key: 'patternGeometry', data }] : [];
+        }
+        const nearestDateIndex = (date, fallback) => {
+          if (!date) return fallback;
+          const target = Date.parse(String(date));
+          if (!Number.isFinite(target)) return fallback;
+          let best = fallback;
+          let distance = Number.POSITIVE_INFINITY;
+          bars.forEach((bar, index) => {
+            const value = Number.isFinite(bar.time) ? bar.time * 1000 : Date.parse(String(bar.date || ''));
+            if (!Number.isFinite(value)) return;
+            const candidateDistance = Math.abs(value - target);
+            if (candidateDistance < distance) {
+              distance = candidateDistance;
+              best = index;
+            }
+          });
+          return best;
+        };
+        const rawStartIndex = Number.isFinite(coordinates.start_index) ? coordinates.start_index : 0;
+        const startFallback = Math.max(0, Math.min(bars.length - 1, rawStartIndex));
+        const start = nearestDateIndex(coordinates.start_date, startFallback);
+        const endDate = coordinates.fit_cutoff || coordinates.breakout_date || coordinates.retest_date || null;
+        const rawEnd = Number.isFinite(coordinates.fit_end_index) ? coordinates.fit_end_index : rawStartIndex + (Number.isFinite(coordinates.span_bars) ? coordinates.span_bars : 0);
+        const endFallback = Math.max(start, Math.min(bars.length - 1, rawEnd));
+        const end = endDate ? Math.max(start, nearestDateIndex(endDate, endFallback)) : endFallback;
+        const lines = [];
+        const addLinear = (key, line) => {
+          if (!line || !Number.isFinite(line.slope_per_bar) || !Number.isFinite(line.intercept)) return;
+          const data = bars.slice(start, end + 1).map((bar, offset) => ({ time: bar.time, value: line.slope_per_bar * (rawStartIndex + offset) + line.intercept }));
+          if (data.length > 1) lines.push({ key, data });
+        };
+        addLinear('patternGeometryUpper', coordinates.upper);
+        addLinear('patternGeometryLower', coordinates.lower);
+        addLinear('patternGeometryNeckline', coordinates.neckline);
+        if (!lines.length && Array.isArray(pattern.points)) {
+          const data = patternGeometry(bars, ticker, pattern);
+          if (data.length) lines.push({ key: 'patternGeometry', data });
+        }
+        if (!lines.length && /double_(top|bottom)/i.test(String(coordinates.type || ''))) {
+          // Restore the original Elliott+ zig-zag treatment for double patterns:
+          // left extreme → middle pivot → right extreme → current close. This
+          // makes the yellow pattern line visibly match the pattern label and
+          // thesis instead of reducing it to an ambiguous horizontal range.
+          const segment = bars.slice(start, end + 1);
+          if (segment.length >= 6) {
+            const midpoint = Math.floor(segment.length / 2);
+            const leftSegment = segment.slice(0, midpoint);
+            const rightSegment = segment.slice(midpoint);
+            const isBottom = coordinates.type === 'double_bottom';
+            const extreme = (items, field, chooseMin) => items.reduce((best, bar) => {
+              if (!best) return bar;
+              return chooseMin ? (bar[field] < best[field] ? bar : best) : (bar[field] > best[field] ? bar : best);
+            }, null);
+            const left = extreme(leftSegment, isBottom ? 'low' : 'high', isBottom);
+            const right = extreme(rightSegment, isBottom ? 'low' : 'high', isBottom);
+            const leftIndex = segment.indexOf(left);
+            const rightIndex = segment.indexOf(right);
+            const between = segment.slice(Math.min(leftIndex, rightIndex) + 1, Math.max(leftIndex, rightIndex));
+            const middle = extreme(between.length ? between : segment, isBottom ? 'high' : 'low', !isBottom);
+            const value = (bar) => isBottom ? bar.low : bar.high;
+            const middleValue = isBottom ? middle.high : middle.low;
+            const data = [
+              { time: left.time, value: value(left) },
+              { time: middle.time, value: middleValue },
+              { time: right.time, value: value(right) },
+              { time: bars.at(-1).time, value: bars.at(-1).close }
+            ].filter((point, index, points) => index === 0 || point.time !== points[index - 1].time);
+            if (data.length >= 3 && data.every((point) => Number.isFinite(point.value))) {
+              lines.push({ key: 'patternGeometryDouble', data });
+            }
+          }
+          if (!lines.length) {
+            const value = coordinates.type === 'double_top' ? Math.max(...segment.map((bar) => bar.high)) : Math.min(...segment.map((bar) => bar.low));
+            if (Number.isFinite(value)) lines.push({ key: 'patternGeometryRange', data: segment.map((bar) => ({ time: bar.time, value })) });
+          }
+        }
+        return lines;
       }
 
       function phaseData(bars, ticker) {
@@ -1041,7 +1292,8 @@
       function freezePriceFrame(bars, data, pattern) {
         const values = bars.flatMap((bar) => [bar.low, bar.high]);
         const gex = gexView(data);
-        values.push(priceSnapshotFor(data)?.value, pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
+        const priceSnapshot = priceSnapshotFor(data, bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)));
+        values.push(priceSnapshot?.value, pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
         const numericValues = values.map(Number).filter(Number.isFinite);
         const min = Math.min(...numericValues);
         const max = Math.max(...numericValues);
@@ -1144,27 +1396,20 @@
         const height = 390;
         const labelSize = compactGex ? 16 : 20;
         const valueSize = compactGex ? 14 : 18;
-        const summaryUsesUniversalContract = ['currentExpiration', 'nextExpiration'].some((key) => ['renderable', 'aggregate_only', 'not_available', 'not_applicable'].includes(data.gexSummary?.[key]?.status));
-        const currentResolved = window.UniversalRefreshGex?.resolveExpiration(data.gexSummary, 'current');
-        const nextResolved = window.UniversalRefreshGex?.resolveExpiration(data.gexSummary, 'next');
-        const profiles = summaryUsesUniversalContract ? [
-          { ...gexView(data), ...(currentResolved?.profile || {}) },
-          { ...gexView({...data, gexSummary: {...data.gexSummary, currentExpiration: data.gexSummary?.nextExpiration}}), ...(nextResolved?.profile || {}), label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || '未標示' }
-        ] : [
-          { ...gexView(data), ...data.gexViews?.current },
-          { ...gexView(data), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
+        const profiles = [
+          { ...gexView(data, 'current'), ...data.gexViews?.current },
+          { ...gexView(data, 'next'), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
         ];
-        const renderableProfiles = profiles.filter((profile) => profile.renderChart !== false && profile.strikes?.length && profile.strikes.length === profile.exposure?.length);
+        const renderableProfiles = profiles.filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length);
         if (!renderableProfiles.length) {
           const summary = data.gexSummary || {};
-          const statusLabel = {renderable: '可繪製', aggregate_only: '僅聚合資料', not_available: '資料尚不可用', not_applicable: '不適用'}[summary.status] || '資料待補';
-          const slot = (label, item) => `<article class="gex-pending-card"><strong>${label}</strong><span>${escapeHtml(item?.expiry || '未標示')}</span><p>${escapeHtml(item?.displayText || summary.displayText || '此到期日目前沒有可繪製的 GEX 資料。')}</p></article>`;
-          container.innerHTML = `<div class="chart-empty-message"><strong>GEX｜${statusLabel}</strong><p>${slot('最近未到期', summary.currentExpiration)}${slot('次近未到期', summary.nextExpiration)}</p><p>${escapeHtml((summary.limitations || []).join('；') || '目前沒有可繪製的到期日 GEX 數值。')}</p></div>`;
+          container.hidden = true;
+          container.hidden = false; container.innerHTML = '<div class="chart-error">此代號目前沒有可用的 GEX 曲線；已隱藏 K 線圖，待選擇權資料補齊後再顯示。</div>'; 
           return;
         }
         const sharedTicks = [...new Set(profiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
-        const currentPrice = priceSnapshotFor(data)?.value ?? null;
-        const sharedDomain = { min: Math.min(...sharedTicks, ...(currentPrice === null ? [] : [currentPrice])), max: Math.max(...sharedTicks, ...(currentPrice === null ? [] : [currentPrice])), ticks: sharedTicks };
+        const currentPrice = priceSnapshotFor(data, data.bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)))?.value || data.bars.at(-1)?.close || sharedTicks[0];
+        const sharedDomain = { min: Math.min(...sharedTicks, currentPrice), max: Math.max(...sharedTicks, currentPrice), ticks: sharedTicks };
         const renderPanel = (gex, key, domain) => {
           const strikes = gex.strikes || [];
           const exposure = gex.exposure || [];
@@ -1209,20 +1454,21 @@
             return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${color}" opacity=".9"/><text x="${xFor(strike).toFixed(1)}" y="${valueY.toFixed(1)}" fill="${valueColor}" text-anchor="middle" font-size="${valueSize}" font-weight="${valueInside ? '700' : '400'}">${exposure[index].toFixed(2)}</text>`;
           }).join('');
           const xGrid = domain.ticks.map((strike) => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="#162b39" stroke-width="1"/><text x="${xFor(strike).toFixed(1)}" y="${height - 18}" fill="#edf6fb" text-anchor="middle" font-size="${labelSize}" font-weight="700">$${strike}</text>`).join('');
-          const vline = (strike, color, label, row, dash = '7 5') => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} $${strike}</text>`;
-          const hasMagnet = Number.isFinite(gex.magnet);
-          const hasFlip = Number.isFinite(gex.flip);
-          const magnetIsFlip = hasMagnet && hasFlip && gex.magnet === gex.flip;
-          const magnetLine = hasMagnet ? vline(gex.magnet, '#65b7d6', magnetIsFlip ? 'Magnet／Flip' : 'Magnet', 1) : '';
-          const flipLine = hasFlip && !magnetIsFlip ? vline(gex.flip, '#9a66c7', 'Flip', 2) : '';
+          const vline = (strike, color, label, row, dash = '7 5') => Number.isFinite(Number(strike)) ? `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} $${strike}</text>` : '';
+          const magnetIsFlip = gex.magnet === gex.flip;
+          const magnetLine = vline(gex.magnet, '#65b7d6', magnetIsFlip ? 'Magnet／Flip' : 'Magnet', 1);
+          const flipLine = magnetIsFlip ? '' : vline(gex.flip, '#9a66c7', 'Flip', 2);
           const levelTags = insight?.levels?.map((level) => `<span class="gex-level-tag" data-role="${level.role}">${level.label} $${level.value}</span>`).join('') || '';
           const detailList = insight?.detail?.map((item) => `<li>${item}</li>`).join('') || '';
           const rail = insight ? `<div class="gex-analysis-rail"><div class="gex-analysis-head"><strong>${gex.label} · 讀法</strong><span>${insight.confidence}</span></div><p>${insight.plain}</p><div class="gex-level-tags">${levelTags}</div><div class="gex-analysis-row"><span class="label">路徑</span><p>${insight.path}</p></div><div class="gex-analysis-row"><span class="label">確認</span><p>${insight.confirm}</p></div><div class="gex-analysis-row"><span class="label">失效</span><p>${insight.invalidate}</p></div><details class="gex-analysis-detail"><summary>判讀依據</summary><ul>${detailList}</ul></details></div>` : '';
-          return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>Gamma exposure profile</strong> · ${gex.label} · ${gex.expiry}</span><span>綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma exposure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${currentPrice === null ? '' : vline(currentPrice, '#c8f169', '現在價格', 0, '0')}${magnetLine}${flipLine}${Number.isFinite(gex.callWall) ? vline(gex.callWall, '#7ee787', 'Call Wall', 3) : ''}${Number.isFinite(gex.putWall) ? vline(gex.putWall, '#4fd1a5', 'Put Wall', 4) : ''}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
+          const isUnsignedPressure = gex.profileKind === 'unsigned-pressure';
+          const profileTitle = isUnsignedPressure ? 'Unsigned gamma-pressure profile' : 'Gamma exposure profile';
+          const profileLegend = isUnsignedPressure ? '綠＝Call 敏感度　紅＝Put 敏感度　琥珀＝相對壓力差' : '綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線';
+          return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>${profileTitle}</strong> · ${gex.label} · ${gex.expiry}</span><span>${profileLegend}</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma pressure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
         };
-        container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}<p class="gex-profile-disclaimer">資料限制：${escapeHtml((data.gexSummary?.limitations || []).join('；') || '目前僅顯示可追溯的 GEX 欄位，不將缺失資料推測為交易訊號。')}</p>`;
+        container.innerHTML = `${renderPanel(profiles[0], 'current', sharedDomain)}${renderPanel(profiles[1], 'next', sharedDomain)}`;
         } catch (error) {
-          console.error('GEX profile render failed', error);
+          console.error('GEX profile render failed', error); container.hidden = false;
           container.innerHTML = '<div class="chart-error">GEX 圖層目前無法由明確欄位繪製。</div>';
         }
       }
@@ -1230,40 +1476,32 @@
       function render() {
         const rawData = datasets[state.ticker];
         const analysisOverlay = analysisOnlyDataset(state.ticker);
-        const baseData = rawData && analysisOverlay ? {
+        const data = rawData && analysisOverlay ? {
           ...rawData,
           ...analysisOverlay,
           bars: rawData.bars?.length ? rawData.bars : analysisOverlay.bars,
-          // Universal Refresh GEX is authoritative. If its status is not
-          // renderable, do not fall back to a candle or stale benchmark map.
-          gexViews: universalGexExpected || ['renderable', 'aggregate_only', 'not_available', 'not_applicable'].includes(analysisOverlay.gexSummary?.currentExpiration?.status)
-            ? {}
-            : {
-                current: { ...(rawData?.gexViews?.current || {}), ...(analysisOverlay.gexViews?.current || {}) },
-                next: { ...(rawData?.gexViews?.next || {}), ...(analysisOverlay.gexViews?.next || {}) }
-              },
-          company: rawData.company || analysisOverlay.company,
+          // Keep the bundled unsigned benchmark profiles when the v2
+          // analysis overlay has no renderable GEX profile yet. A shallow
+          // `analysisOverlay.gexViews || {}` assignment used to erase those
+          // profiles and made the current/next GEX chart appear empty.
+          gexViews: {
+            current: { ...(rawData?.gexViews?.current || {}), ...(analysisOverlay.gexViews?.current || {}) },
+            next: { ...(rawData?.gexViews?.next || {}), ...(analysisOverlay.gexViews?.next || {}) }
+          },
+          company: analysisOverlay.company || rawData.company,
           exchange: rawData.exchange || analysisOverlay.exchange,
           chartSource: rawData.chartSource || analysisOverlay.chartSource,
           sourceUrl: rawData.sourceUrl || analysisOverlay.sourceUrl,
           gexSource: rawData.gexSource || analysisOverlay.gexSource
         } : rawData || analysisOverlay;
-        // Apply the Universal Refresh record after every raw/analysis merge.
-        // This also covers tickers with no analysis run, which otherwise could
-        // expose stale legacy gexViews from the raw benchmark dataset.
-        const data = universalGexExpected ? {
-          ...(baseData || {}),
-          ticker: state.ticker,
-          gexSummary: universalGexRecords.get(state.ticker) || unavailableUniversalGex(state.ticker),
-          gexViews: {}
-        } : baseData;
         if (!data) return;
+        renderedData = data;
         renderMenu();
         // Synchronize the view shell before rebuilding chart series. This
         // prevents a GEX overlay from remaining in front of the candle chart
         // if a later text-panel update is interrupted during a view switch.
         const isGex = state.view === 'gex';
-        $('gex-profile').hidden = !isGex;
+        $('gex-profile').hidden = !isGex; $('chart-stack').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
         $('price-time-axis').hidden = isGex;
@@ -1277,7 +1515,6 @@
           if (chart) chart.remove();
           chart = null;
           candleSeries = null;
-          currentPriceLine = null;
           volumeSeries = null;
           rsiSeries = null;
           macdSeries = {};
@@ -1285,29 +1522,27 @@
           axisBars = [];
           $('phase-overlay').hidden = true;
           $('price-time-axis').hidden = true;
-          $('chart-empty-message').hidden = state.view === 'gex';
-          $('chart-empty-message').textContent = '部分分析已可用；目前沒有可用 K 線資料。';
-          $('chart-notice').textContent = '文字分析已更新；K 線、指標與 GEX 會在下一個完成交易時段資料到達後補上。';
+          $('chart-empty-message').hidden = true;
+          $('chart-empty-message').textContent = '';
+          setChartNotice('');
           return;
         }
         $('chart-empty-message').hidden = true;
         if (chart) chart.remove();
-        currentPriceLine = null;
         layerSeries = {};
         phaseMarkers = [];
         chart = makeChart($('chart-stack'));
         const bars = classifyBars(barsForView);
         axisBars = bars;
         const candleData = bars.map(({ time, open, high, low, close, color, borderColor, wickColor }) => ({ time, open, high, low, close, color, borderColor, wickColor }));
-        candleSeries = chart.addSeries(L.CandlestickSeries, { upColor: colors.weakGo, downColor: colors.weakNoGo, borderVisible: true, wickUpColor: colors.weakGo, wickDownColor: colors.weakNoGo, priceLineVisible: false, lastValueVisible: false });
+        candleSeries = chart.addSeries(L.CandlestickSeries, { upColor: colors.weakGo, downColor: colors.weakNoGo, borderVisible: true, wickUpColor: colors.weakGo, wickDownColor: colors.weakNoGo, lastValueVisible: false });
         candleSeries.setData(candleData);
-        const snapshot = priceSnapshotFor(data);
-        if (snapshot) currentPriceLine = candleSeries.createPriceLine({ price: snapshot.value, color: colors.pattern, lineWidth: 1, lineStyle: L.LineStyle.Solid, axisLabelVisible: true, title: snapshot.label || '現在價格' });
         const phases = phaseData(bars, state.ticker);
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
+        const patternMarker = patternMarkerBar(bars);
         markerApi = L.createSeriesMarkers(candleSeries, [
-          { time: bars[bars.length - 1].time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text }
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: patternDisplayLabel(pattern, data) }
         ]);
         dateAxisSeries = chart.addSeries(L.LineSeries, { color: 'transparent', lineWidth: 1, visible: false, priceLineVisible: false, lastValueVisible: false, priceScaleId: 'right' }, 1);
         dateAxisSeries.setData([{ time: bars[0].time, value: 0 }, { time: bars.at(-1).time, value: 0 }]);
@@ -1341,7 +1576,13 @@
         layerSeries.bbUpper = addLine('bbUpper', bb.map((item) => ({ time: item.time, value: item.upper })), colors.bollinger, 1);
         layerSeries.bbMiddle = addLine('bbMiddle', bb.map((item) => ({ time: item.time, value: item.middle })), '#91a8b7', 1, L.LineStyle.Solid);
         layerSeries.bbLower = addLine('bbLower', bb.map((item) => ({ time: item.time, value: item.lower })), colors.bollinger, 1);
-        layerSeries.patternGeometry = addLine('patternGeometry', patternGeometry(bars, state.ticker, pattern), colors.pattern, 3, L.LineStyle.Solid);
+        const priceSnapshot = priceSnapshotFor(data, bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)));
+        layerSeries.currentPrice = addLine('currentPrice', levelData(bars, priceSnapshot?.value), colors.currentPrice, 1, L.LineStyle.Dashed, true);
+        patternGeometryLines(bars, state.ticker, pattern).forEach((line, index) => {
+          // Pattern geometry uses the same bright lime signal as the 型態組合
+          // control, so it remains visible above the candle and Bollinger layers.
+          layerSeries[`${line.key}-${index}`] = addLine(`${line.key}-${index}`, line.data, colors.pattern, 2, L.LineStyle.Solid);
+        });
         layerSeries.patternGate = addLine('patternGate', levelData(bars, pattern.confirmation), colors.patternConfirmation, 3);
         layerSeries.invalidation = addLine('invalidation', levelData(bars, pattern.invalidation), colors.patternInvalidation, 3);
         layerSeries.wyckoffGate = addLine('wyckoffGate', levelData(bars, data.wyckoffGate), colors.wyckoff, 2);
@@ -1353,20 +1594,20 @@
         freezeIndicatorFrame(rsiSeries.value, rsi.map((item) => item.value), 0, 100);
         const macdValues = [...macd.macd.map((item) => item.value), ...macd.signal.map((item) => item.value), ...histogram.map((item) => item.value), 0];
         freezeIndicatorFrame(macdSeries.macd, macdValues);
-        chart.timeScale().fitContent();
+        setDefaultChartWindow(bars);
         setPaneLayout();
         syncIndicatorRanges();
         chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
           syncIndicatorRanges();
         });
         drawPhaseOverlay(bars, phases);
-        updateLayerVisibility();
+        updateLayerVisibility(data);
         updateText(data, pattern);
         if (state.view !== 'gex') renderGexProfile(data);
         requestAnimationFrame(() => setPaneLayout());
       }
 
-      function updateLayerVisibility() {
+      function updateLayerVisibility(data) {
         if (!chart) return;
         Object.entries(layerSeries).forEach(([name, series]) => {
           const primaryOnly = name === 'channelUpper' || name === 'channelLower';
@@ -1375,10 +1616,13 @@
           series.applyOptions({ visible });
         });
         if (phasePrimitive) phasePrimitive.setVisible(state.layers.wyckoff && state.view !== 'gex');
-        const pattern = getPattern(datasets[state.ticker]);
-        const bars = viewBars(datasets[state.ticker]);
-        markerApi.setMarkers(state.layers.technical && state.view !== 'gex' ? [
-          { time: bars.at(-1).time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: pattern.text }
+        const pattern = getPattern(data);
+        const bars = viewBars(data);
+        const patternMarker = patternMarkerBar(bars);
+        const markerText = patternDisplayLabel(pattern, data);
+        const markerUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(markerText);
+        markerApi.setMarkers(state.layers.technical && state.view !== 'gex' && !markerUnavailable ? [
+          { time: patternMarker.time, position: 'aboveBar', color: colors.pattern, shape: 'circle', text: markerText }
         ] : []);
         $('phase-overlay').hidden = !state.layers.wyckoff || state.view === 'gex';
       }
@@ -1389,9 +1633,6 @@
         document.body.classList.toggle('gex-view', isGex);
         $('gex-layer-control').hidden = !isGex;
         $('title').textContent = state.ticker + ' · ' + data.company;
-        const snapshot = priceSnapshotFor(data);
-        $('current-price').textContent = snapshot ? `${snapshot.label || '價格'} · ${formatPrice(snapshot.value)} · ${snapshot.asOf || snapshot.dataThrough || ''}` : '價格待補';
-        $('current-price').dataset.status = snapshot?.status || 'pending';
         $('chart-title').textContent = isGex ? 'GEX 壓力圖 · Top／Bottom' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
         const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
         const analysisMeta = data.analysisThrough || data.sourceCutoff || data.dataThrough || '—';
@@ -1404,7 +1645,28 @@
         const runtimeOverall = data.overall || {};
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
-        $('thesis').textContent = overall?.thesis || data.thesis;
+        $('thesis').textContent = publicAnalysisText(overall?.thesis || data.thesis);
+        const directionMap = { up: { symbol: '↗', label: '上行' }, down: { symbol: '↘', label: '下行' }, flat: { symbol: '→', label: '盤整' } };
+        const directionText = (direction, kind) => {
+          const normalized = validDirection(direction);
+          const view = directionMap[normalized];
+          const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '';
+          return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label || (kind === 'watch' ? '觀察方向' : '正式預測') };
+        };
+        [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
+          const element = $(id);
+          const kind = id.startsWith('watch-') ? 'watch' : 'formal';
+          const view = directionText(direction, kind);
+          element.textContent = view.text;
+          element.dataset.direction = view.key;
+          const item = element.closest('.direction-item');
+          if (item) {
+            item.dataset.state = view.key === 'pending' ? 'pending' : 'active';
+            item.dataset.direction = view.key;
+            item.hidden = view.key === 'pending';
+          }
+          element.setAttribute('aria-label', view.ariaLabel);
+        });
         $('thesis-refresh').textContent = data.analysisThrough && data.chartThrough && data.analysisThrough !== data.chartThrough
           ? `分析已更新至 ${data.analysisThrough}；K線資料截至 ${data.chartThrough}，等待下一個完成交易時段補齊。`
           : (data.analysisThrough ? `分析截至 ${data.analysisThrough}` : '');
@@ -1414,23 +1676,42 @@
           element.textContent = value || '';
           if (element.parentElement) element.parentElement.hidden = !value;
         });
+        const compactReaderText = (value) => {
+          const text = String(value ?? '').trim();
+          if (!text) return '';
+          if (/\b(?:Mason|Ely|Iris|Clara)\b|metadata-correction|artifact|runId|batchId|schemaVersion|presentationContract/i.test(text)) return '';
+          if (/目前仍維持[「"]?partial-safe|仍維持[「"]?partial-safe|4:00\s*catch-up|16:30\s*(?:PDT|PT)|仍待補欄位|待補／待驗證/i.test(text)) return '';
+          return text.replace(/partial-safe/gi, '').replace(/\s{2,}/g, ' ').trim();
+        };
+        const publicEvidenceLabel = (value) => {
+          const label = String(value || '來源');
+          if (/catch-up|audit|reader redo/i.test(label)) return '收盤後補充檢查';
+          if (/Mason|Ely|Iris|Clara|metadata-correction|artifact|校正版|userFacing/i.test(label)) {
+            if (/新聞|基本面|來源 QA/i.test(label)) return '基本面／新聞來源';
+            if (/選擇權|技術|校正版/i.test(label)) return '技術與選擇權資料';
+            return '分析來源';
+          }
+          return label.replace(/\b(?:v\d+|version|schema|contract)\b/gi, '').replace(/\s{2,}/g, ' ').trim() || '來源';
+        };
         const renderDigest = (item, tone, label = '') => {
           if (!item) return '';
+          const compactPoints = (points = []) => points.map(compactReaderText).filter(Boolean);
           const body = item.sections
-            ? item.sections.map((section) => `<section class="digest-section"><h4>${section.heading}</h4><ul>${section.points.map((point) => `<li>${point}</li>`).join('')}</ul></section>`).join('')
-            : `<ul>${item.points.map((point) => `<li>${point}</li>`).join('')}</ul>`;
-          const next = item.next ? `<p class="digest-next"><strong>下一個觀察：</strong>${item.next}</p>` : '';
-          const updatedDate = String(item.date || '').match(/\d{4}-\d{2}-\d{2}/)?.[0] || '';
-          const updatedAt = item.updatedAtLabel || (updatedDate ? `更新至 ${updatedDate}` : '');
-          const summary = label || item.title || item.date;
-          return `<details class="digest-details" data-tone="${tone}"><summary><span>${summary}</span>${updatedAt ? `<small>${updatedAt}</small>` : ''}</summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${item.title}</span></div>${body}${next}</article></div></details>`;
+            ? item.sections.map((section) => {
+                const points = compactPoints(section.points);
+                return points.length ? `<section class="digest-section"><h4>${escapeHtml(section.heading)}</h4><ul>${points.map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul></section>` : '';
+              }).join('')
+            : `<ul>${compactPoints(item.points).map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>`;
+          const nextText = compactReaderText(item.next);
+          const next = nextText ? `<p class="digest-next"><strong>下一個觀察：</strong>${escapeHtml(nextText)}</p>` : '';
+          return `<details class="digest-details" data-tone="${tone}"><summary><span>${escapeHtml(label || item.date)}</span></summary><div class="digest-details-content"><article class="digest-block" data-tone="${tone}"><div class="digest-head"><span>${escapeHtml(item.title || '')}</span></div>${body}${next}</article></div></details>`;
         };
         const runtimeDigests = data.digestDetails || {};
         const activeDigests = {
           endOfDay: runtimeDigests.endOfDay || null,
           weekly: runtimeDigests.weekly || null
         };
-        const endOfDayLabel = activeDigests.endOfDay?.title || 'End of Day Digest';
+        const endOfDayLabel = activeDigests.endOfDay?.date ? `EoD Digest · ${String(activeDigests.endOfDay.date).slice(0, 10)}` : 'EoD Digest';
         businessDetails.innerHTML = renderDigest(activeDigests.endOfDay, 'endOfDay', endOfDayLabel) + renderDigest(activeDigests.weekly, 'weekly');
         businessDetails.hidden = !businessDetails.innerHTML;
         const historyPanel = $('analysis-history');
@@ -1444,11 +1725,15 @@
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
         historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
+        const patternUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(String(pattern.text || ''));
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
-        const wyckoffText = state.view === 'weekly' ? (data.weeklyWyckoff || '週線資料尚未提供') : data.wyckoff;
+        const wyckoffMetric = $('wyckoff').closest('.metric');
+        const rawWyckoffText = state.view === 'weekly' ? data.weeklyWyckoff : data.wyckoff;
+        const wyckoffText = /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(String(rawWyckoffText || '')) ? '' : String(rawWyckoffText || '');
         $('wyckoff').textContent = wyckoffText;
-        $('pattern-gate').textContent = Number.isFinite(pattern.confirmation) ? '$' + pattern.confirmation.toFixed(2) : '—';
-        $('invalidation').textContent = Number.isFinite(pattern.invalidation) ? '$' + pattern.invalidation.toFixed(2) : '—';
+        if (wyckoffMetric) wyckoffMetric.hidden = !wyckoffText;
+        $('pattern-gate').textContent = patternConditionText(pattern, 'confirmation');
+        $('invalidation').textContent = patternConditionText(pattern, 'invalidation');
         $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
         const secondary = data.patternCandidates?.secondary;
         const candidateSwitch = $('candidate-switch');
@@ -1457,38 +1742,41 @@
         // Keep the primary candidate visible whenever the dataset provides
         // one. The secondary candidate is optional and only appears when it
         // is explicitly called out and materially distinct.
-        candidateSwitch.hidden = isGex || !data.patternCandidates?.primary;
+        candidateSwitch.hidden = isGex || patternUnavailable || !data.patternCandidates?.primary;
         if (!showSecondary && state.candidate !== 'primary') state.candidate = 'primary';
         candidateSwitch.querySelectorAll('[data-candidate]').forEach((button) => {
           const active = button.dataset.candidate === state.candidate;
           const candidate = data.patternCandidates?.[button.dataset.candidate];
           button.hidden = button.dataset.candidate === 'secondary' ? !showSecondary : false;
-          button.textContent = deduplicated && button.dataset.candidate === 'primary' ? pattern.status : candidate ? candidate.status : button.dataset.candidate;
+          button.textContent = deduplicated && button.dataset.candidate === 'primary'
+            ? candidateButtonText(pattern, '主候選')
+            : candidateButtonText(candidate, button.dataset.candidate === 'primary' ? '主候選' : '次候選');
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
         $('options').textContent = isGex ? gex.text : data.options;
         $('freshness').textContent = isGex ? gex.freshness : data.freshness;
-        $('contract-status').textContent = `資料契約 ${irisV2.schemaVersion || contract.contractVersion || 'legacy-seed'} · ${contract.mode === 'sheets-csv-import' ? 'Google Sheets CSV import' : 'local seed'}`;
+        $('contract-status').textContent = '';
+        $('contract-status').hidden = true;
         const sourceSummary = $('source-summary');
         const sourceEvidence = $('source-evidence');
         const gexSource = data.gexSource;
         if (isGex && gexSource) {
           sourceSummary.textContent = 'GEX 判讀使用延遲 aggregate options source；圖表價格沿用同一 ticker 的 completed-session market source。';
           sourceEvidence.hidden = false;
-          sourceEvidence.innerHTML = `<span class="label">GEX 證據與聲明依據</span><ul><li>選擇權來源：${gexSource.provider}；資料截止 ${gexSource.cutoff}。</li><li>計算方法：${gexSource.method}。</li><li>可聲稱：履約價附近的理論 gamma sensitivity concentration、相對位置與條件式價格路徑。</li><li>不可聲稱：${gexSource.limitations}。</li><li>圖表層：Lightweight Charts by TradingView；公開部署時須保留來源標示。</li></ul>`;
+          sourceEvidence.innerHTML = `<span class="label">GEX 證據來源</span><ul><li>選擇權來源：${gexSource.provider}；資料截止 ${gexSource.cutoff}。</li><li>計算方法：${gexSource.method}。</li><li>圖表層：Lightweight Charts by TradingView；公開部署時須保留來源標示。</li></ul>`;
           $('source-link').href = gexSource.url;
           $('source-link').textContent = '開啟 GEX 原始資料來源';
         } else {
-          const evidence = data.sourceEvidence || [];
-          sourceSummary.textContent = evidence.length ? 'Iris v2 sourceEvidence · 僅顯示 packet 提供的公開來源與截止日期。' : '目前沒有可顯示的來源證據。';
+          const evidence = (data.sourceEvidence || []).filter((item) => !/catch-up|audit|reader redo/i.test(String(item.label || '')));
+          sourceSummary.textContent = evidence.length ? '來源摘要 · 僅顯示公開來源與截止日期。' : '目前沒有可顯示的來源證據。';
           sourceEvidence.hidden = !evidence.length;
-          sourceEvidence.innerHTML = evidence.length ? `<span class="label">來源證據</span><ul>${evidence.map((item) => `<li>${escapeHtml(item.label || '來源')} · ${escapeHtml(item.cutoff || '未標示')}${item.url ? ` · <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">開啟來源</a>` : ''}</li>`).join('')}</ul>` : '';
+          sourceEvidence.innerHTML = evidence.length ? `<span class="label">來源證據</span><ul>${evidence.map((item) => `<li>${escapeHtml(publicEvidenceLabel(item.label))} · ${escapeHtml(item.cutoff || '未標示')}${item.url ? ` · <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">開啟來源</a>` : ''}</li>`).join('')}</ul>` : '';
           $('source-link').href = evidence.find((item) => item.url)?.url || data.sourceUrl || '#';
           $('source-link').textContent = evidence.some((item) => item.url) ? '開啟市場資料來源' : '沒有公開來源連結';
           $('source-link').hidden = !evidence.some((item) => item.url);
         }
-        $('pattern-combo').hidden = isGex;
+        $('pattern-combo').hidden = isGex || patternUnavailable;
         $('structure-panel').hidden = isGex;
         document.querySelectorAll('.controls label[data-tone]').forEach((label) => {
           label.hidden = isGex && label.dataset.tone !== 'gex';
@@ -1499,7 +1787,9 @@
           button.setAttribute('aria-pressed', String(active));
         });
         const homeLink = $('dock-home');
-        if (homeLink) homeLink.href = `../data-model/home.html?ticker=${encodeURIComponent(state.ticker)}`;
+        if (homeLink) homeLink.href = '../data-model/home.html';
+        const coverageLink = $('dock-coverage');
+        if (coverageLink) coverageLink.href = `../data-model/coverage.html?ticker=${encodeURIComponent(state.ticker)}`;
         const expirySwitch = $('gex-expiry-switch');
         expirySwitch.hidden = true;
         expirySwitch.querySelectorAll('[data-gex-expiry]').forEach((button) => {
@@ -1507,7 +1797,7 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        $('chart-notice').textContent = isGex ? (data.gexSummary?.displayText || 'GEX 狀態待補。') : data.status === 'partial-safe' ? `此 ticker 為 partial-safe；${(data.missingFields || []).join('；') || '缺失欄位已明確列出。'}` : '';
+        setChartNotice(isGex ? publicGexText(data.gexSummary?.displayText) : '');
         $('price-time-axis').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
@@ -1527,7 +1817,7 @@
       $('ticker-sheet-close').addEventListener('click', closeMainMenu);
       $('menu-backdrop').addEventListener('click', closeMainMenu);
       let wheelScrollTimer;
-      $('ticker-wheel').addEventListener('scroll', () => {
+      $('ticker-wheel').addEventListener('scroll', () => {        if (tickerSelectionLock || Date.now() < suppressTickerScrollUntil) return;
         clearTimeout(wheelScrollTimer);
         wheelScrollTimer = setTimeout(() => {
           if ($('ticker-sheet').hidden) return;
@@ -1553,12 +1843,19 @@
       document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.view === state.view) return;
         state.view = button.dataset.view;
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('view', state.view);
+        window.history.replaceState({}, '', nextUrl);
         render();
       }));
       document.querySelectorAll('[data-gex-expiry]').forEach((button) => button.addEventListener('click', () => {
         if (button.dataset.gexExpiry === state.gexExpiry) return;
         state.gexExpiry = button.dataset.gexExpiry;
         if (state.view !== 'gex') state.view = 'gex';
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('view', state.view);
+        nextUrl.searchParams.set('expiry', state.gexExpiry);
+        window.history.replaceState({}, '', nextUrl);
         render();
       }));
       document.querySelectorAll('[data-candidate]').forEach((button) => button.addEventListener('click', () => {
@@ -1566,7 +1863,7 @@
         state.candidate = button.dataset.candidate;
         render();
       }));
-      document.querySelectorAll('[data-layer]').forEach((input) => input.addEventListener('change', (event) => { state.layers[event.target.dataset.layer] = event.target.checked; updateLayerVisibility(); }));
+      document.querySelectorAll('[data-layer]').forEach((input) => input.addEventListener('change', (event) => { state.layers[event.target.dataset.layer] = event.target.checked; updateLayerVisibility(renderedData); }));
       window.addEventListener('storage', (event) => {
         if (event.key === 'stock-analysis-coverage-overrides') window.location.reload();
       });
