@@ -76,7 +76,7 @@
     .empty { color:var(--muted); padding:20px 0; }
     .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
     .menu-backdrop[hidden], .ticker-sheet[hidden] { display:none; }
-    .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(460px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
+    .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(360px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
     .ticker-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
     .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
     .ticker-sheet-head span { display:block; color:var(--muted); font-size:11px; font-weight:400; }
@@ -131,12 +131,12 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <script src="../shared-menu.js?v=20260910-4"></script>
+  <script src="../coverage-order.js?v=20260909-v1"></script>
+  <script src="../shared-menu.js?v=20260911-issue32-3"></script>
   <elliott-shared-menu data-current="ticker" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260909-v4"></script>
   <script src="../chart-surface/eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="../coverage-order.js?v=20260909-v1"></script>
   <script>
     (() => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};

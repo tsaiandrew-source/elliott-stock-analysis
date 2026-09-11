@@ -50,7 +50,7 @@
     h3 { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
     .menu-backdrop { position: fixed; z-index: 49; inset: 0; border: 0; background: rgba(3, 9, 14, .48); cursor: pointer; }
     .menu-backdrop[hidden], .ticker-sheet[hidden] { display: none; }
-    .ticker-sheet { position: fixed; z-index: 50; top: 73px; right: 50%; width: min(460px, calc(100vw - 28px)); height: 44vh; max-height: 44vh; overflow: hidden; transform: translateX(50%); padding: 13px; border: 1px solid rgba(85, 217, 213, .35); border-radius: 16px; background: rgba(13, 26, 37, .98); box-shadow: 0 18px 46px rgba(0,0,0,.42); }
+    .ticker-sheet { position: fixed; z-index: 50; top: 73px; right: 50%; width: min(360px, calc(100vw - 28px)); height: 44vh; max-height: 44vh; overflow: hidden; transform: translateX(50%); padding: 13px; border: 1px solid rgba(85, 217, 213, .35); border-radius: 16px; background: rgba(13, 26, 37, .98); box-shadow: 0 18px 46px rgba(0,0,0,.42); }
     .ticker-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
     .ticker-sheet-head strong { color: var(--aqua); font-size: 13px; }
     .ticker-sheet-head span { color: var(--muted); font-size: 11px; }
@@ -458,7 +458,8 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <script src="../shared-menu.js?v=20260910-4"></script>
+  <script src="../coverage-order.js?v=20260909-v1"></script>
+  <script src="../shared-menu.js?v=20260911-issue32-3"></script>
   <elliott-shared-menu data-current="ticker" data-home-href="../data-model/home.html" data-coverage-href="../data-model/coverage.html" data-ticker-page-href="index.html"></elliott-shared-menu>
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
@@ -467,7 +468,6 @@
   <script src="analysis-packets-v2.js?v=20260909-rich-reader-v1"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="../coverage-order.js?v=20260909-v1"></script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
@@ -770,13 +770,19 @@
       function selectTicker(ticker) {
         const selected = activeCoverage.find((item) => normalizeTicker(item.ticker) === normalizeTicker(ticker));
         if (!selected) return;
+        if (selected.ticker === state.ticker) return;
         state.ticker = selected.ticker;
         state.candidate = 'primary';
-        const nextUrl = new URL('./index.html', window.location.href);
+        const nextUrl = new URL(window.location.href);
         nextUrl.searchParams.set('ticker', state.ticker);
         nextUrl.searchParams.set('view', state.view);
-        window.location.assign(nextUrl.href);
+        nextUrl.searchParams.delete('candidate');
+        window.history.pushState({}, '', nextUrl);
+        render();
+        window.dispatchEvent(new CustomEvent('elliott:ticker-updated', { detail: { ticker: state.ticker } }));
       }
+
+      window.__elliottSelectTicker = selectTicker;
 
       function renderMenu() {
         $('ticker-menu-label').textContent = state.ticker;
