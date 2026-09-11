@@ -15,9 +15,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/elliott-asterisk-icon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="../assets/elliott-asterisk-apple-touch-icon.png">
   <script src="../pwa-register.js" defer></script>
-  <script>
-    window.addEventListener('load', () => navigator.serviceWorker?.register('../service-worker-v21.js', { scope: '/', updateViaCache: 'none' }).catch(() => {}), { once: true });
-  </script>
   <title>股票分析圖表層</title>
   <script src="../assets/lightweight-charts-5.2.0.min.js"></script>
   <style>
@@ -461,26 +458,21 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <script src="../coverage-order.js?v=20260909-v1"></script>
-  <script src="../shared-menu.js?v=20260911-single-ticker-v1"></script>
+  <script src="../coverage-order.js?v=20260911-labels-v1"></script>
+  <script src="../shared-menu.js?v=20260911-single-ticker-v2"></script>
   <elliott-shared-menu data-current="ticker" data-home-href="../data-model/home.html" data-coverage-href="../data-model/coverage.html" data-ticker-page-href="index.html"></elliott-shared-menu>
   <script src="benchmark-data.js?v=20260905-6"></script>
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script src="analysis-geometry.js?v=20260909-1"></script>
   <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script>
-  <script src="analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
       const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {};
-      const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
-      const liveProxyUrls = [
-        'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec',
-        'https://script.google.com/macros/s/AKfycbxNVxg0LVUZVMafRyQ0aYkMy8z5GXj3Cbkk1XmidPKjeiixNJswqJNHhmZ7jsIm2holHw/exec'
-      ];
+      const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -511,31 +503,8 @@
           }
         };
       };
-      const latestAnalysisDate = (live) => (live?.analysisRuns || [])
-        .map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10))
-        .filter(Boolean)
-        .sort()
-        .at(-1) || '';
-      const freshestLiveContract = (payloads) => payloads.filter(Boolean).sort((a, b) => {
-        const dateCompare = latestAnalysisDate(b).localeCompare(latestAnalysisDate(a));
-        if (dateCompare) return dateCompare;
-        const generatedCompare = String(b.generatedAt || '').localeCompare(String(a.generatedAt || ''));
-        if (generatedCompare) return generatedCompare;
-        return (b.analysisRuns || []).length - (a.analysisRuns || []).length;
-      })[0] || null;
-      const fetchLiveContract = async () => {
-        const payloads = await Promise.all(liveProxyUrls.map(async (url) => {
-          try {
-            const live = await fetchJsonWithTimeout(`${url}?format=json&refresh=${Date.now()}`, 60000);
-            return live && !live.error && Array.isArray(live.coverage) ? live : null;
-          } catch (_) {
-            return null;
-          }
-        }));
-        return freshestLiveContract(payloads);
-      };
-      const liveCacheKey = 'stock-analysis-live-contract-v3';
-      let contract = mergeRuntimeContract(bundledContract, browserFallback);
+      const liveCacheKey = 'stock-analysis-live-contract-v2';
+      let contract = bundledContract;
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
         if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(contract) || latestAnalysisDate(cached) >= latestAnalysisDate(contract))) contract = mergeRuntimeContract(contract, cached);
@@ -544,7 +513,7 @@
       const refreshLiveInBackground = async () => {
         if (window.location.protocol === 'file:') return;
         try {
-          const live = await fetchLiveContract();
+          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 60000);
           if (!live || !Array.isArray(live.coverage)) return;
           const nextSignature = liveSignature(live);
           const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
@@ -969,7 +938,8 @@
       function classifyBars(bars) {
         const mids = sma(bars.map((bar) => bar.close), 20);
         return bars.map((bar, i) => {
-          const previous = bars[i - 1];          if (!previous || mids[i] === null) return { ...bar, color: colors.transition, borderColor: colors.transition, wickColor: colors.transition, state: 'Transition' };
+          const previous = bars[i - 1];
+          if (!previous || mids[i] === null) return { ...bar, color: colors.transition, borderColor: colors.transition, wickColor: colors.transition, state: 'Transition' };
           const closeDelta = (bar.close - previous.close) / previous.close;
           const distance = Math.abs(bar.close - mids[i]) / mids[i];
           let stateName = 'Transition';

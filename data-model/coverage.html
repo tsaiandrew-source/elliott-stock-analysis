@@ -1,14 +1,221 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071018">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="E+">
+  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/elliott-asterisk-icon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/elliott-asterisk-apple-touch-icon.png">
+  <script src="../pwa-register.js" defer></script>
+  <title>Coverage · 股市分析</title>
+  <style>
+    :root { color-scheme: dark; --bg:#071018; --surface:#0d1a25; --surface2:#112433; --line:#203849; --text:#edf6fb; --muted:#91a8b7; --aqua:#55d9d5; --green:#7ee787; --lime:#c8f169; --amber:#f2b84b; --rose:#ff7e8f; }
+    * { box-sizing:border-box; }
+    html { min-height:100%; background:var(--bg); }
+    body { min-height:100vh; min-height:100dvh; margin:0; padding-top:env(safe-area-inset-top); padding-right:env(safe-area-inset-right); padding-left:env(safe-area-inset-left); background:var(--bg); color:var(--text); font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-text-size-adjust:100%; overscroll-behavior-y:none; }
+    button, a { font:inherit; }
+    .home { width:min(760px,100%); margin:0 auto; padding:24px 20px 38px; }
+    .top { display:flex; align-items:start; justify-content:space-between; gap:16px; margin-bottom:22px; }
+    .eyebrow { color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.1em; }
+    h1 { margin:4px 0 0; color:var(--aqua); font-size:24px; }
+    .subtitle { margin-top:5px; color:var(--muted); font-size:13px; }
+    .section { padding:15px; border:1px solid var(--line); border-radius:13px; background:var(--surface); }
+    .section-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+    .section-head strong { color:var(--aqua); font-size:13px; }
+    .section-head span { color:var(--muted); font-size:11px; }
+    .section-head-tools { display:flex; align-items:center; justify-content:flex-end; gap:9px; }
+    .coverage-tabs { display:flex; gap:5px; }
+    .coverage-tab { display:inline-flex; align-items:center; justify-content:center; width:36px; height:32px; border:1px solid var(--line); border-radius:8px; padding:5px; color:var(--muted); background:transparent; cursor:pointer; }
+    .coverage-tab svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .coverage-tab[aria-selected="true"] { border-color:var(--aqua); color:#071018; background:var(--aqua); }
+    .coverage-tab:hover, .coverage-tab:focus-visible { border-color:var(--aqua); color:var(--text); }
+    .coverage-tab[aria-selected="true"]:hover, .coverage-tab[aria-selected="true"]:focus-visible { color:#071018; }
+    .coverage-panel[hidden] { display:none; }
+    .ticker-list { display:grid; gap:8px; margin-top:11px; overflow-x:auto; }
+    .coverage-group + .coverage-group { margin-top:18px; }
+    .market-group { margin-top:18px; padding-top:14px; border-top:1px solid rgba(79,209,165,.3); }
+    .market-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 8px; padding-bottom:6px; border-bottom:1px solid rgba(79,209,165,.4); }
+    .market-group-head strong { color:var(--teal); font-size:13px; }
+    .market-group-head span { color:var(--muted); font-size:10px; }
+    .market-group .coverage-group { margin-top:12px; }
+    .coverage-group-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:0 2px 7px; padding-bottom:5px; border-bottom:1px solid rgba(85,217,213,.22); }
+    .coverage-group-head strong { color:var(--aqua); font-size:12px; }
+    .coverage-group-head span { color:var(--muted); font-size:10px; }
+    .coverage-group[data-group="exploration"] .coverage-group-head { border-bottom-color:rgba(242,184,75,.32); }
+    .coverage-group[data-group="exploration"] .coverage-group-head strong { color:var(--amber); }
+    .coverage-group-empty { margin:0; padding:8px 3px 2px; color:var(--muted); font-size:11px; }
+    .coverage-header, .ticker-row { min-width:0; }
+    .coverage-header { display:grid; grid-template-columns:9px 74px 72px 42px 42px 72px 62px 26px; gap:8px; padding:0 11px 6px; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .ticker-row { display:grid; grid-template-columns:9px 74px 72px 42px 42px 72px 62px 26px; align-items:center; gap:8px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:rgba(17,36,51,.42); }
+    .ticker-row.has-detail { cursor:pointer; }
+    .ticker-row.has-detail:hover { border-color:rgba(85,217,213,.6); background:rgba(17,36,51,.7); }
+    .ticker-row.has-detail:focus-visible { outline:2px solid var(--aqua); outline-offset:2px; }
+    .ticker-row.is-disabled { color:var(--muted); cursor:not-allowed; }
+    .ticker-copy strong { display:block; font-size:14px; }
+    .ticker-copy, .latest-price, .latest-direction, .latest-confidence, .latest-date { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .latest-price { color:var(--text); font-size:12px; font-variant-numeric:tabular-nums; }
+    .latest-direction { color:var(--aqua); font-size:18px; font-weight:800; line-height:1; text-align:center; }
+    .latest-direction[data-direction="up"] { color:var(--green); }
+    .latest-direction[data-direction="down"] { color:var(--rose); }
+    .latest-direction[data-direction="flat"] { color:var(--amber); }
+    .latest-direction[data-direction="pending"] { color:var(--muted); }
+    .latest-confidence { color:var(--lime); font-size:13px; font-weight:800; }
+    .latest-date { color:var(--muted); font-size:11px; }
+    .ticker-copy em { color:var(--muted); font-size:11px; font-style:normal; white-space:nowrap; }
+    .new-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(126,231,135,.13); }
+    .new-dot[hidden] { display:none; }
+    .ticker-history-toggle { grid-column:8; grid-row:1; align-self:center; justify-self:center; width:auto; height:auto; padding:0; border:0; color:var(--aqua); background:transparent; font-size:18px; font-weight:500; line-height:1; text-align:center; cursor:pointer; }
+    .ticker-history-toggle:hover, .ticker-history-toggle:focus-visible { color:var(--text); }
+    .history-panel { grid-column:1 / -1; grid-row:2; width:100%; min-width:640px; margin:9px 0 0 18px; padding-top:6px; border-top:1px solid rgba(32,56,73,.7); }
+    .history-panel[hidden] { display:none; }
+    .history-entry { padding-top:6px; color:var(--muted); font-size:11px; white-space:normal; overflow-wrap:break-word; }
+    .history-entry strong { color:var(--text); }
+    .action { border:1px solid var(--line); border-radius:6px; padding:6px 9px; color:var(--aqua); background:transparent; cursor:pointer; font-size:12px; font-weight:800; }
+    .action:hover, .action:focus-visible { border-color:var(--aqua); background:rgba(85,217,213,.08); }
+    .action[data-active="false"] { color:var(--amber); }
+    .status-active { color:var(--green); font-weight:800; }
+    .status-inactive { color:var(--amber); font-weight:800; }
+    .status-removed { color:var(--muted); font-weight:800; }
+    .empty { padding:20px 0; color:var(--muted); }
+    .foot { margin-top:13px; color:var(--muted); font-size:11px; }
+    .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
+    .menu-backdrop[hidden], .ticker-sheet[hidden] { display:none; }
+    .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(360px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
+    .ticker-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
+    .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
+    .ticker-sheet-head span { display:block; color:var(--muted); font-size:11px; font-weight:400; }
+    .ticker-sheet-close { border:0; color:var(--muted); background:transparent; font-size:22px; line-height:1; cursor:pointer; }
+    .ticker-wheel { display:flex; flex-direction:column; height:calc(44vh - 100px); overflow-y:auto; scroll-snap-type:y mandatory; border:1px solid var(--line); border-radius:11px; background:rgba(7,16,24,.52); }
+    .ticker-wheel-item { display:flex; flex:0 0 42px; align-items:center; justify-content:space-between; gap:10px; scroll-snap-align:center; padding:6px 13px; border:0; border-bottom:1px solid rgba(32,56,73,.55); color:var(--muted); background:transparent; text-align:left; cursor:pointer; }
+    .ticker-wheel-item:last-child { border-bottom:0; }
+    .ticker-wheel-item strong { font-size:13px; }
+    .ticker-wheel-item span { overflow:hidden; color:var(--muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+    .ticker-wheel-item.is-current { color:var(--text); background:rgba(85,217,213,.13); box-shadow:inset 3px 0 var(--aqua); }
+    .ticker-wheel-item.is-current strong { color:var(--aqua); }
+    .ticker-wheel-item:disabled { opacity:.62; cursor:not-allowed; }
+    .ticker-wheel-item:disabled strong { color:var(--muted); }
+    @media (min-width:1000px) {
+      body { padding-top:0; padding-bottom:0; }
+      .ticker-sheet { top:73px; bottom:auto; }
+    }
+    @media (max-width:560px) {
+      body { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+      .home { padding:16px 12px 30px; }
+      .top { display:block; }
+      .section { padding:12px; }
+      .coverage-header, .ticker-row { min-width:0; }
+      .ticker-sheet { width:calc(100vw - 24px); }
+    }
+    @media (min-width:561px) and (max-width:999px) and (min-height:600px) {
+      .ticker-sheet { top:73px; }
+      body { font-size:16px; }
+      .home { padding:24px; }
+      h1 { font-size:28px; }
+      .subtitle { font-size:15px; }
+      .section { padding:18px; }
+      .section-head strong { font-size:15px; }
+      .section-head span, .coverage-tab { font-size:13px; }
+      .coverage-tab { padding:8px 12px; }
+      .coverage-header { font-size:12px; }
+      .ticker-copy strong { font-size:16px; }
+      .latest-confidence { font-size:15px; }
+      .latest-date, .history-entry, .foot { font-size:13px; }
+      .action { font-size:14px; }
+      .ticker-sheet-head strong { font-size:15px; }
+      .ticker-sheet-head span, .ticker-wheel-item span { font-size:13px; }
+      .ticker-wheel-item strong { font-size:15px; }
+    }
+    @media (max-width:560px) {
+      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
+      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
+    }
+    /* Portrait phones keep the analysis scan line compact: ticker, price,
+       confidence, updated date, and the inline history affordance. */
+    @media (max-width:560px) and (orientation: portrait) {
+      .ticker-list { overflow-x:visible; }
+      .coverage-header, .ticker-row { min-width:0; }
+      .coverage-header { grid-template-columns:9px 58px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .ticker-row { grid-template-columns:9px 58px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
+      .coverage-header .price-column, .ticker-row .latest-price { display:none; }
+      .ticker-history { grid-column:8; }
+      .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
+      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
+      .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
+    }
+    /* Small landscape phones still use a compact scan row; do not let the
+       tablet sizing rules make the history panel oversized. */
+    @media (max-width:700px) and (orientation: landscape) {
+      body { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+      .home { padding:16px 12px 30px; }
+      .section { padding:12px; }
+      .ticker-list { overflow-x:visible; }
+      .coverage-header, .ticker-row { min-width:0; }
+      .coverage-header { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; }
+      .ticker-row { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
+      .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
+      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
+      .history-entry { line-height:1.45; overflow-wrap:break-word; word-break:normal; }
+      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
+      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
+    }
+    /* iPhone landscape is wider than 700px. Use the viewport height to keep
+       it in the compact phone treatment instead of the larger tablet rules. */
+    @media (max-width:999px) and (orientation: landscape) and (max-height:500px) {
+      body { font-size:15px; padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+      .home { width:min(760px,100%); padding:16px 12px 30px; }
+      .section { padding:12px; }
+      .coverage-header, .ticker-row { min-width:0; }
+      .coverage-header { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding-left:8px; padding-right:8px; font-size:10px; }
+      .ticker-row { grid-template-columns:9px 58px 62px 28px 28px 58px 62px 22px; gap:6px; padding:9px 8px; }
+      .latest-confidence { font-size:13px; }
+      .latest-date { font-size:11px; }
+      .ticker-history-toggle { grid-column:8; grid-row:1; font-size:18px; }
+      .history-panel { grid-column:1 / -1; grid-row:2; min-width:0; margin-left:0; padding-right:2px; }
+      .history-entry { font-size:11px; line-height:1.45; overflow-wrap:break-word; word-break:normal; }
+      .ticker-sheet { top:auto; bottom:calc(69px + env(safe-area-inset-bottom)); height:min(44vh,320px); max-height:min(44vh,320px); }
+      .ticker-wheel { height:calc(min(44vh,320px) - 100px); }
+    }
+  </style>
+</head>
+<body>
+  <main class="home">
+    <header class="top">
+      <div><div class="eyebrow">ELLIOTT+ STOCK ANALYSIS</div><h1>Coverage</h1><p class="subtitle">Covered tickers · 點選代號開啟日線分析</p></div>
+    </header>
+    <section class="section" aria-labelledby="coverage-heading">
+      <div class="section-head">
+        <strong id="coverage-heading">Coverage</strong>
+        <div class="section-head-tools">
+          <span id="coverage-count"></span>
+        </div>
+      </div>
+      <div class="ticker-list" id="ticker-list"></div>
+    </section>
+    <p class="foot">綠點表示有可用的新分析；歷史紀錄採 append-only 保存，點選每列右側「+」即可查看。</p>
+  </main>
+  <button type="button" class="menu-backdrop" id="menu-backdrop" aria-label="關閉代號選單" hidden></button>
+  <section class="ticker-sheet" id="ticker-sheet" aria-label="Ticker selections" hidden>
+    <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
+    <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
+  </section>
+  <script src="../coverage-order.js?v=20260911-labels-v1"></script>
+  <script src="../shared-menu.js?v=20260911-single-ticker-v2"></script>
+  <elliott-shared-menu data-current="coverage" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script>
-  <script src="../chart-surface/analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
-      const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
-      const liveProxyUrls = [
-        'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec',
-        'https://script.google.com/macros/s/AKfycbxNVxg0LVUZVMafRyQ0aYkMy8z5GXj3Cbkk1XmidPKjeiixNJswqJNHhmZ7jsIm2holHw/exec'
-      ];
+      const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -20,14 +227,14 @@
         }
       };
       const mergeRuntimeContract = (fallback, live) => {
-        if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
+        if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
         [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
         return {
           ...fallback,
           ...live,
-          coverage: live.coverage?.length ? live.coverage : fallback.coverage,
+          coverage: live.coverage.length ? live.coverage : fallback.coverage,
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -39,31 +246,8 @@
           }
         };
       };
-      const latestAnalysisDate = (live) => (live?.analysisRuns || [])
-        .map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10))
-        .filter(Boolean)
-        .sort()
-        .at(-1) || '';
-      const freshestLiveContract = (payloads) => payloads.filter(Boolean).sort((a, b) => {
-        const dateCompare = latestAnalysisDate(b).localeCompare(latestAnalysisDate(a));
-        if (dateCompare) return dateCompare;
-        const generatedCompare = String(b.generatedAt || '').localeCompare(String(a.generatedAt || ''));
-        if (generatedCompare) return generatedCompare;
-        return (b.analysisRuns || []).length - (a.analysisRuns || []).length;
-      })[0] || null;
-      const fetchLiveContract = async () => {
-        const payloads = await Promise.all(liveProxyUrls.map(async (url) => {
-          try {
-            const live = await fetchJsonWithTimeout(`${url}?format=json&refresh=${Date.now()}`, 60000);
-            return live && !live.error && Array.isArray(live.coverage) ? live : null;
-          } catch (_) {
-            return null;
-          }
-        }));
-        return freshestLiveContract(payloads);
-      };
-      const liveCacheKey = 'stock-analysis-live-contract-v3';
-      let activeContract = mergeRuntimeContract(contract, browserFallback);
+      const liveCacheKey = 'stock-analysis-live-contract-v2';
+      let activeContract = contract;
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
         if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(activeContract) || latestAnalysisDate(cached) >= latestAnalysisDate(activeContract))) activeContract = mergeRuntimeContract(activeContract, cached);
@@ -72,8 +256,219 @@
       const refreshLiveInBackground = async () => {
         if (window.location.protocol === 'file:') return;
         try {
-          const live = await fetchLiveContract();
+          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 60000);
           if (!live || !Array.isArray(live.coverage)) return;
           const nextSignature = liveSignature(live);
           const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
           sessionStorage.setItem(liveCacheKey, JSON.stringify(live));
+          sessionStorage.setItem(`${liveCacheKey}-signature`, nextSignature);
+          if (nextSignature !== previousSignature) window.location.reload();
+        } catch (_) {
+          // The already-rendered bundled or cached contract remains usable.
+        }
+      };
+      const datasets = activeContract.datasets?.benchmark || {};
+      const partialChartSources = {
+        '2330': '../chart-surface/partial-market-data/2330.json', '2646': '../chart-surface/partial-market-data/2646.json', 'NBIS': '../chart-surface/partial-market-data/NBIS.json', 'IREN': '../chart-surface/partial-market-data/IREN.json',
+        'ACHR': '../chart-surface/partial-market-data/ACHR.json', 'AMKR': '../chart-surface/partial-market-data/AMKR.json',
+        'CSCO': '../chart-surface/partial-market-data/CSCO.json', 'LITE': '../chart-surface/partial-market-data/LITE.json',
+        'MRVL': '../chart-surface/partial-market-data/MRVL.json', 'NOK': '../chart-surface/partial-market-data/NOK.json',
+        'NVDA': '../chart-surface/partial-market-data/NVDA.json', 'ONDS': '../chart-surface/partial-market-data/ONDS.json',
+        'PLTR': '../chart-surface/partial-market-data/PLTR.json', 'SNDK': '../chart-surface/partial-market-data/SNDK.json', 'AVGO': '../chart-surface/partial-market-data/AVGO.json'
+      };
+      const partialDatasets = {};
+      await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
+        try {
+          const data = await fetchJsonWithTimeout(source, 1200);
+          if (data) partialDatasets[ticker] = data;
+        } catch (_) {
+          // The contract and explicit packet snapshot remain usable when a chart seed is unavailable.
+        }
+      }));
+      const priceDatasets = { ...datasets, ...partialDatasets };
+      const irisV2 = window.PROTOTYPE_IRIS_V2 || {};
+      const v2Batches = Object.values(irisV2.batches || {});
+      const v2Runs = v2Batches.flatMap((batch) => [
+        ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily })),
+        ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly }))
+      ]);
+      const runMap = new Map();
+      [...(activeContract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
+      const runs = [...runMap.values()];
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
+      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
+      const twseTickers = new Set(['2330', '2646']);
+      const canonicalCoverageGroup = (ticker) => {
+        const symbol = String(ticker || '').trim().toUpperCase();
+        if (trackingTickers.has(symbol)) return 'tracking';
+        if (explorationTickers.has(symbol)) return 'exploration';
+        return null;
+      };
+      const inferredCoverageGroup = (ticker) => canonicalCoverageGroup(ticker) || 'tracking';
+      const inferredMarketGroup = (ticker) => twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
+      const baseCoverage = [
+        ...(activeContract.coverage || []).map((item) => ({ ...item, coverageGroup: canonicalCoverageGroup(item.ticker) || item.coverageGroup || item.CoverageGroup || inferredCoverageGroup(item.ticker), marketGroup: item.marketGroup || item.MarketGroup || inferredMarketGroup(item.ticker) })),
+        ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true, coverageGroup: inferredCoverageGroup(ticker), marketGroup: inferredMarketGroup(ticker) }))
+      ].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
+      let overrides = {};
+      try { overrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { overrides = {}; }
+      const allRows = () => {
+        const merged = new Map(baseCoverage.map((item) => [item.ticker, { ...item }]));
+        Object.entries(overrides).forEach(([ticker, item]) => merged.set(ticker, { ...(merged.get(ticker) || { ticker }), ...item }));
+        return [...merged.values()];
+      };
+      const rows = () => allRows().filter((item) => item.removed !== true);
+      const query = new URLSearchParams(window.location.search);
+      const selectedTicker = query.get('ticker') || rows().find((item) => item.active !== false && item.hidden !== true)?.ticker || '';
+      const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+      const normalizePriceSnapshot = (snapshot, fallbackBar) => {
+        const source = snapshot && typeof snapshot === 'object' ? snapshot : {};
+        const value = Number(source.value ?? source.price ?? source.last ?? source.close);
+        if (Number.isFinite(value)) {
+          const status = source.status === 'snapshot' ? 'snapshot' : 'close';
+          return { value, status, label: status === 'snapshot' ? '現價快照' : '收盤價', asOf: source.asOf || source.dataThrough || '' };
+        }
+        if (snapshot && ['pending', 'not_applicable'].includes(String(source.status || '').toLowerCase())) return null;
+        const close = Number(fallbackBar?.close);
+        return Number.isFinite(close) ? { value: close, status: 'close', label: '收盤價', asOf: fallbackBar?.date || '' } : null;
+      };
+      const formatPrice = (value) => Number.isFinite(Number(value)) ? Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+      const normalizeCoverageGroup = (value, ticker = '') => {
+        const normalized = String(value ?? '').trim().toLowerCase();
+        if (['exploration', 'explore', 'exploratory'].includes(normalized)) return 'exploration';
+        if (['tracking', 'tracked', 'track'].includes(normalized)) return 'tracking';
+        return explorationTickers.has(String(ticker || '').trim().toUpperCase()) ? 'exploration' : 'tracking';
+      };
+      const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracked · 追蹤';
+      const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group, item.ticker);
+      const normalizeMarketGroup = (value, ticker = '') => {
+        const normalized = String(value ?? '').trim().toLowerCase();
+        if (['twse', 'taiwan', 'taiwan stock exchange', 'taiwan-stock-exchange'].includes(normalized)) return 'twse';
+        return twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
+      };
+      const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
+      const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
+      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
+      const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
+      const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
+      const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
+      const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
+      const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
+      const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
+      const preferredRuns = (ticker) => {
+        const candidates = runs.filter((run) => run.ticker === ticker);
+        return candidates.sort((a, b) => compareRuns(a, b) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)));
+      };
+      const latestRun = (ticker) => preferredRuns(ticker).filter((run) => !isWeeklyRun(run))[0] || preferredRuns(ticker)[0];
+      const latestWeeklyRun = (ticker) => preferredRuns(ticker).find(isWeeklyRun) || null;
+      const validDirection = (value) => ['up', 'flat', 'down'].includes(String(value || '').toLowerCase()) ? String(value).toLowerCase() : null;
+      const watchDirectionFor = (run, timeframe) => {
+        const direct = validDirection(run?.watchDirection?.[timeframe] || run?.[`${timeframe}WatchDirection`]);
+        if (direct) return direct;
+        return validDirection(run?.technicalEvidence?.patterns?.[`${timeframe}Primary`]?.watch_direction);
+      };
+      const confidenceFor = (run) => {
+        const value = Number(run?.confidencePercent ?? run?.confidence);
+        return Number.isFinite(value) ? value : null;
+      };
+      const directionRunFor = (ticker, timeframe) => {
+        const weekly = timeframe === 'weekly';
+        return preferredRuns(ticker).find((run) => (weekly ? isWeeklyRun(run) : !isWeeklyRun(run)) && watchDirectionFor(run, timeframe)) || null;
+      };
+      const priceSnapshotFor = (ticker, latest, coverageItem) => normalizePriceSnapshot(coverageItem?.priceSnapshot || latest?.priceSnapshot || latest?.currentPriceSnapshot, priceDatasets[ticker]?.bars?.at(-1));
+      const list = document.getElementById('ticker-list');
+      const coverage = window.PROTOTYPE_SORT_COVERAGE(rows().filter((item) => item.active !== false && item.hidden !== true));
+      const trackingCount = coverage.filter((item) => coverageGroup(item) === 'tracking').length;
+      const explorationCount = coverage.filter((item) => coverageGroup(item) === 'exploration').length;
+      const twseCount = coverage.filter((item) => marketGroup(item) === 'twse').length;
+      document.getElementById('coverage-count').textContent = `${coverage.length} 個 active ticker · Tracked ${trackingCount} · Exploration ${explorationCount} · TWSE ${twseCount}`;
+      const currentAnalysis = document.getElementById('current-analysis');
+      if (currentAnalysis) currentAnalysis.href = `../chart-surface/index.html?ticker=${encodeURIComponent(selectedTicker)}&view=daily`;
+      const renderTickerRows = (items) => items.map((item) => {
+        const latest = latestRun(item.ticker);
+        const weekly = latestWeeklyRun(item.ticker);
+        const dailyDirectionRun = directionRunFor(item.ticker, 'daily') || latest;
+        const weeklyDirectionRun = directionRunFor(item.ticker, 'weekly') || weekly || latest;
+        const history = runs.filter((run) => run.ticker === item.ticker).sort((a, b) => String(b.analysisDate).localeCompare(String(a.analysisDate)));
+        const historyHtml = history.length ? history.map((run) => `<div class="history-entry"><strong>${escapeHtml(run.analysisDate)}</strong> · ${escapeHtml(run.runType === 'weekly' ? '週線' : '日線')} · 信心 ${escapeHtml(confidenceFor(run) == null ? '—' : `${confidenceFor(run)}%`)} · ${escapeHtml(run.wyckoff || 'Wyckoff 未標示')}<br>${escapeHtml(run.thesis || run.pattern || '')}</div>`).join('') : '<div class="history-entry">尚無分析紀錄</div>';
+        const directionMap = { up: { symbol: '↗', key: 'up', label: '上行觀察' }, down: { symbol: '↘', key: 'down', label: '下行觀察' }, flat: { symbol: '→', key: 'flat', label: '盤整觀察' }, null: { symbol: '—', key: 'pending', label: '觀察方向待定' } };
+        const directionCell = (run, timeframe) => {
+          const forecast = directionMap[watchDirectionFor(run, timeframe) ?? 'null'] || directionMap.null;
+          return `<span class="latest-direction" data-direction="${escapeHtml(forecast.key)}" title="${escapeHtml(forecast.label)}" aria-label="${escapeHtml(forecast.label)}">${escapeHtml(forecast.symbol)}</span>`;
+        };
+        const compactDate = latest?.analysisDate ? latest.analysisDate.slice(5).replace('-', '/') : '—';
+        const hasDetail = canOpenChart(item.ticker, latest);
+        const rowAttributes = hasDetail
+          ? ` class="ticker-row has-detail" data-ticker="${escapeHtml(item.ticker)}" role="button" tabindex="0" aria-label="開啟 ${escapeHtml(item.ticker)} 分析"`
+          : ` class="ticker-row is-disabled" title="尚無可用分析，暫不可開啟"`;
+        const confidenceValue = confidenceFor(latest);
+        const confidence = confidenceValue == null ? '—' : `${confidenceValue}%`;
+        const confidenceTitle = latest?.confidenceBand ? `信心區間：${latest.confidenceBand}` : '';
+        const priceSnapshot = priceSnapshotFor(item.ticker, latest, item);
+        const price = priceSnapshot ? formatPrice(priceSnapshot.value) : '—';
+        const priceTitle = priceSnapshot ? `${priceSnapshot.label}${priceSnapshot.asOf ? ` · ${priceSnapshot.asOf}` : ''}` : '尚無價格資料';
+        return `<div${rowAttributes}><span class="new-dot" title="${latest ? `新分析：${escapeHtml(latest.analysisDate)}` : ''}" ${latest ? '' : 'hidden'}></span><span class="ticker-copy"><strong>${escapeHtml(item.ticker)}</strong></span><span class="latest-price" title="${escapeHtml(priceTitle)}">${escapeHtml(price)}</span>${directionCell(dailyDirectionRun, 'daily')}${directionCell(weeklyDirectionRun, 'weekly')}<span class="latest-confidence" title="${escapeHtml(confidenceTitle)}">${escapeHtml(confidence)}</span><span class="latest-date" title="${latest ? `更新 ${escapeHtml(latest.analysisDate)}` : ''}">${latest ? escapeHtml(compactDate) : '—'}</span><button type="button" class="ticker-history-toggle" aria-label="${escapeHtml(item.ticker)} 分析歷史" aria-controls="history-${escapeHtml(item.ticker)}" aria-expanded="false">+</button><div class="history-panel" id="history-${escapeHtml(item.ticker)}" hidden>${historyHtml}</div></div>`;
+      }).join('');
+      const renderCoverageGroup = (group, items) => {
+        const label = coverageGroupLabel(group);
+        const rowsHtml = items.length ? `<div class="coverage-header" role="row"><span aria-hidden="true"></span><span>代號</span><span class="price-column">收盤價</span><span title="觀察方向 · 日線" aria-label="觀察方向 · 日線">日方向</span><span title="觀察方向 · 週線" aria-label="觀察方向 · 週線">週方向</span><span>信心 (%)</span><span>更新</span><span aria-hidden="true"></span></div>${renderTickerRows(items)}` : '<p class="coverage-group-empty">尚無 ticker</p>';
+        return `<section class="coverage-group" data-group="${group}"><div class="coverage-group-head"><strong>${label}</strong><span>${items.length} 個 ticker</span></div>${rowsHtml}</section>`;
+      };
+      const usCoverage = coverage.filter((item) => marketGroup(item) !== 'twse');
+      const twseCoverage = coverage.filter((item) => marketGroup(item) === 'twse');
+      list.innerHTML = [
+        renderCoverageGroup('tracking', usCoverage.filter((item) => coverageGroup(item) === 'tracking')),
+        renderCoverageGroup('exploration', usCoverage.filter((item) => coverageGroup(item) === 'exploration')),
+        `<section class="market-group" data-market-group="twse"><div class="market-group-head"><strong>${marketGroupLabel('twse')}</strong><span>${twseCoverage.length} 個 ticker</span></div>${['tracking', 'exploration'].map((group) => renderCoverageGroup(group, twseCoverage.filter((item) => coverageGroup(item) === group))).join('')}</section>`
+      ].join('');
+      list.querySelectorAll('.ticker-row.has-detail[data-ticker]').forEach((row) => {
+        const open = () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(row.dataset.ticker)}&view=daily`; };
+        row.addEventListener('click', (event) => { if (!event.target.closest('.ticker-history-toggle, .history-panel')) open(); });
+        row.addEventListener('keydown', (event) => { if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('.ticker-history-toggle, .history-panel')) { event.preventDefault(); open(); } });
+      });
+      list.querySelectorAll('.ticker-history-toggle').forEach((button) => button.addEventListener('click', () => {
+        const panel = button.nextElementSibling;
+        const open = panel && !panel.hidden;
+        if (panel) panel.hidden = open;
+        button.setAttribute('aria-expanded', String(!open));
+        button.textContent = open ? '+' : '−';
+      }));
+      const closeTickerSheet = () => {
+        document.getElementById('ticker-sheet').hidden = true;
+        document.getElementById('menu-backdrop').hidden = true;
+        document.getElementById('ticker-menu-toggle').setAttribute('aria-expanded', 'false');
+      };
+      const wheel = document.getElementById('ticker-wheel');
+      wheel.replaceChildren(...coverage.map((item) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ticker-wheel-item' + (item.ticker === selectedTicker ? ' is-current' : '');
+        button.dataset.ticker = item.ticker;
+        button.setAttribute('role', 'option');
+        button.setAttribute('aria-selected', String(item.ticker === selectedTicker));
+        const ticker = document.createElement('strong'); ticker.textContent = item.ticker;
+        const company = document.createElement('span'); company.textContent = item.company || item.ticker;
+        button.append(ticker, company);
+        const hasDetail = canOpenChart(item.ticker, latestRun(item.ticker));
+        button.disabled = !hasDetail;
+        if (!hasDetail) button.title = '尚無可用分析，暫不可開啟';
+        if (hasDetail) button.addEventListener('click', () => { window.location.href = `../chart-surface/index.html?ticker=${encodeURIComponent(item.ticker)}&view=daily`; });
+        return button;
+      }));
+      const currentItem = wheel.querySelector('.is-current');
+      if (currentItem) wheel.scrollTop = Math.max(0, currentItem.offsetTop - wheel.clientHeight / 2 + currentItem.offsetHeight / 2);
+      document.getElementById('ticker-menu-toggle').addEventListener('click', () => {
+        const sheet = document.getElementById('ticker-sheet');
+        const open = sheet.hidden;
+        sheet.hidden = !open;
+        document.getElementById('menu-backdrop').hidden = !open;
+        document.getElementById('ticker-menu-toggle').setAttribute('aria-expanded', String(open));
+      });
+      document.getElementById('ticker-sheet-close').addEventListener('click', closeTickerSheet);
+      document.getElementById('menu-backdrop').addEventListener('click', closeTickerSheet);
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !document.getElementById('ticker-sheet').hidden) closeTickerSheet(); });
+      void refreshLiveInBackground();
+    })();
+  </script>
+</body>
+</html>
