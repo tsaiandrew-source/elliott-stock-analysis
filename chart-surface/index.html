@@ -466,12 +466,14 @@
   <script src="analysis-details.js?v=20260905-1"></script>
   <script src="analysis-geometry.js?v=20260909-1"></script>
   <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script>
+  <script src="analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
       const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {};
+      const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
       const liveProxyUrls = [
         'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec',
         'https://script.google.com/macros/s/AKfycbxNVxg0LVUZVMafRyQ0aYkMy8z5GXj3Cbkk1XmidPKjeiixNJswqJNHhmZ7jsIm2holHw/exec'
@@ -530,7 +532,7 @@
         return freshestLiveContract(payloads);
       };
       const liveCacheKey = 'stock-analysis-live-contract-v3';
-      let contract = bundledContract;
+      let contract = mergeRuntimeContract(bundledContract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
         if (cached && Array.isArray(cached.coverage)) contract = mergeRuntimeContract(bundledContract, cached);

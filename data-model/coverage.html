@@ -211,10 +211,12 @@
   <script src="../shared-menu.js?v=20260911-single-ticker-v1"></script>
   <elliott-shared-menu data-current="coverage" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script>
+  <script src="../chart-surface/analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
+      const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
       const liveProxyUrls = [
         'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec',
         'https://script.google.com/macros/s/AKfycbxNVxg0LVUZVMafRyQ0aYkMy8z5GXj3Cbkk1XmidPKjeiixNJswqJNHhmZ7jsIm2holHw/exec'
@@ -273,7 +275,7 @@
         return freshestLiveContract(payloads);
       };
       const liveCacheKey = 'stock-analysis-live-contract-v3';
-      let activeContract = contract;
+      let activeContract = mergeRuntimeContract(contract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
         if (cached && Array.isArray(cached.coverage)) activeContract = mergeRuntimeContract(contract, cached);
