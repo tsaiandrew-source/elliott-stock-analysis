@@ -83,6 +83,7 @@ for (const file of htmlFiles) {
     if (!html.includes("technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary']")) failures.push(`${file}: selected daily/weekly pattern coordinates are not wired to the chart`);
     if (/if \(state\.view === 'weekly' \|\| !bars\.length \|\| !pattern\) return \[\]/.test(html)) failures.push(`${file}: weekly pattern geometry is still disabled`);
     if (!html.includes("state.view === 'weekly' ? null")) failures.push(`${file}: weekly charts can still fall back to daily geometry sidecars`);
+    if (!html.includes('const DAILY_VISIBLE_MONTHS = 4') || !html.includes('setDefaultChartWindow(bars)')) failures.push(`${file}: daily chart default window is not constrained to the recent four months`);
   }
   if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
