@@ -465,13 +465,13 @@
   <script src="weekly-history.js?v=20260905-1"></script>
   <script src="analysis-details.js?v=20260905-1"></script>
   <script src="analysis-geometry.js?v=20260909-1"></script>
-  <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script>
+  <script src="analysis-packets-v2.js?v=20260911-refresh-fix"></script><script src="analysis-live-fallback.js?v=20260911-9-10-fallback"></script>
   <script src="eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
       const L = window.LightweightCharts;
-      const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {};
+      const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {}; const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
       const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
@@ -484,14 +484,14 @@
         }
       };
       const mergeRuntimeContract = (fallback, live) => {
-        if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
+        if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
         [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
         return {
           ...fallback,
           ...live,
-          coverage: live.coverage.length ? live.coverage : fallback.coverage,
+          coverage: live.coverage?.length ? live.coverage : fallback.coverage,
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -503,8 +503,8 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v2';
-      let contract = bundledContract;
+      const latestAnalysisDate = (live) => (live?.analysisRuns || []).map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10)).filter(Boolean).sort().at(-1) || ''; const liveCacheKey = 'stock-analysis-live-contract-v3';
+      let contract = mergeRuntimeContract(bundledContract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
         if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(contract) || latestAnalysisDate(cached) >= latestAnalysisDate(contract))) contract = mergeRuntimeContract(contract, cached);
