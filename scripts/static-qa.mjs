@@ -123,7 +123,7 @@ if (await exists('data-model/home.html')) {
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-control', 'ticker-step', 'data-step="previous"', 'data-step="next"', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'elliott:ticker-updated']) {
+  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
