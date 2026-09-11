@@ -969,8 +969,7 @@
       function classifyBars(bars) {
         const mids = sma(bars.map((bar) => bar.close), 20);
         return bars.map((bar, i) => {
-          const previous = bars[i - 1];
-          if (!previous || mids[i] === null) return { ...bar, color: colors.transition, borderColor: colors.transition, wickColor: colors.transition, state: 'Transition' };
+          const previous = bars[i - 1];          if (!previous || mids[i] === null) return { ...bar, color: colors.transition, borderColor: colors.transition, wickColor: colors.transition, state: 'Transition' };
           const closeDelta = (bar.close - previous.close) / previous.close;
           const distance = Math.abs(bar.close - mids[i]) / mids[i];
           let stateName = 'Transition';
