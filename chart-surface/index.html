@@ -1005,7 +1005,24 @@
         return [...merged.values()].sort((a, b) => Number(a.time) - Number(b.time));
       }
 
+      const DAILY_VISIBLE_MONTHS = 4;
+      const DAILY_VISIBLE_RIGHT_OFFSET = 3;
       function viewBars(data) { return state.view === 'weekly' ? weeklyBars(data.bars, state.ticker) : data.bars; }
+
+      function setDefaultChartWindow(bars) {
+        chart.timeScale().fitContent();
+        if (!['daily', 'gex'].includes(state.view) || bars.length < 2) return;
+        const lastTime = Number(bars.at(-1)?.time);
+        if (!Number.isFinite(lastTime)) return;
+        const cutoff = new Date(lastTime * 1000);
+        cutoff.setUTCMonth(cutoff.getUTCMonth() - DAILY_VISIBLE_MONTHS);
+        const cutoffTime = cutoff.getTime() / 1000;
+        const firstVisible = Math.max(0, bars.findIndex((bar) => Number(bar.time) >= cutoffTime));
+        chart.timeScale().setVisibleLogicalRange({
+          from: firstVisible,
+          to: bars.length - 1 + DAILY_VISIBLE_RIGHT_OFFSET
+        });
+      }
 
       function gexView(data, expiryKey = state.gexExpiry) {
         const summary = data.gexSummary || {};
@@ -1565,7 +1582,7 @@
         freezeIndicatorFrame(rsiSeries.value, rsi.map((item) => item.value), 0, 100);
         const macdValues = [...macd.macd.map((item) => item.value), ...macd.signal.map((item) => item.value), ...histogram.map((item) => item.value), 0];
         freezeIndicatorFrame(macdSeries.macd, macdValues);
-        chart.timeScale().fitContent();
+        setDefaultChartWindow(bars);
         setPaneLayout();
         syncIndicatorRanges();
         chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
