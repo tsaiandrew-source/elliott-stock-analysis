@@ -15,6 +15,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/elliott-asterisk-icon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="../assets/elliott-asterisk-apple-touch-icon.png">
   <script src="../pwa-register.js" defer></script>
+  <script>
+    window.addEventListener('load', () => navigator.serviceWorker?.register('../service-worker-v21.js', { scope: '/', updateViaCache: 'none' }).catch(() => {}), { once: true });
+  </script>
   <title>股票分析圖表層</title>
   <script src="../assets/lightweight-charts-5.2.0.min.js"></script>
   <style>
