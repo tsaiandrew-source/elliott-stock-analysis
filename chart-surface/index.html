@@ -149,9 +149,9 @@
     .gex-landmark-expiry strong { color: var(--text); font-size: 11px; }
     .gex-landmark-number { grid-row: 1 / 3; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--watch-tone, var(--amber)); color: #071018; font-size: 9px; font-weight: 800; }
     .gex-landmark { display: grid; gap: 2px; min-width: 0; padding: 7px; border: 1px solid var(--line); border-radius: 7px; }
-    .gex-landmark b { font-size: 10px; }
-    .gex-landmark strong { color: var(--text); font-size: 13px; }
-    .gex-landmark small { color: var(--muted); font-size: 9px; line-height: 1.3; }
+    .gex-landmark b { max-width: 100%; font-size: 10px; overflow-wrap: anywhere; word-break: break-word; }
+    .gex-landmark strong { max-width: 100%; color: var(--text); font-size: 13px; overflow-wrap: anywhere; }
+    .gex-landmark small { max-width: 100%; color: var(--muted); font-size: 9px; line-height: 1.3; overflow-wrap: anywhere; }
     .gex-landmark[data-role="call"] { border-color: color-mix(in srgb, var(--green) 48%, var(--line)); }
     .gex-landmark[data-role="call"] b { color: var(--green); }
     .gex-landmark[data-role="put"] { border-color: color-mix(in srgb, var(--red) 48%, var(--line)); }
@@ -1461,6 +1461,45 @@
         setPaneLayout();
       }
 
+      function gexScenarioForStrike(ticker, strike, currentPrice) {
+        return ticker === 'NBIS' ? (strike >= 234.8
+          ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
+          : strike <= 222.63
+            ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
+            : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
+          : { direction: strike > currentPrice ? 'up' : strike < currentPrice ? 'down' : 'neutral', label: strike > currentPrice ? '上方情境' : strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
+      }
+
+      function buildGexOptionSummaryHtml(data) {
+        const universalGex = universalGexRecordFor(state.ticker);
+        const baseProfiles = universalGex ? [
+          { ...gexView(data, 'current') },
+          { ...gexView(data, 'next'), label: '下週到期' }
+        ] : [
+          { ...gexView(data, 'current'), ...data.gexViews?.current },
+          { ...gexView(data, 'next'), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
+        ];
+        const profiles = (window.ElliottGexOverview?.collectProfiles(baseProfiles, universalGex || data.gexSummary, 2) || baseProfiles)
+          .filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length)
+          .slice(0, 2);
+        if (!profiles.length) return '';
+        const sharedTicks = profiles.flatMap((profile) => profile.strikes || []);
+        const currentPrice = priceSnapshotFor(data, data.bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)))?.value || data.bars.at(-1)?.close || sharedTicks[0];
+        const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
+        return profiles.map((profile) => {
+          const signed = profile.profileKind === 'signed-dealer-gex';
+          const ranked = (profile.strikes || []).map((strike, index) => ({ strike: Number(strike), magnitude: Math.abs(Number(profile.exposure?.[index]) || 0) })).filter((item) => Number.isFinite(item.strike) && item.magnitude > 0).sort((a, b) => b.magnitude - a.magnitude);
+          const lower = signed ? profile.putWall : ranked.find((item) => item.strike < currentPrice)?.strike ?? null;
+          const upper = signed ? profile.callWall : ranked.find((item) => item.strike > currentPrice)?.strike ?? null;
+          const pivot = signed ? profile.flip : ranked[0]?.strike ?? null;
+          const band = lower != null && upper != null
+            ? `情境帶 ${fmt(lower)}–${fmt(upper)}；${signed ? `${fmt(pivot)} 為 Gamma Flip 參考。` : `${fmt(pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
+            : '目前只能定位敏感度集中，不能建立完整方向區間。';
+          const scenario = gexScenarioForStrike(state.ticker, pivot ?? upper ?? lower ?? currentPrice, currentPrice);
+          return `<strong>${escapeHtml(profile.label)}：</strong>${escapeHtml(band)}<br><strong>${escapeHtml(scenario.label)}：</strong>${escapeHtml(scenario.text)}`;
+        }).join('<br><br>');
+      }
+
       function renderGexProfile(data) {
         const container = $('gex-profile');
         if (state.view !== 'gex') {
@@ -1502,27 +1541,18 @@
         const displayTicks = [...new Set(displayProfiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
         const displayDomain = { min: Math.min(...displayTicks, currentPrice), max: Math.max(...displayTicks, currentPrice), ticks: displayTicks };
         const profileTones = ['#9a66c7', '#55d9d5', '#2d9cff', '#c8f169'];
-        const scenarioForStrike = (strike) => state.ticker === 'NBIS' ? (strike >= 234.8
-          ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
-          : strike <= 222.63
-            ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
-            : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
-          : { direction: strike > currentPrice ? 'up' : strike < currentPrice ? 'down' : 'neutral', label: strike > currentPrice ? '上方情境' : strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
-        const aggregateExpiries = [
-          data.gexSummary?.aggregateEvidence?.currentExpiration,
-          data.gexSummary?.aggregateEvidence?.nextExpiration,
-          ...(data.gexSummary?.aggregateEvidence?.additionalExpirations || [])
-        ].filter(Boolean);
+        const scenarioForStrike = (strike) => gexScenarioForStrike(state.ticker, strike, currentPrice);
         const landmarkFor = (profile) => {
-          const evidence = aggregateExpiries.find((item) => (item.expiration || item.expiry) === profile.expiry);
-          const node = (side) => evidence?.unsignedGammaSensitivity?.[side]?.dominantUnsignedNodes?.[0]?.strike ?? null;
           const signed = profile.profileKind === 'signed-dealer-gex';
-          const dominantIndex = (profile.exposure || []).reduce((best, value, index) => best < 0 || Math.abs(value) > Math.abs(profile.exposure[best]) ? index : best, -1);
+          const source = renderableProfiles.find((item) => item.expiry === profile.expiry) || profile;
+          const ranked = (source.strikes || []).map((strike, index) => ({ strike: Number(strike), magnitude: Math.abs(Number(source.exposure?.[index]) || 0) })).filter((item) => Number.isFinite(item.strike) && item.magnitude > 0).sort((a, b) => b.magnitude - a.magnitude);
+          const strongestBelow = ranked.find((item) => item.strike < currentPrice)?.strike ?? null;
+          const strongestAbove = ranked.find((item) => item.strike > currentPrice)?.strike ?? null;
           return {
-            call: signed ? profile.callWall : node('C'),
-            put: signed ? profile.putWall : node('P'),
+            call: signed ? profile.callWall : strongestAbove,
+            put: signed ? profile.putWall : strongestBelow,
             flip: signed ? profile.flip : null,
-            pivot: signed ? null : (dominantIndex >= 0 ? profile.strikes[dominantIndex] : null),
+            pivot: signed ? null : (ranked[0]?.strike ?? null),
             signed
           };
         };
@@ -1530,13 +1560,13 @@
           const rows = marketProfiles.slice(0, 4).map((profile, profileIndex) => {
             const landmark = landmarkFor(profile);
             const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
-            const callRelation = landmark.call == null ? '等待 signed GEX' : landmark.call > currentPrice ? '上方反應區' : '已位於現價下方';
-            const putRelation = landmark.put == null ? '等待 signed GEX' : landmark.put < currentPrice ? '下方反應區' : '已位於現價上方';
+            const callRelation = landmark.call == null ? '上方無可用節點' : '上方反應區';
+            const putRelation = landmark.put == null ? '下方無可用節點' : '下方反應區';
             const reading = landmark.call != null && landmark.put != null
               ? `情境帶 ${fmt(landmark.put)}–${fmt(landmark.call)}；${landmark.signed ? '' : `${fmt(landmark.pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
               : '目前只能定位敏感度集中，不能建立完整方向區間。';
             const scenario = scenarioForStrike(landmark.pivot ?? landmark.call ?? landmark.put ?? currentPrice);
-            return `<div class="gex-landmark-row" style="--watch-tone:${profileTones[profileIndex % profileTones.length]}"><span class="gex-landmark-expiry"><i class="gex-landmark-number">${profileIndex + 1}</i><strong>${escapeHtml(profile.label)}</strong>${escapeHtml(profile.expiry)}</span><span class="gex-landmark" data-role="put"><b>${landmark.signed ? 'Put Wall' : 'Put 支撐候選'}</b><strong>${fmt(landmark.put)}</strong><small>${putRelation}</small></span><span class="gex-landmark" data-role="flip"><b>${landmark.signed ? 'Gamma Flip' : 'Gamma Pivot 候選'}</b><strong>${fmt(landmark.signed ? landmark.flip : landmark.pivot)}</strong><small>${landmark.signed ? '波動狀態切換參考' : '低信心 · 正式 Flip 無法判定'}</small></span><span class="gex-landmark" data-role="call"><b>${landmark.signed ? 'Call Wall' : 'Call 壓力候選'}</b><strong>${fmt(landmark.call)}</strong><small>${callRelation}</small></span><p class="gex-landmark-reading" data-direction="${scenario.direction}" style="grid-column:2 / -1">${reading}<br><b>${scenario.label}：</b>${scenario.text}</p></div>`;
+            return `<div class="gex-landmark-row" style="--watch-tone:${profileTones[profileIndex % profileTones.length]}"><span class="gex-landmark-expiry"><i class="gex-landmark-number">${profileIndex + 1}</i><strong>${escapeHtml(profile.label)}</strong>${escapeHtml(profile.expiry)}</span><span class="gex-landmark" data-role="put"><b>${landmark.signed ? 'Put Wall' : '下方支撐候選'}</b><strong>${fmt(landmark.put)}</strong><small>${putRelation}</small></span><span class="gex-landmark" data-role="flip"><b>${landmark.signed ? 'Gamma Flip' : 'Gamma Pivot 候選'}</b><strong>${fmt(landmark.signed ? landmark.flip : landmark.pivot)}</strong><small>${landmark.signed ? '波動狀態切換參考' : '低信心 · 正式 Flip 無法判定'}</small></span><span class="gex-landmark" data-role="call"><b>${landmark.signed ? 'Call Wall' : '上方壓力候選'}</b><strong>${fmt(landmark.call)}</strong><small>${callRelation}</small></span><p class="gex-landmark-reading" data-direction="${scenario.direction}" style="grid-column:2 / -1">${reading}<br><b>${scenario.label}：</b>${scenario.text}</p></div>`;
           }).join('');
           return `<section class="gex-landmarks" data-gex-map-analysis aria-label="GEX 優先觀察"><div class="gex-landmarks-head"><strong>優先觀察</strong><span>本週優先 · 壓力座標 × Ely 情境</span></div>${rows}<p class="gex-heat-caveat">方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導。Unsigned sensitivity 不包含 dealer sign；候選節點不等於正式 Wall、Flip 或必然磁吸。</p></section>`;
         };
@@ -1570,7 +1600,7 @@
             const ring = (strike, color, extra, label) => strike == null ? '' : `<circle cx="${xFor(strike).toFixed(1)}" cy="${y}" r="${markerRadius(strike, extra).toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.4"><title>${label} ${window.ElliottGexOverview?.formatStrike(strike)}</title></circle>`;
             const pivotX = landmark.pivot == null ? null : xFor(landmark.pivot);
             const pivotMarker = pivotX == null ? '' : `<path d="M ${pivotX.toFixed(1)} ${y - 8} L ${(pivotX + 8).toFixed(1)} ${y} L ${pivotX.toFixed(1)} ${y + 8} L ${(pivotX - 8).toFixed(1)} ${y} Z" fill="none" stroke="#c68cff" stroke-width="2.4"><title>Gamma Pivot 候選 ${window.ElliottGexOverview?.formatStrike(landmark.pivot)}</title></path>`;
-            const semanticMarkers = `${ring(landmark.put, '#ff7695', 4, landmark.signed ? 'Put Wall' : 'Put 支撐候選')}${pivotMarker}${ring(landmark.call, '#7ee787', 8, landmark.signed ? 'Call Wall' : 'Call 壓力候選')}`;
+            const semanticMarkers = `${ring(landmark.put, '#ff7695', 4, landmark.signed ? 'Put Wall' : '下方支撐候選')}${pivotMarker}${ring(landmark.call, '#7ee787', 8, landmark.signed ? 'Call Wall' : '上方壓力候選')}`;
             return `<text x="${left - 12}" y="${y - 7}" fill="#edf6fb" text-anchor="end" font-size="${compactGex ? 15 : 13}" font-weight="700">${profile.label}</text><text x="${left - 12}" y="${y + 12}" fill="${profileTones[profileIndex]}" text-anchor="end" font-size="${compactGex ? 13 : 11}">${profile.expiry} · ${shareByExpiry.get(profile.expiry) || 0}%</text><line x1="${left}" y1="${y}" x2="${mapWidth - right}" y2="${y}" stroke="#203849" stroke-width="2"/>${nodes}${semanticMarkers}${dominantLabel}`;
           }).join('');
           const ticks = Array.from({ length: 5 }, (_, index) => domain.min + (domain.max - domain.min) * index / 4);
@@ -1578,7 +1608,7 @@
           const spotX = xFor(currentPrice);
           const evidenceKind = marketProfiles.every((profile) => profile.profileKind === 'signed-dealer-gex') ? 'Signed dealer GEX map' : 'Unsigned sensitivity map';
           const landmarks = renderLandmarks(marketProfiles);
-          return `<section class="gex-market-map" aria-label="GEX 市場壓力地圖"><div class="gex-market-map-head"><strong>市場壓力地圖</strong><span>${evidenceKind} · ${laneCount} 個到期日</span></div><p class="gex-market-summary">${escapeHtml(overview?.interpretation || '')}</p><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的跨週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="${axisY - 29}" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="${axisY}" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="${axisY}" x2="${mapWidth - right}" y2="${axisY}" stroke="#91a8b7"/>${axis}</svg>${landmarks}<div class="gex-market-map-note"><span data-role="put">紅圈＝Put 候選</span><span data-role="flip">紫菱形＝Gamma Pivot</span><span data-role="call">綠圈＝Call 候選</span><span>候選座標不是 dealer 部位</span></div></section>`;
+          return `<section class="gex-market-map" aria-label="GEX 市場壓力地圖"><div class="gex-market-map-head"><strong>市場壓力地圖</strong><span>${evidenceKind} · ${laneCount} 個到期日</span></div><p class="gex-market-summary">${escapeHtml(overview?.interpretation || '')}</p><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的跨週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="${axisY - 29}" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="${axisY}" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="${axisY}" x2="${mapWidth - right}" y2="${axisY}" stroke="#91a8b7"/>${axis}</svg>${landmarks}<div class="gex-market-map-note"><span data-role="put">紅圈＝下方支撐候選</span><span data-role="flip">紫菱形＝Gamma Pivot</span><span data-role="call">綠圈＝上方壓力候選</span><span>Unsigned 候選不是 dealer Wall／Flip</span></div></section>`;
         };
         const marketMapMarkup = renderMarketMap(displayProfiles, displayDomain);
         const renderPanel = (gex, key, domain) => {
@@ -1933,7 +1963,10 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        $('options').textContent = isGex ? gex.text : data.options;
+        const optionsPanel = $('options');
+        const gexOptionSummaryHtml = buildGexOptionSummaryHtml(data);
+        if (gexOptionSummaryHtml) optionsPanel.innerHTML = gexOptionSummaryHtml;
+        else optionsPanel.textContent = isGex ? gex.text : data.options;
         $('freshness').textContent = isGex ? gex.freshness : data.freshness;
         $('contract-status').textContent = '';
         $('contract-status').hidden = true;
