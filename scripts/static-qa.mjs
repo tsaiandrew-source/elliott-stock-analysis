@@ -29,6 +29,7 @@ const requiredFiles = [
   'chart-surface/universal-refresh-gex-consumer.js',
   'scripts/validate-universal-refresh-gex.mjs',
   'scripts/ingest-universal-refresh-gex.mjs',
+  'scripts/run-universal-refresh-gex-cycle.mjs',
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
