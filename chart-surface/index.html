@@ -1537,10 +1537,12 @@
           const evidence = aggregateExpiries.find((item) => (item.expiration || item.expiry) === profile.expiry);
           const node = (side) => evidence?.unsignedGammaSensitivity?.[side]?.dominantUnsignedNodes?.[0]?.strike ?? null;
           const signed = profile.profileKind === 'signed-dealer-gex';
+          const dominantIndex = (profile.exposure || []).reduce((best, value, index) => best < 0 || Math.abs(value) > Math.abs(profile.exposure[best]) ? index : best, -1);
           return {
             call: signed ? profile.callWall : node('C'),
             put: signed ? profile.putWall : node('P'),
             flip: signed ? profile.flip : null,
+            pivot: signed ? null : (dominantIndex >= 0 ? profile.strikes[dominantIndex] : null),
             signed
           };
         };
@@ -1551,9 +1553,9 @@
             const callRelation = landmark.call == null ? '等待 signed GEX' : landmark.call > currentPrice ? '上方反應區' : '已位於現價下方';
             const putRelation = landmark.put == null ? '等待 signed GEX' : landmark.put < currentPrice ? '下方反應區' : '已位於現價上方';
             const reading = landmark.call != null && landmark.put != null
-              ? `情境帶 ${fmt(landmark.put)}–${fmt(landmark.call)}；站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
+              ? `情境帶 ${fmt(landmark.put)}–${fmt(landmark.call)}；${landmark.signed ? '' : `${fmt(landmark.pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
               : '目前只能定位敏感度集中，不能建立完整方向區間。';
-            return `<div class="gex-landmark-row"><span class="gex-landmark-expiry"><strong>${escapeHtml(profile.label)}</strong>${escapeHtml(profile.expiry)}</span><span class="gex-landmark" data-role="put"><b>${landmark.signed ? 'Put Wall' : 'Put 支撐候選'}</b><strong>${fmt(landmark.put)}</strong><small>${putRelation}</small></span><span class="gex-landmark" data-role="flip"><b>Gamma Flip</b><strong>${fmt(landmark.flip)}</strong><small>${landmark.signed ? '波動狀態切換參考' : 'Unsigned 無法計算'}</small></span><span class="gex-landmark" data-role="call"><b>${landmark.signed ? 'Call Wall' : 'Call 壓力候選'}</b><strong>${fmt(landmark.call)}</strong><small>${callRelation}</small></span><p class="gex-landmark-reading" style="grid-column:2 / -1">${reading}</p></div>`;
+            return `<div class="gex-landmark-row"><span class="gex-landmark-expiry"><strong>${escapeHtml(profile.label)}</strong>${escapeHtml(profile.expiry)}</span><span class="gex-landmark" data-role="put"><b>${landmark.signed ? 'Put Wall' : 'Put 支撐候選'}</b><strong>${fmt(landmark.put)}</strong><small>${putRelation}</small></span><span class="gex-landmark" data-role="flip"><b>${landmark.signed ? 'Gamma Flip' : 'Gamma Pivot 候選'}</b><strong>${fmt(landmark.signed ? landmark.flip : landmark.pivot)}</strong><small>${landmark.signed ? '波動狀態切換參考' : '低信心 · 正式 Flip 無法判定'}</small></span><span class="gex-landmark" data-role="call"><b>${landmark.signed ? 'Call Wall' : 'Call 壓力候選'}</b><strong>${fmt(landmark.call)}</strong><small>${callRelation}</small></span><p class="gex-landmark-reading" style="grid-column:2 / -1">${reading}</p></div>`;
           }).join('');
           return `<section class="gex-landmarks" aria-label="GEX 壓力座標實驗"><div class="gex-landmarks-head"><strong>壓力座標</strong><span>候選牆位 × 情境驗證</span></div>${rows}</section>`;
         };
