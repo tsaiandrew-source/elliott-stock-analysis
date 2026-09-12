@@ -77,8 +77,8 @@ for (const file of htmlFiles) {
     if (!html.includes('const publicGexText')) failures.push(`${file}: public GEX text filter is missing`);
     if (!html.includes('const publicAnalysisText')) failures.push(`${file}: public analysis text filter is missing`);
     if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
-    if (!html.includes('市場壓力概覽') || !html.includes('ElliottGexOverview')) failures.push(`${file}: GEX market overview is not wired`);
-    if (!html.includes('到期日市場地圖') || !html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
+    if (!html.includes('市場壓力地圖') || !html.includes('ElliottGexOverview') || !html.includes('gex-market-summary')) failures.push(`${file}: consolidated GEX market-pressure map is not wired`);
+    if (!html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
     if (html.includes('履約價 × 到期日熱圖') || html.includes('heatmapMarkup')) failures.push(`${file}: discarded GEX heatmap is still wired`);
     if (!html.includes('data-gex-map-analysis') || !html.includes('selectWatchItems(marketProfiles)')) failures.push(`${file}: automatic GEX market-map watch analysis is not wired`);
     if (!html.includes('Math.min(4, marketProfiles.length)') || !html.includes('marketProfiles.slice(0, 4)')) failures.push(`${file}: GEX market map is not capped and laid out for four expirations`);
