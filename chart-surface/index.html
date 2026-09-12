@@ -1933,7 +1933,8 @@
           const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '';
           return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label || (kind === 'watch' ? '觀察方向' : '正式預測') };
         };
-        const analyzedPattern = patternUnavailable ? '型態待補' : String(pattern.text || '').replace(/形成中/g, '').trim() || '型態待補';
+        const analyzedPattern = patternUnavailable ? '' : String(pattern.text || '').replace(/形成中/g, '').trim();
+        const patternTimeframe = state.view === 'weekly' ? 'weekly' : 'daily';
         [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
           const element = $(id);
           const kind = id.startsWith('watch-') ? 'watch' : 'formal';
@@ -1948,8 +1949,9 @@
             const labelElement = item.querySelector('.direction-label');
             if (labelElement) {
               const baseLabel = item.dataset.baseLabel || labelElement.textContent;
+              const showPattern = Boolean(analyzedPattern) && item.dataset.kind === 'watch' && item.dataset.timeframe === patternTimeframe;
               item.dataset.baseLabel = baseLabel;
-              labelElement.textContent = `${baseLabel} · ${analyzedPattern}`;
+              labelElement.textContent = showPattern ? `${baseLabel} · ${analyzedPattern}` : baseLabel;
             }
           }
           element.setAttribute('aria-label', view.ariaLabel);
