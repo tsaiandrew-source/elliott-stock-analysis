@@ -1671,7 +1671,34 @@
           const exposureSpan = Math.max(maxExposure - minExposure, 0.1);
           const yFor = (value) => top + (maxExposure - value) / exposureSpan * plotHeight;
           const xFor = (strike) => left + (strike - minStrike) / Math.max(maxStrike - minStrike, 1) * plotWidth;
-          const barWidth = Math.max(16, Math.min(44, plotWidth / Math.max(strikes.length, 1) * .58));
+          // Keep the visual focused on the meaningful pressure nodes. Public
+          // aggregate chains often contain long runs of zero or tiny values;
+          // drawing every one makes the profile look like a solid barcode.
+          const nodes = strikes.map((strike, index) => ({ strike: Number(strike), value: Number(exposure[index]) }))
+            .filter((node) => Number.isFinite(node.strike) && Number.isFinite(node.value));
+          const nonZeroNodes = nodes.filter((node) => Math.abs(node.value) > 0);
+          const keepCount = Math.max(4, Math.ceil(nonZeroNodes.length * .8));
+          const visibleNodes = (nonZeroNodes.length > keepCount
+            ? [...nonZeroNodes].sort((a, b) => Math.abs(b.value) - Math.abs(a.value)).slice(0, keepCount)
+            : nonZeroNodes).sort((a, b) => a.strike - b.strike);
+          const labelNodes = [];
+          [...visibleNodes]
+            .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+            .forEach((node) => {
+              if (labelNodes.length >= 6) return;
+              const x = xFor(node.strike);
+              if (labelNodes.every((candidate) => Math.abs(xFor(candidate.strike) - x) >= 62)) labelNodes.push(node);
+            });
+          const labelStrikes = new Set(labelNodes.map((node) => node.strike));
+          const formatGexValue = (value) => {
+            const absolute = Math.abs(value);
+            const sign = value < 0 ? '-' : '';
+            if (absolute >= 1e9) return `${sign}${(absolute / 1e9).toFixed(1)}B`;
+            if (absolute >= 1e6) return `${sign}${(absolute / 1e6).toFixed(1)}M`;
+            if (absolute >= 1e3) return `${sign}${(absolute / 1e3).toFixed(1)}K`;
+            return `${value.toFixed(0)}`;
+          };
+          const barWidth = Math.max(10, Math.min(36, plotWidth / Math.max(visibleNodes.length, 1) * .58));
           const zeroY = yFor(0);
           const labeledBars = new Set(exposure.map((value, index) => ({ index, magnitude: Math.abs(value) })).sort((a, b) => b.magnitude - a.magnitude).slice(0, compactGex ? 3 : 5).map((item) => item.index));
           const cumulative = [];
@@ -1687,21 +1714,26 @@
             const controlTwo = { x: point.x - (next.x - previous.x) / 6, y: point.y - (next.y - previous.y) / 6 };
             return `${path} C ${controlOne.x.toFixed(1)} ${controlOne.y.toFixed(1)}, ${controlTwo.x.toFixed(1)} ${controlTwo.y.toFixed(1)}, ${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
           }, '');
-          const bars = strikes.map((strike, index) => {
+          const bars = visibleNodes.map(({ strike, value }) => {
             const x = xFor(strike) - barWidth / 2;
-            const y = Math.min(zeroY, yFor(exposure[index]));
-            const h = Math.max(2, Math.abs(yFor(exposure[index]) - zeroY));
-            const color = exposure[index] >= 0 ? '#24d17a' : '#ff4d6d';
+            const y = Math.min(zeroY, yFor(value));
+            const h = Math.max(2, Math.abs(yFor(value) - zeroY));
+            const color = value >= 0 ? '#24d17a' : '#ff4d6d';
             const valueInside = h >= 24;
-            const valueY = valueInside ? y + h / 2 + 4 : exposure[index] >= 0 ? y - 7 : y + h + 14;
+            const valueY = valueInside ? y + h / 2 + 4 : value >= 0 ? y - 7 : y + h + 14;
             const valueColor = valueInside ? '#071018' : '#91a8b7';
-            const valueLabel = labeledBars.has(index) ? `<text x="${xFor(strike).toFixed(1)}" y="${valueY.toFixed(1)}" fill="${valueColor}" text-anchor="middle" font-size="${valueSize}" font-weight="${valueInside ? '700' : '400'}">${window.ElliottGexOverview?.formatCompact(exposure[index]) || exposure[index].toFixed(0)}</text>` : '';
+            const valueLabel = labelStrikes.has(strike) ? `<text x="${xFor(strike).toFixed(1)}" y="${valueY.toFixed(1)}" fill="${valueColor}" text-anchor="middle" font-size="${valueSize}" font-weight="${valueInside ? '700' : '400'}">${formatGexValue(value)}</text>` : '';
             return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${color}" opacity=".9"/>${valueLabel}`;
           }).join('');
-          const maxAxisLabels = compactGex ? 5 : 8;
-          const labelEvery = Math.max(1, Math.ceil(domain.ticks.length / maxAxisLabels));
-          const xGrid = domain.ticks.map((strike, index) => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="#162b39" stroke-width="1"/>${index % labelEvery === 0 || index === domain.ticks.length - 1 ? `<text x="${xFor(strike).toFixed(1)}" y="${height - 18}" fill="#edf6fb" text-anchor="middle" font-size="${labelSize}" font-weight="700">${window.ElliottGexOverview?.formatStrike(strike) || `$${strike}`}</text>` : ''}`).join('');
-          const vline = (strike, color, label, row, dash = '7 5') => Number.isFinite(Number(strike)) ? `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} ${window.ElliottGexOverview?.formatStrike(strike) || `$${strike}`}</text>` : '';
+          const xGridTicks = [];
+          domain.ticks.forEach((strike) => {
+            const lastTick = xGridTicks.at(-1);
+            if (lastTick === undefined || xFor(strike) - xFor(lastTick) >= 62) xGridTicks.push(strike);
+          });
+          const finalTick = domain.ticks.at(-1);
+          if (finalTick !== undefined && xGridTicks.at(-1) !== finalTick && xFor(finalTick) - xFor(xGridTicks.at(-1)) >= 62) xGridTicks.push(finalTick);
+          const xGrid = [...new Set(xGridTicks)].map((strike) => `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="#162b39" stroke-width="1"/><text x="${xFor(strike).toFixed(1)}" y="${height - 18}" fill="#edf6fb" text-anchor="middle" font-size="${labelSize}" font-weight="700">${window.ElliottGexOverview?.formatStrike(strike) || `$${strike}`}</text>`).join('');
+          const vline = (strike, color, label, row, dash = '7 5') => Number.isFinite(Number(strike)) ? `<line x1="${xFor(strike).toFixed(1)}" y1="${top}" x2="${xFor(strike).toFixed(1)}" y2="${height - bottom}" stroke="${color}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${(xFor(strike) + 5).toFixed(1)}" y="${(top - 30 + row * 14).toFixed(1)}" fill="${color}" font-size="${labelSize}" font-weight="700" style="paint-order:stroke;stroke:#0b1721;stroke-width:4px">${label} $${strike}</text>` : '';
           const magnetIsFlip = gex.magnet === gex.flip;
           const magnetLine = vline(gex.magnet, '#65b7d6', magnetIsFlip ? 'Magnet／Flip' : 'Magnet', 1);
           const flipLine = magnetIsFlip ? '' : vline(gex.flip, '#9a66c7', 'Flip', 2);
