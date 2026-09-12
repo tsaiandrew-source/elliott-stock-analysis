@@ -85,7 +85,7 @@ for (const file of htmlFiles) {
     if (html.includes('履約價 × 到期日熱圖') || html.includes('heatmapMarkup')) failures.push(`${file}: discarded GEX heatmap is still wired`);
     if (!html.includes('data-gex-map-analysis') || !html.includes('本週優先 · 壓力座標 × Ely 情境')) failures.push(`${file}: consolidated GEX market-map watch analysis is not wired`);
     if (!html.includes('Math.min(4, marketProfiles.length)') || !html.includes('marketProfiles.slice(0, 4)')) failures.push(`${file}: GEX market map is not capped and laid out for four expirations`);
-    for (const label of ['日線觀察', '日線確認', '週線觀察', '週線確認']) {
+    for (const label of ['日線投影', '日線確認', '週線投影', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
     }
     if (html.includes('資料部分可用；完整度與限制已在摘要中整理。')) failures.push(`${file}: partial-status uncertainty notice is still public`);
