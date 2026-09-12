@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import vm from 'node:vm';
+import { validatePacket } from './validate-universal-refresh-gex.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -24,6 +25,9 @@ const requiredFiles = [
   'chart-surface/data-contract.js',
   'chart-surface/analysis-localization.js',
   'chart-surface/analysis-geometry.js',
+  'chart-surface/universal-refresh-gex-data.js',
+  'chart-surface/universal-refresh-gex-consumer.js',
+  'scripts/validate-universal-refresh-gex.mjs',
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
@@ -147,6 +151,17 @@ if (await exists('chart-surface/universal-refresh-gex-consumer.js')) {
   const gexConsumer = await read('chart-surface/universal-refresh-gex-consumer.js');
   for (const marker of ['unsigned_gamma_sensitivity', 'profileKind', 'unsigned-pressure']) {
     if (!gexConsumer.includes(marker)) failures.push(`chart-surface/universal-refresh-gex-consumer.js: missing ${marker}`);
+  }
+}
+
+if (await exists('chart-surface/universal-refresh-gex-data.js')) {
+  try {
+    const context = { window: {} };
+    vm.createContext(context);
+    vm.runInContext(await read('chart-surface/universal-refresh-gex-data.js'), context);
+    validatePacket(context.window.UNIVERSAL_REFRESH_GEX, 'UNIVERSAL_REFRESH_GEX');
+  } catch (error) {
+    failures.push(`Universal Refresh GEX packet: ${error.message}`);
   }
 }
 
