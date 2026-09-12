@@ -78,6 +78,7 @@ for (const file of htmlFiles) {
     if (!html.includes('const publicAnalysisText')) failures.push(`${file}: public analysis text filter is missing`);
     if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
     if (!html.includes('市場壓力概覽') || !html.includes('ElliottGexOverview')) failures.push(`${file}: GEX market overview is not wired`);
+    if (!html.includes('到期日市場地圖') || !html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
     for (const label of ['日線觀察', '日線確認', '週線觀察', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
     }
