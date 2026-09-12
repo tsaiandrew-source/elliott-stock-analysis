@@ -216,9 +216,22 @@
     .technical-subsection > h3 { margin-bottom: 0; }
     .consolidated-analysis .technical-subsection { margin: 0; }
     .consolidated-analysis .technical-subsection .pattern-combo { margin-top: 0; }
-    .wyckoff-subsection { margin-top: 10px; padding-top: 0; }
-    .wyckoff-subsection .wyckoff-title { margin: 0 0 6px; color: var(--aqua); font-size: 13px; font-weight: 800; }
-    .wyckoff-subsection .wyckoff-reading { margin: 0; color: var(--text); font-size: 15px; line-height: 1.42; }
+    .wyckoff-box { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--aqua); border-radius: 9px; background: rgba(17, 36, 51, .32); }
+    .wyckoff-box-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .wyckoff-box .wyckoff-title { margin: 0; color: var(--aqua); font-size: 13px; font-weight: 800; }
+    .wyckoff-box-scope { color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .wyckoff-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .wyckoff-button { display: grid; gap: 4px; min-width: 0; padding: 8px 9px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
+    .wyckoff-button[data-timeframe="daily"] { border-color: color-mix(in srgb, var(--aqua) 54%, transparent); }
+    .wyckoff-button[data-timeframe="weekly"] { border-color: color-mix(in srgb, var(--pattern-family) 54%, transparent); }
+    .wyckoff-button[data-state="ready"] { background: color-mix(in srgb, var(--aqua) 7%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--aqua) 18%, transparent); }
+    .wyckoff-button[data-state="pending"] { opacity: .78; }
+    .wyckoff-button-label { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .04em; }
+    .wyckoff-button-phase { color: var(--aqua); font-size: 13px; font-weight: 900; line-height: 1.25; }
+    .wyckoff-button[data-timeframe="weekly"] .wyckoff-button-phase { color: var(--pattern-family); }
+    .wyckoff-button-reading { color: var(--text); font-size: 14px; font-weight: 700; line-height: 1.35; }
+    .wyckoff-button[data-state="pending"] .wyckoff-button-reading { color: var(--muted); font-weight: 600; }
+    @media (max-width: 420px) { .wyckoff-buttons { grid-template-columns: 1fr; } }
     .summary + .summary { margin-top: 12px; }
     .summary p { margin-top: 8px; }
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
@@ -510,9 +523,20 @@
                       </div>
                     </div>
           </section>
-          <section class="wyckoff-subsection" aria-label="Wyckoff 階段 · 日線">
-            <h4 class="wyckoff-title" id="wyckoff-label">Wyckoff 階段 · 日線</h4>
-            <p class="wyckoff-reading" id="wyckoff"></p>
+          <section class="wyckoff-box" aria-label="Wyckoff 階段 · 日線與週線">
+            <div class="wyckoff-box-head"><h4 class="wyckoff-title">Wyckoff 階段</h4></div>
+            <div class="wyckoff-buttons" role="group" aria-label="Wyckoff 日線與週線讀法">
+              <div class="wyckoff-button" data-timeframe="daily" id="wyckoff-daily-card">
+                <span class="wyckoff-button-label">日線</span>
+                <span class="wyckoff-button-phase" id="wyckoff-daily-phase"></span>
+                <span class="wyckoff-button-reading" id="wyckoff-daily"></span>
+              </div>
+              <div class="wyckoff-button" data-timeframe="weekly" id="wyckoff-weekly-card">
+                <span class="wyckoff-button-label">週線</span>
+                <span class="wyckoff-button-phase" id="wyckoff-weekly-phase"></span>
+                <span class="wyckoff-button-reading" id="wyckoff-weekly"></span>
+              </div>
+            </div>
           </section>
           <p class="source-note cadence-note" id="thesis-refresh"></p>
         </section>
@@ -753,6 +777,12 @@
         if (value && typeof value === 'object') return String(value.currentPhase || value.pendingPhase || value.structure || '').trim();
         return String(value || '').trim();
       };
+      const wyckoffPhaseLabel = (value) => {
+        if (!value || typeof value !== 'object') return '';
+        const phase = String(value.current_phase || value.currentPhase || value.pending_phase || value.pendingPhase || '').trim();
+        if (!phase) return '';
+        return /^phase\s+/i.test(phase) ? phase : `Phase ${phase}`;
+      };
       const wyckoffPhaseFor = (run, timeframe) => {
         const structured = run?.technicalEvidence?.wyckoff?.[timeframe];
         if (structured && typeof structured === 'object') return structured;
@@ -831,8 +861,11 @@
           dailyWatchDirection: watchDirectionFor(dailyRun, 'daily'),
           weeklyWatchDirection: watchDirectionFor(weeklyRun || dailyRun, 'weekly'),
           thesis: publicAnalysisText(selectedRun.thesis),
-          wyckoff: wyckoffTextFor(patternRun, 'daily'),
-          weeklyWyckoff: wyckoffTextFor(patternRun, 'weekly'),
+          // Keep the two Wyckoff reads tied to their own canonical runs. The
+          // selected chart view must not replace a missing Weekly read with a
+          // Daily read or make the Weekly section disappear.
+          wyckoff: wyckoffTextFor(dailyRun, 'daily'),
+          weeklyWyckoff: wyckoffTextFor(weeklyRun || dailyRun, 'weekly'),
           wyckoffPhases: {
             daily: wyckoffPhaseFor(dailyRun, 'daily'),
             weekly: wyckoffPhaseFor(weeklyRun || dailyRun, 'weekly')
@@ -2058,11 +2091,19 @@
         }).join('');
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
         historyPanel.hidden = !historyEntries;
-        const rawWyckoffText = data.wyckoff;
-        const wyckoffText = /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(String(rawWyckoffText || '')) ? '' : String(rawWyckoffText || '');
-        $('wyckoff').textContent = wyckoffText;
-        const wyckoffSection = $('wyckoff').closest('.wyckoff-subsection');
-        if (wyckoffSection) wyckoffSection.hidden = !wyckoffText;
+        [['wyckoff-daily', data.wyckoff, data.wyckoffPhases?.daily, 'daily'], ['wyckoff-weekly', data.weeklyWyckoff, data.wyckoffPhases?.weekly, 'weekly']].forEach(([valueId, rawText, phase, timeframe]) => {
+          const raw = String(rawText || '').trim();
+          const gated = !raw || /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(raw);
+          const sourcePending = ['pending', 'unclassified'].includes(String(phase?.status || '').toLowerCase());
+          const missingRead = !raw && !phase;
+          const text = gated && (sourcePending || missingRead)
+            ? '尚未辨識（目前無可辯護交易區間）'
+            : (gated ? '' : raw);
+          $(`${valueId}-phase`).textContent = gated ? '' : wyckoffPhaseLabel(phase);
+          $(valueId).textContent = text;
+          const card = $(`${valueId}-card`);
+          if (card) card.dataset.state = gated && text ? 'pending' : 'ready';
+        });
         const secondary = data.patternCandidates?.secondary;
         const candidateSwitch = $('candidate-switch');
         const deduplicated = candidatesSimilar(data) || state.view === 'weekly';
