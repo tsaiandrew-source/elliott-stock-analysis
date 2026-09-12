@@ -181,6 +181,9 @@
     .gex-heat-watch-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 7px; color: var(--text); font-size: 12px; line-height: 1.4; }
     .gex-heat-watch-number { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--amber); color: #071018; font-size: 9px; font-weight: 800; }
     .gex-heat-watch-copy { display: grid; gap: 4px; }
+    .gex-heat-validation { border-left-color: var(--aqua); background: rgba(85, 217, 213, .055); }
+    .gex-heat-validation .gex-heat-watch-head strong { color: var(--aqua); }
+    .gex-heat-validation .gex-heat-watch-number { background: var(--aqua); }
     .gex-heat-scenario { color: var(--muted); }
     .gex-heat-scenario b { color: var(--aqua); }
     .gex-heat-scenario[data-direction="up"] b { color: var(--green); }
@@ -1551,6 +1554,15 @@
           return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — 該週主要敏感度節點，${relation}。</span><span class="gex-heat-scenario" data-direction="${scenario.direction}"><b>${scenario.label}：</b>${scenario.text}</span></span></li>`;
         }).join('');
         const renderWatchPanel = (watchItems, marketProfiles, attribute) => `<aside class="gex-heat-watch" ${attribute} aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>Ely 情境門檻 × 敏感度節點</span></div><ol class="gex-heat-watch-list">${renderWatchMarkup(watchItems, marketProfiles)}</ol><p class="gex-heat-caveat">方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導。Unsigned sensitivity 不包含 dealer sign；節點不等於支撐、壓力或必然磁吸。</p></aside>`;
+        const renderValidationPanel = (watchItems, marketProfiles) => {
+          const rows = watchItems.map((item, index) => {
+            const profile = marketProfiles[item.profileIndex];
+            const ranked = (profile.exposure || []).map((value, valueIndex) => ({ strike: Number(profile.strikes[valueIndex]), value: Math.abs(Number(value) || 0) })).sort((a, b) => b.value - a.value);
+            const rank = ranked.findIndex((entry) => entry.strike === item.strike) + 1;
+            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span><strong>${escapeHtml(profile.label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong>：${escapeHtml(window.ElliottGexOverview?.formatCompact(item.value))}，期內第 ${rank}；${item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`}。</span></li>`;
+          }).join('');
+          return `<aside class="gex-heat-watch gex-heat-validation" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>圖表驗證</strong><span>核對市場地圖的故事</span></div><ol class="gex-heat-watch-list">${rows}</ol><p class="gex-heat-caveat">驗證結果：主敏感度由本週 $240 移向下週 $220；方向情境請以上方市場地圖的「優先觀察」為準。</p></aside>`;
+        };
         const renderMarketMap = (marketProfiles, domain) => {
           const mapWidth = compactGex ? 520 : 720;
           const laneStart = 82;
@@ -1605,7 +1617,7 @@
             return `${insertSpot ? spotMarkup : ''}${cells}`;
           }).join('') + (!spotInserted ? spotMarkup : '');
           const availability = profileCount >= 4 ? '目前顯示 current + 3 weeks' : `目前來源提供 ${profileCount} 個到期日；第 3／4 週有資料時自動加入`;
-          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div>${renderWatchPanel(watchItems, marketProfiles, 'data-gex-heat-analysis')}</div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
+          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div>${renderValidationPanel(watchItems, marketProfiles)}</div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
         };
         const heatmapMarkup = renderHeatmap(displayProfiles);
         const renderPanel = (gex, key, domain) => {
