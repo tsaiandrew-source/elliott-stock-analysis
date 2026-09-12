@@ -1463,6 +1463,7 @@
 
       function renderGexProfile(data) {
         const container = $('gex-profile');
+        container.dataset.currentWeekOptionHtml = '';
         if (state.view !== 'gex') {
           container.hidden = true;
           container.replaceChildren();
@@ -1523,6 +1524,16 @@
           };
         };
         const renderLandmarks = (marketProfiles) => {
+          const currentProfile = marketProfiles[0];
+          if (currentProfile) {
+            const currentLandmark = landmarkFor(currentProfile);
+            const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
+            const scenario = scenarioForStrike(currentLandmark.pivot ?? currentLandmark.call ?? currentLandmark.put ?? currentPrice);
+            const band = currentLandmark.put != null && currentLandmark.call != null
+              ? `情境帶 ${fmt(currentLandmark.put)}–${fmt(currentLandmark.call)}；${currentLandmark.signed ? '' : `${fmt(currentLandmark.pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
+              : '目前只能定位敏感度集中，不能建立完整方向區間。';
+            container.dataset.currentWeekOptionHtml = `<strong>本週到期：</strong>${escapeHtml(band)}<br><strong>${escapeHtml(scenario.label)}：</strong>${escapeHtml(scenario.text)}`;
+          }
           const rows = marketProfiles.slice(0, 4).map((profile, profileIndex) => {
             const landmark = landmarkFor(profile);
             const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
@@ -1929,7 +1940,10 @@
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
-        $('options').textContent = isGex ? gex.text : data.options;
+        const optionsPanel = $('options');
+        const currentWeekOptionHtml = $('gex-profile').dataset.currentWeekOptionHtml;
+        if (isGex && currentWeekOptionHtml) optionsPanel.innerHTML = currentWeekOptionHtml;
+        else optionsPanel.textContent = isGex ? gex.text : data.options;
         $('freshness').textContent = isGex ? gex.freshness : data.freshness;
         $('contract-status').textContent = '';
         $('contract-status').hidden = true;
