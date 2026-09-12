@@ -1461,9 +1461,47 @@
         setPaneLayout();
       }
 
+      function gexScenarioForStrike(ticker, strike, currentPrice) {
+        return ticker === 'NBIS' ? (strike >= 234.8
+          ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
+          : strike <= 222.63
+            ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
+            : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
+          : { direction: strike > currentPrice ? 'up' : strike < currentPrice ? 'down' : 'neutral', label: strike > currentPrice ? '上方情境' : strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
+      }
+
+      function buildGexOptionSummaryHtml(data) {
+        const universalGex = universalGexRecordFor(state.ticker);
+        const baseProfiles = universalGex ? [
+          { ...gexView(data, 'current') },
+          { ...gexView(data, 'next'), label: '下週到期' }
+        ] : [
+          { ...gexView(data, 'current'), ...data.gexViews?.current },
+          { ...gexView(data, 'next'), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
+        ];
+        const profiles = (window.ElliottGexOverview?.collectProfiles(baseProfiles, universalGex || data.gexSummary, 2) || baseProfiles)
+          .filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length)
+          .slice(0, 2);
+        if (!profiles.length) return '';
+        const sharedTicks = profiles.flatMap((profile) => profile.strikes || []);
+        const currentPrice = priceSnapshotFor(data, data.bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)))?.value || data.bars.at(-1)?.close || sharedTicks[0];
+        const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
+        return profiles.map((profile) => {
+          const signed = profile.profileKind === 'signed-dealer-gex';
+          const ranked = (profile.strikes || []).map((strike, index) => ({ strike: Number(strike), magnitude: Math.abs(Number(profile.exposure?.[index]) || 0) })).filter((item) => Number.isFinite(item.strike) && item.magnitude > 0).sort((a, b) => b.magnitude - a.magnitude);
+          const lower = signed ? profile.putWall : ranked.find((item) => item.strike < currentPrice)?.strike ?? null;
+          const upper = signed ? profile.callWall : ranked.find((item) => item.strike > currentPrice)?.strike ?? null;
+          const pivot = signed ? profile.flip : ranked[0]?.strike ?? null;
+          const band = lower != null && upper != null
+            ? `情境帶 ${fmt(lower)}–${fmt(upper)}；${signed ? `${fmt(pivot)} 為 Gamma Flip 參考。` : `${fmt(pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
+            : '目前只能定位敏感度集中，不能建立完整方向區間。';
+          const scenario = gexScenarioForStrike(state.ticker, pivot ?? upper ?? lower ?? currentPrice, currentPrice);
+          return `<strong>${escapeHtml(profile.label)}：</strong>${escapeHtml(band)}<br><strong>${escapeHtml(scenario.label)}：</strong>${escapeHtml(scenario.text)}`;
+        }).join('<br><br>');
+      }
+
       function renderGexProfile(data) {
         const container = $('gex-profile');
-        container.dataset.currentWeekOptionHtml = '';
         if (state.view !== 'gex') {
           container.hidden = true;
           container.replaceChildren();
@@ -1503,12 +1541,7 @@
         const displayTicks = [...new Set(displayProfiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
         const displayDomain = { min: Math.min(...displayTicks, currentPrice), max: Math.max(...displayTicks, currentPrice), ticks: displayTicks };
         const profileTones = ['#9a66c7', '#55d9d5', '#2d9cff', '#c8f169'];
-        const scenarioForStrike = (strike) => state.ticker === 'NBIS' ? (strike >= 234.8
-          ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
-          : strike <= 222.63
-            ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
-            : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
-          : { direction: strike > currentPrice ? 'up' : strike < currentPrice ? 'down' : 'neutral', label: strike > currentPrice ? '上方情境' : strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
+        const scenarioForStrike = (strike) => gexScenarioForStrike(state.ticker, strike, currentPrice);
         const landmarkFor = (profile) => {
           const signed = profile.profileKind === 'signed-dealer-gex';
           const source = renderableProfiles.find((item) => item.expiry === profile.expiry) || profile;
@@ -1524,16 +1557,6 @@
           };
         };
         const renderLandmarks = (marketProfiles) => {
-          const currentProfile = marketProfiles[0];
-          if (currentProfile) {
-            const currentLandmark = landmarkFor(currentProfile);
-            const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
-            const scenario = scenarioForStrike(currentLandmark.pivot ?? currentLandmark.call ?? currentLandmark.put ?? currentPrice);
-            const band = currentLandmark.put != null && currentLandmark.call != null
-              ? `情境帶 ${fmt(currentLandmark.put)}–${fmt(currentLandmark.call)}；${currentLandmark.signed ? '' : `${fmt(currentLandmark.pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
-              : '目前只能定位敏感度集中，不能建立完整方向區間。';
-            container.dataset.currentWeekOptionHtml = `<strong>本週到期：</strong>${escapeHtml(band)}<br><strong>${escapeHtml(scenario.label)}：</strong>${escapeHtml(scenario.text)}`;
-          }
           const rows = marketProfiles.slice(0, 4).map((profile, profileIndex) => {
             const landmark = landmarkFor(profile);
             const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
@@ -1941,8 +1964,8 @@
           button.setAttribute('aria-pressed', String(active));
         });
         const optionsPanel = $('options');
-        const currentWeekOptionHtml = $('gex-profile').dataset.currentWeekOptionHtml;
-        if (isGex && currentWeekOptionHtml) optionsPanel.innerHTML = currentWeekOptionHtml;
+        const gexOptionSummaryHtml = buildGexOptionSummaryHtml(data);
+        if (gexOptionSummaryHtml) optionsPanel.innerHTML = gexOptionSummaryHtml;
         else optionsPanel.textContent = isGex ? gex.text : data.options;
         $('freshness').textContent = isGex ? gex.freshness : data.freshness;
         $('contract-status').textContent = '';
