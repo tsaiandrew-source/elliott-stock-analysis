@@ -22,7 +22,7 @@
       .shared-ticker-head strong,.ticker-sheet-head strong{color:var(--aqua,#55d9d5);font-size:13px}
       .ticker-sheet-head span{color:var(--muted,#91a8b7);font-size:11px;font-weight:400}
       .shared-ticker-close,.ticker-sheet-close{width:36px;height:36px;border:0;border-radius:9px;color:var(--muted,#91a5b4);background:transparent;font-size:22px;line-height:1;cursor:pointer}
-      .shared-ticker-wheel,.ticker-wheel{display:flex;min-height:0;height:auto;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scroll-snap-type:y proximity;scrollbar-width:thin;scrollbar-color:var(--aqua,#55d9d5) transparent;border:1px solid var(--line,#203849);border-radius:11px;background:rgba(7,16,24,.52)}
+      .shared-ticker-wheel,.ticker-wheel{display:flex;min-height:0;height:auto;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scroll-snap-type:none;scrollbar-width:thin;scrollbar-color:var(--aqua,#55d9d5) transparent;border:1px solid var(--line,#203849);border-radius:11px;background:rgba(7,16,24,.52)}
       .shared-ticker-item,.ticker-wheel-item{display:flex;flex:0 0 44px;align-items:center;justify-content:space-between;gap:10px;padding:7px 13px;border:0;border-bottom:1px solid rgba(32,56,73,.55);color:var(--text,#edf6fb);background:transparent;text-align:left;font:800 13px/1 system-ui,-apple-system,sans-serif;cursor:pointer;scroll-snap-align:center}
       .shared-ticker-item:last-child,.ticker-wheel-item:last-child{border-bottom:0}
       .shared-ticker-item:hover,.shared-ticker-item:focus-visible,.ticker-wheel-item:hover,.ticker-wheel-item:focus-visible{color:var(--aqua,#55d9d5);background:rgba(85,217,213,.1);outline:0}
