@@ -1559,9 +1559,11 @@
             const profile = marketProfiles[item.profileIndex];
             const ranked = (profile.exposure || []).map((value, valueIndex) => ({ strike: Number(profile.strikes[valueIndex]), value: Math.abs(Number(value) || 0) })).sort((a, b) => b.value - a.value);
             const rank = ranked.findIndex((entry) => entry.strike === item.strike) + 1;
-            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span><strong>${escapeHtml(profile.label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong>：${escapeHtml(window.ElliottGexOverview?.formatCompact(item.value))}，期內第 ${rank}；${item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`}。</span></li>`;
+            const scenario = scenarioForStrike(item.strike);
+            const relation = item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`;
+            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — ${escapeHtml(window.ElliottGexOverview?.formatCompact(item.value))}、期內第 ${rank}，${relation}。</span><span class="gex-heat-scenario" data-direction="${scenario.direction}"><b>${scenario.label}：</b>${scenario.text}</span></span></li>`;
           }).join('');
-          return `<aside class="gex-heat-watch gex-heat-validation" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>圖表驗證</strong><span>核對市場地圖的故事</span></div><ol class="gex-heat-watch-list">${rows}</ol><p class="gex-heat-caveat">驗證結果：主敏感度由本週 $240 移向下週 $220；方向情境請以上方市場地圖的「優先觀察」為準。</p></aside>`;
+          return `<aside class="gex-heat-watch gex-heat-validation" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>履約價證據 × Ely 情境門檻</span></div><ol class="gex-heat-watch-list">${rows}</ol><p class="gex-heat-caveat">主敏感度由本週 $240 移向下週 $220。方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導；Unsigned sensitivity 不等於支撐、壓力或必然磁吸。</p></aside>`;
         };
         const renderMarketMap = (marketProfiles, domain) => {
           const mapWidth = compactGex ? 520 : 720;
