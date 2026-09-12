@@ -116,6 +116,7 @@ if (await exists('data-model/home.html')) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
   }
   if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
+  if (!home.includes('.edition-card[aria-expanded="true"] .edition-copy span')) failures.push('data-model/home.html: expanded digest summary is still truncated');
   if (home.includes('id="reader"') || home.includes('reader-toolbar')) failures.push('data-model/home.html: obsolete standalone digest reader remains');
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
   if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
