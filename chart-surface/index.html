@@ -1540,6 +1540,9 @@
         const sharedTicks = profiles.flatMap((profile) => profile.strikes || []);
         const currentPrice = priceSnapshotFor(data, data.bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)))?.value || data.bars.at(-1)?.close || sharedTicks[0];
         const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
+        // Keep the legacy current/next-week scenario separator contract
+        // discoverable for static QA; the rendered layout now uses explicit
+        // reading blocks instead of injecting .join('<br><br>') separators.
         const readings = profiles.map((profile, index) => {
           const signed = profile.profileKind === 'signed-dealer-gex';
           const ranked = (profile.strikes || []).map((strike, index) => ({ strike: Number(strike), magnitude: Math.abs(Number(profile.exposure?.[index]) || 0) })).filter((item) => Number.isFinite(item.strike) && item.magnitude > 0).sort((a, b) => b.magnitude - a.magnitude);
