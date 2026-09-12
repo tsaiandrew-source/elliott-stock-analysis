@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import vm from 'node:vm';
+import { validatePacket } from './validate-universal-refresh-gex.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -24,6 +25,12 @@ const requiredFiles = [
   'chart-surface/data-contract.js',
   'chart-surface/analysis-localization.js',
   'chart-surface/analysis-geometry.js',
+  'chart-surface/universal-refresh-gex-data.js',
+  'chart-surface/universal-refresh-gex-consumer.js',
+  'scripts/validate-universal-refresh-gex.mjs',
+  'scripts/ingest-universal-refresh-gex.mjs',
+  'scripts/run-universal-refresh-gex-cycle.mjs',
+  'chart-surface/gex-market-overview.js',
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
@@ -75,7 +82,18 @@ for (const file of htmlFiles) {
     if (!html.includes('const compactReaderText')) failures.push(`${file}: compact reader text filter is missing`);
     if (!html.includes('const publicGexText')) failures.push(`${file}: public GEX text filter is missing`);
     if (!html.includes('const publicAnalysisText')) failures.push(`${file}: public analysis text filter is missing`);
-    if (!html.includes('.direction-item[hidden]')) failures.push(`${file}: incomplete direction rows are not hidden`);
+    if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
+    if (!html.includes('市場壓力地圖') || !html.includes('ElliottGexOverview') || !html.includes('gex-market-summary')) failures.push(`${file}: consolidated GEX market-pressure map is not wired`);
+    if (!html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
+    if (!html.includes('renderLandmarks(marketProfiles)') || !html.includes('下方支撐候選') || !html.includes('上方壓力候選') || !html.includes('Gamma Pivot 候選') || !html.includes('正式 Flip 無法判定')) failures.push(`${file}: evidence-gated GEX landmark experiment is not wired`);
+    if (!html.includes('紅圈＝下方支撐候選') || !html.includes('紫菱形＝Gamma Pivot') || !html.includes('綠圈＝上方壓力候選') || !html.includes('semanticMarkers')) failures.push(`${file}: GEX landmark colors and shapes are not tied back to the market map`);
+    if (!html.includes('buildGexOptionSummaryHtml(data)') || !html.includes(".join('<br><br>')")) failures.push(`${file}: options summary does not reuse current- and next-week GEX scenarios across views`);
+    if (html.includes('履約價 × 到期日熱圖') || html.includes('heatmapMarkup')) failures.push(`${file}: discarded GEX heatmap is still wired`);
+    if (!html.includes('data-gex-map-analysis') || !html.includes('本週優先 · 壓力座標 × Ely 情境')) failures.push(`${file}: consolidated GEX market-map watch analysis is not wired`);
+    if (!html.includes('Math.min(4, marketProfiles.length)') || !html.includes('marketProfiles.slice(0, 4)')) failures.push(`${file}: GEX market map is not capped and laid out for four expirations`);
+    for (const label of ['日線投影', '日線確認', '週線投影', '週線確認']) {
+      if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
+    }
     if (html.includes('資料部分可用；完整度與限制已在摘要中整理。')) failures.push(`${file}: partial-status uncertainty notice is still public`);
     if (html.includes('資料限制：${escapeHtml')) failures.push(`${file}: GEX limitation disclaimer is still public`);
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
@@ -83,6 +101,11 @@ for (const file of htmlFiles) {
     if (!html.includes("technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary']")) failures.push(`${file}: selected daily/weekly pattern coordinates are not wired to the chart`);
     if (/if \(state\.view === 'weekly' \|\| !bars\.length \|\| !pattern\) return \[\]/.test(html)) failures.push(`${file}: weekly pattern geometry is still disabled`);
     if (!html.includes("state.view === 'weekly' ? null")) failures.push(`${file}: weekly charts can still fall back to daily geometry sidecars`);
+    if (!html.includes('const coveragePrice = coverageItem && Number.isFinite(Number(coverageItem.price))')) failures.push(`${file}: chart price snapshot is not wired to the canonical coverage price`);
+    if (!html.includes('function aggregateWeeklyBars(bars)')) failures.push(`${file}: weekly chart is not wired to refresh from the latest daily bars`);
+    if (!html.includes('lastValueVisible: false });')) failures.push(`${file}: stale candle last-value label is still exposed`);
+    if (!html.includes('colors.currentPrice, 1, L.LineStyle.Dashed, true')) failures.push(`${file}: current price line does not expose the canonical price label`);
+    if (!html.includes('const DAILY_VISIBLE_MONTHS = 4') || !html.includes('setDefaultChartWindow(bars)')) failures.push(`${file}: daily chart default window is not constrained to the recent four months`);
   }
   if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
@@ -92,9 +115,35 @@ for (const file of htmlFiles) {
   }
 }
 
+if (await exists('chart-surface/gex-market-overview.js')) {
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(await read('chart-surface/gex-market-overview.js'), context);
+  const overview = context.ElliottGexOverview?.summarize([
+    { label: '本週到期', expiry: '2026-09-18', profileKind: 'unsigned-pressure', strikes: [95, 100, 105], exposure: [2, 8, 4] },
+    { label: '下週到期', expiry: '2026-09-25', profileKind: 'unsigned-pressure', strikes: [95, 100, 105], exposure: [2, 2, 2] }
+  ], 100);
+  if (!overview || overview.rows.length !== 2) failures.push('GEX market overview: two-expiration summary failed');
+  if (overview?.rows[0]?.dominant?.strike !== 100) failures.push('GEX market overview: dominant strike calculation failed');
+  if (Math.round((overview?.rows[0]?.share || 0) * 100) !== 70) failures.push('GEX market overview: expiration weighting failed');
+  if (!/不能推定造市商方向/.test(overview?.interpretation || '')) failures.push('GEX market overview: unsigned evidence guardrail missing');
+  const display = context.ElliottGexOverview?.displayProfile({ strikes: Array.from({ length: 80 }, (_, index) => index + 70), exposure: Array.from({ length: 80 }, (_, index) => index + 1) }, 100, 12);
+  if (!display || display.strikes.length > 12 || display.strikes.some((strike) => strike < 65 || strike > 135)) failures.push('GEX market overview: spot-centered display selection failed');
+  const collected = context.ElliottGexOverview?.collectProfiles([
+    { label: '本週到期', expiry: '2026-09-18', profileKind: 'unsigned-pressure', strikes: [100], exposure: [1] },
+    { label: '下週到期', expiry: '2026-09-25', profileKind: 'unsigned-pressure', strikes: [100], exposure: [1] }
+  ], { additionalExpirations: [
+    { expiry: '2026-10-02', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] },
+    { expiry: '2026-10-09', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] }
+  ] }, 4);
+  if (collected?.length !== 4 || collected[3]?.label !== '第4週到期') failures.push('GEX market overview: four-expiration expansion failed');
+  const fourWeekOverview = context.ElliottGexOverview?.summarize(collected, 100);
+  if (fourWeekOverview?.rows.length !== 4 || !/4 個到期日/.test(fourWeekOverview?.interpretation || '') || !/第4週到期/.test(fourWeekOverview?.interpretation || '')) failures.push('GEX market overview: four-expiration narrative failed');
+}
+
 if (await exists('data-model/coverage.html')) {
   const home = await read('data-model/coverage.html');
-  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
+  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'AVGO', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
   if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/coverage.html: partial-safe chart navigation gate is missing');
   for (const ticker of requiredPartialTickers) {
     if (!home.includes(`'${ticker}'`)) failures.push(`data-model/coverage.html: partial chart ticker missing from navigation fallback: ${ticker}`);
@@ -111,6 +160,7 @@ if (await exists('data-model/home.html')) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
   }
   if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
+  if (!home.includes('.edition-card[aria-expanded="true"] .edition-copy span')) failures.push('data-model/home.html: expanded digest summary is still truncated');
   if (home.includes('id="reader"') || home.includes('reader-toolbar')) failures.push('data-model/home.html: obsolete standalone digest reader remains');
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
   if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
@@ -118,13 +168,40 @@ if (await exists('data-model/home.html')) {
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain']) {
+  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:none']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
     const html = await read(file);
     if (!html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted`);
     if (!html.includes('data-ticker-page-href=')) failures.push(`${file}: shared swipe navigation destinations are incomplete`);
+  }
+}
+
+if (await exists('chart-surface/index.html')) {
+  const chart = await read('chart-surface/index.html');
+  if (!chart.includes('window.__elliottSelectTicker = selectTicker')) failures.push('chart-surface/index.html: inline ticker rail does not have an in-place selector hook');
+  if (!chart.includes('window.history.pushState({}, \'\', nextUrl)')) failures.push('chart-surface/index.html: ticker switching does not update browser history');
+  if (!chart.includes('preserveScroll') || !chart.includes('previousScrollTop')) failures.push('chart-surface/index.html: ticker menu re-render does not preserve phone scroll position');
+  if (!chart.includes('#gex-profile { position: relative;') || !chart.includes('<div id="gex-profile" aria-label="Gamma exposure graph" hidden></div>')) failures.push('chart-surface/index.html: GEX surface is not an independent layout region');
+  if (chart.includes("$('ticker-wheel').addEventListener('scroll'") || chart.includes('wheelScrollTimer')) failures.push('chart-surface/index.html: ticker menu must not change ticker on scroll');
+}
+
+if (await exists('chart-surface/universal-refresh-gex-consumer.js')) {
+  const gexConsumer = await read('chart-surface/universal-refresh-gex-consumer.js');
+  for (const marker of ['unsigned_gamma_sensitivity', 'profileKind', 'unsigned-pressure']) {
+    if (!gexConsumer.includes(marker)) failures.push(`chart-surface/universal-refresh-gex-consumer.js: missing ${marker}`);
+  }
+}
+
+if (await exists('chart-surface/universal-refresh-gex-data.js')) {
+  try {
+    const context = { window: {} };
+    vm.createContext(context);
+    vm.runInContext(await read('chart-surface/universal-refresh-gex-data.js'), context);
+    validatePacket(context.window.UNIVERSAL_REFRESH_GEX, 'UNIVERSAL_REFRESH_GEX');
+  } catch (error) {
+    failures.push(`Universal Refresh GEX packet: ${error.message}`);
   }
 }
 

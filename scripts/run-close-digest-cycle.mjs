@@ -2,8 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { consumeCloseDigest } from './consume-close-digest.mjs';
-import { releaseCloseDigest } from './release-close-digest.mjs';
+import { consumeDailyDigest, DAILY_EDITIONS } from './consume-close-digest.mjs';
+import { releaseDailyDigest } from './release-close-digest.mjs';
 
 const TIMEZONE = 'America/Los_Angeles';
 export const dateInLosAngeles = (value = new Date()) => {
@@ -17,12 +17,14 @@ async function exists(file) {
   try { await fs.access(file); return true; } catch { return false; }
 }
 
-export async function runCloseDigestCycle(options, dependencies = {}) {
-  const consume = dependencies.consume || consumeCloseDigest;
-  const release = dependencies.release || releaseCloseDigest;
+export async function runDailyDigestCycle(options, dependencies = {}) {
+  const consume = dependencies.consume || consumeDailyDigest;
+  const release = dependencies.release || releaseDailyDigest;
+  const edition = options.edition || 'close';
+  if (!DAILY_EDITIONS[edition]) throw new Error(`unsupported daily edition: ${edition}`);
   const now = options.now ? new Date(options.now) : new Date();
   const marketDate = options.marketDate || dateInLosAngeles(now);
-  const ackPath = path.join(path.resolve(options.stateDir), 'acks', `daily-${marketDate}-close.json`);
+  const ackPath = path.join(path.resolve(options.stateDir), 'acks', `daily-${marketDate}-${edition}.json`);
   let consumer;
 
   if (options.mode === 'recovery' && await exists(ackPath)) {
@@ -32,13 +34,14 @@ export async function runCloseDigestCycle(options, dependencies = {}) {
       repoRoot:options.repoRoot,
       outbox:options.outbox,
       stateDir:options.stateDir,
+      edition,
       marketDate,
       now,
       requirePresent:options.mode === 'recovery'
     });
   }
 
-  if (consumer.status === 'NOOP') return { status:'NOOP', reason:consumer.reason, marketDate };
+  if (consumer.status === 'NOOP') return { status:'NOOP', reason:consumer.reason, marketDate, edition };
   if (!['INGESTED', 'UNCHANGED'].includes(consumer.status)) throw new Error(`consumer did not succeed: ${consumer.status}`);
   if (!await exists(ackPath)) throw new Error('successful consumer acknowledgement is missing');
   const promoted = await release({
@@ -49,14 +52,17 @@ export async function runCloseDigestCycle(options, dependencies = {}) {
     now,
     maxAgeMinutes:options.maxAgeMinutes
   });
-  return { status:promoted.status, outcome:promoted.outcome, marketDate, digestId:consumer.digestId, release:promoted };
+  return { status:promoted.status, outcome:promoted.outcome, marketDate, edition, digestId:consumer.digestId, release:promoted };
 }
 
+export const runCloseDigestCycle = (options, dependencies = {}) => runDailyDigestCycle({ ...options, edition:'close' }, dependencies);
+
 function parseArgs(argv) {
-  const options = { maxAgeMinutes:180 };
+  const options = { edition:'close', maxAgeMinutes:180 };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--mode') options.mode = argv[++index];
+    else if (arg === '--edition') options.edition = argv[++index];
     else if (arg === '--repo-root') options.repoRoot = argv[++index];
     else if (arg === '--outbox') options.outbox = argv[++index];
     else if (arg === '--state-dir') options.stateDir = argv[++index];
@@ -67,13 +73,14 @@ function parseArgs(argv) {
     else throw new Error(`unknown argument ${arg}`);
   }
   if (!['primary', 'recovery'].includes(options.mode) || !options.repoRoot || !options.outbox || !options.stateDir) {
-    throw new Error('usage: run-close-digest-cycle.mjs --mode primary|recovery --repo-root <path> --outbox <path> --state-dir <path>');
+    throw new Error('usage: run-close-digest-cycle.mjs --edition morning|midday|close --mode primary|recovery --repo-root <path> --outbox <path> --state-dir <path>');
   }
+  if (!DAILY_EDITIONS[options.edition]) throw new Error(`unsupported daily edition: ${options.edition}`);
   return options;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  runCloseDigestCycle(parseArgs(process.argv.slice(2))).then((result) => {
+  runDailyDigestCycle(parseArgs(process.argv.slice(2))).then((result) => {
     console.log(JSON.stringify(result, null, 2));
   }).catch((error) => {
     console.error(JSON.stringify({ status:'FAILED_GATE', reason:error.message }, null, 2));

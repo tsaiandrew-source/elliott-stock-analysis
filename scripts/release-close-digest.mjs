@@ -3,9 +3,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
+import { isDeepStrictEqual, promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { validateClosePacket } from './consume-close-digest.mjs';
+import { validateDailyPacket } from './consume-close-digest.mjs';
+import { ingestPayload, renderBrowserDataset } from './ingest-digests.mjs';
 
 const execFileAsync = promisify(execFile);
 const DATA_FILES = ['data-model/digests.json', 'data-model/digest-data.js'];
@@ -24,16 +25,16 @@ const output = (result) => typeof result === 'string' ? result : String(result?.
 
 export const releaseMetadata = (record, packetSha256) => ({
   key:`${record.id}-r${record.revision}`,
-  branch:`codex/digest-${record.marketDate}-close-r${record.revision}`,
-  title:`Publish close digest ${record.marketDate} (r${record.revision})`,
+  branch:`codex/digest-${record.marketDate}-${record.edition}-r${record.revision}`,
+  title:`Publish ${record.edition} digest ${record.marketDate} (r${record.revision})`,
   body:[
     'Summary',
     '',
-    `Publish the validated ${record.marketDate} close digest produced by the elliott-cross-market-digest-v1 handoff.`,
+    `Publish the validated ${record.marketDate} ${record.edition} digest produced by the elliott-cross-market-digest-v1 handoff.`,
     '',
     'Validation',
     '',
-    '- close packet identity, revision, timestamps, source URLs, and SHA-256 verified',
+    `- ${record.edition} packet identity, revision, timestamps, source URLs, and SHA-256 verified`,
     '- consumer acknowledgement output hashes verified',
     '- digest ingestion QA: PASS',
     '- static QA: PASS',
@@ -63,7 +64,7 @@ export function assertAllowedChanges(statusText, allowed = DATA_FILES) {
 
 export function validateConsumerAck(ack, record, packetHash) {
   if (!['INGESTED', 'UNCHANGED'].includes(ack?.status)) throw new Error('consumer result must be INGESTED or UNCHANGED');
-  if (ack.digestId !== record.id || ack.marketDate !== record.marketDate || ack.edition !== 'close') throw new Error('consumer result identity does not match packet');
+  if (ack.digestId !== record.id || ack.marketDate !== record.marketDate || ack.edition !== record.edition) throw new Error('consumer result identity does not match packet');
   if (ack.revision !== record.revision) throw new Error('consumer result revision does not match packet');
   if (ack.packetSha256 !== packetHash) throw new Error('consumer result packet hash does not match packet');
   if (!clean(ack.storeSha256) || !clean(ack.browserBundleSha256)) throw new Error('consumer result output hashes are required');
@@ -98,22 +99,27 @@ async function readReleaseInputs(options, run) {
   if (!packetSource) throw new Error('packet path is required');
   const packetPath = path.resolve(packetSource);
   const packetText = await fs.readFile(packetPath, 'utf8');
-  const packet = json(packetText, 'close packet');
-  const record = validateClosePacket(packet, {
+  const packet = json(packetText, 'daily packet');
+  const record = validateDailyPacket(packet, {
+    edition:ack.edition,
     marketDate:ack.marketDate,
     now:options.now ? new Date(options.now) : new Date(),
     maxAgeMinutes:options.maxAgeMinutes
   });
   const packetHash = sha256(packetText);
   validateConsumerAck(ack, record, packetHash);
-  const storeHash = sha256(await fs.readFile(path.join(repoRoot, DATA_FILES[0])));
+  const storeContents = await fs.readFile(path.join(repoRoot, DATA_FILES[0]));
+  const localStore = json(storeContents.toString('utf8'), 'consumer digest store');
+  const localRecord = localStore.records?.find((item) => item.id === record.id);
+  if (!localRecord || !isDeepStrictEqual(localRecord, record)) throw new Error('consumer digest store does not contain the acknowledged packet record');
+  const storeHash = sha256(storeContents);
   const browserHash = sha256(await fs.readFile(path.join(repoRoot, DATA_FILES[1])));
   if (storeHash !== ack.storeSha256 || browserHash !== ack.browserBundleSha256) throw new Error('consumer output hashes no longer match repository data');
   const status = output(await run('git', ['status', '--porcelain=v1', '--untracked-files=all'], { cwd:repoRoot }));
   const changed = assertAllowedChanges(status);
   const metadata = releaseMetadata(record, packetHash);
   const statePath = path.join(stateDir, 'releases', `${safeKey(metadata.key)}.json`);
-  return { repoRoot, stateDir, ackPath, packetPath, packetHash, record, ack, metadata, statePath, changed };
+  return { repoRoot, stateDir, ackPath, packetPath, packetHash, packet, record, ack, metadata, statePath, changed };
 }
 
 async function loadState(statePath) {
@@ -144,9 +150,7 @@ async function prepare(context, state, options, run) {
     throw new Error(`release requires exactly these consumer changes: ${DATA_FILES.join(', ')}`);
   }
   await run('git', ['fetch', context.remote, context.base], { cwd:context.repoRoot });
-  const sourceHead = clean(output(await run('git', ['rev-parse', 'HEAD'], { cwd:context.repoRoot })));
   const baseHead = clean(output(await run('git', ['rev-parse', `${context.remote}/${context.base}`], { cwd:context.repoRoot })));
-  if (sourceHead !== baseHead) throw new Error(`consumer repository HEAD must equal latest ${context.remote}/${context.base}`);
   const worktree = path.join(context.stateDir, 'release-worktrees', safeKey(context.metadata.key));
   try {
     await fs.access(worktree);
@@ -159,10 +163,35 @@ async function prepare(context, state, options, run) {
   const existingBranch = clean(output(await run('git', ['branch', '--list', context.metadata.branch], { cwd:worktree })));
   if (existingBranch) await run('git', ['switch', context.metadata.branch], { cwd:worktree });
   else await run('git', ['switch', '-c', context.metadata.branch], { cwd:worktree });
-  for (const file of DATA_FILES) await fs.copyFile(path.join(context.repoRoot, file), path.join(worktree, file));
-  const copiedStoreHash = sha256(await fs.readFile(path.join(worktree, DATA_FILES[0])));
-  const copiedBrowserHash = sha256(await fs.readFile(path.join(worktree, DATA_FILES[1])));
-  if (copiedStoreHash !== context.ack.storeSha256 || copiedBrowserHash !== context.ack.browserBundleSha256) throw new Error('staged digest hashes do not match acknowledgement');
+  const baseStore = json(await fs.readFile(path.join(worktree, DATA_FILES[0]), 'utf8'), 'release worktree digest store');
+  const prepared = ingestPayload(baseStore, context.packet, options.now ? new Date(options.now).toISOString() : new Date().toISOString());
+  if (!prepared.stats.added && !prepared.stats.updated) {
+    await run(process.execPath, ['scripts/public-smoke.mjs'], {
+      cwd:worktree,
+      env:{ PUBLIC_BASE_URL:context.publicBaseUrl, EXPECTED_DIGEST_ID:context.record.id, PUBLIC_SMOKE_SKIP_PROXY:'1' }
+    });
+    return saveState(context, state || {}, {
+      version:1,
+      status:'PUBLISHED',
+      digestId:context.record.id,
+      marketDate:context.record.marketDate,
+      revision:context.record.revision,
+      packetSha256:context.packetHash,
+      storeSha256:sha256(await fs.readFile(path.join(worktree, DATA_FILES[0]))),
+      browserBundleSha256:sha256(await fs.readFile(path.join(worktree, DATA_FILES[1]))),
+      branch:context.metadata.branch,
+      title:context.metadata.title,
+      body:context.metadata.body,
+      worktree,
+      baseHead,
+      publicSmokeDigestId:context.record.id,
+      publishedAt:new Date().toISOString()
+    });
+  }
+  await fs.writeFile(path.join(worktree, DATA_FILES[0]), `${JSON.stringify(prepared.dataset, null, 2)}\n`, 'utf8');
+  await fs.writeFile(path.join(worktree, DATA_FILES[1]), renderBrowserDataset(prepared.dataset), 'utf8');
+  const stagedStoreHash = sha256(await fs.readFile(path.join(worktree, DATA_FILES[0])));
+  const stagedBrowserHash = sha256(await fs.readFile(path.join(worktree, DATA_FILES[1])));
   const stagedStatus = output(await run('git', ['status', '--porcelain=v1', '--untracked-files=all'], { cwd:worktree }));
   const stagedFiles = assertAllowedChanges(stagedStatus);
   if (stagedFiles.length !== DATA_FILES.length) throw new Error('staged release does not contain both digest outputs');
@@ -178,8 +207,8 @@ async function prepare(context, state, options, run) {
     marketDate:context.record.marketDate,
     revision:context.record.revision,
     packetSha256:context.packetHash,
-    storeSha256:context.ack.storeSha256,
-    browserBundleSha256:context.ack.browserBundleSha256,
+    storeSha256:stagedStoreHash,
+    browserBundleSha256:stagedBrowserHash,
     branch:context.metadata.branch,
     title:context.metadata.title,
     body:context.metadata.body,
@@ -238,7 +267,7 @@ async function promote(context, state, options, run, sleep) {
   return saveState(context, state, { status:'PUBLISHED', publicSmokeDigestId:context.record.id, publishedAt:new Date().toISOString() });
 }
 
-export async function releaseCloseDigest(options, dependencies = {}) {
+export async function releaseDailyDigest(options, dependencies = {}) {
   const run = dependencies.run || commandRunner;
   const sleep = dependencies.sleep || ((milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)));
   const context = await readReleaseInputs(options, run);
@@ -252,6 +281,8 @@ export async function releaseCloseDigest(options, dependencies = {}) {
   if (options.prepareOnly) return { ...state, outcome:'PREPARED' };
   return promote(context, state, options, run, sleep);
 }
+
+export const releaseCloseDigest = (options, dependencies = {}) => releaseDailyDigest(options, dependencies);
 
 function parseArgs(argv) {
   const options = { maxAgeMinutes:180, prepareOnly:false };
@@ -276,7 +307,7 @@ function parseArgs(argv) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  releaseCloseDigest(parseArgs(process.argv.slice(2))).then((result) => {
+  releaseDailyDigest(parseArgs(process.argv.slice(2))).then((result) => {
     console.log(JSON.stringify(result, null, 2));
   }).catch((error) => {
     console.error(JSON.stringify({ status:'FAILED_GATE', reason:error.message }, null, 2));

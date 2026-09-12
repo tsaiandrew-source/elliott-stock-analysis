@@ -89,12 +89,12 @@
     .foot { margin-top:13px; color:var(--muted); font-size:11px; }
     .menu-backdrop { position:fixed; z-index:49; inset:0; border:0; background:rgba(3,9,14,.48); cursor:pointer; }
     .menu-backdrop[hidden], .ticker-sheet[hidden] { display:none; }
-    .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(460px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
+    .ticker-sheet { position:fixed; z-index:50; top:73px; right:50%; width:min(360px,calc(100vw - 28px)); height:44vh; max-height:44vh; overflow:hidden; transform:translateX(50%); padding:13px; border:1px solid rgba(85,217,213,.35); border-radius:16px; background:rgba(13,26,37,.98); box-shadow:0 18px 46px rgba(0,0,0,.42); }
     .ticker-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
     .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
     .ticker-sheet-head span { display:block; color:var(--muted); font-size:11px; font-weight:400; }
     .ticker-sheet-close { border:0; color:var(--muted); background:transparent; font-size:22px; line-height:1; cursor:pointer; }
-    .ticker-wheel { display:flex; flex-direction:column; height:calc(44vh - 100px); overflow-y:auto; scroll-snap-type:y mandatory; border:1px solid var(--line); border-radius:11px; background:rgba(7,16,24,.52); }
+    .ticker-wheel { display:flex; flex-direction:column; height:calc(44vh - 100px); overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; scroll-snap-type:none; border:1px solid var(--line); border-radius:11px; background:rgba(7,16,24,.52); }
     .ticker-wheel-item { display:flex; flex:0 0 42px; align-items:center; justify-content:space-between; gap:10px; scroll-snap-align:center; padding:6px 13px; border:0; border-bottom:1px solid rgba(32,56,73,.55); color:var(--muted); background:transparent; text-align:left; cursor:pointer; }
     .ticker-wheel-item:last-child { border-bottom:0; }
     .ticker-wheel-item strong { font-size:13px; }
@@ -207,14 +207,14 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <script src="../shared-menu.js?v=20260910-4"></script>
+  <script src="../coverage-order.js?v=20260911-labels-v1"></script>
+  <script src="../shared-menu.js?v=20260912-menu-stability-v1"></script>
   <elliott-shared-menu data-current="coverage" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
-  <script src="../chart-surface/analysis-packets-v2.js?v=20260909-rich-reader-v1"></script>
+  <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script><script src="../chart-surface/analysis-live-fallback.js?v=20260911-9-11-fallback-v2"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
-  <script src="../coverage-order.js?v=20260909-v1"></script>
   <script>
     (async () => {
-      const contract = window.PROTOTYPE_DATA_CONTRACT || {};
+      const contract = window.PROTOTYPE_DATA_CONTRACT || {}; const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
       const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyNsvi0AFuZYFVnqxWajYeBLgzGuHOqHDAduZfaSMyfSzEWK2BsIaVBWEGxFrWKd9HGbQ/exec';
       const fetchJsonWithTimeout = async (url, timeoutMs = 2200) => {
         const controller = new AbortController();
@@ -227,14 +227,14 @@
         }
       };
       const mergeRuntimeContract = (fallback, live) => {
-        if (!live || live.error || !Array.isArray(live.coverage)) return fallback;
+        if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
         [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
         return {
           ...fallback,
           ...live,
-          coverage: [...fallback.coverage, ...live.coverage].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index),
+          coverage: [...new Map([...(fallback.coverage || []), ...(live.coverage || [])].map((item) => [item.ticker, item])).values()],
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -246,17 +246,17 @@
           }
         };
       };
-      const liveCacheKey = 'stock-analysis-live-contract-v2';
-      let activeContract = contract;
+      const latestAnalysisDate = (live) => (live?.analysisRuns || []).map((run) => String(run.analysisDate || run.AnalysisDate || run.dataThrough || run.DataThrough || '').slice(0, 10)).filter(Boolean).sort().at(-1) || ''; const liveCacheKey = 'stock-analysis-live-contract-v3';
+      let activeContract = mergeRuntimeContract(contract, browserFallback);
       try {
         const cached = JSON.parse(sessionStorage.getItem(liveCacheKey) || 'null');
-        if (cached && Array.isArray(cached.coverage)) activeContract = mergeRuntimeContract(contract, cached);
+        if (cached && Array.isArray(cached.coverage) && latestAnalysisDate(cached) && (!latestAnalysisDate(activeContract) || latestAnalysisDate(cached) >= latestAnalysisDate(activeContract))) activeContract = mergeRuntimeContract(activeContract, cached);
       } catch (_) { /* Ignore an unavailable or malformed browser cache. */ }
       const liveSignature = (live) => JSON.stringify({ coverage: live.coverage || [], analysisRuns: live.analysisRuns || [], tables: live.tables || {} });
       const refreshLiveInBackground = async () => {
         if (window.location.protocol === 'file:') return;
         try {
-          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 15000);
+          const live = await fetchJsonWithTimeout(`${liveProxyUrl}?format=json&refresh=${Date.now()}`, 60000);
           if (!live || !Array.isArray(live.coverage)) return;
           const nextSignature = liveSignature(live);
           const previousSignature = sessionStorage.getItem(`${liveCacheKey}-signature`);
@@ -348,7 +348,7 @@
       };
       const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
       const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
-      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
+      const partialChartTickers = new Set(Object.keys(partialChartSources));
       const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
       const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
       const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));

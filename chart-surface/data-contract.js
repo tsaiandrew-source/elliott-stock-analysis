@@ -5280,15 +5280,15 @@ window.PROTOTYPE_DATA_CONTRACT = {
     if (!local) return remote || {};
     const merged = { ...local, ...(remote || {}) };
     ['pattern', 'patternStatus', 'thesis', 'wyckoff', 'weeklyWyckoff', 'options', 'business', 'freshness'].forEach((key) => {
-      if (local[key] != null && local[key] !== '') merged[key] = local[key];
+      if (merged[key] == null || merged[key] === '') merged[key] = local[key];
     });
-    merged.bars = Array.isArray(remote?.bars) && remote.bars.length >= 20 ? remote.bars : (local.bars || []);
+    merged.bars = Array.isArray(remote?.bars) && remote.bars.length ? remote.bars : (local.bars || []);
     merged.patternCandidates = {
       ...(remote?.patternCandidates || {}),
       primary: candidate(remote?.patternCandidates?.primary, local.patternCandidates?.primary),
       secondary: candidate(remote?.patternCandidates?.secondary, local.patternCandidates?.secondary)
     };
-    merged.gexViews = local.gexViews || remote?.gexViews;
+    merged.gexViews = remote?.gexViews || local.gexViews;
     return merged;
   };
   const applyLocalizedContract = () => {
@@ -5301,7 +5301,7 @@ window.PROTOTYPE_DATA_CONTRACT = {
     const runs = (remote.analysisRuns || localRuns).map((run) => {
       const local = localRuns.find((item) => item.runId === run.runId) || localRuns.find((item) => item.ticker === run.ticker && item.analysisDate === run.analysisDate && item.runType === run.runType);
       if (!local) return run;
-      return { ...run, ...local, chartSource: run.chartSource || local.chartSource, gexSource: run.gexSource || local.gexSource };
+      return { ...local, ...run, chartSource: run.chartSource || local.chartSource, gexSource: run.gexSource || local.gexSource };
     });
     window.PROTOTYPE_DATA_CONTRACT = {
       ...remote,

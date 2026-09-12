@@ -1,43 +1,51 @@
-# Close digest automation contract
+# Daily digest automation contract
 
-This contract automates only the weekday Elliott cross-market **close** edition. It does not replace the producer cadence or touch the Iris v2/AppSheet ticker feed. The release runner is fail-closed and may publish only the exact close packet bound to a successful consumer acknowledgement.
+This contract provides one fail-closed ingestion and release path for the weekday Elliott cross-market **morning**, **midday**, and **close** editions. The existing close command remains backward compatible: omitting `--edition` still selects `close`. The pipeline does not touch the Iris v2/AppSheet ticker feed or any social route.
 
 ## Ownership
 
-- June/Universe Refresh is the producer. It researches, verifies, and publishes one completed `elliott-cross-market-digest-v1` packet to the outbox.
-- The Elliott app consumer is the only writer to `data-model/digests.json` and `data-model/digest-data.js`.
-- The local consumer never pushes, opens a PR, merges, changes settings, or deploys.
-- `release-close-digest.mjs` is the sole GitHub promotion owner. It stages only the two acknowledged digest outputs in an isolated worktree based on the latest `origin/main`.
-- `run-close-digest-cycle.mjs` joins the stages for the heartbeat while preserving their separate gates and durable state.
+- The digest heartbeat is the producer. After research and editorial gates pass, it atomically writes one completed `elliott-cross-market-digest-v1` packet to the producer-owned outbox.
+- The Elliott app consumer validates the packet and writes acknowledged local copies of `data-model/digests.json` and `data-model/digest-data.js`.
+- The consumer never pushes, opens a PR, merges, changes settings, or deploys.
+- The release runner is the sole GitHub promotion owner. It replays the acknowledged packet into only those two outputs in an isolated worktree based on the latest `origin/main`, preserving editions or revisions that merged after the local consumer checkout was created.
+- `run-close-digest-cycle.mjs` joins the stages and accepts `--edition morning|midday|close`. The filename is retained so the activated close command does not break.
 
 ## Cadence
 
-The producer keeps its existing America/Los_Angeles cadence: weekdays at 05:30, 11:30, and 16:00, plus the separate Sunday 16:00 weekly edition.
+All times use `America/Los_Angeles`.
 
-The close consumer wakes on weekdays at:
+| Edition | Producer | Primary consumer | Recovery consumer |
+|---|---:|---:|---:|
+| morning | weekdays 05:30 | 05:50 | 06:20 |
+| midday | weekdays 11:30 | 11:50 | 12:20 |
+| close | weekdays 16:00 | 16:20 | 16:50 |
 
-- 16:20 for the primary check. It ingests and then releases a valid packet. A missing packet is a quiet no-op.
-- 16:50 for recovery. It reconciles an existing acknowledgement/release state without re-ingesting. If no acknowledgement exists, it retries ingestion with `--require-present`; a still-missing packet is a failed gate.
+Primary absence is a quiet no-op. Recovery reconciles an existing acknowledgement/release state without re-ingesting; otherwise it retries with `--require-present` and reports a failed gate if the packet is still missing. Saturday has no daily run. The Sunday 16:00 weekly edition remains outside this contract.
 
-There is no Saturday or Sunday close-consumer run. The Sunday weekly edition requires its own future consumer contract.
+The producer and consumer are deliberately separated by 20 minutes. Recovery runs 30 minutes later. This avoids making release latency part of research time and keeps each edition out of the next producer window.
 
 ## Producer packet
 
-The producer atomically writes a temporary file and renames it into the configured outbox only after completion. A close packet contains exactly one record and must include:
+The producer writes a temporary file and renames it into the outbox only after every source, timestamp, fact, and editorial gate passes. Each packet contains exactly one record:
 
-- `id: daily-YYYY-MM-DD-close`;
-- `cadence: daily` and `edition: close`;
+- `id: daily-YYYY-MM-DD-<edition>`;
+- `cadence: daily` and `edition: morning|midday|close`;
 - the correct `marketDate` and `timezone: America/Los_Angeles`;
 - `status: complete` and a positive integer `revision`;
 - `publishedAt`, `sourceCutoffAt`, and `retrievedAt` ISO-8601 timestamps;
+- publication no earlier than 05:30 for morning, 11:30 for midday, or 16:00 for close;
 - non-empty Traditional Chinese `title`, `summary`, and `sections`;
 - at least one safe HTTP(S) source link.
 
-Corrections keep the same ID and slot, increment `revision`, change content, and set a later `updatedAt`. Existing ingestion guards reject stale and same-revision conflicts.
+Corrections retain the ID and edition slot, increment `revision`, change content, and set a later `updatedAt`. Existing ingestion guards reject stale and same-revision conflicts.
+
+Recommended filenames are:
+
+- `daily-YYYY-MM-DD-morning.json`
+- `daily-YYYY-MM-DD-midday.json`
+- `daily-YYYY-MM-DD-close.json`
 
 ## Runtime paths
-
-Configure these absolute paths in the heartbeat host:
 
 - `ELLIOTT_APP_REPO`: checked-out `elliott-stock-analysis` repository.
 - `ELLIOTT_DIGEST_OUTBOX`: producer-owned `outbox/` directory.
@@ -47,85 +55,50 @@ Recommended handoff root:
 
 `/Users/andrtsai/Documents/ChatGPT/P F Social/handoffs/elliott-cross-market/`
 
-The consumer state contains `locks/`, `processing/`, `archive/YYYY-MM-DD/`, `quarantine/`, `acks/<digest-id>.json`, and append-only `runs.ndjson`.
+Consumer state is edition-scoped and contains `locks/`, `processing/`, `archive/YYYY-MM-DD/`, `quarantine/`, `acks/<digest-id>.json`, `releases/<digest-id>-rN.json`, and append-only `runs.ndjson`.
 
 ## Heartbeat commands
 
-Primary check:
+Primary check for an edition:
 
 ```sh
 node scripts/run-close-digest-cycle.mjs \
+  --edition morning \
   --mode primary \
   --repo-root "$ELLIOTT_APP_REPO" \
   --outbox "$ELLIOTT_DIGEST_OUTBOX" \
-  --state-dir "$ELLIOTT_DIGEST_STATE_DIR"
+  --state-dir "$ELLIOTT_DIGEST_STATE_DIR" \
+  --public-base-url https://tsaiandrew-source.github.io/elliott-stock-analysis
 ```
 
-Recovery check:
+Recovery uses the same command with `--mode recovery`. Substitute `midday` or `close` for the other slots. `--market-date`, `--now`, and `--max-age-minutes` support deterministic testing. Use the bundled Codex Node runtime when system Node is unavailable.
 
-```sh
-node scripts/run-close-digest-cycle.mjs \
-  --mode recovery \
-  --repo-root "$ELLIOTT_APP_REPO" \
-  --outbox "$ELLIOTT_DIGEST_OUTBOX" \
-  --state-dir "$ELLIOTT_DIGEST_STATE_DIR"
-```
-
-Use `--market-date`, `--now`, and `--max-age-minutes` for deterministic validation and recovery testing. If system Node is unavailable, use the bundled Codex Node runtime.
-
-The consumer takes an exclusive per-date lock, discovers one matching packet, validates identity/slot/timestamps/freshness/sources, claims it by atomic rename, updates both app data files atomically, and runs digest-ingest, static, and PWA QA. On QA failure it restores both app files and quarantines the claimed packet. Replays are unchanged no-ops at the store layer.
+The consumer takes an exclusive per-date, per-edition lock; discovers exactly one matching packet; validates identity, slot, timestamps, freshness, and sources; claims it by atomic rename; updates both app data files atomically; and runs digest-ingest, static, and PWA QA. Failure restores both files and quarantines the packet. Replays are unchanged no-ops at the store layer.
 
 ## Deterministic release
 
-The release runner accepts `--consumer-result <ack.json>` and optionally `--packet <archive.json>`; otherwise it uses the acknowledgement's archived packet. It rejects anything except an `INGESTED` or `UNCHANGED` close result whose digest ID, market date, edition, revision, packet hash, output hashes, and three QA results all match.
+The release runner accepts a consumer acknowledgement and its archived packet. It rejects anything except an `INGESTED` or `UNCHANGED` result whose digest ID, market date, edition, revision, packet hash, output hashes, and three QA results all match.
 
 Before promotion it requires the consumer checkout's `HEAD` to equal freshly fetched `origin/main` and its complete dirty set to be exactly:
 
 - `data-model/digests.json`
 - `data-model/digest-data.js`
 
-It creates `codex/digest-YYYY-MM-DD-close-rN` in `consumer-state/release-worktrees/`, copies and re-hashes only those outputs, reruns all QA, and commits only those paths. The PR title, body, branch, and public-smoke target are derived deterministically from the packet identity and SHA-256.
+The runner verifies the acknowledged local hashes, then replays that exact packet onto the latest remote dataset rather than copying an older complete dataset over it. The deterministic branch is `codex/digest-YYYY-MM-DD-<edition>-rN`; PR metadata and the public-smoke target derive from the packet identity and SHA-256. State transitions are `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, `PAGES_PASSED`, then `PUBLISHED`. Recovery resumes from durable state and searches for the deterministic branch's existing PR before creating one.
 
-Each transition is atomically recorded in `consumer-state/releases/<digest-id>-rN.json`: `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, `PAGES_PASSED`, then `PUBLISHED`. A recovery run resumes from that state, searches for the deterministic branch's existing PR before creating one, and returns `NOOP` after publication. Unexpected changes, identity/hash drift, missing authentication, API errors, failed checks, merge conflicts, absent/failed Pages runs, and public-smoke failures stop the release.
+Unexpected changes, identity or hash drift, missing authentication, API errors, failed checks, merge conflicts, absent or failed Pages runs, and public-smoke failures stop the release. Runtime credentials are never stored in this repository.
 
-For a local-only rehearsal that stops before all network mutations:
+## Authorization boundary
 
-```sh
-node scripts/release-close-digest.mjs \
-  --repo-root "$ELLIOTT_APP_REPO" \
-  --state-dir "$ELLIOTT_DIGEST_STATE_DIR" \
-  --consumer-result "$ELLIOTT_DIGEST_STATE_DIR/acks/daily-YYYY-MM-DD-close.json" \
-  --prepare-only
-```
-
-Runtime credentials are not stored by this repository. Full promotion assumes:
-
-- `origin` is the intended public GitHub repository;
-- Git push authentication is already configured;
-- `gh auth status` succeeds with permission to create and squash-merge PRs and read Actions;
-- required branch checks and GitHub Pages are enabled;
-- public smoke can reach the Pages URL.
-
-## Release and Pages verification
-
-After the deterministic release has merged and GitHub Pages reports success, the runner verifies the exact deployed record without invoking the Iris/AppSheet proxy:
-
-```sh
-PUBLIC_BASE_URL=https://tsaiandrew-source.github.io/elliott-stock-analysis \
-EXPECTED_DIGEST_ID=daily-YYYY-MM-DD-close \
-PUBLIC_SMOKE_SKIP_PROXY=1 \
-node scripts/public-smoke.mjs
-```
-
-`digest-data.js` and `digests.json` use a network-first service-worker path with offline cache fallback, so every published digest revision is fetched without a manually authored cache-version bump.
+Code support for all daily editions does not itself authorize their public release. The already approved close route continues unchanged. Morning and midday release wakes must be activated only after the exact public destination, schedule, packet handoff, command, and fail-closed scope are separately reviewed and approved.
 
 ## Reporting
 
 Stay quiet for `NOOP` and `consumer_locked`. Report only:
 
-- `INGESTED` with digest ID, revision, packet hash, app-output hashes, QA status, and acknowledgement path;
+- `INGESTED` with edition, digest ID, revision, packet and output hashes, QA status, and acknowledgement path;
 - `PUBLISHED` with PR, merge commit, Pages run, and exact digest public-smoke result;
-- `FAILED_GATE` for persistent absence, malformed/unsafe/stale/conflicting/duplicate packets, QA rollback, or Pages verification failure;
-- a required user action when repository access, credentials, branch protection, or deployment repair is needed.
+- `FAILED_GATE` for persistent absence, malformed or unsafe data, stale/conflicting/duplicate packets, QA rollback, or Pages verification failure;
+- required user action for repository access, credentials, branch protection, or deployment repair.
 
-The heartbeat must never rewrite producer analysis, bypass a failed gate, or make the producer write the app store directly.
+The heartbeat must never rewrite producer analysis, bypass a failed gate, make the producer write the app store directly, or cross into Iris/AppSheet or social publishing.

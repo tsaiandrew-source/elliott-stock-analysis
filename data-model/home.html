@@ -44,8 +44,8 @@
     .status-card, .group { border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.9); box-shadow:0 16px 40px rgba(0,0,0,.16); }
     .status-card { padding:22px; color:var(--muted); }
     .status-card strong { display:block; margin-bottom:4px; color:var(--text); font-size:17px; }
-    .digest-list { display:grid; gap:14px; }
-    .group { overflow:hidden; }
+    .digest-list { display:grid; gap:14px; min-width:0; }
+    .group { min-width:0; overflow:hidden; }
     .group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:13px 15px; border-bottom:1px solid var(--line); }
     .group-head time { color:var(--text); font-weight:850; }
     .group-head span { color:var(--muted); font-size:11px; }
@@ -63,18 +63,19 @@
     .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { border-color:rgba(200,241,105,.36); color:var(--lime); }
     .edition-copy { min-width:0; }
     .edition-copy strong { display:block; font-size:14px; }
-    .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted); font-size:12px; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted); font-size:15px; line-height:1.6; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .edition-card[aria-expanded="true"] .edition-copy span { display:block; overflow:visible; -webkit-line-clamp:unset; }
     .edition-time { color:var(--muted); font-size:11px; white-space:nowrap; }
     .list-view[hidden] { display:none; }
-    .article { width:min(720px,100%); margin:0 auto; padding:26px 22px 40px; overflow-wrap:anywhere; }
+    .article { width:min(720px,100%); min-width:0; margin:0 auto; padding:26px 22px 40px; overflow-wrap:anywhere; }
     .article section { margin-top:28px; }
     .article h3 { margin:0 0 10px; color:var(--aqua); font-size:17px; }
     .article p { margin:0 0 12px; }
     .article ul { margin:0; padding-left:1.3em; }
     .article li + li { margin-top:8px; }
     .table-wrap { width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:11px; }
-    table { width:100%; min-width:520px; border-collapse:collapse; font-size:13px; }
-    th, td { padding:10px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; font-size:13px; }
+    th, td { padding:10px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; overflow-wrap:anywhere; }
     th { color:var(--aqua); background:var(--surface2); }
     tr:last-child td { border-bottom:0; }
     .article .source-list { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:8px 0 0; padding:0; list-style:none; }
@@ -94,6 +95,9 @@
       .edition-copy { grid-column:1 / -1; grid-row:2; }
       .edition-time { grid-column:2; grid-row:1; }
       .article { padding:22px 16px 36px; }
+      .table-wrap { overflow-x:hidden; }
+      table { table-layout:fixed; font-size:12px; }
+      th, td { padding:8px 6px; }
     }
   </style>
 </head>
@@ -114,8 +118,8 @@
 
   </main>
 
-  <script src="../coverage-order.js?v=20260909-v1"></script>
-  <script src="../shared-menu.js?v=20260910-4"></script>
+  <script src="../coverage-order.js?v=20260911-labels-v1"></script>
+  <script src="../shared-menu.js?v=20260912-menu-stability-v1"></script>
   <elliott-shared-menu data-current="home" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-href="../chart-surface/index.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
 
   <script src="digest-model.js?v=20260910-2"></script>
