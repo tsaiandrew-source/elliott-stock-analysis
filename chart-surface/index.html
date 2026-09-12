@@ -164,6 +164,9 @@
     .gex-heat-label { justify-items: end; padding-right: 7px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
     .gex-heat-date { color: var(--text); font-size: 11px; font-weight: 800; text-align: center; }
     .gex-heat-date small { display: block; color: var(--muted); font-size: 9px; font-weight: 400; }
+    .gex-heat-spot-row { position: relative; grid-column: 1 / -1; height: 18px; display: flex; align-items: center; justify-content: flex-end; color: var(--amber); font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .gex-heat-spot-row::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--amber); opacity: .9; }
+    .gex-heat-spot-row span { position: relative; z-index: 1; padding-left: 7px; background: #161f32; }
     .gex-heat-cell { position: relative; min-width: 0; min-height: 31px; display: grid; place-items: center; overflow: visible; border: 1px solid transparent; border-radius: 4px; background: rgba(145, 168, 183, .08); color: var(--text); font-size: 10px; font-variant-numeric: tabular-nums; }
     .gex-heat-cell[data-watch-index] { z-index: 2; border-color: var(--amber); box-shadow: inset 0 0 0 1px rgba(242, 184, 75, .28), 0 0 0 1px rgba(7, 16, 24, .9); }
     .gex-heat-cell[data-watch-index]::after { content: attr(data-watch-index); position: absolute; z-index: 3; top: -7px; right: -6px; width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; background: var(--amber); color: #071018; font-size: 9px; font-weight: 800; }
@@ -177,6 +180,11 @@
     .gex-heat-watch-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
     .gex-heat-watch-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 7px; color: var(--text); font-size: 12px; line-height: 1.4; }
     .gex-heat-watch-number { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--amber); color: #071018; font-size: 9px; font-weight: 800; }
+    .gex-heat-watch-copy { display: grid; gap: 4px; }
+    .gex-heat-scenario { color: var(--muted); }
+    .gex-heat-scenario b { color: var(--aqua); }
+    .gex-heat-scenario[data-direction="up"] b { color: var(--green); }
+    .gex-heat-scenario[data-direction="down"] b { color: var(--red); }
     .gex-heat-caveat { padding-top: 7px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
     .source-evidence { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
     .source-evidence[hidden] { display: none; }
@@ -1570,14 +1578,28 @@
           const watchLookup = new Map(watchItems.map((item, index) => [`${item.profileIndex}:${item.strike}`, index + 1]));
           const columns = `66px repeat(${profileCount}, minmax(52px, 1fr))`;
           const headers = `<div class="gex-heat-label">履約價</div>${marketProfiles.map((profile) => `<div class="gex-heat-date">${escapeHtml(profile.label)}<small>${escapeHtml(profile.expiry)}</small></div>`).join('')}`;
-          const rows = heatStrikes.map((strike) => `<div class="gex-heat-label">${escapeHtml(window.ElliottGexOverview?.formatStrike(strike) || strike)}</div>${profileMaps.map((map, index) => { const value = map.get(strike) || 0; const opacity = value ? Math.max(.14, value / maxValue) : 0; const watchIndex = watchLookup.get(`${index}:${strike}`); return `<div class="gex-heat-cell" data-gex-heat-cell data-profile-index="${index}" data-strike="${strike}" data-value="${value}"${watchIndex ? ` data-watch-index="${watchIndex}"` : ''} aria-label="${watchIndex ? `重點 ${watchIndex}，` : ''}${escapeHtml(marketProfiles[index].label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(strike))}，敏感度 ${escapeHtml(window.ElliottGexOverview?.formatCompact(value))}"><span class="gex-heat-fill" style="background:${tones[index % tones.length]};opacity:${opacity.toFixed(2)}"></span><span>${value ? escapeHtml(window.ElliottGexOverview?.formatCompact(value)) : '—'}</span></div>`; }).join('')}`).join('');
+          let spotInserted = false;
+          const spotMarkup = `<div class="gex-heat-spot-row" data-gex-heat-spot aria-label="現在價格 ${escapeHtml(window.ElliottGexOverview?.formatStrike(currentPrice))}"><span>現在 ${escapeHtml(window.ElliottGexOverview?.formatStrike(currentPrice))}</span></div>`;
+          const rows = heatStrikes.map((strike, strikeIndex) => {
+            const previousStrike = heatStrikes[strikeIndex - 1];
+            const insertSpot = !spotInserted && (currentPrice >= strike) && (strikeIndex === 0 || currentPrice < previousStrike);
+            if (insertSpot) spotInserted = true;
+            const cells = `<div class="gex-heat-label">${escapeHtml(window.ElliottGexOverview?.formatStrike(strike) || strike)}</div>${profileMaps.map((map, index) => { const value = map.get(strike) || 0; const opacity = value ? Math.max(.14, value / maxValue) : 0; const watchIndex = watchLookup.get(`${index}:${strike}`); return `<div class="gex-heat-cell" data-gex-heat-cell data-profile-index="${index}" data-strike="${strike}" data-value="${value}"${watchIndex ? ` data-watch-index="${watchIndex}"` : ''} aria-label="${watchIndex ? `重點 ${watchIndex}，` : ''}${escapeHtml(marketProfiles[index].label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(strike))}，敏感度 ${escapeHtml(window.ElliottGexOverview?.formatCompact(value))}"><span class="gex-heat-fill" style="background:${tones[index % tones.length]};opacity:${opacity.toFixed(2)}"></span><span>${value ? escapeHtml(window.ElliottGexOverview?.formatCompact(value)) : '—'}</span></div>`; }).join('')}`;
+            return `${insertSpot ? spotMarkup : ''}${cells}`;
+          }).join('') + (!spotInserted ? spotMarkup : '');
           const watchMarkup = watchItems.map((item, index) => {
             const profile = marketProfiles[item.profileIndex];
             const relation = item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`;
-            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — 該週主要敏感度節點，${relation}；接近時看價格接受度、成交量與次日 OI 是否同步。</span></li>`;
+            const nbisScenario = state.ticker === 'NBIS' ? (item.strike >= 234.8
+              ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
+              : item.strike <= 222.63
+                ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
+                : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
+              : { direction: item.strike > currentPrice ? 'up' : item.strike < currentPrice ? 'down' : 'neutral', label: item.strike > currentPrice ? '上方情境' : item.strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
+            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — 該週主要敏感度節點，${relation}。</span><span class="gex-heat-scenario" data-direction="${nbisScenario.direction}"><b>${nbisScenario.label}：</b>${nbisScenario.text}</span></span></li>`;
           }).join('');
           const availability = profileCount >= 4 ? '目前顯示 current + 3 weeks' : `目前來源提供 ${profileCount} 個到期日；第 3／4 週有資料時自動加入`;
-          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div><aside class="gex-heat-watch" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>框線編號對應熱圖</span></div><ol class="gex-heat-watch-list">${watchMarkup}</ol><p class="gex-heat-caveat">Unsigned sensitivity 不包含 dealer sign；框線代表值得監看，不等於支撐、壓力或方向。</p></aside></div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
+          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div><aside class="gex-heat-watch" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>Ely 情境門檻 × 框線節點</span></div><ol class="gex-heat-watch-list">${watchMarkup}</ol><p class="gex-heat-caveat">方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導。Unsigned sensitivity 不包含 dealer sign；框線不等於支撐、壓力或必然磁吸。</p></aside></div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
         };
         const heatmapMarkup = renderHeatmap(displayProfiles);
         const renderPanel = (gex, key, domain) => {

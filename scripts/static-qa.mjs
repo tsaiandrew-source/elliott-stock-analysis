@@ -80,7 +80,7 @@ for (const file of htmlFiles) {
     if (!html.includes('市場壓力概覽') || !html.includes('ElliottGexOverview')) failures.push(`${file}: GEX market overview is not wired`);
     if (!html.includes('到期日市場地圖') || !html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
     if (!html.includes('履約價 × 到期日熱圖') || !html.includes('heatmapMarkup')) failures.push(`${file}: multi-expiration GEX heatmap is not wired`);
-    if (!html.includes('data-watch-index') || !html.includes('data-gex-heat-analysis')) failures.push(`${file}: automatic heatmap watch analysis is not wired`);
+    if (!html.includes('data-watch-index') || !html.includes('data-gex-heat-analysis') || !html.includes('data-gex-heat-spot')) failures.push(`${file}: automatic heatmap watch analysis is not wired`);
     for (const label of ['日線觀察', '日線確認', '週線觀察', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
     }
