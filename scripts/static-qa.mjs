@@ -30,6 +30,7 @@ const requiredFiles = [
   'scripts/validate-universal-refresh-gex.mjs',
   'scripts/ingest-universal-refresh-gex.mjs',
   'scripts/run-universal-refresh-gex-cycle.mjs',
+  'chart-surface/gex-market-overview.js',
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
@@ -81,7 +82,18 @@ for (const file of htmlFiles) {
     if (!html.includes('const compactReaderText')) failures.push(`${file}: compact reader text filter is missing`);
     if (!html.includes('const publicGexText')) failures.push(`${file}: public GEX text filter is missing`);
     if (!html.includes('const publicAnalysisText')) failures.push(`${file}: public analysis text filter is missing`);
-    if (!html.includes('.direction-item[hidden]')) failures.push(`${file}: incomplete direction rows are not hidden`);
+    if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
+    if (!html.includes('市場壓力地圖') || !html.includes('ElliottGexOverview') || !html.includes('gex-market-summary')) failures.push(`${file}: consolidated GEX market-pressure map is not wired`);
+    if (!html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
+    if (!html.includes('renderLandmarks(marketProfiles)') || !html.includes('下方支撐候選') || !html.includes('上方壓力候選') || !html.includes('Gamma Pivot 候選') || !html.includes('正式 Flip 無法判定')) failures.push(`${file}: evidence-gated GEX landmark experiment is not wired`);
+    if (!html.includes('紅圈＝下方支撐候選') || !html.includes('紫菱形＝Gamma Pivot') || !html.includes('綠圈＝上方壓力候選') || !html.includes('semanticMarkers')) failures.push(`${file}: GEX landmark colors and shapes are not tied back to the market map`);
+    if (!html.includes('buildGexOptionSummaryHtml(data)') || !html.includes(".join('<br><br>')")) failures.push(`${file}: options summary does not reuse current- and next-week GEX scenarios across views`);
+    if (html.includes('履約價 × 到期日熱圖') || html.includes('heatmapMarkup')) failures.push(`${file}: discarded GEX heatmap is still wired`);
+    if (!html.includes('data-gex-map-analysis') || !html.includes('本週優先 · 壓力座標 × Ely 情境')) failures.push(`${file}: consolidated GEX market-map watch analysis is not wired`);
+    if (!html.includes('Math.min(4, marketProfiles.length)') || !html.includes('marketProfiles.slice(0, 4)')) failures.push(`${file}: GEX market map is not capped and laid out for four expirations`);
+    for (const label of ['日線投影', '日線確認', '週線投影', '週線確認']) {
+      if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
+    }
     if (html.includes('資料部分可用；完整度與限制已在摘要中整理。')) failures.push(`${file}: partial-status uncertainty notice is still public`);
     if (html.includes('資料限制：${escapeHtml')) failures.push(`${file}: GEX limitation disclaimer is still public`);
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
@@ -101,6 +113,32 @@ for (const file of htmlFiles) {
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
     failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
   }
+}
+
+if (await exists('chart-surface/gex-market-overview.js')) {
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(await read('chart-surface/gex-market-overview.js'), context);
+  const overview = context.ElliottGexOverview?.summarize([
+    { label: '本週到期', expiry: '2026-09-18', profileKind: 'unsigned-pressure', strikes: [95, 100, 105], exposure: [2, 8, 4] },
+    { label: '下週到期', expiry: '2026-09-25', profileKind: 'unsigned-pressure', strikes: [95, 100, 105], exposure: [2, 2, 2] }
+  ], 100);
+  if (!overview || overview.rows.length !== 2) failures.push('GEX market overview: two-expiration summary failed');
+  if (overview?.rows[0]?.dominant?.strike !== 100) failures.push('GEX market overview: dominant strike calculation failed');
+  if (Math.round((overview?.rows[0]?.share || 0) * 100) !== 70) failures.push('GEX market overview: expiration weighting failed');
+  if (!/不能推定造市商方向/.test(overview?.interpretation || '')) failures.push('GEX market overview: unsigned evidence guardrail missing');
+  const display = context.ElliottGexOverview?.displayProfile({ strikes: Array.from({ length: 80 }, (_, index) => index + 70), exposure: Array.from({ length: 80 }, (_, index) => index + 1) }, 100, 12);
+  if (!display || display.strikes.length > 12 || display.strikes.some((strike) => strike < 65 || strike > 135)) failures.push('GEX market overview: spot-centered display selection failed');
+  const collected = context.ElliottGexOverview?.collectProfiles([
+    { label: '本週到期', expiry: '2026-09-18', profileKind: 'unsigned-pressure', strikes: [100], exposure: [1] },
+    { label: '下週到期', expiry: '2026-09-25', profileKind: 'unsigned-pressure', strikes: [100], exposure: [1] }
+  ], { additionalExpirations: [
+    { expiry: '2026-10-02', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] },
+    { expiry: '2026-10-09', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] }
+  ] }, 4);
+  if (collected?.length !== 4 || collected[3]?.label !== '第4週到期') failures.push('GEX market overview: four-expiration expansion failed');
+  const fourWeekOverview = context.ElliottGexOverview?.summarize(collected, 100);
+  if (fourWeekOverview?.rows.length !== 4 || !/4 個到期日/.test(fourWeekOverview?.interpretation || '') || !/第4週到期/.test(fourWeekOverview?.interpretation || '')) failures.push('GEX market overview: four-expiration narrative failed');
 }
 
 if (await exists('data-model/coverage.html')) {
