@@ -214,7 +214,15 @@
     .value { font-weight: 700; }
     .thesis { font-size: 17px; line-height: 1.42; }
     .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(17, 36, 51, .32); }
-    .direction-summary-head { color: var(--aqua); font-size: 11px; font-weight: 800; }
+    .direction-summary-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--aqua); font-size: 11px; font-weight: 800; }
+    .direction-summary-head .analysis-scope { color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .direction-summary-note { color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .direction-summary-pattern { display: flex; align-items: baseline; gap: 8px; min-width: 0; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
+    .direction-summary-pattern[data-state="active"] { border-color: color-mix(in srgb, var(--pattern-family) 82%, white 8%); background: color-mix(in srgb, var(--pattern-family) 8%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pattern-family) 24%, transparent), 0 0 10px color-mix(in srgb, var(--pattern-family) 12%, transparent); }
+    .direction-summary-pattern[data-state="pending"] { opacity: .52; }
+    .direction-summary-pattern .label { color: var(--pattern-family); font-size: 10px; }
+    .direction-summary-pattern strong { min-width: 0; overflow: hidden; color: var(--text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .direction-summary-pattern .direction-pattern-state { color: var(--muted); font-size: 10px; white-space: nowrap; }
     .direction-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
     .direction-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
     .direction-item[data-kind="formal"] { border-color: rgba(145, 168, 183, .34); }
@@ -470,14 +478,16 @@
           <section class="analysis-core-subsection" aria-label="核心論述">
           <h4 class="analysis-core-title">核心論述</h4>
           <p class="thesis" id="thesis"></p>
-                    <div class="direction-summary" id="direction-summary" aria-label="固定方向象限：日線觀察、日線確認、週線觀察、週線確認">
-                      <div class="direction-summary-head">方向象限 · 觀察／確認 × 日線／週線</div>
+                    <div class="direction-summary" id="direction-summary" aria-label="固定方向象限：日線投影、日線確認、週線投影、週線確認；亮起表示已有方向訊號，變暗表示待補或未確認">
+                      <div class="direction-summary-head"><span>方向象限 · 投影（觀察）／確認 × 日線／週線</span><span class="analysis-scope" id="analysis-scope">目前：日線</span></div>
+                      <div class="direction-summary-pattern" id="direction-summary-pattern" data-state="pending" aria-label="目前型態"><span class="label">型態</span><strong id="direction-pattern">—</strong><span class="direction-pattern-state" id="direction-pattern-state">待補</span></div>
                       <div class="direction-summary-grid">
-                        <div class="direction-item" data-kind="watch" data-timeframe="daily"><span class="direction-label">日線觀察</span><span class="direction-value" id="watch-daily-direction"></span></div>
+                        <div class="direction-item" data-kind="watch" data-timeframe="daily"><span class="direction-label">日線投影</span><span class="direction-value" id="watch-daily-direction"></span></div>
                         <div class="direction-item" data-kind="formal" data-timeframe="daily"><span class="direction-label">日線確認</span><span class="direction-value" id="formal-daily-direction"></span></div>
-                        <div class="direction-item" data-kind="watch" data-timeframe="weekly"><span class="direction-label">週線觀察</span><span class="direction-value" id="watch-weekly-direction"></span></div>
+                        <div class="direction-item" data-kind="watch" data-timeframe="weekly"><span class="direction-label">週線投影</span><span class="direction-value" id="watch-weekly-direction"></span></div>
                         <div class="direction-item" data-kind="formal" data-timeframe="weekly"><span class="direction-label">週線確認</span><span class="direction-value" id="formal-weekly-direction"></span></div>
                       </div>
+                      <p class="direction-summary-note">投影＝尚待價格／收盤接受驗證；確認＝完成收盤接受後才升級。</p>
                     </div>
                     <p class="source-note cadence-note" id="thesis-refresh"></p>
                     
@@ -485,7 +495,7 @@
           
           <section class="technical-subsection">
           <div id="pattern-combo" class="pattern-combo" aria-label="型態組合：型態線、型態確認位、失效位">
-            <div class="combo-head"><span>型態組合</span><span class="combo-hint" id="candidate-label">主候選 · 狀態 → 確認 → 失效</span></div>
+            <div class="combo-head"><span>型態組合</span><span class="combo-hint" id="candidate-label">日線 · 投影 → 確認 → 失效</span></div>
             <div class="combo-grid">
               <div class="metric" data-tone="pattern"><span class="label">型態線</span><span class="value" id="pattern"></span></div>
               <div class="metric" data-tone="confirmation"><span class="label">型態確認位</span><span class="value" id="pattern-gate"></span></div>
@@ -1882,6 +1892,8 @@
         $('chart-meta').textContent = isGex
           ? `GEX · 本週／下週到期 · ${gex.freshness}`
           : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + `分析截至 ${analysisMeta} · K線截至 ${chartMeta}`;
+        const analysisScope = $('analysis-scope');
+        if (analysisScope) analysisScope.textContent = isGex ? '基準：日線＋週線' : `目前：${state.view === 'weekly' ? '週線' : '日線'}`;
         const detail = analysisDetails[state.ticker] || {};
         const businessDetails = $('business-details');
         const runtimeOverall = data.overall || {};
@@ -1968,6 +1980,14 @@
         historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
         const patternUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(String(pattern.text || ''));
+        const quadrantPattern = $('direction-summary-pattern');
+        const quadrantPatternText = $('direction-pattern');
+        const quadrantPatternState = $('direction-pattern-state');
+        if (quadrantPattern && quadrantPatternText && quadrantPatternState) {
+          quadrantPatternText.textContent = String(pattern.text || '型態待補');
+          quadrantPatternState.textContent = String(pattern.status || '').replace(/^主候選\s*·\s*/, '') || (patternUnavailable ? '待補' : '形成中');
+          quadrantPattern.dataset.state = patternUnavailable ? 'pending' : 'active';
+        }
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         const wyckoffMetric = $('wyckoff').closest('.metric');
         const rawWyckoffText = state.view === 'weekly' ? data.weeklyWyckoff : data.wyckoff;
@@ -1976,7 +1996,7 @@
         if (wyckoffMetric) wyckoffMetric.hidden = !wyckoffText;
         $('pattern-gate').textContent = patternConditionText(pattern, 'confirmation');
         $('invalidation').textContent = patternConditionText(pattern, 'invalidation');
-        $('candidate-label').textContent = pattern.label + ' · 狀態 → 確認 → 失效';
+        $('candidate-label').textContent = `${state.view === 'weekly' ? '週線' : '日線'} · ${pattern.label} · 投影 → 確認 → 失效`;
         const secondary = data.patternCandidates?.secondary;
         const candidateSwitch = $('candidate-switch');
         const deduplicated = candidatesSimilar(data) || state.view === 'weekly';
