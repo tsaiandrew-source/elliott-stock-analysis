@@ -81,7 +81,7 @@
     .ticker-sheet-head strong { color:var(--aqua); font-size:13px; }
     .ticker-sheet-head span { display:block; color:var(--muted); font-size:11px; font-weight:400; }
     .ticker-sheet-close { border:0; color:var(--muted); background:transparent; font-size:22px; line-height:1; cursor:pointer; }
-    .ticker-wheel { display:flex; flex-direction:column; height:calc(44vh - 100px); overflow-y:auto; scroll-snap-type:y mandatory; border:1px solid var(--line); border-radius:11px; background:rgba(7,16,24,.52); }
+    .ticker-wheel { display:flex; flex-direction:column; height:calc(44vh - 100px); overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; scroll-snap-type:none; border:1px solid var(--line); border-radius:11px; background:rgba(7,16,24,.52); }
     .ticker-wheel-item { display:flex; flex:0 0 42px; align-items:center; justify-content:space-between; gap:10px; scroll-snap-align:center; padding:6px 13px; border:0; border-bottom:1px solid rgba(32,56,73,.55); color:var(--muted); background:transparent; text-align:left; cursor:pointer; }
     .ticker-wheel-item:last-child { border-bottom:0; }
     .ticker-wheel-item strong { font-size:13px; }
@@ -132,7 +132,7 @@
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
   <script src="../coverage-order.js?v=20260911-labels-v1"></script>
-  <script src="../shared-menu.js?v=20260911-single-ticker-v2"></script>
+  <script src="../shared-menu.js?v=20260912-menu-stability-v1"></script>
   <elliott-shared-menu data-current="ticker" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script>
   <script src="../chart-surface/eod-digest-20260908.js?v=20260909-v1"></script>
