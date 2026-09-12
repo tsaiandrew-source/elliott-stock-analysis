@@ -155,6 +155,19 @@
     .gex-market-map-head span { color: var(--muted); font-size: 11px; }
     .gex-market-map svg { display: block; width: 100%; height: auto; overflow: visible; }
     .gex-market-map-note { display: flex; flex-wrap: wrap; gap: 5px 14px; color: var(--muted); font-size: 11px; }
+    .gex-heatmap { display: grid; gap: 9px; padding: 16px 0 6px; }
+    .gex-heatmap-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .gex-heatmap-head strong { color: var(--purple); font-size: 13px; }
+    .gex-heatmap-head span { color: var(--muted); font-size: 11px; }
+    .gex-heat-grid { display: grid; gap: 3px; align-items: stretch; }
+    .gex-heat-label, .gex-heat-date, .gex-heat-cell { min-width: 0; min-height: 31px; display: grid; place-items: center; }
+    .gex-heat-label { justify-items: end; padding-right: 7px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .gex-heat-date { color: var(--text); font-size: 11px; font-weight: 800; text-align: center; }
+    .gex-heat-date small { display: block; color: var(--muted); font-size: 9px; font-weight: 400; }
+    .gex-heat-cell { position: relative; overflow: hidden; border-radius: 4px; background: rgba(145, 168, 183, .08); color: var(--text); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .gex-heat-fill { position: absolute; inset: 0; }
+    .gex-heat-cell span:last-child { position: relative; z-index: 1; text-shadow: 0 1px 2px #071018; }
+    .gex-heat-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 11px; }
     .source-evidence { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
     .source-evidence[hidden] { display: none; }
     .source-evidence .label { display: block; margin-bottom: 5px; color: var(--purple); }
@@ -313,6 +326,8 @@
       .gex-overview-narrative { font-size: 15px; }
       .gex-market-map-head strong { font-size: 15px; }
       .gex-market-map-head span, .gex-market-map-note { font-size: 13px; }
+      .gex-heatmap-head strong { font-size: 15px; }
+      .gex-heatmap-head span, .gex-heat-legend { font-size: 13px; }
       .label { font-size: 13px; }
       .thesis { font-size: 19px; }
       .business-context p, .digest-head, .digest-section ul, .digest-block ul { font-size: 14px; }
@@ -350,6 +365,8 @@
       .gex-overview-facts { grid-template-columns: 1fr; }
       .gex-market-map { padding-top: 11px; }
       .gex-market-map-head { align-items: flex-start; flex-direction: column; gap: 3px; }
+      .gex-heatmap-head { align-items: flex-start; flex-direction: column; gap: 3px; }
+      .gex-heat-label { padding-right: 4px; }
     }
     /* Use the visual viewport as a fallback when iPhone Safari keeps the
        layout viewport in its previous orientation for a frame or two. */
@@ -1463,13 +1480,14 @@
         const labelSize = compactGex ? 16 : 20;
         const valueSize = compactGex ? 14 : 18;
         const universalGex = universalGexRecordFor(state.ticker);
-        const profiles = universalGex ? [
+        const baseProfiles = universalGex ? [
           { ...gexView(data, 'current') },
           { ...gexView(data, 'next'), label: '下週到期' }
         ] : [
           { ...gexView(data, 'current'), ...data.gexViews?.current },
           { ...gexView(data, 'next'), ...data.gexViews?.next, label: '下週到期', expiry: data.gexSummary?.nextExpiration?.expiry || data.gexViews?.next?.expiry || '未標示' }
         ];
+        const profiles = window.ElliottGexOverview?.collectProfiles(baseProfiles, universalGex || data.gexSummary, 4) || baseProfiles;
         const renderableProfiles = profiles.filter((profile) => profile.strikes?.length && profile.strikes.length === profile.exposure?.length);
         if (!renderableProfiles.length) {
           const summary = data.gexSummary || {};
@@ -1491,7 +1509,11 @@
         const displayDomain = { min: Math.min(...displayTicks, currentPrice), max: Math.max(...displayTicks, currentPrice), ticks: displayTicks };
         const renderMarketMap = (marketProfiles, domain) => {
           const mapWidth = compactGex ? 520 : 720;
-          const mapHeight = 248;
+          const laneStart = 82;
+          const laneGap = 62;
+          const laneCount = Math.min(4, marketProfiles.length);
+          const axisY = laneStart + Math.max(0, laneCount - 1) * laneGap + 48;
+          const mapHeight = axisY + 48;
           const left = compactGex ? 92 : 104;
           const right = 34;
           const plotWidth = mapWidth - left - right;
@@ -1499,21 +1521,38 @@
           const allMagnitudes = marketProfiles.flatMap((profile) => profile.exposure || []).map((value) => Math.abs(Number(value) || 0));
           const maxMagnitude = Math.max(...allMagnitudes, 1);
           const radiusFor = (value) => 4 + Math.sqrt(Math.abs(Number(value) || 0) / maxMagnitude) * (compactGex ? 15 : 19);
-          const lanes = marketProfiles.slice(0, 2).map((profile, profileIndex) => {
-            const y = profileIndex === 0 ? 82 : 157;
+          const tones = ['#9a66c7', '#55d9d5', '#2d9cff', '#c8f169'];
+          const labelTones = ['#c68cff', '#7ff5ef', '#74b8ff', '#d9ff78'];
+          const lanes = marketProfiles.slice(0, 4).map((profile, profileIndex) => {
+            const y = laneStart + profileIndex * laneGap;
             const dominantIndex = (profile.exposure || []).reduce((best, value, index) => best < 0 || Math.abs(value) > Math.abs(profile.exposure[best]) ? index : best, -1);
-            const nodes = (profile.strikes || []).map((strike, index) => `<circle cx="${xFor(strike).toFixed(1)}" cy="${y}" r="${radiusFor(profile.exposure[index]).toFixed(1)}" fill="${profileIndex === 0 ? '#9a66c7' : '#55d9d5'}" opacity="${index === dominantIndex ? '.95' : '.38'}"><title>${profile.label} · ${window.ElliottGexOverview?.formatStrike(strike)} · 敏感度 ${window.ElliottGexOverview?.formatCompact(profile.exposure[index])}</title></circle>`).join('');
+            const nodes = (profile.strikes || []).map((strike, index) => `<circle cx="${xFor(strike).toFixed(1)}" cy="${y}" r="${radiusFor(profile.exposure[index]).toFixed(1)}" fill="${tones[profileIndex]}" opacity="${index === dominantIndex ? '.95' : '.38'}"><title>${profile.label} · ${window.ElliottGexOverview?.formatStrike(strike)} · 敏感度 ${window.ElliottGexOverview?.formatCompact(profile.exposure[index])}</title></circle>`).join('');
             const dominantStrike = dominantIndex >= 0 ? profile.strikes[dominantIndex] : null;
-            const dominantLabel = dominantStrike == null ? '' : `<line x1="${xFor(dominantStrike).toFixed(1)}" y1="${y - 31}" x2="${xFor(dominantStrike).toFixed(1)}" y2="${y - 20}" stroke="${profileIndex === 0 ? '#c68cff' : '#7ff5ef'}" stroke-width="2"/><text x="${xFor(dominantStrike).toFixed(1)}" y="${y - 37}" fill="${profileIndex === 0 ? '#c68cff' : '#7ff5ef'}" text-anchor="middle" font-size="${compactGex ? 14 : 12}" font-weight="700">主節點 ${window.ElliottGexOverview?.formatStrike(dominantStrike)}</text>`;
+            const dominantLabel = dominantStrike == null ? '' : `<line x1="${xFor(dominantStrike).toFixed(1)}" y1="${y - 25}" x2="${xFor(dominantStrike).toFixed(1)}" y2="${y - 18}" stroke="${labelTones[profileIndex]}" stroke-width="2"/><text x="${xFor(dominantStrike).toFixed(1)}" y="${y - 30}" fill="${labelTones[profileIndex]}" text-anchor="middle" font-size="${compactGex ? 13 : 11}" font-weight="700">主節點 ${window.ElliottGexOverview?.formatStrike(dominantStrike)}</text>`;
             return `<text x="${left - 12}" y="${y - 7}" fill="#edf6fb" text-anchor="end" font-size="${compactGex ? 15 : 13}" font-weight="700">${profile.label}</text><text x="${left - 12}" y="${y + 12}" fill="#91a8b7" text-anchor="end" font-size="${compactGex ? 13 : 11}">${profile.expiry}</text><line x1="${left}" y1="${y}" x2="${mapWidth - right}" y2="${y}" stroke="#203849" stroke-width="2"/>${nodes}${dominantLabel}`;
           }).join('');
           const ticks = Array.from({ length: 5 }, (_, index) => domain.min + (domain.max - domain.min) * index / 4);
-          const axis = ticks.map((tick) => `<line x1="${xFor(tick).toFixed(1)}" y1="195" x2="${xFor(tick).toFixed(1)}" y2="201" stroke="#91a8b7"/><text x="${xFor(tick).toFixed(1)}" y="220" fill="#91a8b7" text-anchor="middle" font-size="${compactGex ? 14 : 12}">${window.ElliottGexOverview?.formatStrike(tick)}</text>`).join('');
+          const axis = ticks.map((tick) => `<line x1="${xFor(tick).toFixed(1)}" y1="${axisY}" x2="${xFor(tick).toFixed(1)}" y2="${axisY + 6}" stroke="#91a8b7"/><text x="${xFor(tick).toFixed(1)}" y="${axisY + 25}" fill="#91a8b7" text-anchor="middle" font-size="${compactGex ? 14 : 12}">${window.ElliottGexOverview?.formatStrike(tick)}</text>`).join('');
           const spotX = xFor(currentPrice);
           const evidenceKind = marketProfiles.every((profile) => profile.profileKind === 'signed-dealer-gex') ? 'Signed dealer GEX map' : 'Unsigned sensitivity map';
-          return `<section class="gex-market-map" aria-label="本週與下週 GEX 市場地圖"><div class="gex-market-map-head"><strong>到期日市場地圖</strong><span>${evidenceKind}</span></div><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的本週與下週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="166" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="201" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="195" x2="${mapWidth - right}" y2="195" stroke="#91a8b7"/>${axis}</svg><div class="gex-market-map-note"><span>圓越大＝敏感度越集中</span><span>同一價格軸＝直接看主節點如何換位</span><span>接近現價＝優先觀察，不代表必然支撐或壓力</span></div></section>`;
+          return `<section class="gex-market-map" aria-label="跨到期日 GEX 市場地圖"><div class="gex-market-map-head"><strong>到期日市場地圖</strong><span>${evidenceKind} · ${laneCount} 個到期日</span></div><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的跨週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="${axisY - 29}" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="${axisY}" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="${axisY}" x2="${mapWidth - right}" y2="${axisY}" stroke="#91a8b7"/>${axis}</svg><div class="gex-market-map-note"><span>圓越大＝敏感度越集中</span><span>同一價格軸＝直接看主節點如何換位</span><span>接近現價＝優先觀察，不代表必然支撐或壓力</span></div></section>`;
         };
         const marketMapMarkup = renderMarketMap(displayProfiles, displayDomain);
+        const renderHeatmap = (marketProfiles) => {
+          const profileCount = marketProfiles.length;
+          const profileMaps = marketProfiles.map((profile) => new Map((profile.strikes || []).map((strike, index) => [Number(strike), Math.abs(Number(profile.exposure[index]) || 0)])));
+          const strikeTotals = new Map();
+          profileMaps.forEach((map) => map.forEach((value, strike) => strikeTotals.set(strike, (strikeTotals.get(strike) || 0) + value)));
+          const heatStrikes = [...strikeTotals.entries()].sort((a, b) => b[1] - a[1]).slice(0, compactGex ? 8 : 10).map(([strike]) => strike).sort((a, b) => b - a);
+          const maxValue = Math.max(...profileMaps.flatMap((map) => [...map.values()]), 1);
+          const tones = ['#9a66c7', '#55d9d5', '#2d9cff', '#c8f169'];
+          const columns = `66px repeat(${profileCount}, minmax(52px, 1fr))`;
+          const headers = `<div class="gex-heat-label">履約價</div>${marketProfiles.map((profile) => `<div class="gex-heat-date">${escapeHtml(profile.label)}<small>${escapeHtml(profile.expiry)}</small></div>`).join('')}`;
+          const rows = heatStrikes.map((strike) => `<div class="gex-heat-label">${escapeHtml(window.ElliottGexOverview?.formatStrike(strike) || strike)}</div>${profileMaps.map((map, index) => { const value = map.get(strike) || 0; const opacity = value ? Math.max(.14, value / maxValue) : 0; return `<div class="gex-heat-cell" aria-label="${escapeHtml(marketProfiles[index].label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(strike))} 敏感度 ${escapeHtml(window.ElliottGexOverview?.formatCompact(value))}"><span class="gex-heat-fill" style="background:${tones[index % tones.length]};opacity:${opacity.toFixed(2)}"></span><span>${value ? escapeHtml(window.ElliottGexOverview?.formatCompact(value)) : '—'}</span></div>`; }).join('')}`).join('');
+          const availability = profileCount >= 4 ? '目前顯示 current + 3 weeks' : `目前來源提供 ${profileCount} 個到期日；第 3／4 週有資料時自動加入`;
+          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div><div class="gex-heat-legend"><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
+        };
+        const heatmapMarkup = renderHeatmap(displayProfiles);
         const renderPanel = (gex, key, domain) => {
           const strikes = gex.strikes || [];
           const exposure = gex.exposure || [];
@@ -1578,7 +1617,7 @@
           const profileLegend = isUnsignedPressure ? '柱＝Gamma 敏感度　琥珀＝累積曲線' : '綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線';
           return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>${profileTitle}</strong> · ${gex.label} · ${gex.expiry}</span><span>${profileLegend}</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma pressure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
         };
-        container.innerHTML = `${overviewMarkup}${marketMapMarkup}`;
+        container.innerHTML = `${overviewMarkup}${marketMapMarkup}${heatmapMarkup}`;
         } catch (error) {
           console.error('GEX profile render failed', error); container.hidden = false;
           container.innerHTML = '<div class="chart-error">GEX 圖層目前無法由明確欄位繪製。</div>';

@@ -38,6 +38,25 @@
     return { ...profile, strikes: selected.map((point) => point.strike), exposure: selected.map((point) => point.exposure) };
   }
 
+  function collectProfiles(baseProfiles, source, limit = 4) {
+    const candidates = [
+      ...(baseProfiles || []),
+      ...(Array.isArray(source?.expirations) ? source.expirations : []),
+      ...(Array.isArray(source?.additionalExpirations) ? source.additionalExpirations : []),
+      ...(Array.isArray(source?.expirationProfiles) ? source.expirationProfiles : [])
+    ];
+    const seen = new Set();
+    return candidates.map((profile, index) => {
+      const expiry = profile?.expiry || profile?.expiration;
+      const profileKind = profile?.profileKind || (profile?.exposureType === 'signed_dealer_gex' && profile?.status === 'renderable' ? 'signed-dealer-gex' : profile?.exposureType === 'unsigned_gamma_sensitivity' && profile?.status === 'aggregate_only' ? 'unsigned-pressure' : 'unavailable');
+      return { ...profile, expiry, label: profile?.label || (index === 0 ? '本週到期' : index === 1 ? '下週到期' : `第${index + 1}週到期`), profileKind };
+    }).filter((profile) => {
+      if (!profile.expiry || seen.has(profile.expiry) || !Array.isArray(profile.strikes) || profile.strikes.length !== profile.exposure?.length || profile.profileKind === 'unavailable') return false;
+      seen.add(profile.expiry);
+      return true;
+    }).slice(0, Math.max(2, limit));
+  }
+
   function summarize(profiles, spot) {
     const rows = (profiles || []).map((profile) => summarizeProfile(profile, spot)).filter((row) => row.points.length);
     const combined = rows.reduce((sum, row) => sum + row.totalMagnitude, 0);
@@ -60,5 +79,5 @@
     return { rows, lead, signed, evidenceLabel, confidence, interpretation, formatStrike, formatCompact };
   }
 
-  root.ElliottGexOverview = Object.freeze({ summarize, displayProfile, formatStrike, formatCompact });
+  root.ElliottGexOverview = Object.freeze({ summarize, displayProfile, collectProfiles, formatStrike, formatCompact });
 })(typeof window === 'undefined' ? globalThis : window);

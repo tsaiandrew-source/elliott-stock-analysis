@@ -79,6 +79,7 @@ for (const file of htmlFiles) {
     if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
     if (!html.includes('市場壓力概覽') || !html.includes('ElliottGexOverview')) failures.push(`${file}: GEX market overview is not wired`);
     if (!html.includes('到期日市場地圖') || !html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
+    if (!html.includes('履約價 × 到期日熱圖') || !html.includes('heatmapMarkup')) failures.push(`${file}: multi-expiration GEX heatmap is not wired`);
     for (const label of ['日線觀察', '日線確認', '週線觀察', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
     }
@@ -117,6 +118,14 @@ if (await exists('chart-surface/gex-market-overview.js')) {
   if (!/不能推定造市商方向/.test(overview?.interpretation || '')) failures.push('GEX market overview: unsigned evidence guardrail missing');
   const display = context.ElliottGexOverview?.displayProfile({ strikes: Array.from({ length: 80 }, (_, index) => index + 70), exposure: Array.from({ length: 80 }, (_, index) => index + 1) }, 100, 12);
   if (!display || display.strikes.length > 12 || display.strikes.some((strike) => strike < 65 || strike > 135)) failures.push('GEX market overview: spot-centered display selection failed');
+  const collected = context.ElliottGexOverview?.collectProfiles([
+    { label: '本週到期', expiry: '2026-09-18', profileKind: 'unsigned-pressure', strikes: [100], exposure: [1] },
+    { label: '下週到期', expiry: '2026-09-25', profileKind: 'unsigned-pressure', strikes: [100], exposure: [1] }
+  ], { additionalExpirations: [
+    { expiry: '2026-10-02', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] },
+    { expiry: '2026-10-09', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] }
+  ] }, 4);
+  if (collected?.length !== 4 || collected[3]?.label !== '第4週到期') failures.push('GEX market overview: four-expiration expansion failed');
 }
 
 if (await exists('data-model/coverage.html')) {
