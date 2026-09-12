@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v23';
+const CACHE_VERSION = 'elliott-pwa-v24';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -14,6 +14,8 @@ const LIVE_DATA_PATHS = new Set([
   new URL('chart-surface/analysis-details.js', APP_ROOT).pathname,
   new URL('chart-surface/benchmark-data.js', APP_ROOT).pathname,
   new URL('chart-surface/weekly-history.js', APP_ROOT).pathname,
+  new URL('chart-surface/universal-refresh-gex-consumer.js', APP_ROOT).pathname,
+  new URL('chart-surface/universal-refresh-gex-data.js', APP_ROOT).pathname,
   new URL('chart-surface/eod-digest-20260908.js', APP_ROOT).pathname
 ]);
 
@@ -38,6 +40,8 @@ const CORE_ASSETS = [
   './chart-surface/data-contract.js',
   './chart-surface/analysis-localization.js',
   './chart-surface/analysis-geometry.js',
+  './chart-surface/universal-refresh-gex-consumer.js',
+  './chart-surface/universal-refresh-gex-data.js',
 ].map((path) => new URL(path, APP_ROOT).href);
 
 self.addEventListener('install', (event) => {

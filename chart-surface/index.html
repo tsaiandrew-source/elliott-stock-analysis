@@ -1056,17 +1056,17 @@
         const expiry = expiryKey === 'next' ? summary.nextExpiration : summary.currentExpiration;
         const universalRecord = universalGexRecordFor(state.ticker);
         if (universalRecord) {
-          const resolved = window.UniversalRefreshGex?.resolveExpiration(universalRecord, expiryKey) || { renderChart: false, status: expiry?.status || universalRecord.status || 'not_available', reason: expiry?.displayText || universalRecord.displayText || 'GEX 資料尚不可用。', profile: null };
+          const resolved = window.UniversalRefreshGex?.resolveExpiration(universalRecord, expiryKey) || { renderChart: false, profileKind: 'unavailable', status: expiry?.status || universalRecord.status || 'not_available', reason: expiry?.displayText || universalRecord.displayText || 'GEX 資料尚不可用。', profile: null };
           return {
             label: expiryKey === 'next' ? '下週到期' : '本週到期',
-            expiry: expiry?.expiry || '未標示',
+            expiry: resolved.profile?.expiry || expiry?.expiry || '未標示',
             magnet: resolved.profile?.magnet ?? null,
             flip: resolved.profile?.gammaFlip ?? null,
             callWall: resolved.profile?.dealerCallWall ?? null,
             putWall: resolved.profile?.dealerPutWall ?? null,
             strikes: resolved.profile?.strikes || [],
             exposure: resolved.profile?.exposure || [],
-            profileKind: resolved.renderChart ? 'signed-dealer-gex' : 'unavailable',
+            profileKind: resolved.profileKind || 'unavailable',
             text: resolved.reason || publicGexText(expiry?.displayText || universalRecord.displayText),
             freshness: expiry?.dataThrough || universalRecord.dataThrough || data.freshness,
             status: resolved.status

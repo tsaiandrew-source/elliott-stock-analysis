@@ -140,6 +140,13 @@ if (await exists('chart-surface/index.html')) {
   if (!chart.includes('preserveScroll') || !chart.includes('previousScrollTop')) failures.push('chart-surface/index.html: ticker menu re-render does not preserve phone scroll position');
 }
 
+if (await exists('chart-surface/universal-refresh-gex-consumer.js')) {
+  const gexConsumer = await read('chart-surface/universal-refresh-gex-consumer.js');
+  for (const marker of ['unsigned_gamma_sensitivity', 'profileKind', 'unsigned-pressure']) {
+    if (!gexConsumer.includes(marker)) failures.push(`chart-surface/universal-refresh-gex-consumer.js: missing ${marker}`);
+  }
+}
+
 if (await exists('data-model/digest-model.js')) {
   const context = {};
   vm.createContext(context);
