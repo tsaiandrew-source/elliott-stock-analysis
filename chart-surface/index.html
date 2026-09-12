@@ -1900,6 +1900,7 @@
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
         $('thesis').textContent = publicAnalysisText(overall?.thesis || data.thesis);
+        const patternUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(String(pattern.text || ''));
         const directionMap = { up: { symbol: '↗', label: '上行' }, down: { symbol: '↘', label: '下行' }, flat: { symbol: '→', label: '盤整' } };
         const directionText = (direction, kind) => {
           const normalized = validDirection(direction);
@@ -1980,7 +1981,6 @@
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
         historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
-        const patternUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(String(pattern.text || ''));
         const quadrantPattern = $('direction-summary-pattern');
         const quadrantPatternText = $('direction-pattern');
         const quadrantPatternState = $('direction-pattern-state');
