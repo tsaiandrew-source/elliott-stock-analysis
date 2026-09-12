@@ -728,6 +728,8 @@
         return legacy && typeof legacy === 'object' ? legacy : null;
       };
       const wyckoffTextFor = (run, timeframe) => {
+        const structured = wyckoffPhaseFor(run, timeframe);
+        if (structured) return structuredWyckoffText(structured);
         const phase = run?.wyckoffPhase?.[timeframe];
         return structuredWyckoffText(phase || run?.[timeframe === 'weekly' ? 'weeklyWyckoff' : 'wyckoff']);
       };
