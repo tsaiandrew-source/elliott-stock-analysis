@@ -1911,7 +1911,8 @@
           const element = $(id);
           const kind = id.startsWith('watch-') ? 'watch' : 'formal';
           const view = directionText(direction, kind);
-          element.textContent = view.text;
+          const projectionPattern = id === 'watch-daily-direction' && !patternUnavailable ? String(pattern.text || '').trim() : '';
+          element.textContent = projectionPattern || view.text;
           element.dataset.direction = view.key;
           const item = element.closest('.direction-item');
           if (item) {
