@@ -175,18 +175,17 @@
     .thesis { font-size: 17px; line-height: 1.42; }
     .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(17, 36, 51, .32); }
     .direction-summary-head { color: var(--aqua); font-size: 11px; font-weight: 800; }
-    .direction-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-    .direction-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
-    .direction-item[data-kind="formal"] { border-color: rgba(145, 168, 183, .34); }
-    .direction-item[data-kind="watch"] { border-color: color-mix(in srgb, var(--pattern-family) 38%, transparent); }
-    .direction-item[data-state="pending"] { border-color: rgba(145, 168, 183, .34); }
-    .direction-item[data-state="active"] { border-color: color-mix(in srgb, var(--direction-color) 82%, white 8%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--direction-color) 26%, transparent), 0 0 10px color-mix(in srgb, var(--direction-color) 14%, transparent); }
+    .direction-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .direction-item { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 8px; min-width: 0; min-height: 64px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: rgba(7, 16, 24, .26); }
+    .direction-item[data-kind="formal"] { border-color: rgba(145, 168, 183, .46); }
+    .direction-item[data-kind="watch"] { border-color: color-mix(in srgb, var(--pattern-family) 52%, transparent); }
+    .direction-item[data-state="pending"] { border-color: rgba(145, 168, 183, .34); opacity: .72; }
+    .direction-item[data-state="active"] { border-color: color-mix(in srgb, var(--direction-color) 82%, white 8%); background: color-mix(in srgb, var(--direction-color) 8%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--direction-color) 26%, transparent), 0 0 10px color-mix(in srgb, var(--direction-color) 14%, transparent); }
     .direction-item[data-state="active"][data-direction="up"] { --direction-color: var(--green); }
     .direction-item[data-state="active"][data-direction="down"] { --direction-color: var(--red); }
     .direction-item[data-state="active"][data-direction="flat"] { --direction-color: var(--amber); }
-    .direction-item[hidden] { display: none !important; }
     .direction-item .direction-label { color: var(--muted); font-size: 11px; white-space: nowrap; }
-    .direction-value { color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .direction-value { color: var(--muted); font-size: 24px; line-height: 1; font-weight: 900; white-space: nowrap; }
     .direction-value[data-direction="up"] { color: var(--green); }
     .direction-value[data-direction="down"] { color: var(--red); }
     .direction-value[data-direction="flat"] { color: var(--amber); }
@@ -402,13 +401,13 @@
         <section class="panel summary" id="business-panel">
           <h3>核心論述</h3>
           <p class="thesis" id="thesis"></p>
-          <div class="direction-summary" id="direction-summary" aria-label="正式預測與觀察方向">
-            <div class="direction-summary-head">方向區分</div>
+          <div class="direction-summary" id="direction-summary" aria-label="固定方向象限：日線觀察、日線確認、週線觀察、週線確認">
+            <div class="direction-summary-head">方向象限 · 觀察／確認 × 日線／週線</div>
             <div class="direction-summary-grid">
-              <div class="direction-item" data-kind="formal"><span class="direction-label">正式預測 · 日線</span><span class="direction-value" id="formal-daily-direction"></span></div>
-              <div class="direction-item" data-kind="watch"><span class="direction-label">觀察方向 · 日線</span><span class="direction-value" id="watch-daily-direction"></span></div>
-              <div class="direction-item" data-kind="formal"><span class="direction-label">正式預測 · 週線</span><span class="direction-value" id="formal-weekly-direction"></span></div>
-              <div class="direction-item" data-kind="watch"><span class="direction-label">觀察方向 · 週線</span><span class="direction-value" id="watch-weekly-direction"></span></div>
+              <div class="direction-item" data-kind="watch" data-timeframe="daily"><span class="direction-label">日線觀察</span><span class="direction-value" id="watch-daily-direction"></span></div>
+              <div class="direction-item" data-kind="formal" data-timeframe="daily"><span class="direction-label">日線確認</span><span class="direction-value" id="formal-daily-direction"></span></div>
+              <div class="direction-item" data-kind="watch" data-timeframe="weekly"><span class="direction-label">週線觀察</span><span class="direction-value" id="watch-weekly-direction"></span></div>
+              <div class="direction-item" data-kind="formal" data-timeframe="weekly"><span class="direction-label">週線確認</span><span class="direction-value" id="formal-weekly-direction"></span></div>
             </div>
           </div>
           <p class="source-note cadence-note" id="thesis-refresh"></p>
@@ -1701,7 +1700,7 @@
           if (item) {
             item.dataset.state = view.key === 'pending' ? 'pending' : 'active';
             item.dataset.direction = view.key;
-            item.hidden = view.key === 'pending';
+            item.hidden = false;
           }
           element.setAttribute('aria-label', view.ariaLabel);
         });
