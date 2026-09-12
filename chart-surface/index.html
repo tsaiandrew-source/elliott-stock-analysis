@@ -202,18 +202,30 @@
     .stack { display: grid; gap: 12px; }
     .summary { padding: 16px; }
     .business-panel .business-summary { margin-top: 0; padding-top: 0; border-top: 0; }
+    .business-panel .business-summary > #business { color: var(--text); font-size: 15px; line-height: 1.42; }
+    .business-panel .business-context p { color: var(--text); font-size: 15px; line-height: 1.42; }
     .consolidated-analysis > h3 { color: var(--aqua); }
-    .analysis-core-subsection { margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .analysis-core-subsection { margin-bottom: 0; padding-bottom: 0; }
     .analysis-core-title { margin: 0 0 8px; color: var(--aqua); font-size: 13px; font-weight: 700; letter-spacing: .04em; }
     .technical-subsection > h3 { margin-bottom: 0; }
     .consolidated-analysis .technical-subsection { margin: 0; }
     .consolidated-analysis .technical-subsection .pattern-combo { margin-top: 0; }
+    .wyckoff-subsection { margin-top: 10px; padding-top: 0; }
+    .wyckoff-subsection .wyckoff-title { margin: 0 0 6px; color: var(--aqua); font-size: 13px; font-weight: 800; }
+    .wyckoff-subsection .wyckoff-reading { margin: 0; color: var(--text); font-size: 15px; line-height: 1.42; }
     .summary + .summary { margin-top: 12px; }
     .summary p { margin-top: 8px; }
     .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
     .value { font-weight: 700; }
     .thesis { font-size: 17px; line-height: 1.42; }
-    .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(17, 36, 51, .32); }
+    .thesis-readings { display: grid; gap: 9px; margin-top: 2px; }
+    .thesis-reading { padding-left: 10px; border-left: 2px solid var(--line); }
+    .thesis-reading[data-timeframe="daily"] { border-left-color: var(--aqua); }
+    .thesis-reading[data-timeframe="weekly"] { border-left-color: var(--pattern-family); }
+    .thesis-reading .thesis-reading-label { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .04em; }
+    .thesis-reading .thesis-reading-text { margin-top: 3px; color: var(--text); font-size: 15px; line-height: 1.42; }
+    .gex-readings { margin-top: 0; }
+    .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--pattern-family); border-radius: 9px; background: rgba(17, 36, 51, .32); }
     .direction-summary-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--aqua); font-size: 11px; font-weight: 800; }
     .direction-summary-head .analysis-scope { color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
     .direction-summary-note { color: var(--muted); font-size: 10px; line-height: 1.4; }
@@ -337,7 +349,7 @@
       .gex-landmark-reading { font-size: 13px; line-height: 1.62; }
       .label { font-size: 13px; }
       .thesis { font-size: 19px; }
-      .business-context p, .digest-head, .digest-section ul, .digest-block ul { font-size: 14px; }
+      .digest-head, .digest-section ul, .digest-block ul { font-size: 14px; }
       .digest-details summary { font-size: 15px; }
       .digest-date, .digest-next { font-size: 13px; }
       .digest-section h4, .combo-head { font-size: 14px; }
@@ -471,34 +483,25 @@
           <h3>技術結構分析</h3>
           <section class="analysis-core-subsection" aria-label="核心論述">
           <h4 class="analysis-core-title">核心論述</h4>
-          <p class="thesis" id="thesis"></p>
+          <div class="thesis-readings" id="thesis-readings">
+            <div class="thesis-reading" data-timeframe="daily"><div class="thesis-reading-label">日線讀法</div><p class="thesis-reading-text" id="thesis-daily"></p></div>
+            <div class="thesis-reading" data-timeframe="weekly"><div class="thesis-reading-label">週線讀法</div><p class="thesis-reading-text" id="thesis-weekly"></p></div>
+          </div>
                     <div class="direction-summary" id="direction-summary" aria-label="固定方向象限：日線投影、日線確認、週線投影、週線確認；亮起表示已有方向訊號，變暗表示待補或未確認">
-                      <div class="direction-summary-head"><span>方向象限 · 投影（觀察）／確認 × 日線／週線</span><span class="analysis-scope" id="analysis-scope">目前：日線</span></div>
+                      <div class="direction-summary-head"><span>方向象限</span></div>
                       <div class="direction-summary-grid">
                         <div class="direction-item" data-kind="watch" data-timeframe="daily"><span class="direction-label">日線投影</span><span class="direction-value" id="watch-daily-direction"></span></div>
                         <div class="direction-item" data-kind="formal" data-timeframe="daily"><span class="direction-label">日線確認</span><span class="direction-value" id="formal-daily-direction"></span></div>
                         <div class="direction-item" data-kind="watch" data-timeframe="weekly"><span class="direction-label">週線投影</span><span class="direction-value" id="watch-weekly-direction"></span></div>
                         <div class="direction-item" data-kind="formal" data-timeframe="weekly"><span class="direction-label">週線確認</span><span class="direction-value" id="formal-weekly-direction"></span></div>
                       </div>
-                      <p class="direction-summary-note">投影＝尚待價格／收盤接受驗證；確認＝完成收盤接受後才升級。</p>
                     </div>
-                    <p class="source-note cadence-note" id="thesis-refresh"></p>
-                    
           </section>
-          
-          <section class="technical-subsection">
-          <div id="pattern-combo" class="pattern-combo" aria-label="型態組合：型態線、型態確認位、失效位">
-            <div class="combo-head"><span>型態組合</span><span class="combo-hint" id="candidate-label">日線 · 投影 → 確認 → 失效</span></div>
-            <div class="combo-grid">
-              <div class="metric" data-tone="pattern"><span class="label">型態線</span><span class="value" id="pattern"></span></div>
-              <div class="metric" data-tone="confirmation"><span class="label">型態確認位</span><span class="value" id="pattern-gate"></span></div>
-              <div class="metric" data-tone="invalidation"><span class="label">失效位</span><span class="value" id="invalidation"></span></div>
-            </div>
-          </div>
-          <div class="grid-2">
-            <div class="metric" data-tone="wyckoff"><span class="label" id="wyckoff-label">Wyckoff 階段 · 日線</span><span class="value" id="wyckoff"></span></div>
-          </div>
+          <section class="wyckoff-subsection" aria-label="Wyckoff 階段 · 日線">
+            <h4 class="wyckoff-title" id="wyckoff-label">Wyckoff 階段 · 日線</h4>
+            <p class="wyckoff-reading" id="wyckoff"></p>
           </section>
+          <p class="source-note cadence-note" id="thesis-refresh"></p>
         </section>
         <section class="panel summary" data-tone="gex">
           <h3>選擇權／GEX</h3>
@@ -779,6 +782,11 @@
         const businessEvidence = selectedRun.businessEvidence || {};
         const selectedDigest = state.view === 'weekly' ? (weeklyDigest || dailyDigest) : dailyDigest;
         const patternLabel = patternLabelFor(patternRun, selectedDigest, state.view === 'weekly' ? 'weekly' : 'daily');
+        const dailyPatternLabel = patternLabelFor(dailyRun, dailyDigest, 'daily');
+        const weeklyPatternLabel = patternLabelFor(weeklyRun || dailyRun, weeklyDigest || dailyDigest, 'weekly');
+        const digestRead = (digest, heading) => String(digestSection(digest, heading)?.points?.[0] || '').trim();
+        const dailyThesis = publicAnalysisText(dailyRun?.thesis || dailyRun?.overall?.thesis || '');
+        const weeklyThesis = publicAnalysisText(weeklyRun?.thesis || weeklyRun?.overall?.thesis || digestRead(weeklyDigest, '摘要與市場脈絡') || digestRead(weeklyDigest, 'Pattern 與 Wyckoff') || (weeklyPatternLabel ? `週線主讀法：${weeklyPatternLabel}；方向以週線投影與確認閘門判讀。` : '')).replace(/形成中(?=週線)/gu, '形成中；');
         const patternCandidates = primary ? { primary: { ...primary, patternLabel, coordinates: primaryCoordinates, text: patternLabel, geometry: primary.geometry || structuredCoordinates?.type || 'none' }, ...(secondary ? { secondary: { ...secondary, text: secondary.patternLabel || patternLabel, geometry: secondary.geometry || 'none' } } : {}) } : {};
         const optionText = publicGexText(gexSummary?.displayText || selectedRun.options || digestOptionText(dailyDigest));
         const businessText = selectedRun.fundamentalsNews || selectedRun.business || digestSection(dailyDigest, '摘要與市場脈絡')?.points?.[1] || '';
@@ -799,6 +807,10 @@
           sourceUrl: sourceEvidence.find((item) => item.url)?.url || '',
           pattern: patternLabel,
           patternStatus: patternRun.status,
+          dailyPatternText: dailyPatternLabel,
+          weeklyPatternText: weeklyPatternLabel,
+          dailyThesis,
+          weeklyThesis,
           patternCandidates,
           predictionDirection: selectedRun.predictionDirection ?? null,
           dailyPredictionDirection: dailyRun?.predictionDirection ?? null,
@@ -1232,10 +1244,17 @@
         return bars[Math.max(0, Math.min(bars.length - 1, Math.floor(bars.length * 0.72)))];
       }
 
-      function candidateButtonText(candidate, fallbackLabel = '候選') {
+      function candidateButtonText(candidate, fallbackLabel = '候選', timeframe = '日線', patternName = '') {
         if (!candidate) return fallbackLabel;
+        const cleanPatternName = String(patternName || candidate.patternLabel || candidate.text || '').replace(/形成中/g, '').trim();
         const legacyStatus = String(candidate.status || '').trim();
-        if (legacyStatus) return legacyStatus;
+        if (legacyStatus) {
+          const statusParts = legacyStatus.split(' · ').map((part) => part.trim()).filter((part) => part && !/(?:主候選|次候選)/u.test(part));
+          const patternState = /形成中/u.test(String(patternName || '')) && !statusParts.some((part) => /形成中|突破候選|突破確認|回測守住/u.test(part)) ? ['形成中'] : [];
+          const confidence = candidate.confidencePercent ?? candidate.confidence;
+          const confidencePart = Number.isFinite(Number(confidence)) && !statusParts.some((part) => /^信心\s*\d+/u.test(part)) ? [`信心 ${Number(confidence)}`] : [];
+          return [`${timeframe}${cleanPatternName || fallbackLabel}`, ...patternState, ...statusParts, ...confidencePart].filter(Boolean).join(' · ');
+        }
         const stateLabels = {
           forming: '形成中',
           breakout_candidate: '突破候選',
@@ -1245,7 +1264,7 @@
         const label = candidate.label || fallbackLabel;
         const state = stateLabels[candidate.coordinates?.state] || '';
         const confidence = candidate.confidencePercent ?? candidate.confidence;
-        return [label, state, Number.isFinite(Number(confidence)) ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
+        return [`${timeframe}${cleanPatternName || label}`, state, Number.isFinite(Number(confidence)) ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
       }
 
       function weeklyPattern(data) {
@@ -1521,7 +1540,7 @@
         const sharedTicks = profiles.flatMap((profile) => profile.strikes || []);
         const currentPrice = priceSnapshotFor(data, data.bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)))?.value || data.bars.at(-1)?.close || sharedTicks[0];
         const fmt = (value) => value == null ? '無法判定' : window.ElliottGexOverview?.formatStrike(value);
-        return profiles.map((profile) => {
+        const readings = profiles.map((profile, index) => {
           const signed = profile.profileKind === 'signed-dealer-gex';
           const ranked = (profile.strikes || []).map((strike, index) => ({ strike: Number(strike), magnitude: Math.abs(Number(profile.exposure?.[index]) || 0) })).filter((item) => Number.isFinite(item.strike) && item.magnitude > 0).sort((a, b) => b.magnitude - a.magnitude);
           const lower = signed ? profile.putWall : ranked.find((item) => item.strike < currentPrice)?.strike ?? null;
@@ -1531,8 +1550,12 @@
             ? `情境帶 ${fmt(lower)}–${fmt(upper)}；${signed ? `${fmt(pivot)} 為 Gamma Flip 參考。` : `${fmt(pivot)} 只作反應轉換觀察。`}站上上緣且獲接受才支持上行延伸，跌破下緣且獲接受才提高下行風險。`
             : '目前只能定位敏感度集中，不能建立完整方向區間。';
           const scenario = gexScenarioForStrike(state.ticker, pivot ?? upper ?? lower ?? currentPrice, currentPrice);
-          return `<strong>${escapeHtml(profile.label)}：</strong>${escapeHtml(band)}<br><strong>${escapeHtml(scenario.label)}：</strong>${escapeHtml(scenario.text)}`;
-        }).join('<br><br>');
+          const timeframe = index === 0 ? 'daily' : 'weekly';
+          const timeframeLabel = index === 0 ? '本週到期' : '下週到期';
+          const text = `${escapeHtml(band)}<br><strong>${escapeHtml(scenario.label)}：</strong>${escapeHtml(scenario.text)}`;
+          return `<div class="thesis-reading" data-timeframe="${timeframe}"><div class="thesis-reading-label">${timeframeLabel}</div><p class="thesis-reading-text">${text}</p></div>`;
+        }).join('');
+        return `<div class="thesis-readings gex-readings">${readings}</div>`;
       }
 
       function renderGexProfile(data) {
@@ -1782,7 +1805,6 @@
         $('chart-legend').hidden = isGex;
         $('price-time-axis').hidden = isGex;
         // Keep the integrated technical analysis rail persistent across every view.
-        $('pattern-combo').hidden = false;
         $('structure-panel').hidden = false;
         renderGexProfile(data);
         const pattern = getPattern(data);
@@ -1917,14 +1939,13 @@
         $('chart-meta').textContent = isGex
           ? `GEX · 本週／下週到期 · ${gex.freshness}`
           : (state.view === 'weekly' ? '週線 · ' + weeklyCoverage : '日線 · ') + `分析截至 ${analysisMeta} · K線截至 ${chartMeta}`;
-        const analysisScope = $('analysis-scope');
-        if (analysisScope) analysisScope.textContent = isGex ? '基準：日線＋週線' : `目前：${state.view === 'weekly' ? '週線' : '日線'}`;
         const detail = analysisDetails[state.ticker] || {};
         const businessDetails = $('business-details');
         const runtimeOverall = data.overall || {};
         const overall = runtimeOverall;
         const hasOverall = Object.values(overall).some(Boolean);
-        $('thesis').textContent = publicAnalysisText(overall?.thesis || data.thesis);
+        $('thesis-daily').textContent = publicAnalysisText(data.dailyThesis || overall?.thesis || data.thesis);
+        $('thesis-weekly').textContent = publicAnalysisText(data.weeklyThesis || data.dailyThesis || overall?.thesis || data.thesis);
         const patternUnavailable = /無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(String(pattern.text || ''));
         const directionMap = { up: { symbol: '↗', label: '上行' }, down: { symbol: '↘', label: '下行' }, flat: { symbol: '→', label: '盤整' } };
         const directionText = (direction, kind) => {
@@ -1933,8 +1954,15 @@
           const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '';
           return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label || (kind === 'watch' ? '觀察方向' : '正式預測') };
         };
-        const analyzedPattern = patternUnavailable ? '' : String(pattern.text || '').replace(/形成中/g, '').trim();
-        const patternTimeframe = state.view === 'weekly' ? 'weekly' : 'daily';
+        const cleanQuadrantPattern = (value) => {
+          const text = String(value || '').trim();
+          if (!text || /^(?:日線|週線)?主候選$|無合格主型態|無穩定主型態|型態資料待補|尚未提供|待補/i.test(text)) return '';
+          return text.replace(/形成中/g, '').trim();
+        };
+        const quadrantPatterns = {
+          daily: cleanQuadrantPattern(data.dailyPatternText || (state.view !== 'weekly' ? pattern.text : '')),
+          weekly: cleanQuadrantPattern(data.weeklyPatternText || (state.view === 'weekly' ? pattern.text : ''))
+        };
         [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
           const element = $(id);
           const kind = id.startsWith('watch-') ? 'watch' : 'formal';
@@ -1949,9 +1977,10 @@
             const labelElement = item.querySelector('.direction-label');
             if (labelElement) {
               const baseLabel = item.dataset.baseLabel || labelElement.textContent;
-              const showPattern = Boolean(analyzedPattern) && item.dataset.kind === 'watch' && item.dataset.timeframe === patternTimeframe;
+              const itemPattern = quadrantPatterns[item.dataset.timeframe] || '';
+              const showPattern = Boolean(itemPattern) && item.dataset.kind === 'watch';
               item.dataset.baseLabel = baseLabel;
-              labelElement.textContent = showPattern ? `${baseLabel} · ${analyzedPattern}` : baseLabel;
+              labelElement.textContent = showPattern ? `${baseLabel} · ${itemPattern}` : baseLabel;
             }
           }
           element.setAttribute('aria-label', view.ariaLabel);
@@ -2013,16 +2042,11 @@
         }).join('');
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
         historyPanel.hidden = !historyEntries;
-        $('pattern').textContent = pattern.text;
-        $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
-        const wyckoffMetric = $('wyckoff').closest('.metric');
-        const rawWyckoffText = state.view === 'weekly' ? data.weeklyWyckoff : data.wyckoff;
+        const rawWyckoffText = data.wyckoff;
         const wyckoffText = /待補|尚未提供|未分類|未辨識出可辯護交易區間|unclassified/i.test(String(rawWyckoffText || '')) ? '' : String(rawWyckoffText || '');
         $('wyckoff').textContent = wyckoffText;
-        if (wyckoffMetric) wyckoffMetric.hidden = !wyckoffText;
-        $('pattern-gate').textContent = patternConditionText(pattern, 'confirmation');
-        $('invalidation').textContent = patternConditionText(pattern, 'invalidation');
-        $('candidate-label').textContent = `${state.view === 'weekly' ? '週線' : '日線'} · ${pattern.label} · 投影 → 確認 → 失效`;
+        const wyckoffSection = $('wyckoff').closest('.wyckoff-subsection');
+        if (wyckoffSection) wyckoffSection.hidden = !wyckoffText;
         const secondary = data.patternCandidates?.secondary;
         const candidateSwitch = $('candidate-switch');
         const deduplicated = candidatesSimilar(data) || state.view === 'weekly';
@@ -2035,10 +2059,14 @@
         candidateSwitch.querySelectorAll('[data-candidate]').forEach((button) => {
           const active = button.dataset.candidate === state.candidate;
           const candidate = data.patternCandidates?.[button.dataset.candidate];
+          const timeframeLabel = state.view === 'weekly' ? '週線' : '日線';
+          const candidatePatternName = button.dataset.candidate === 'primary'
+            ? patternDisplayLabel(pattern, data)
+            : patternDisplayLabel(candidate, data);
           button.hidden = button.dataset.candidate === 'secondary' ? !showSecondary : false;
           button.textContent = deduplicated && button.dataset.candidate === 'primary'
-            ? candidateButtonText(pattern, '主候選')
-            : candidateButtonText(candidate, button.dataset.candidate === 'primary' ? '主候選' : '次候選');
+            ? candidateButtonText(pattern, '主候選', timeframeLabel, candidatePatternName)
+            : candidateButtonText(candidate, button.dataset.candidate === 'primary' ? '主候選' : '次候選', timeframeLabel, candidatePatternName);
           button.classList.toggle('is-active', active);
           button.setAttribute('aria-pressed', String(active));
         });
@@ -2068,7 +2096,6 @@
           $('source-link').hidden = !evidence.some((item) => item.url);
         }
         // View switches change the visualization, not the integrated analysis rail.
-        $('pattern-combo').hidden = patternUnavailable;
         $('structure-panel').hidden = false;
         document.querySelectorAll('.controls label[data-tone]').forEach((label) => {
           label.hidden = isGex && label.dataset.tone !== 'gex';
