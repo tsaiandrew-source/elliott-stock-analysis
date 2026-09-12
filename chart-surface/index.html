@@ -1528,6 +1528,29 @@
         const displayProfiles = profiles.map((profile) => window.ElliottGexOverview?.displayProfile(profile, currentPrice, compactGex ? 12 : 18) || profile);
         const displayTicks = [...new Set(displayProfiles.flatMap((profile) => profile.strikes || []))].sort((a, b) => a - b);
         const displayDomain = { min: Math.min(...displayTicks, currentPrice), max: Math.max(...displayTicks, currentPrice), ticks: displayTicks };
+        const selectWatchItems = (marketProfiles) => marketProfiles.flatMap((profile, profileIndex) => {
+          const values = (profile.exposure || []).map((value) => Math.abs(Number(value) || 0));
+          const profileMax = Math.max(...values, 1);
+          return (profile.strikes || []).map((strike, index) => {
+            const value = values[index];
+            const distancePct = Math.abs(Number(strike) - currentPrice) / Math.max(Math.abs(currentPrice), .01);
+            const score = (value / profileMax) * .72 + Math.max(0, 1 - distancePct / .12) * .28;
+            return { profileIndex, strike: Number(strike), value, distancePct, score };
+          }).filter((item) => item.value > 0);
+        }).sort((a, b) => b.score - a.score).filter((item, index, items) => items.findIndex((other) => other.profileIndex === item.profileIndex) === index).slice(0, 3);
+        const scenarioForStrike = (strike) => state.ticker === 'NBIS' ? (strike >= 234.8
+          ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
+          : strike <= 222.63
+            ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
+            : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
+          : { direction: strike > currentPrice ? 'up' : strike < currentPrice ? 'down' : 'neutral', label: strike > currentPrice ? '上方情境' : strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
+        const renderWatchMarkup = (watchItems, marketProfiles) => watchItems.map((item, index) => {
+          const profile = marketProfiles[item.profileIndex];
+          const relation = item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`;
+          const scenario = scenarioForStrike(item.strike);
+          return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — 該週主要敏感度節點，${relation}。</span><span class="gex-heat-scenario" data-direction="${scenario.direction}"><b>${scenario.label}：</b>${scenario.text}</span></span></li>`;
+        }).join('');
+        const renderWatchPanel = (watchItems, marketProfiles, attribute) => `<aside class="gex-heat-watch" ${attribute} aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>Ely 情境門檻 × 敏感度節點</span></div><ol class="gex-heat-watch-list">${renderWatchMarkup(watchItems, marketProfiles)}</ol><p class="gex-heat-caveat">方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導。Unsigned sensitivity 不包含 dealer sign；節點不等於支撐、壓力或必然磁吸。</p></aside>`;
         const renderMarketMap = (marketProfiles, domain) => {
           const mapWidth = compactGex ? 520 : 720;
           const laneStart = 82;
@@ -1556,7 +1579,8 @@
           const axis = ticks.map((tick) => `<line x1="${xFor(tick).toFixed(1)}" y1="${axisY}" x2="${xFor(tick).toFixed(1)}" y2="${axisY + 6}" stroke="#91a8b7"/><text x="${xFor(tick).toFixed(1)}" y="${axisY + 25}" fill="#91a8b7" text-anchor="middle" font-size="${compactGex ? 14 : 12}">${window.ElliottGexOverview?.formatStrike(tick)}</text>`).join('');
           const spotX = xFor(currentPrice);
           const evidenceKind = marketProfiles.every((profile) => profile.profileKind === 'signed-dealer-gex') ? 'Signed dealer GEX map' : 'Unsigned sensitivity map';
-          return `<section class="gex-market-map" aria-label="跨到期日 GEX 市場地圖"><div class="gex-market-map-head"><strong>到期日市場地圖</strong><span>${evidenceKind} · ${laneCount} 個到期日</span></div><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的跨週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="${axisY - 29}" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="${axisY}" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="${axisY}" x2="${mapWidth - right}" y2="${axisY}" stroke="#91a8b7"/>${axis}</svg><div class="gex-market-map-note"><span>圓越大＝敏感度越集中</span><span>同一價格軸＝直接看主節點如何換位</span><span>接近現價＝優先觀察，不代表必然支撐或壓力</span></div></section>`;
+          const watchPanel = renderWatchPanel(selectWatchItems(marketProfiles), marketProfiles, 'data-gex-map-analysis');
+          return `<section class="gex-market-map" aria-label="跨到期日 GEX 市場地圖"><div class="gex-market-map-head"><strong>到期日市場地圖</strong><span>${evidenceKind} · ${laneCount} 個到期日</span></div><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的跨週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="${axisY - 29}" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="${axisY}" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="${axisY}" x2="${mapWidth - right}" y2="${axisY}" stroke="#91a8b7"/>${axis}</svg>${watchPanel}<div class="gex-market-map-note"><span>圓越大＝敏感度越集中</span><span>同一價格軸＝直接看主節點如何換位</span><span>接近現價＝優先觀察，不代表必然支撐或壓力</span></div></section>`;
         };
         const marketMapMarkup = renderMarketMap(displayProfiles, displayDomain);
         const renderHeatmap = (marketProfiles) => {
@@ -1567,14 +1591,7 @@
           const heatStrikes = [...strikeTotals.entries()].sort((a, b) => b[1] - a[1]).slice(0, compactGex ? 8 : 10).map(([strike]) => strike).sort((a, b) => b - a);
           const maxValue = Math.max(...profileMaps.flatMap((map) => [...map.values()]), 1);
           const tones = ['#9a66c7', '#55d9d5', '#2d9cff', '#c8f169'];
-          const watchItems = profileMaps.flatMap((map, profileIndex) => {
-            const profileMax = Math.max(...map.values(), 1);
-            return [...map.entries()].filter(([, value]) => value > 0).map(([strike, value]) => {
-              const distancePct = Math.abs(strike - currentPrice) / Math.max(Math.abs(currentPrice), .01);
-              const score = (value / profileMax) * .72 + Math.max(0, 1 - distancePct / .12) * .28;
-              return { profileIndex, strike, value, distancePct, score };
-            });
-          }).sort((a, b) => b.score - a.score).filter((item, index, items) => items.findIndex((other) => other.profileIndex === item.profileIndex) === index).slice(0, 3);
+          const watchItems = selectWatchItems(marketProfiles);
           const watchLookup = new Map(watchItems.map((item, index) => [`${item.profileIndex}:${item.strike}`, index + 1]));
           const columns = `66px repeat(${profileCount}, minmax(52px, 1fr))`;
           const headers = `<div class="gex-heat-label">履約價</div>${marketProfiles.map((profile) => `<div class="gex-heat-date">${escapeHtml(profile.label)}<small>${escapeHtml(profile.expiry)}</small></div>`).join('')}`;
@@ -1587,19 +1604,8 @@
             const cells = `<div class="gex-heat-label">${escapeHtml(window.ElliottGexOverview?.formatStrike(strike) || strike)}</div>${profileMaps.map((map, index) => { const value = map.get(strike) || 0; const opacity = value ? Math.max(.14, value / maxValue) : 0; const watchIndex = watchLookup.get(`${index}:${strike}`); return `<div class="gex-heat-cell" data-gex-heat-cell data-profile-index="${index}" data-strike="${strike}" data-value="${value}"${watchIndex ? ` data-watch-index="${watchIndex}"` : ''} aria-label="${watchIndex ? `重點 ${watchIndex}，` : ''}${escapeHtml(marketProfiles[index].label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(strike))}，敏感度 ${escapeHtml(window.ElliottGexOverview?.formatCompact(value))}"><span class="gex-heat-fill" style="background:${tones[index % tones.length]};opacity:${opacity.toFixed(2)}"></span><span>${value ? escapeHtml(window.ElliottGexOverview?.formatCompact(value)) : '—'}</span></div>`; }).join('')}`;
             return `${insertSpot ? spotMarkup : ''}${cells}`;
           }).join('') + (!spotInserted ? spotMarkup : '');
-          const watchMarkup = watchItems.map((item, index) => {
-            const profile = marketProfiles[item.profileIndex];
-            const relation = item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`;
-            const nbisScenario = state.ticker === 'NBIS' ? (item.strike >= 234.8
-              ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
-              : item.strike <= 222.63
-                ? { direction: 'down', label: '下行風險門檻', text: '$222.63 上方仍屬回測後整理；完成收盤跌破則轉弱，$213.91 下方代表突破回測失效。' }
-                : { direction: 'neutral', label: '基準情境', text: '$222.63 至 $234.80 間以整理看待；等待完成收盤離開區間並獲後續接受。' })
-              : { direction: item.strike > currentPrice ? 'up' : item.strike < currentPrice ? 'down' : 'neutral', label: item.strike > currentPrice ? '上方情境' : item.strike < currentPrice ? '下方情境' : '現價情境', text: '價格接近時，以完成收盤接受、成交量與次日 OI 共同確認；Gamma 敏感度本身不提供方向。' };
-            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — 該週主要敏感度節點，${relation}。</span><span class="gex-heat-scenario" data-direction="${nbisScenario.direction}"><b>${nbisScenario.label}：</b>${nbisScenario.text}</span></span></li>`;
-          }).join('');
           const availability = profileCount >= 4 ? '目前顯示 current + 3 weeks' : `目前來源提供 ${profileCount} 個到期日；第 3／4 週有資料時自動加入`;
-          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div><aside class="gex-heat-watch" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>Ely 情境門檻 × 框線節點</span></div><ol class="gex-heat-watch-list">${watchMarkup}</ol><p class="gex-heat-caveat">方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導。Unsigned sensitivity 不包含 dealer sign；框線不等於支撐、壓力或必然磁吸。</p></aside></div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
+          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div>${renderWatchPanel(watchItems, marketProfiles, 'data-gex-heat-analysis')}</div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
         };
         const heatmapMarkup = renderHeatmap(displayProfiles);
         const renderPanel = (gex, key, domain) => {
