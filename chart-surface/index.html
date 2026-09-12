@@ -632,7 +632,7 @@
       const preferredRuns = (ticker) => {
         const candidates = eligibleRuns(ticker);
         const rich = candidates.filter(isRichAnalysisRun);
-        return rich.length ? rich : candidates;
+        return candidates.map((run) => { const fallback = candidates.find((candidate) => isRichAnalysisRun(candidate) && isWeeklyRun(candidate) === isWeeklyRun(run) && runDate(candidate) < runDate(run)); return fallback ? { ...fallback, ...run } : run; });
       };
       const latestDailyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => !isWeeklyRun(run)))[0] || null;
       const latestWeeklyRun = (ticker) => sortRuns(preferredRuns(ticker).filter((run) => isWeeklyRun(run)))[0] || null;
