@@ -149,30 +149,12 @@
     .gex-overview-fact { padding-top: 8px; border-top: 1px solid var(--line); }
     .gex-overview-fact span { display: block; color: var(--muted); font-size: 10px; }
     .gex-overview-fact strong { display: block; margin-top: 3px; color: var(--text); font-size: 12px; }
-    .gex-market-map, .gex-heatmap { display: grid; gap: 12px; margin: 0 0 12px; padding: 14px; border: 1px solid color-mix(in srgb, var(--purple) 45%, var(--line)); border-radius: 10px; background: linear-gradient(135deg, rgba(154, 102, 199, .12), rgba(17, 36, 51, .3)); }
+    .gex-market-map { display: grid; gap: 12px; margin: 0 0 12px; padding: 14px; border: 1px solid color-mix(in srgb, var(--purple) 45%, var(--line)); border-radius: 10px; background: linear-gradient(135deg, rgba(154, 102, 199, .12), rgba(17, 36, 51, .3)); }
     .gex-market-map-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
     .gex-market-map-head strong { color: var(--text); font-size: 15px; }
     .gex-market-map-head span { color: var(--purple); font-size: 11px; font-weight: 800; }
     .gex-market-map svg { display: block; width: 100%; height: auto; overflow: visible; }
     .gex-market-map-note { display: flex; flex-wrap: wrap; gap: 5px 14px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
-    .gex-heatmap-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-    .gex-heatmap-head strong { color: var(--text); font-size: 15px; }
-    .gex-heatmap-head span { color: var(--purple); font-size: 11px; font-weight: 800; }
-    .gex-heat-stage { display: grid; gap: 10px; }
-    .gex-heat-grid { display: grid; gap: 3px; align-items: stretch; }
-    .gex-heat-label, .gex-heat-date, .gex-heat-cell { min-width: 0; min-height: 31px; display: grid; place-items: center; }
-    .gex-heat-label { justify-items: end; padding-right: 7px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
-    .gex-heat-date { color: var(--text); font-size: 11px; font-weight: 800; text-align: center; }
-    .gex-heat-date small { display: block; color: var(--muted); font-size: 9px; font-weight: 400; }
-    .gex-heat-spot-row { position: relative; grid-column: 1 / -1; height: 18px; display: flex; align-items: center; justify-content: flex-end; color: var(--amber); font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; }
-    .gex-heat-spot-row::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--amber); opacity: .9; }
-    .gex-heat-spot-row span { position: relative; z-index: 1; padding-left: 7px; background: #161f32; }
-    .gex-heat-cell { position: relative; min-width: 0; min-height: 31px; display: grid; place-items: center; overflow: visible; border: 1px solid transparent; border-radius: 4px; background: rgba(145, 168, 183, .08); color: var(--text); font-size: 10px; font-variant-numeric: tabular-nums; }
-    .gex-heat-cell[data-watch-index] { z-index: 2; border-color: var(--amber); box-shadow: inset 0 0 0 1px rgba(242, 184, 75, .28), 0 0 0 1px rgba(7, 16, 24, .9); }
-    .gex-heat-cell[data-watch-index]::after { content: attr(data-watch-index); position: absolute; z-index: 3; top: -7px; right: -6px; width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; background: var(--amber); color: #071018; font-size: 9px; font-weight: 800; }
-    .gex-heat-fill { position: absolute; inset: 0; }
-    .gex-heat-cell span:last-child { position: relative; z-index: 1; text-shadow: 0 1px 2px #071018; }
-    .gex-heat-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
     .gex-heat-watch { display: grid; gap: 8px; padding: 10px 12px; border-left: 3px solid var(--amber); background: rgba(242, 184, 75, .06); }
     .gex-heat-watch-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
     .gex-heat-watch-head strong { color: var(--amber); font-size: 13px; }
@@ -181,9 +163,6 @@
     .gex-heat-watch-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 7px; color: var(--text); font-size: 12px; line-height: 1.4; }
     .gex-heat-watch-number { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--amber); color: #071018; font-size: 9px; font-weight: 800; }
     .gex-heat-watch-copy { display: grid; gap: 4px; }
-    .gex-heat-validation { border-left-color: var(--aqua); background: rgba(85, 217, 213, .055); }
-    .gex-heat-validation .gex-heat-watch-head strong { color: var(--aqua); }
-    .gex-heat-validation .gex-heat-watch-number { background: var(--aqua); }
     .gex-heat-scenario { color: var(--muted); }
     .gex-heat-scenario b { color: var(--aqua); }
     .gex-heat-scenario[data-direction="up"] b { color: var(--green); }
@@ -347,8 +326,6 @@
       .gex-overview-narrative { font-size: 15px; }
       .gex-market-map-head strong { font-size: 15px; }
       .gex-market-map-head span, .gex-market-map-note { font-size: 13px; }
-      .gex-heatmap-head strong { font-size: 15px; }
-      .gex-heatmap-head span, .gex-heat-legend { font-size: 13px; }
       .gex-heat-watch-head strong { font-size: 15px; }
       .gex-heat-watch-head span, .gex-heat-caveat { font-size: 12px; }
       .gex-heat-watch-list li { font-size: 14px; }
@@ -389,7 +366,6 @@
       .gex-overview-facts { grid-template-columns: 1fr; }
       .gex-market-map { padding-top: 11px; }
       .gex-market-map-head { align-items: flex-start; flex-direction: column; gap: 3px; }
-      .gex-heatmap-head { align-items: flex-start; flex-direction: column; gap: 3px; }
       .gex-heat-label { padding-right: 4px; }
     }
     /* Use the visual viewport as a fallback when iPhone Safari keeps the
@@ -1525,7 +1501,7 @@
         const overview = window.ElliottGexOverview?.summarize(renderableProfiles, currentPrice);
         const overviewMarkup = overview?.rows?.length ? (() => {
           const weightRows = overview.rows.map((row) => `<div class="gex-weight-row"><div class="gex-weight-name">${escapeHtml(row.label)}<small>${escapeHtml(row.expiry)}</small></div><div class="gex-weight-track" role="img" aria-label="${escapeHtml(row.label)}占兩期敏感度 ${Math.round(row.share * 100)}%"><span class="gex-weight-fill" style="width:${Math.max(2, row.share * 100).toFixed(1)}%"></span></div><div class="gex-weight-value">${Math.round(row.share * 100)}%</div></div>`).join('');
-          const facts = overview.rows.slice(0, 2).map((row) => `<div class="gex-overview-fact"><span>${escapeHtml(row.label)}主敏感度</span><strong>${escapeHtml(overview.formatStrike(row.dominant?.strike))} · ${escapeHtml(row.relation)}</strong></div>`).join('');
+          const facts = overview.rows.slice(0, 4).map((row) => `<div class="gex-overview-fact"><span>${escapeHtml(row.label)}主敏感度</span><strong>${escapeHtml(overview.formatStrike(row.dominant?.strike))} · ${escapeHtml(row.relation)}</strong></div>`).join('');
           return `<section class="gex-market-overview" aria-label="GEX 市場壓力概覽"><div class="gex-overview-head"><h3>市場壓力概覽</h3><span class="gex-evidence-state">${escapeHtml(overview.evidenceLabel)} · ${escapeHtml(overview.confidence)}</span></div><p class="gex-overview-narrative">${escapeHtml(overview.interpretation)}</p><div class="gex-expiry-weight" aria-label="到期日敏感度占比">${weightRows}</div><div class="gex-overview-facts">${facts}<div class="gex-overview-fact"><span>現在價格</span><strong>${escapeHtml(overview.formatStrike(currentPrice))}</strong></div></div></section>`;
         })() : '';
         const displayProfiles = profiles.map((profile) => window.ElliottGexOverview?.displayProfile(profile, currentPrice, compactGex ? 12 : 18) || profile);
@@ -1540,7 +1516,7 @@
             const score = (value / profileMax) * .72 + Math.max(0, 1 - distancePct / .12) * .28;
             return { profileIndex, strike: Number(strike), value, distancePct, score };
           }).filter((item) => item.value > 0);
-        }).sort((a, b) => b.score - a.score).filter((item, index, items) => items.findIndex((other) => other.profileIndex === item.profileIndex) === index).slice(0, 3);
+        }).sort((a, b) => b.score - a.score).filter((item, index, items) => items.findIndex((other) => other.profileIndex === item.profileIndex) === index).slice(0, 4);
         const scenarioForStrike = (strike) => state.ticker === 'NBIS' ? (strike >= 234.8
           ? { direction: 'up', label: '多方升級門檻', text: '先收復 $234.80，再於 $240 上方形成完成收盤接受，才強化多方延伸；未站穩前仍是修復測試。' }
           : strike <= 222.63
@@ -1554,17 +1530,6 @@
           return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — 該週主要敏感度節點，${relation}。</span><span class="gex-heat-scenario" data-direction="${scenario.direction}"><b>${scenario.label}：</b>${scenario.text}</span></span></li>`;
         }).join('');
         const renderWatchPanel = (watchItems, marketProfiles, attribute) => `<aside class="gex-heat-watch" ${attribute} aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>Ely 情境門檻 × 敏感度節點</span></div><ol class="gex-heat-watch-list">${renderWatchMarkup(watchItems, marketProfiles)}</ol><p class="gex-heat-caveat">方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導。Unsigned sensitivity 不包含 dealer sign；節點不等於支撐、壓力或必然磁吸。</p></aside>`;
-        const renderValidationPanel = (watchItems, marketProfiles) => {
-          const rows = watchItems.map((item, index) => {
-            const profile = marketProfiles[item.profileIndex];
-            const ranked = (profile.exposure || []).map((value, valueIndex) => ({ strike: Number(profile.strikes[valueIndex]), value: Math.abs(Number(value) || 0) })).sort((a, b) => b.value - a.value);
-            const rank = ranked.findIndex((entry) => entry.strike === item.strike) + 1;
-            const scenario = scenarioForStrike(item.strike);
-            const relation = item.distancePct <= .0125 ? '貼近現價' : `${(item.distancePct * 100).toFixed(1)}% ${item.strike > currentPrice ? '高於' : '低於'}現價`;
-            return `<li><span class="gex-heat-watch-number">${index + 1}</span><span class="gex-heat-watch-copy"><span><strong>${escapeHtml(profile.label)} · ${escapeHtml(window.ElliottGexOverview?.formatStrike(item.strike))}</strong> — ${escapeHtml(window.ElliottGexOverview?.formatCompact(item.value))}、期內第 ${rank}，${relation}。</span><span class="gex-heat-scenario" data-direction="${scenario.direction}"><b>${scenario.label}：</b>${scenario.text}</span></span></li>`;
-          }).join('');
-          return `<aside class="gex-heat-watch gex-heat-validation" data-gex-heat-analysis aria-live="polite"><div class="gex-heat-watch-head"><strong>優先觀察</strong><span>履約價證據 × Ely 情境門檻</span></div><ol class="gex-heat-watch-list">${rows}</ol><p class="gex-heat-caveat">主敏感度由本週 $240 移向下週 $220。方向來自 Ely 的獨立價格結構情境，不是由 Gamma 推導；Unsigned sensitivity 不等於支撐、壓力或必然磁吸。</p></aside>`;
-        };
         const renderMarketMap = (marketProfiles, domain) => {
           const mapWidth = compactGex ? 520 : 720;
           const laneStart = 82;
@@ -1597,31 +1562,6 @@
           return `<section class="gex-market-map" aria-label="跨到期日 GEX 市場地圖"><div class="gex-market-map-head"><strong>到期日市場地圖</strong><span>${evidenceKind} · ${laneCount} 個到期日</span></div><svg viewBox="0 0 ${mapWidth} ${mapHeight}" role="img" aria-label="共同價格軸上的跨週 Gamma 敏感度節點"><rect x="${left}" y="35" width="${plotWidth}" height="${axisY - 29}" rx="7" fill="#0b1721" stroke="#203849"/><line x1="${spotX.toFixed(1)}" y1="35" x2="${spotX.toFixed(1)}" y2="${axisY}" stroke="#f2b84b" stroke-width="2" stroke-dasharray="6 5"/><text x="${spotX.toFixed(1)}" y="20" fill="#f2b84b" text-anchor="middle" font-size="${compactGex ? 15 : 13}" font-weight="700">現在 ${window.ElliottGexOverview?.formatStrike(currentPrice)}</text>${lanes}<line x1="${left}" y1="${axisY}" x2="${mapWidth - right}" y2="${axisY}" stroke="#91a8b7"/>${axis}</svg>${watchPanel}<div class="gex-market-map-note"><span>圓越大＝敏感度越集中</span><span>同一價格軸＝直接看主節點如何換位</span><span>接近現價＝優先觀察，不代表必然支撐或壓力</span></div></section>`;
         };
         const marketMapMarkup = renderMarketMap(displayProfiles, displayDomain);
-        const renderHeatmap = (marketProfiles) => {
-          const profileCount = marketProfiles.length;
-          const profileMaps = marketProfiles.map((profile) => new Map((profile.strikes || []).map((strike, index) => [Number(strike), Math.abs(Number(profile.exposure[index]) || 0)])));
-          const strikeTotals = new Map();
-          profileMaps.forEach((map) => map.forEach((value, strike) => strikeTotals.set(strike, (strikeTotals.get(strike) || 0) + value)));
-          const heatStrikes = [...strikeTotals.entries()].sort((a, b) => b[1] - a[1]).slice(0, compactGex ? 8 : 10).map(([strike]) => strike).sort((a, b) => b - a);
-          const maxValue = Math.max(...profileMaps.flatMap((map) => [...map.values()]), 1);
-          const tones = ['#9a66c7', '#55d9d5', '#2d9cff', '#c8f169'];
-          const watchItems = selectWatchItems(marketProfiles);
-          const watchLookup = new Map(watchItems.map((item, index) => [`${item.profileIndex}:${item.strike}`, index + 1]));
-          const columns = `66px repeat(${profileCount}, minmax(52px, 1fr))`;
-          const headers = `<div class="gex-heat-label">履約價</div>${marketProfiles.map((profile) => `<div class="gex-heat-date">${escapeHtml(profile.label)}<small>${escapeHtml(profile.expiry)}</small></div>`).join('')}`;
-          let spotInserted = false;
-          const spotMarkup = `<div class="gex-heat-spot-row" data-gex-heat-spot aria-label="現在價格 ${escapeHtml(window.ElliottGexOverview?.formatStrike(currentPrice))}"><span>現在 ${escapeHtml(window.ElliottGexOverview?.formatStrike(currentPrice))}</span></div>`;
-          const rows = heatStrikes.map((strike, strikeIndex) => {
-            const previousStrike = heatStrikes[strikeIndex - 1];
-            const insertSpot = !spotInserted && (currentPrice >= strike) && (strikeIndex === 0 || currentPrice < previousStrike);
-            if (insertSpot) spotInserted = true;
-            const cells = `<div class="gex-heat-label">${escapeHtml(window.ElliottGexOverview?.formatStrike(strike) || strike)}</div>${profileMaps.map((map, index) => { const value = map.get(strike) || 0; const opacity = value ? Math.max(.14, value / maxValue) : 0; const watchIndex = watchLookup.get(`${index}:${strike}`); return `<div class="gex-heat-cell" data-gex-heat-cell data-profile-index="${index}" data-strike="${strike}" data-value="${value}"${watchIndex ? ` data-watch-index="${watchIndex}"` : ''} aria-label="${watchIndex ? `重點 ${watchIndex}，` : ''}${escapeHtml(marketProfiles[index].label)} ${escapeHtml(window.ElliottGexOverview?.formatStrike(strike))}，敏感度 ${escapeHtml(window.ElliottGexOverview?.formatCompact(value))}"><span class="gex-heat-fill" style="background:${tones[index % tones.length]};opacity:${opacity.toFixed(2)}"></span><span>${value ? escapeHtml(window.ElliottGexOverview?.formatCompact(value)) : '—'}</span></div>`; }).join('')}`;
-            return `${insertSpot ? spotMarkup : ''}${cells}`;
-          }).join('') + (!spotInserted ? spotMarkup : '');
-          const availability = profileCount >= 4 ? '目前顯示 current + 3 weeks' : `目前來源提供 ${profileCount} 個到期日；第 3／4 週有資料時自動加入`;
-          return `<section class="gex-heatmap" aria-label="跨到期日 Gamma 敏感度熱圖"><div class="gex-heatmap-head"><strong>履約價 × 到期日熱圖</strong><span>${escapeHtml(availability)}</span></div><div class="gex-heat-stage"><div class="gex-heat-grid" style="grid-template-columns:${columns}">${headers}${rows}</div>${renderValidationPanel(watchItems, marketProfiles)}</div><div class="gex-heat-legend"><span>琥珀框線＝系統挑出的觀察節點</span><span>顏色越深＝該到期日的敏感度越大</span><span>橫向比較＝同一履約價跨週變化</span><span>縱向比較＝單一到期日的集中區</span></div></section>`;
-        };
-        const heatmapMarkup = renderHeatmap(displayProfiles);
         const renderPanel = (gex, key, domain) => {
           const strikes = gex.strikes || [];
           const exposure = gex.exposure || [];
@@ -1686,7 +1626,7 @@
           const profileLegend = isUnsignedPressure ? '柱＝Gamma 敏感度　琥珀＝累積曲線' : '綠＝正 GEX　紅＝負 GEX　琥珀＝累積曲線';
           return `<section class="gex-expiry-panel" data-expiry="${key}"><div class="gex-visual"><div class="gex-profile-head"><span><strong>${profileTitle}</strong> · ${gex.label} · ${gex.expiry}</span><span>${profileLegend}</span></div><div class="gex-profile-canvas"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${gex.label} gamma pressure profile"><rect x="${left}" y="${top}" width="${plotWidth}" height="${plotHeight}" fill="#0b1721" stroke="#203849"/>${xGrid}<line x1="${left}" y1="${zeroY.toFixed(1)}" x2="${width - right}" y2="${zeroY.toFixed(1)}" stroke="#91a8b7" stroke-width="1" stroke-dasharray="3 4"/><text x="${left - 8}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" fill="#91a8b7" font-size="${labelSize}">0</text>${vline(currentPrice, '#55d9d5', '現在價格', 0, '0')}${magnetLine}${flipLine}${vline(gex.callWall, '#7ee787', 'Call Wall', 3)}${vline(gex.putWall, '#4fd1a5', 'Put Wall', 4)}${bars}<path d="${smoothPath(cumulativePoints)}" fill="none" stroke="#f2b84b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>${rail}</section>`;
         };
-        container.innerHTML = `${overviewMarkup}${marketMapMarkup}${heatmapMarkup}`;
+        container.innerHTML = `${overviewMarkup}${marketMapMarkup}`;
         } catch (error) {
           console.error('GEX profile render failed', error); container.hidden = false;
           container.innerHTML = '<div class="chart-error">GEX 圖層目前無法由明確欄位繪製。</div>';

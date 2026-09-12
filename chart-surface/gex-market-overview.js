@@ -65,14 +65,11 @@
     const signed = rows.length > 0 && rows.every((row) => row.profileKind === 'signed-dealer-gex');
     const evidenceLabel = signed ? 'Signed dealer GEX' : 'Unsigned gamma sensitivity';
     const confidence = signed ? '資料層級：較高' : '資料層級：條件式';
-    const first = rows[0];
-    const second = rows[1];
-    const shift = first?.dominant && second?.dominant
-      ? first.dominant.strike === second.dominant.strike
-        ? `兩個到期日都集中在 ${formatStrike(first.dominant.strike)}`
-        : `主敏感度由 ${formatStrike(first.dominant.strike)} 移向 ${formatStrike(second.dominant.strike)}`
-      : '到期日之間的集中位置仍待完整資料';
-    const leadText = lead ? `${lead.label}承擔約 ${Math.round(lead.share * 100)}% 的兩期總敏感度` : '尚無可比較的到期日';
+    const dominantPath = rows.filter((row) => row.dominant).map((row) => `${row.label} ${formatStrike(row.dominant.strike)}`);
+    const shift = dominantPath.length > 1
+      ? `主敏感度依序為 ${dominantPath.join(' → ')}`
+      : dominantPath.length ? `主敏感度集中在 ${dominantPath[0]}` : '到期日之間的集中位置仍待完整資料';
+    const leadText = lead ? `${lead.label}承擔約 ${Math.round(lead.share * 100)}% 的 ${rows.length} 個到期日總敏感度` : '尚無可比較的到期日';
     const interpretation = signed
       ? `${leadText}；${shift}。正負值可用來描述模型中的 dealer gamma regime，但仍須配合價格確認。`
       : `${leadText}；${shift}。這裡只表示哪個價位對 Gamma 較敏感，不能推定造市商方向、支撐或壓力。`;

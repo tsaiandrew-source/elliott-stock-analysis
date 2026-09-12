@@ -79,8 +79,9 @@ for (const file of htmlFiles) {
     if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
     if (!html.includes('市場壓力概覽') || !html.includes('ElliottGexOverview')) failures.push(`${file}: GEX market overview is not wired`);
     if (!html.includes('到期日市場地圖') || !html.includes('marketMapMarkup')) failures.push(`${file}: integrated GEX market map is not wired`);
-    if (!html.includes('履約價 × 到期日熱圖') || !html.includes('heatmapMarkup')) failures.push(`${file}: multi-expiration GEX heatmap is not wired`);
-    if (!html.includes('data-watch-index') || !html.includes('data-gex-map-analysis') || !html.includes('data-gex-heat-analysis') || !html.includes('data-gex-heat-spot')) failures.push(`${file}: automatic GEX watch analysis is not wired`);
+    if (html.includes('履約價 × 到期日熱圖') || html.includes('heatmapMarkup')) failures.push(`${file}: discarded GEX heatmap is still wired`);
+    if (!html.includes('data-gex-map-analysis') || !html.includes('selectWatchItems(marketProfiles)')) failures.push(`${file}: automatic GEX market-map watch analysis is not wired`);
+    if (!html.includes('Math.min(4, marketProfiles.length)') || !html.includes('marketProfiles.slice(0, 4)')) failures.push(`${file}: GEX market map is not capped and laid out for four expirations`);
     for (const label of ['日線觀察', '日線確認', '週線觀察', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
     }
@@ -127,6 +128,8 @@ if (await exists('chart-surface/gex-market-overview.js')) {
     { expiry: '2026-10-09', status: 'aggregate_only', exposureType: 'unsigned_gamma_sensitivity', strikes: [100], exposure: [1] }
   ] }, 4);
   if (collected?.length !== 4 || collected[3]?.label !== '第4週到期') failures.push('GEX market overview: four-expiration expansion failed');
+  const fourWeekOverview = context.ElliottGexOverview?.summarize(collected, 100);
+  if (fourWeekOverview?.rows.length !== 4 || !/4 個到期日/.test(fourWeekOverview?.interpretation || '') || !/第4週到期/.test(fourWeekOverview?.interpretation || '')) failures.push('GEX market overview: four-expiration narrative failed');
 }
 
 if (await exists('data-model/coverage.html')) {
