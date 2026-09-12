@@ -217,12 +217,6 @@
     .direction-summary-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--aqua); font-size: 11px; font-weight: 800; }
     .direction-summary-head .analysis-scope { color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
     .direction-summary-note { color: var(--muted); font-size: 10px; line-height: 1.4; }
-    .direction-summary-pattern { display: flex; align-items: baseline; gap: 8px; min-width: 0; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
-    .direction-summary-pattern[data-state="active"] { border-color: color-mix(in srgb, var(--pattern-family) 82%, white 8%); background: color-mix(in srgb, var(--pattern-family) 8%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pattern-family) 24%, transparent), 0 0 10px color-mix(in srgb, var(--pattern-family) 12%, transparent); }
-    .direction-summary-pattern[data-state="pending"] { opacity: .52; }
-    .direction-summary-pattern .label { color: var(--pattern-family); font-size: 10px; }
-    .direction-summary-pattern strong { min-width: 0; overflow: hidden; color: var(--text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-    .direction-summary-pattern .direction-pattern-state { color: var(--muted); font-size: 10px; white-space: nowrap; }
     .direction-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
     .direction-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 8px; border: 1px solid var(--line); border-radius: 7px; background: rgba(7, 16, 24, .26); }
     .direction-item[data-kind="formal"] { border-color: rgba(145, 168, 183, .34); }
@@ -232,7 +226,7 @@
     .direction-item[data-state="active"][data-direction="up"] { --direction-color: var(--green); }
     .direction-item[data-state="active"][data-direction="down"] { --direction-color: var(--red); }
     .direction-item[data-state="active"][data-direction="flat"] { --direction-color: var(--amber); }
-    .direction-item .direction-label { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .direction-item .direction-label { min-width: 0; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .direction-value { color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
     .direction-value[data-direction="up"] { color: var(--green); }
     .direction-value[data-direction="down"] { color: var(--red); }
@@ -480,7 +474,6 @@
           <p class="thesis" id="thesis"></p>
                     <div class="direction-summary" id="direction-summary" aria-label="固定方向象限：日線投影、日線確認、週線投影、週線確認；亮起表示已有方向訊號，變暗表示待補或未確認">
                       <div class="direction-summary-head"><span>方向象限 · 投影（觀察）／確認 × 日線／週線</span><span class="analysis-scope" id="analysis-scope">目前：日線</span></div>
-                      <div class="direction-summary-pattern" id="direction-summary-pattern" data-state="pending" aria-label="目前型態"><span class="label">型態</span><strong id="direction-pattern">—</strong><span class="direction-pattern-state" id="direction-pattern-state">待補</span></div>
                       <div class="direction-summary-grid">
                         <div class="direction-item" data-kind="watch" data-timeframe="daily"><span class="direction-label">日線投影</span><span class="direction-value" id="watch-daily-direction"></span></div>
                         <div class="direction-item" data-kind="formal" data-timeframe="daily"><span class="direction-label">日線確認</span><span class="direction-value" id="formal-daily-direction"></span></div>
@@ -1940,18 +1933,24 @@
           const label = view ? (kind === 'watch' ? `${view.label}觀察` : view.label) : '';
           return { key: normalized || 'pending', text: view?.symbol || '—', ariaLabel: label || (kind === 'watch' ? '觀察方向' : '正式預測') };
         };
+        const analyzedPattern = patternUnavailable ? '型態待補' : String(pattern.text || '').replace(/形成中/g, '').trim() || '型態待補';
         [['formal-daily-direction', data.dailyPredictionDirection], ['watch-daily-direction', data.dailyWatchDirection], ['formal-weekly-direction', data.weeklyPredictionDirection], ['watch-weekly-direction', data.weeklyWatchDirection]].forEach(([id, direction]) => {
           const element = $(id);
           const kind = id.startsWith('watch-') ? 'watch' : 'formal';
           const view = directionText(direction, kind);
-          const projectionPattern = id === 'watch-daily-direction' && !patternUnavailable ? String(pattern.text || '').trim() : '';
-          element.textContent = projectionPattern || view.text;
+          element.textContent = view.text;
           element.dataset.direction = view.key;
           const item = element.closest('.direction-item');
           if (item) {
             item.dataset.state = view.key === 'pending' ? 'pending' : 'active';
             item.dataset.direction = view.key;
             item.hidden = false;
+            const labelElement = item.querySelector('.direction-label');
+            if (labelElement) {
+              const baseLabel = item.dataset.baseLabel || labelElement.textContent;
+              item.dataset.baseLabel = baseLabel;
+              labelElement.textContent = `${baseLabel} · ${analyzedPattern}`;
+            }
           }
           element.setAttribute('aria-label', view.ariaLabel);
         });
@@ -2013,14 +2012,6 @@
         historyPanel.innerHTML = historyEntries ? `<details class="digest-details" data-tone="history"><summary><span>分析歷史 · ${history.length} 筆</span></summary><div class="digest-details-content">${historyEntries}</div></details>` : '';
         historyPanel.hidden = !historyEntries;
         $('pattern').textContent = pattern.text;
-        const quadrantPattern = $('direction-summary-pattern');
-        const quadrantPatternText = $('direction-pattern');
-        const quadrantPatternState = $('direction-pattern-state');
-        if (quadrantPattern && quadrantPatternText && quadrantPatternState) {
-          quadrantPatternText.textContent = String(pattern.text || '型態待補');
-          quadrantPatternState.textContent = String(pattern.status || '').replace(/^主候選\s*·\s*/, '') || (patternUnavailable ? '待補' : '形成中');
-          quadrantPattern.dataset.state = patternUnavailable ? 'pending' : 'active';
-        }
         $('wyckoff-label').textContent = `Wyckoff 階段 · ${state.view === 'weekly' ? '週線' : '日線'}`;
         const wyckoffMetric = $('wyckoff').closest('.metric');
         const rawWyckoffText = state.view === 'weekly' ? data.weeklyWyckoff : data.wyckoff;
