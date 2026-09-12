@@ -202,7 +202,8 @@
     .stack { display: grid; gap: 12px; }
     .summary { padding: 16px; }
     .consolidated-analysis > h3 { color: var(--aqua); }
-    .technical-subsection { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .analysis-core-subsection { margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .analysis-core-title { margin: 0 0 8px; color: var(--aqua); font-size: 13px; font-weight: 700; letter-spacing: .04em; }
     .technical-subsection > h3 { margin-bottom: 0; }
     .summary + .summary { margin-top: 12px; }
     .summary p { margin-top: 8px; }
@@ -449,9 +450,11 @@
       </section>
 
       <aside class="stack" aria-label="目前分析">
-        <section class="panel summary consolidated-analysis" id="business-panel">
-          <h3>核心論述 · 技術結構分析</h3>
-          <p class="thesis" id="thesis"></p>
+        <section id="structure-panel" class="panel summary consolidated-analysis">
+          <h3>技術結構分析</h3>
+          <section class="analysis-core-subsection" aria-label="核心論述">
+          <h4 class="analysis-core-title">核心論述</h4>
+<p class="thesis" id="thesis"></p>
           <div class="direction-summary" id="direction-summary" aria-label="固定方向象限：日線觀察、日線確認、週線觀察、週線確認">
             <div class="direction-summary-head">方向象限 · 觀察／確認 × 日線／週線</div>
             <div class="direction-summary-grid">
@@ -472,9 +475,11 @@
           </div>
           <div class="thesis-details" id="business-details" hidden></div>
           <div class="thesis-details analysis-history" id="analysis-history" hidden></div>
-          <section id="structure-panel" class="technical-subsection">
-          <h3>技術結構分析</h3>
-          <div id="pattern-combo" class="pattern-combo" aria-label="型態組合：型態線、型態確認位、失效位">
+        </section>
+        
+          </section>
+          <section class="technical-subsection">
+<div id="pattern-combo" class="pattern-combo" aria-label="型態組合：型態線、型態確認位、失效位">
             <div class="combo-head"><span>型態組合</span><span class="combo-hint" id="candidate-label">主候選 · 狀態 → 確認 → 失效</span></div>
             <div class="combo-grid">
               <div class="metric" data-tone="pattern"><span class="label">型態線</span><span class="value" id="pattern"></span></div>
@@ -485,9 +490,10 @@
           <div class="grid-2">
             <div class="metric" data-tone="wyckoff"><span class="label" id="wyckoff-label">Wyckoff 階段 · 日線</span><span class="value" id="wyckoff"></span></div>
           </div>
-          </section>
         </section>
-        <section class="panel summary" data-tone="gex">
+        
+          </section>
+        </section><section class="panel summary" data-tone="gex">
           <h3>選擇權／GEX</h3>
           <p id="options"></p>
           <p class="source-note" id="freshness"></p>
