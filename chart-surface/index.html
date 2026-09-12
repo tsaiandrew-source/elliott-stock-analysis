@@ -1746,8 +1746,9 @@
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
         $('price-time-axis').hidden = isGex;
-        $('pattern-combo').hidden = isGex;
-        $('structure-panel').hidden = isGex;
+        // Keep the integrated technical analysis rail persistent across every view.
+        $('pattern-combo').hidden = false;
+        $('structure-panel').hidden = false;
         renderGexProfile(data);
         const pattern = getPattern(data);
         const barsForView = viewBars(data);
@@ -2020,8 +2021,9 @@
           $('source-link').textContent = evidence.some((item) => item.url) ? '開啟市場資料來源' : '沒有公開來源連結';
           $('source-link').hidden = !evidence.some((item) => item.url);
         }
-        $('pattern-combo').hidden = isGex || patternUnavailable;
-        $('structure-panel').hidden = isGex;
+        // View switches change the visualization, not the integrated analysis rail.
+        $('pattern-combo').hidden = patternUnavailable;
+        $('structure-panel').hidden = false;
         document.querySelectorAll('.controls label[data-tone]').forEach((label) => {
           label.hidden = isGex && label.dataset.tone !== 'gex';
         });
