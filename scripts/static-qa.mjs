@@ -99,7 +99,7 @@ for (const file of htmlFiles) {
 
 if (await exists('data-model/coverage.html')) {
   const home = await read('data-model/coverage.html');
-  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
+  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'AVGO', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
   if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/coverage.html: partial-safe chart navigation gate is missing');
   for (const ticker of requiredPartialTickers) {
     if (!home.includes(`'${ticker}'`)) failures.push(`data-model/coverage.html: partial chart ticker missing from navigation fallback: ${ticker}`);
@@ -116,6 +116,7 @@ if (await exists('data-model/home.html')) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
   }
   if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
+  if (!home.includes('.edition-card[aria-expanded="true"] .edition-copy span')) failures.push('data-model/home.html: expanded digest summary is still truncated');
   if (home.includes('id="reader"') || home.includes('reader-toolbar')) failures.push('data-model/home.html: obsolete standalone digest reader remains');
   if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
   if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
@@ -123,7 +124,7 @@ if (await exists('data-model/home.html')) {
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain']) {
+  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:y proximity']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
@@ -137,6 +138,14 @@ if (await exists('chart-surface/index.html')) {
   const chart = await read('chart-surface/index.html');
   if (!chart.includes('window.__elliottSelectTicker = selectTicker')) failures.push('chart-surface/index.html: inline ticker rail does not have an in-place selector hook');
   if (!chart.includes('window.history.pushState({}, \'\', nextUrl)')) failures.push('chart-surface/index.html: ticker switching does not update browser history');
+  if (!chart.includes('preserveScroll') || !chart.includes('previousScrollTop')) failures.push('chart-surface/index.html: ticker menu re-render does not preserve phone scroll position');
+}
+
+if (await exists('chart-surface/universal-refresh-gex-consumer.js')) {
+  const gexConsumer = await read('chart-surface/universal-refresh-gex-consumer.js');
+  for (const marker of ['unsigned_gamma_sensitivity', 'profileKind', 'unsigned-pressure']) {
+    if (!gexConsumer.includes(marker)) failures.push(`chart-surface/universal-refresh-gex-consumer.js: missing ${marker}`);
+  }
 }
 
 if (await exists('data-model/digest-model.js')) {

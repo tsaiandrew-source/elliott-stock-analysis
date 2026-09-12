@@ -348,7 +348,7 @@
       };
       const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
       const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
-      const partialChartTickers = new Set(['2330', '2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK']);
+      const partialChartTickers = new Set(Object.keys(partialChartSources));
       const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
       const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
       const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));

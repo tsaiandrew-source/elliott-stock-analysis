@@ -56,7 +56,7 @@
     .ticker-sheet-head span { color: var(--muted); font-size: 11px; }
     .ticker-sheet-close { border: 0; color: var(--muted); background: transparent; font-size: 22px; line-height: 1; cursor: pointer; }
     .ticker-sheet-close:hover, .ticker-sheet-close:focus-visible { color: var(--text); }
-    .ticker-wheel { display: flex; flex-direction: column; height: calc(44vh - 100px); overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: thin; scrollbar-color: var(--aqua) transparent; border: 1px solid var(--line); border-radius: 11px; background: rgba(7,16,24,.52); }
+    .ticker-wheel { display: flex; flex-direction: column; height: calc(44vh - 100px); overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scroll-snap-type: y proximity; scrollbar-width: thin; scrollbar-color: var(--aqua) transparent; border: 1px solid var(--line); border-radius: 11px; background: rgba(7,16,24,.52); }
     .ticker-wheel-item { display: flex; flex: 0 0 42px; align-items: center; justify-content: space-between; gap: 10px; scroll-snap-align: center; padding: 6px 13px; border: 0; border-bottom: 1px solid rgba(32,56,73,.55); color: var(--muted); background: transparent; text-align: left; cursor: pointer; }
     .ticker-wheel-item:last-child { border-bottom: 0; }
     .ticker-wheel-item strong { font-size: 13px; }
@@ -796,6 +796,9 @@
         $('ticker-menu-label').textContent = state.ticker;
         $('ticker-menu-toggle').setAttribute('aria-label', `選擇代號，目前為 ${state.ticker}`);
         const wheel = $('ticker-wheel');
+        const menu = $('ticker-sheet');
+        const preserveScroll = !menu.hidden;
+        const previousScrollTop = preserveScroll ? wheel.scrollTop : 0;
         document.querySelectorAll('[data-view]').forEach((button) => {
           const active = button.dataset.view === state.view;
           button.classList.toggle('is-active', active);
@@ -817,7 +820,13 @@
           return button;
         }));
         const currentItem = wheel.querySelector('.is-current');
-        if (currentItem) wheel.scrollTop = Math.max(0, currentItem.offsetTop - wheel.clientHeight / 2 + currentItem.offsetHeight / 2);
+        requestAnimationFrame(() => {
+          if (preserveScroll && !menu.hidden) {
+            wheel.scrollTop = previousScrollTop;
+          } else if (currentItem) {
+            wheel.scrollTop = Math.max(0, currentItem.offsetTop - wheel.clientHeight / 2 + currentItem.offsetHeight / 2);
+          }
+        });
       }
 
       function sma(values, length) {
@@ -1047,17 +1056,17 @@
         const expiry = expiryKey === 'next' ? summary.nextExpiration : summary.currentExpiration;
         const universalRecord = universalGexRecordFor(state.ticker);
         if (universalRecord) {
-          const resolved = window.UniversalRefreshGex?.resolveExpiration(universalRecord, expiryKey) || { renderChart: false, status: expiry?.status || universalRecord.status || 'not_available', reason: expiry?.displayText || universalRecord.displayText || 'GEX 資料尚不可用。', profile: null };
+          const resolved = window.UniversalRefreshGex?.resolveExpiration(universalRecord, expiryKey) || { renderChart: false, profileKind: 'unavailable', status: expiry?.status || universalRecord.status || 'not_available', reason: expiry?.displayText || universalRecord.displayText || 'GEX 資料尚不可用。', profile: null };
           return {
             label: expiryKey === 'next' ? '下週到期' : '本週到期',
-            expiry: expiry?.expiry || '未標示',
+            expiry: resolved.profile?.expiry || expiry?.expiry || '未標示',
             magnet: resolved.profile?.magnet ?? null,
             flip: resolved.profile?.gammaFlip ?? null,
             callWall: resolved.profile?.dealerCallWall ?? null,
             putWall: resolved.profile?.dealerPutWall ?? null,
             strikes: resolved.profile?.strikes || [],
             exposure: resolved.profile?.exposure || [],
-            profileKind: resolved.renderChart ? 'signed-dealer-gex' : 'unavailable',
+            profileKind: resolved.profileKind || 'unavailable',
             text: resolved.reason || publicGexText(expiry?.displayText || universalRecord.displayText),
             freshness: expiry?.dataThrough || universalRecord.dataThrough || data.freshness,
             status: resolved.status
