@@ -149,16 +149,15 @@
     .gex-overview-fact { padding-top: 8px; border-top: 1px solid var(--line); }
     .gex-overview-fact span { display: block; color: var(--muted); font-size: 10px; }
     .gex-overview-fact strong { display: block; margin-top: 3px; color: var(--text); font-size: 12px; }
-    .gex-market-map { display: grid; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .gex-market-map, .gex-heatmap { display: grid; gap: 12px; margin: 0 0 12px; padding: 14px; border: 1px solid color-mix(in srgb, var(--purple) 45%, var(--line)); border-radius: 10px; background: linear-gradient(135deg, rgba(154, 102, 199, .12), rgba(17, 36, 51, .3)); }
     .gex-market-map-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-    .gex-market-map-head strong { color: var(--purple); font-size: 13px; }
-    .gex-market-map-head span { color: var(--muted); font-size: 11px; }
+    .gex-market-map-head strong { color: var(--text); font-size: 15px; }
+    .gex-market-map-head span { color: var(--purple); font-size: 11px; font-weight: 800; }
     .gex-market-map svg { display: block; width: 100%; height: auto; overflow: visible; }
-    .gex-market-map-note { display: flex; flex-wrap: wrap; gap: 5px 14px; color: var(--muted); font-size: 11px; }
-    .gex-heatmap { display: grid; gap: 9px; padding: 16px 0 6px; }
+    .gex-market-map-note { display: flex; flex-wrap: wrap; gap: 5px 14px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
     .gex-heatmap-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-    .gex-heatmap-head strong { color: var(--purple); font-size: 13px; }
-    .gex-heatmap-head span { color: var(--muted); font-size: 11px; }
+    .gex-heatmap-head strong { color: var(--text); font-size: 15px; }
+    .gex-heatmap-head span { color: var(--purple); font-size: 11px; font-weight: 800; }
     .gex-heat-stage { display: grid; gap: 10px; }
     .gex-heat-grid { display: grid; gap: 3px; align-items: stretch; }
     .gex-heat-label, .gex-heat-date, .gex-heat-cell { min-width: 0; min-height: 31px; display: grid; place-items: center; }
@@ -170,7 +169,7 @@
     .gex-heat-cell[data-watch-index]::after { content: attr(data-watch-index); position: absolute; z-index: 3; top: -7px; right: -6px; width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; background: var(--amber); color: #071018; font-size: 9px; font-weight: 800; }
     .gex-heat-fill { position: absolute; inset: 0; }
     .gex-heat-cell span:last-child { position: relative; z-index: 1; text-shadow: 0 1px 2px #071018; }
-    .gex-heat-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 11px; }
+    .gex-heat-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
     .gex-heat-watch { display: grid; gap: 8px; padding: 10px 12px; border-left: 3px solid var(--amber); background: rgba(242, 184, 75, .06); }
     .gex-heat-watch-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
     .gex-heat-watch-head strong { color: var(--amber); font-size: 13px; }
