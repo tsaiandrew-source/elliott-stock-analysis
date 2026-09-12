@@ -1,7 +1,7 @@
 (() => {
   const order = Object.freeze([
     'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS',
-    'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'
+    'NVDA', 'MRVL', 'SNDK', 'AVGO', 'OKLO', '2646', '2330'
   ]);
   const rankByTicker = new Map(order.map((ticker, index) => [ticker, index]));
   const normalizeTicker = (value) => String(value ?? '').trim().toUpperCase();

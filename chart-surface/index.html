@@ -491,7 +491,7 @@
         return {
           ...fallback,
           ...live,
-          coverage: live.coverage.length ? live.coverage : fallback.coverage,
+          coverage: [...fallback.coverage, ...live.coverage].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index),
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -711,7 +711,7 @@
           bars: []
         };
       };
-      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'OKLO']);
       const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
       const twseTickers = new Set(['2330', '2646']);
       const activeCoverage = window.PROTOTYPE_SORT_COVERAGE(coverageRows().filter((item) => item.active !== false));
