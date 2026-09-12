@@ -721,6 +721,12 @@
         if (value && typeof value === 'object') return String(value.currentPhase || value.pendingPhase || value.structure || '').trim();
         return String(value || '').trim();
       };
+      const wyckoffPhaseFor = (run, timeframe) => {
+        const structured = run?.technicalEvidence?.wyckoff?.[timeframe];
+        if (structured && typeof structured === 'object') return structured;
+        const legacy = run?.wyckoffPhase?.[timeframe];
+        return legacy && typeof legacy === 'object' ? legacy : null;
+      };
       const wyckoffTextFor = (run, timeframe) => {
         const phase = run?.wyckoffPhase?.[timeframe];
         return structuredWyckoffText(phase || run?.[timeframe === 'weekly' ? 'weeklyWyckoff' : 'wyckoff']);
@@ -784,6 +790,10 @@
           thesis: publicAnalysisText(selectedRun.thesis),
           wyckoff: wyckoffTextFor(patternRun, 'daily'),
           weeklyWyckoff: wyckoffTextFor(patternRun, 'weekly'),
+          wyckoffPhases: {
+            daily: wyckoffPhaseFor(dailyRun, 'daily'),
+            weekly: wyckoffPhaseFor(weeklyRun || dailyRun, 'weekly')
+          },
           wyckoffGate: null,
           patternGate: selectedRun.confirmation,
           invalidation: selectedRun.invalidation,
@@ -1335,14 +1345,21 @@
         return lines;
       }
 
-      function phaseData(bars, ticker) {
+      function phaseData(bars, ticker, data = renderedData, timeframe = state.view === 'weekly' ? 'weekly' : 'daily') {
         if (!bars.length) return [];
-        const indices = ticker === 'NBIS' ? [0.16, 0.56, 0.80] : [0.16, 0.60, 0.86];
-        const descriptions = ticker === 'NBIS' ? ['啟動', '整理', 'UTAD候選'] : ['吸收', '整理', 'Spring候選'];
-        return indices.map((ratio, index) => ({
-          time: bars[Math.min(bars.length - 1, Math.round((bars.length - 1) * ratio))].time,
-          label: `Phase ${String.fromCharCode(65 + index)} | ${descriptions[index]}`
-        }));
+        const segments = data?.wyckoffPhases?.[timeframe]?.segments;
+        if (!Array.isArray(segments) || !segments.length) return [];
+        const firstTime = Number(bars[0].time);
+        const lastTime = Number(bars.at(-1).time);
+        return segments.map((segment, index) => {
+          const start = Date.parse(String(segment.start || '').slice(0, 10) + 'T00:00:00Z') / 1000;
+          if (!Number.isFinite(start) || start > lastTime || start < firstTime) return null;
+          const bar = bars.find((item) => Number(item.time) >= start);
+          if (!bar) return null;
+          const phase = String(segment.phase || String.fromCharCode(65 + index)).trim();
+          const label = String(segment.label_zh || segment.label || '').trim();
+          return { time: bar.time, label: label ? 'Phase ' + phase + '｜' + label : 'Phase ' + phase };
+        }).filter(Boolean);
       }
 
       function drawPhaseOverlay(bars, phases = phaseData(bars, state.ticker)) {
@@ -1746,7 +1763,7 @@
         const candleData = bars.map(({ time, open, high, low, close, color, borderColor, wickColor }) => ({ time, open, high, low, close, color, borderColor, wickColor }));
         candleSeries = chart.addSeries(L.CandlestickSeries, { upColor: colors.weakGo, downColor: colors.weakNoGo, borderVisible: true, wickUpColor: colors.weakGo, wickDownColor: colors.weakNoGo, lastValueVisible: false });
         candleSeries.setData(candleData);
-        const phases = phaseData(bars, state.ticker);
+        const phases = phaseData(bars, state.ticker, data);
         phasePrimitive = new VerticalPhasePrimitive(phases);
         candleSeries.attachPrimitive(phasePrimitive);
         const patternMarker = patternMarkerBar(bars);
