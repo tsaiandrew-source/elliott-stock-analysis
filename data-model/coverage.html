@@ -234,7 +234,7 @@
         return {
           ...fallback,
           ...live,
-          coverage: live.coverage?.length ? live.coverage : fallback.coverage,
+          coverage: [...new Map([...(fallback.coverage || []), ...(live.coverage || [])].map((item) => [item.ticker, item])).values()],
           analysisRuns: [...uniqueRuns.values()],
           tables: { ...(fallback.tables || {}), ...(live.tables || {}) },
           datasets: {
@@ -295,7 +295,7 @@
       const runMap = new Map();
       [...(activeContract.analysisRuns || []), ...v2Runs].forEach((run) => { const key = run.runId || [run.ticker, run.analysisDate, run.runType].join('|'); if (key) runMap.set(key, run); });
       const runs = [...runMap.values()];
-      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS']);
+      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'OKLO']);
       const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
       const twseTickers = new Set(['2330', '2646']);
       const canonicalCoverageGroup = (ticker) => {

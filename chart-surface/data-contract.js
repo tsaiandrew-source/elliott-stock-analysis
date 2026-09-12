@@ -34,6 +34,19 @@ window.PROTOTYPE_DATA_CONTRACT = {
       "gexSource": "https://cdn.cboe.com/api/global/delayed_quotes/options/IREN.json",
       "freshness": "技術／文字 2026-09-04；選擇權 2026-08-28",
       "optionsFreshness": "2026-08-28"
+    },
+    {
+      "ticker": "OKLO",
+      "company": "Oklo",
+      "exchange": "NYSE",
+      "active": true,
+      "defaultView": "daily",
+      "latestChartDate": "",
+      "marketSource": "https://api.nasdaq.com/api/quote/OKLO/chart?assetclass=stocks",
+      "chartSource": "",
+      "gexSource": "https://cdn.cboe.com/api/global/delayed_quotes/options/OKLO.json",
+      "freshness": "等待下一個完成交易時段 Universal Refresh",
+      "optionsFreshness": ""
     }
   ],
   "analysisRuns": [
