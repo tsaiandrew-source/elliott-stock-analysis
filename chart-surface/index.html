@@ -231,6 +231,10 @@
     .thesis-reading .thesis-reading-label { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .04em; }
     .thesis-reading .thesis-reading-text { margin-top: 3px; color: var(--text); font-size: 15px; line-height: 1.42; }
     .gex-readings { margin-top: 0; }
+    .gex-readings .thesis-reading[data-timeframe="daily"] { border-left-color: var(--purple); }
+    .gex-readings .thesis-reading[data-timeframe="daily"] .thesis-reading-label { color: var(--purple); }
+    .gex-readings .thesis-reading[data-timeframe="weekly"] { border-left-color: var(--aqua); }
+    .gex-readings .thesis-reading[data-timeframe="weekly"] .thesis-reading-label { color: var(--aqua); }
     .direction-summary { display: grid; gap: 8px; margin-top: 11px; padding: 10px; border: 1px solid var(--pattern-family); border-radius: 9px; background: rgba(17, 36, 51, .32); }
     .direction-summary-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--aqua); font-size: 11px; font-weight: 800; }
     .direction-summary-head .analysis-scope { color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
