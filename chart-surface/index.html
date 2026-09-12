@@ -1812,7 +1812,7 @@
         document.body.classList.toggle('gex-view', isGex);
         $('gex-layer-control').hidden = !isGex;
         $('title').textContent = state.ticker + ' · ' + data.company;
-        $('chart-title').textContent = isGex ? 'GEX 壓力圖 · Top／Bottom' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
+        $('chart-title').textContent = isGex ? 'GEX 壓力圖' : 'GoNoGo 風格 ' + (state.view === 'weekly' ? '週線' : '日線') + ' K 線';
         const weeklyCoverage = weeklyHistory[state.ticker]?.length >= 20 ? `${weeklyHistory[state.ticker].length} 週歷史資料 · ` : '由日線 OHLCV 聚合 · ';
         const analysisMeta = data.analysisThrough || data.sourceCutoff || data.dataThrough || '—';
         const chartMeta = data.chartThrough || data.dataThrough || '—';
