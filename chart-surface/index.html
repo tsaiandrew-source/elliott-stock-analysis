@@ -313,7 +313,8 @@
       .topbar { align-items: center; }
       .view-switch { display: inline-flex; }
       .layout { grid-template-columns: 1fr; }
-      #chart-stack, #gex-profile { height: 780px; min-height: 780px; }
+      #chart-stack { height: 780px; min-height: 780px; }
+      #gex-profile { height: auto; min-height: 0; overflow: visible; padding: 14px 18px 18px; }
       .combo-grid { grid-template-columns: 1fr; gap: 10px; }
       .combo-grid .metric:not(:last-child)::after { content: none; }
     }
@@ -324,7 +325,8 @@
       .layout { gap: 14px; }
       .gex-expiry-panel { grid-template-columns: minmax(0, 1fr) minmax(230px, .5fr); gap: 10px; }
       body { font-size: 16px; }
-      .shell { padding: 24px; }
+      .shell { padding: 16px; }
+      #gex-profile { height: auto; min-height: 0; overflow: visible; padding: 14px 18px 18px; }
       h1 { font-size: 24px; }
       h2 { font-size: 20px; }
       h3 { font-size: 15px; }
@@ -359,14 +361,14 @@
     @media (max-width: 420px) {
       body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
       .chart-panel, .summary { padding: 12px; }
-      #chart-stack, #gex-profile { height: 690px; min-height: 690px; }
+      #chart-stack { height: 690px; min-height: 690px; }
       .grid-2 { grid-template-columns: 1fr; gap: 8px; }
       .business-context { grid-template-columns: 1fr; }
       .chart-head { flex-direction: column; }
       .view-tools { width: 100%; justify-content: flex-start; }
       .view-switch { flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
       .view-switch button { flex: 0 0 auto; }
-      #gex-profile { padding: 12px 38px 22px 8px; }
+      #gex-profile { height: auto; min-height: 0; overflow: visible; padding: 12px; }
       .ticker-sheet { width: calc(100vw - 24px); }
       .gex-expiry-panel { grid-template-columns: 1fr; gap: 2px; }
       .gex-expiry-panel > .gex-analysis-rail { margin: 8px 0 16px; border-left: 1px solid var(--line); }
@@ -394,7 +396,8 @@
     html.force-phone-portrait .chart-head { flex-direction: column; }
     html.force-phone-portrait .view-tools { width: 100%; justify-content: flex-start; }
     html.force-phone-portrait .view-switch { flex: 0 0 auto; max-width: 100%; overflow-x: auto; }
-    html.force-phone-portrait #chart-stack, html.force-phone-portrait #gex-profile { height: 690px; min-height: 690px; }
+    html.force-phone-portrait #chart-stack { height: 690px; min-height: 690px; }
+    html.force-phone-portrait #gex-profile { height: auto; min-height: 0; overflow: visible; padding: 12px; }
     html.force-phone-portrait .ticker-sheet { top: auto; bottom: calc(69px + env(safe-area-inset-bottom)); height: min(44vh, 320px); max-height: min(44vh, 320px); }
     html.force-phone-portrait .ticker-wheel { height: calc(min(44vh, 320px) - 100px); }
     /* iPhone landscape is wider than the normal phone breakpoint. Keep the
