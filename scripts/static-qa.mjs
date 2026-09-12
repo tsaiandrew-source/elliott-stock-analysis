@@ -24,6 +24,7 @@ const requiredFiles = [
   'chart-surface/data-contract.js',
   'chart-surface/analysis-localization.js',
   'chart-surface/analysis-geometry.js',
+  'chart-surface/gex-market-overview.js',
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
@@ -76,6 +77,7 @@ for (const file of htmlFiles) {
     if (!html.includes('const publicGexText')) failures.push(`${file}: public GEX text filter is missing`);
     if (!html.includes('const publicAnalysisText')) failures.push(`${file}: public analysis text filter is missing`);
     if (!html.includes('.direction-item')) failures.push(`${file}: persistent direction rows are missing`);
+    if (!html.includes('市場壓力概覽') || !html.includes('ElliottGexOverview')) failures.push(`${file}: GEX market overview is not wired`);
     for (const label of ['日線觀察', '日線確認', '週線觀察', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
     }
@@ -98,6 +100,22 @@ for (const file of htmlFiles) {
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
     failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
   }
+}
+
+if (await exists('chart-surface/gex-market-overview.js')) {
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(await read('chart-surface/gex-market-overview.js'), context);
+  const overview = context.ElliottGexOverview?.summarize([
+    { label: '本週到期', expiry: '2026-09-18', profileKind: 'unsigned-pressure', strikes: [95, 100, 105], exposure: [2, 8, 4] },
+    { label: '下週到期', expiry: '2026-09-25', profileKind: 'unsigned-pressure', strikes: [95, 100, 105], exposure: [2, 2, 2] }
+  ], 100);
+  if (!overview || overview.rows.length !== 2) failures.push('GEX market overview: two-expiration summary failed');
+  if (overview?.rows[0]?.dominant?.strike !== 100) failures.push('GEX market overview: dominant strike calculation failed');
+  if (Math.round((overview?.rows[0]?.share || 0) * 100) !== 70) failures.push('GEX market overview: expiration weighting failed');
+  if (!/不能推定造市商方向/.test(overview?.interpretation || '')) failures.push('GEX market overview: unsigned evidence guardrail missing');
+  const display = context.ElliottGexOverview?.displayProfile({ strikes: Array.from({ length: 80 }, (_, index) => index + 70), exposure: Array.from({ length: 80 }, (_, index) => index + 1) }, 100, 12);
+  if (!display || display.strikes.length > 12 || display.strikes.some((strike) => strike < 65 || strike > 135)) failures.push('GEX market overview: spot-centered display selection failed');
 }
 
 if (await exists('data-model/coverage.html')) {
