@@ -10,11 +10,15 @@ import { ingestPayload, renderBrowserDataset, validateDataset, validateRecord } 
 const execFileAsync = promisify(execFile);
 const DEFAULT_TIMEZONE = 'America/Los_Angeles';
 const DEFAULT_MAX_AGE_MINUTES = 180;
-export const DAILY_EDITIONS = Object.freeze({
-  morning:{ hour:5, minute:30 },
-  midday:{ hour:11, minute:30 },
-  close:{ hour:16, minute:0 }
+export const DIGEST_EDITIONS = Object.freeze({
+  morning:{ cadence:'daily', dateField:'marketDate', hour:5, minute:30 },
+  midday:{ cadence:'daily', dateField:'marketDate', hour:11, minute:30 },
+  close:{ cadence:'daily', dateField:'marketDate', hour:16, minute:0 },
+  weekly:{ cadence:'weekly', dateField:'weekStart', hour:16, minute:0 }
 });
+export const DAILY_EDITIONS = Object.freeze(Object.fromEntries(
+  Object.entries(DIGEST_EDITIONS).filter(([, config]) => config.cadence === 'daily')
+));
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const timestamp = (value, label) => {
@@ -33,6 +37,16 @@ const localDate = (value, timeZone = DEFAULT_TIMEZONE) => {
   return `${parts.year}-${parts.month}-${parts.day}`;
 };
 const dateInZone = (value = new Date(), timeZone = DEFAULT_TIMEZONE) => localDate(value, timeZone);
+const shiftDate = (value, days) => {
+  const date = new Date(`${value}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+};
+export const weekStartInZone = (value = new Date(), timeZone = DEFAULT_TIMEZONE) => {
+  const local = dateInZone(value, timeZone);
+  const weekday = new Date(`${local}T12:00:00Z`).getUTCDay();
+  return shiftDate(local, -((weekday + 6) % 7));
+};
 const atomicWrite = async (target, contents) => {
   await fs.mkdir(path.dirname(target), { recursive:true });
   const temporary = `${target}.tmp-${process.pid}-${Date.now()}`;
@@ -45,20 +59,25 @@ const appendJsonLine = async (target, value) => {
 };
 
 const editionConfig = (edition) => {
-  const config = DAILY_EDITIONS[edition];
-  if (!config) throw new Error(`unsupported daily edition: ${edition}`);
+  const config = DIGEST_EDITIONS[edition];
+  if (!config) throw new Error(`unsupported digest edition: ${edition}`);
   return config;
 };
 
-export function validateDailyPacket(payload, { edition, marketDate, now = new Date(), maxAgeMinutes = DEFAULT_MAX_AGE_MINUTES } = {}) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(marketDate || '')) throw new Error('marketDate is required');
+export function validateDigestPacket(payload, { edition, slotDate, marketDate, weekStart, now = new Date(), maxAgeMinutes = DEFAULT_MAX_AGE_MINUTES } = {}) {
   const schedule = editionConfig(edition);
+  const expectedDate = slotDate || (schedule.dateField === 'weekStart' ? weekStart : marketDate);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(expectedDate || '')) throw new Error(`${schedule.dateField} is required`);
+  if (schedule.cadence === 'weekly' && new Date(`${expectedDate}T12:00:00Z`).getUTCDay() !== 1) {
+    throw new Error('weekStart must be a Monday');
+  }
   const records = payload?.schemaVersion ? validateDataset(payload, 'packet').records : [validateRecord(payload, 'packet')];
   if (records.length !== 1) throw new Error('packet must contain exactly one record');
   const record = records[0];
-  if (record.cadence !== 'daily' || record.edition !== edition) throw new Error(`packet must be the daily ${edition} edition`);
-  if (record.marketDate !== marketDate) throw new Error(`packet marketDate must be ${marketDate}`);
-  if (record.id !== `daily-${marketDate}-${edition}`) throw new Error(`packet id must be daily-${marketDate}-${edition}`);
+  if (record.cadence !== schedule.cadence || record.edition !== edition) throw new Error(`packet must be the ${schedule.cadence} ${edition} edition`);
+  if (record[schedule.dateField] !== expectedDate) throw new Error(`packet ${schedule.dateField} must be ${expectedDate}`);
+  const expectedId = schedule.cadence === 'weekly' ? `weekly-${expectedDate}` : `daily-${expectedDate}-${edition}`;
+  if (record.id !== expectedId) throw new Error(`packet id must be ${expectedId}`);
   if (record.timezone !== DEFAULT_TIMEZONE) throw new Error(`packet timezone must be ${DEFAULT_TIMEZONE}`);
   if (record.status !== 'complete') throw new Error('packet status must be complete');
   if (!Number.isInteger(record.revision) || record.revision < 1) throw new Error('packet revision must be a positive integer');
@@ -70,11 +89,12 @@ export function validateDailyPacket(payload, { edition, marketDate, now = new Da
   const publishedLocal = localParts(record.publishedAt, record.timezone);
   const publishedMinute = Number(publishedLocal.hour) * 60 + Number(publishedLocal.minute);
   const earliestMinute = schedule.hour * 60 + schedule.minute;
-  if (localDate(record.publishedAt, record.timezone) !== marketDate || publishedMinute < earliestMinute) {
+  const publicationDate = schedule.cadence === 'weekly' ? shiftDate(expectedDate, 6) : expectedDate;
+  if (localDate(record.publishedAt, record.timezone) !== publicationDate || publishedMinute < earliestMinute) {
     const earliest = `${String(schedule.hour).padStart(2, '0')}:${String(schedule.minute).padStart(2, '0')}`;
-    throw new Error(`packet.publishedAt must be on the market date at or after ${earliest} PT`);
+    throw new Error(`packet.publishedAt must be on ${publicationDate} at or after ${earliest} PT`);
   }
-  if (localDate(record.sourceCutoffAt, record.timezone) !== marketDate) throw new Error('packet.sourceCutoffAt must match the market date');
+  if (localDate(record.sourceCutoffAt, record.timezone) !== publicationDate) throw new Error('packet.sourceCutoffAt must match the publication date');
   if (sourceCutoffAt > retrievedAt) throw new Error('packet retrieval cannot precede its source cutoff');
   if (sourceCutoffAt > publishedAt + 60 * 60 * 1000) throw new Error('packet source cutoff is implausibly later than publication');
   const freshest = Math.max(publishedAt, retrievedAt);
@@ -83,15 +103,26 @@ export function validateDailyPacket(payload, { edition, marketDate, now = new Da
   return record;
 }
 
+export function validateDailyPacket(payload, options = {}) {
+  const edition = options.edition || 'close';
+  if (!DAILY_EDITIONS[edition]) throw new Error(`unsupported daily edition: ${edition}`);
+  return validateDigestPacket(payload, { ...options, edition });
+}
+
+export const validateWeeklyPacket = (payload, options = {}) => validateDigestPacket(payload, { ...options, edition:'weekly' });
+
 export const validateClosePacket = (payload, options = {}) => validateDailyPacket(payload, { ...options, edition:'close' });
 
 const parsePayload = (text) => JSON.parse(text);
 const packetRecords = (payload) => payload?.schemaVersion ? payload.records : [payload];
-const looksLikeSlot = (payload, marketDate, edition) => packetRecords(payload).some(
-  (record) => record?.cadence === 'daily' && record?.edition === edition && record?.marketDate === marketDate
-);
+const looksLikeSlot = (payload, slotDate, edition) => {
+  const config = editionConfig(edition);
+  return packetRecords(payload).some(
+    (record) => record?.cadence === config.cadence && record?.edition === edition && record?.[config.dateField] === slotDate
+  );
+};
 
-export async function discoverDailyPacket(outbox, marketDate, edition) {
+export async function discoverDigestPacket(outbox, slotDate, edition) {
   editionConfig(edition);
   let names = [];
   try { names = await fs.readdir(outbox); } catch (error) {
@@ -111,10 +142,17 @@ export async function discoverDailyPacket(outbox, marketDate, edition) {
       malformed.push({ file, error:error.message });
       continue;
     }
-    if (looksLikeSlot(payload, marketDate, edition)) matches.push({ file, text, payload, hash:sha256(text) });
+    if (looksLikeSlot(payload, slotDate, edition)) matches.push({ file, text, payload, hash:sha256(text) });
   }
   return { matches, malformed };
 }
+
+export async function discoverDailyPacket(outbox, marketDate, edition) {
+  if (!DAILY_EDITIONS[edition]) throw new Error(`unsupported daily edition: ${edition}`);
+  return discoverDigestPacket(outbox, marketDate, edition);
+}
+
+export const discoverWeeklyPacket = (outbox, weekStart) => discoverDigestPacket(outbox, weekStart, 'weekly');
 
 export const discoverClosePacket = (outbox, marketDate) => discoverDailyPacket(outbox, marketDate, 'close');
 
@@ -128,17 +166,19 @@ async function runQa(repoRoot) {
   return results;
 }
 
-export async function consumeDailyDigest(options) {
+export async function consumeDigest(options) {
   const repoRoot = path.resolve(options.repoRoot || process.cwd());
   const outbox = path.resolve(options.outbox);
   const stateDir = path.resolve(options.stateDir);
   const edition = options.edition || 'close';
-  editionConfig(edition);
+  const schedule = editionConfig(edition);
   const now = options.now ? new Date(options.now) : new Date();
-  const marketDate = options.marketDate || dateInZone(now);
-  const runId = `${edition}-${marketDate}-${now.toISOString().replace(/[:.]/g, '-')}`;
-  const baseResult = { runId, marketDate, edition, checkedAt:now.toISOString() };
-  const lockPath = path.join(stateDir, 'locks', `${marketDate}-${edition}.lock`);
+  const slotDate = options.slotDate || (schedule.dateField === 'weekStart'
+    ? options.weekStart || weekStartInZone(now)
+    : options.marketDate || dateInZone(now));
+  const runId = `${edition}-${slotDate}-${now.toISOString().replace(/[:.]/g, '-')}`;
+  const baseResult = { runId, cadence:schedule.cadence, [schedule.dateField]:slotDate, slotDate, edition, checkedAt:now.toISOString() };
+  const lockPath = path.join(stateDir, 'locks', `${slotDate}-${edition}.lock`);
   let lock;
   let candidate;
   if (!options.dryRun) {
@@ -149,7 +189,7 @@ export async function consumeDailyDigest(options) {
     }
   }
   try {
-    const discovered = await discoverDailyPacket(outbox, marketDate, edition);
+    const discovered = await discoverDigestPacket(outbox, slotDate, edition);
     if (discovered.matches.length === 0) {
       const result = { ...baseResult, status:options.requirePresent ? 'FAILED_GATE' : 'NOOP', reason:'packet_missing', malformed:discovered.malformed };
       if (!options.dryRun) await appendJsonLine(path.join(stateDir, 'runs.ndjson'), result);
@@ -158,7 +198,7 @@ export async function consumeDailyDigest(options) {
     }
     if (discovered.matches.length > 1) throw new Error(`multiple packets claim the same ${edition} slot`);
     candidate = discovered.matches[0];
-    const record = validateDailyPacket(candidate.payload, { edition, marketDate, now, maxAgeMinutes:options.maxAgeMinutes });
+    const record = validateDigestPacket(candidate.payload, { edition, slotDate, now, maxAgeMinutes:options.maxAgeMinutes });
     const storePath = path.join(repoRoot, 'data-model/digests.json');
     const browserPath = path.join(repoRoot, 'data-model/digest-data.js');
     const existingText = await fs.readFile(storePath, 'utf8');
@@ -177,7 +217,7 @@ export async function consumeDailyDigest(options) {
         await atomicWrite(browserPath, renderBrowserDataset(prepared.dataset));
       }
       const qa = options.qa === false ? [] : await runQa(repoRoot);
-      const archiveDir = path.join(stateDir, 'archive', marketDate);
+      const archiveDir = path.join(stateDir, 'archive', slotDate);
       await fs.mkdir(archiveDir, { recursive:true });
       const archivedPath = path.join(archiveDir, `${candidate.hash}-${path.basename(candidate.file)}`);
       await fs.rename(claimedPath, archivedPath);
@@ -229,6 +269,14 @@ export async function consumeDailyDigest(options) {
   }
 }
 
+export const consumeDailyDigest = (options) => {
+  const edition = options.edition || 'close';
+  if (!DAILY_EDITIONS[edition]) throw new Error(`unsupported daily edition: ${edition}`);
+  return consumeDigest({ ...options, edition });
+};
+
+export const consumeWeeklyDigest = (options) => consumeDigest({ ...options, edition:'weekly' });
+
 export const consumeCloseDigest = (options) => consumeDailyDigest({ ...options, edition:'close' });
 
 function parseArgs(argv) {
@@ -240,6 +288,7 @@ function parseArgs(argv) {
     else if (arg === '--state-dir') options.stateDir = argv[++index];
     else if (arg === '--repo-root') options.repoRoot = argv[++index];
     else if (arg === '--market-date') options.marketDate = argv[++index];
+    else if (arg === '--week-start') options.weekStart = argv[++index];
     else if (arg === '--now') options.now = argv[++index];
     else if (arg === '--max-age-minutes') options.maxAgeMinutes = Number(argv[++index]);
     else if (arg === '--dry-run') options.dryRun = true;
@@ -247,13 +296,13 @@ function parseArgs(argv) {
     else throw new Error(`unknown argument ${arg}`);
   }
   editionConfig(options.edition);
-  if (!options.outbox || !options.stateDir) throw new Error('usage: consume-close-digest.mjs --edition morning|midday|close --outbox <dir> --state-dir <dir> [--market-date YYYY-MM-DD] [--dry-run] [--require-present]');
+  if (!options.outbox || !options.stateDir) throw new Error('usage: consume-close-digest.mjs --edition morning|midday|close|weekly --outbox <dir> --state-dir <dir> [--market-date YYYY-MM-DD] [--week-start YYYY-MM-DD] [--dry-run] [--require-present]');
   if (!Number.isFinite(options.maxAgeMinutes) || options.maxAgeMinutes <= 0) throw new Error('--max-age-minutes must be positive');
   return options;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  consumeDailyDigest(parseArgs(process.argv.slice(2))).then((result) => {
+  consumeDigest(parseArgs(process.argv.slice(2))).then((result) => {
     console.log(JSON.stringify(result, null, 2));
   }).catch((error) => {
     console.error(JSON.stringify(error.result || { status:'FAILED_GATE', reason:error.message }, null, 2));
