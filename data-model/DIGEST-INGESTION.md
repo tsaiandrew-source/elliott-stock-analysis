@@ -17,6 +17,14 @@ Every daily record requires:
 
 Corrections retain the same ID and slot, change the content, and set `updatedAt` later than the stored revision. A different ID cannot occupy an existing date/edition slot.
 
+Every weekly record requires:
+
+- `id: "weekly-YYYY-MM-DD"`, where the date is the Monday `weekStart`;
+- `cadence: "weekly"` and `edition: "weekly"`;
+- `weekStart` in `YYYY-MM-DD`;
+- Sunday publication timestamps and `timezone: "America/Los_Angeles"`;
+- non-empty `title`, `summary`, `sections`, and safe HTTP(S) sources.
+
 ## Consumer command
 
 Validate without writing:
@@ -37,4 +45,4 @@ The command upserts `data-model/digests.json` and regenerates `data-model/digest
 
 The app-owned heartbeat may discover a completed Universe Refresh packet and invoke the consumer command. It must remain quiet when there is no new packet. It reports only an ingestion, validation failure, or required user action. The producer must never write the store directly.
 
-The implemented weekday close-edition consumer and its scheduler/release boundary are documented in [CLOSE-DIGEST-AUTOMATION.md](CLOSE-DIGEST-AUTOMATION.md).
+The implemented daily and weekly consumer and its scheduler/release boundary are documented in [CLOSE-DIGEST-AUTOMATION.md](CLOSE-DIGEST-AUTOMATION.md).

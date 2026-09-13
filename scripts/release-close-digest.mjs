@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { isDeepStrictEqual, promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { validateDailyPacket } from './consume-close-digest.mjs';
+import { validateDigestPacket } from './consume-close-digest.mjs';
 import { ingestPayload, renderBrowserDataset } from './ingest-digests.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -23,14 +23,21 @@ const clean = (value) => String(value ?? '').trim();
 const safeKey = (value) => clean(value).replace(/[^a-zA-Z0-9._-]/g, '-');
 const output = (result) => typeof result === 'string' ? result : String(result?.stdout ?? '');
 
+const recordDate = (record) => record.cadence === 'weekly' ? record.weekStart : record.marketDate;
+const identityFields = (record) => ({
+  cadence:record.cadence,
+  slotDate:recordDate(record),
+  ...(record.cadence === 'weekly' ? { weekStart:record.weekStart } : { marketDate:record.marketDate })
+});
+
 export const releaseMetadata = (record, packetSha256) => ({
   key:`${record.id}-r${record.revision}`,
-  branch:`codex/digest-${record.marketDate}-${record.edition}-r${record.revision}`,
-  title:`Publish ${record.edition} digest ${record.marketDate} (r${record.revision})`,
+  branch:`codex/digest-${recordDate(record)}-${record.edition}-r${record.revision}`,
+  title:`Publish ${record.edition} digest ${recordDate(record)} (r${record.revision})`,
   body:[
     'Summary',
     '',
-    `Publish the validated ${record.marketDate} ${record.edition} digest produced by the elliott-cross-market-digest-v1 handoff.`,
+    `Publish the validated ${recordDate(record)} ${record.edition} digest produced by the elliott-cross-market-digest-v1 handoff.`,
     '',
     'Validation',
     '',
@@ -64,7 +71,10 @@ export function assertAllowedChanges(statusText, allowed = DATA_FILES) {
 
 export function validateConsumerAck(ack, record, packetHash) {
   if (!['INGESTED', 'UNCHANGED'].includes(ack?.status)) throw new Error('consumer result must be INGESTED or UNCHANGED');
-  if (ack.digestId !== record.id || ack.marketDate !== record.marketDate || ack.edition !== record.edition) throw new Error('consumer result identity does not match packet');
+  const dateField = record.cadence === 'weekly' ? 'weekStart' : 'marketDate';
+  const ackDate = ack.slotDate || ack[dateField];
+  if (ack.digestId !== record.id || ackDate !== recordDate(record) || ack.edition !== record.edition) throw new Error('consumer result identity does not match packet');
+  if (ack.cadence && ack.cadence !== record.cadence) throw new Error('consumer result cadence does not match packet');
   if (ack.revision !== record.revision) throw new Error('consumer result revision does not match packet');
   if (ack.packetSha256 !== packetHash) throw new Error('consumer result packet hash does not match packet');
   if (!clean(ack.storeSha256) || !clean(ack.browserBundleSha256)) throw new Error('consumer result output hashes are required');
@@ -99,10 +109,10 @@ async function readReleaseInputs(options, run) {
   if (!packetSource) throw new Error('packet path is required');
   const packetPath = path.resolve(packetSource);
   const packetText = await fs.readFile(packetPath, 'utf8');
-  const packet = json(packetText, 'daily packet');
-  const record = validateDailyPacket(packet, {
+  const packet = json(packetText, 'digest packet');
+  const record = validateDigestPacket(packet, {
     edition:ack.edition,
-    marketDate:ack.marketDate,
+    slotDate:ack.slotDate || ack.weekStart || ack.marketDate,
     now:options.now ? new Date(options.now) : new Date(),
     maxAgeMinutes:options.maxAgeMinutes
   });
@@ -174,7 +184,7 @@ async function prepare(context, state, options, run) {
       version:1,
       status:'PUBLISHED',
       digestId:context.record.id,
-      marketDate:context.record.marketDate,
+      ...identityFields(context.record),
       revision:context.record.revision,
       packetSha256:context.packetHash,
       storeSha256:sha256(await fs.readFile(path.join(worktree, DATA_FILES[0]))),
@@ -204,7 +214,7 @@ async function prepare(context, state, options, run) {
     version:1,
     status:'PREPARED',
     digestId:context.record.id,
-    marketDate:context.record.marketDate,
+    ...identityFields(context.record),
     revision:context.record.revision,
     packetSha256:context.packetHash,
     storeSha256:stagedStoreHash,
@@ -267,7 +277,7 @@ async function promote(context, state, options, run, sleep) {
   return saveState(context, state, { status:'PUBLISHED', publicSmokeDigestId:context.record.id, publishedAt:new Date().toISOString() });
 }
 
-export async function releaseDailyDigest(options, dependencies = {}) {
+export async function releaseDigest(options, dependencies = {}) {
   const run = dependencies.run || commandRunner;
   const sleep = dependencies.sleep || ((milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)));
   const context = await readReleaseInputs(options, run);
@@ -282,7 +292,9 @@ export async function releaseDailyDigest(options, dependencies = {}) {
   return promote(context, state, options, run, sleep);
 }
 
-export const releaseCloseDigest = (options, dependencies = {}) => releaseDailyDigest(options, dependencies);
+export const releaseDailyDigest = (options, dependencies = {}) => releaseDigest(options, dependencies);
+export const releaseWeeklyDigest = (options, dependencies = {}) => releaseDigest(options, dependencies);
+export const releaseCloseDigest = (options, dependencies = {}) => releaseDigest(options, dependencies);
 
 function parseArgs(argv) {
   const options = { maxAgeMinutes:180, prepareOnly:false };
@@ -307,7 +319,7 @@ function parseArgs(argv) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  releaseDailyDigest(parseArgs(process.argv.slice(2))).then((result) => {
+  releaseDigest(parseArgs(process.argv.slice(2))).then((result) => {
     console.log(JSON.stringify(result, null, 2));
   }).catch((error) => {
     console.error(JSON.stringify({ status:'FAILED_GATE', reason:error.message }, null, 2));

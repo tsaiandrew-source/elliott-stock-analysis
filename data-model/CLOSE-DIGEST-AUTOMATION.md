@@ -1,6 +1,6 @@
-# Daily digest automation contract
+# Digest automation contract
 
-This contract provides one fail-closed ingestion and release path for the weekday Elliott cross-market **morning**, **midday**, and **close** editions. The existing close command remains backward compatible: omitting `--edition` still selects `close`. The pipeline does not touch the Iris v2/AppSheet ticker feed or any social route.
+This contract provides one fail-closed ingestion and release path for the weekday Elliott cross-market **morning**, **midday**, and **close** editions plus the Sunday **weekly** edition. The existing close command remains backward compatible: omitting `--edition` still selects `close`. The pipeline does not touch the Iris v2/AppSheet ticker feed or any social route.
 
 ## Ownership
 
@@ -8,7 +8,7 @@ This contract provides one fail-closed ingestion and release path for the weekda
 - The Elliott app consumer validates the packet and writes acknowledged local copies of `data-model/digests.json` and `data-model/digest-data.js`.
 - The consumer never pushes, opens a PR, merges, changes settings, or deploys.
 - The release runner is the sole GitHub promotion owner. It replays the acknowledged packet into only those two outputs in an isolated worktree based on the latest `origin/main`, preserving editions or revisions that merged after the local consumer checkout was created.
-- `run-close-digest-cycle.mjs` joins the stages and accepts `--edition morning|midday|close`. The filename is retained so the activated close command does not break.
+- `run-close-digest-cycle.mjs` joins the stages and accepts `--edition morning|midday|close|weekly`. The filename is retained so the activated close command does not break.
 
 ## Cadence
 
@@ -19,8 +19,9 @@ All times use `America/Los_Angeles`.
 | morning | weekdays 05:30 | 05:50 | 06:20 |
 | midday | weekdays 11:30 | 11:50 | 12:20 |
 | close | weekdays 16:00 | 16:20 | 16:50 |
+| weekly | Sunday 16:00 | 16:20 | 16:50 |
 
-Primary absence is a quiet no-op. Recovery reconciles an existing acknowledgement/release state without re-ingesting; otherwise it retries with `--require-present` and reports a failed gate if the packet is still missing. Saturday has no daily run. The Sunday 16:00 weekly edition remains outside this contract.
+Primary absence is a quiet no-op. Recovery reconciles an existing acknowledgement/release state without re-ingesting; otherwise it retries with `--require-present` and reports a failed gate if the packet is still missing. Saturday has no run. Sunday morning and midday expansion wakes remain quiet.
 
 The producer and consumer are deliberately separated by 20 minutes. Recovery runs 30 minutes later. This avoids making release latency part of research time and keeps each edition out of the next producer window.
 
@@ -37,6 +38,15 @@ The producer writes a temporary file and renames it into the outbox only after e
 - non-empty Traditional Chinese `title`, `summary`, and `sections`;
 - at least one safe HTTP(S) source link.
 
+The Sunday weekly packet contains exactly one record with:
+
+- `id: weekly-YYYY-MM-DD`, where the date is the Monday `weekStart`;
+- `cadence: weekly`, `edition: weekly`, and that same `weekStart`;
+- `timezone: America/Los_Angeles`, `status: complete`, and a positive integer `revision`;
+- `publishedAt` on the following Sunday at or after 16:00 PT, plus same-Sunday `sourceCutoffAt` and `retrievedAt`;
+- non-empty Traditional Chinese `title`, `summary`, and `sections`;
+- at least one safe HTTP(S) source link.
+
 Corrections retain the ID and edition slot, increment `revision`, change content, and set a later `updatedAt`. Existing ingestion guards reject stale and same-revision conflicts.
 
 Recommended filenames are:
@@ -44,6 +54,7 @@ Recommended filenames are:
 - `daily-YYYY-MM-DD-morning.json`
 - `daily-YYYY-MM-DD-midday.json`
 - `daily-YYYY-MM-DD-close.json`
+- `weekly-YYYY-MM-DD.json` using the Monday `weekStart`
 
 ## Runtime paths
 
@@ -71,26 +82,26 @@ node scripts/run-close-digest-cycle.mjs \
   --public-base-url https://tsaiandrew-source.github.io/elliott-stock-analysis
 ```
 
-Recovery uses the same command with `--mode recovery`. Substitute `midday` or `close` for the other slots. `--market-date`, `--now`, and `--max-age-minutes` support deterministic testing. Use the bundled Codex Node runtime when system Node is unavailable.
+Recovery uses the same command with `--mode recovery`. Substitute `midday`, `close`, or `weekly` for the other slots. Weekly deterministic tests use `--week-start`; daily tests use `--market-date`. `--now` and `--max-age-minutes` support deterministic testing. Use the bundled Codex Node runtime when system Node is unavailable.
 
 The consumer takes an exclusive per-date, per-edition lock; discovers exactly one matching packet; validates identity, slot, timestamps, freshness, and sources; claims it by atomic rename; updates both app data files atomically; and runs digest-ingest, static, and PWA QA. Failure restores both files and quarantines the packet. Replays are unchanged no-ops at the store layer.
 
 ## Deterministic release
 
-The release runner accepts a consumer acknowledgement and its archived packet. It rejects anything except an `INGESTED` or `UNCHANGED` result whose digest ID, market date, edition, revision, packet hash, output hashes, and three QA results all match.
+The release runner accepts a consumer acknowledgement and its archived packet. It rejects anything except an `INGESTED` or `UNCHANGED` result whose digest ID, slot date (`marketDate` or `weekStart`), cadence, edition, revision, packet hash, output hashes, and three QA results all match.
 
 Before promotion it requires the consumer checkout's `HEAD` to equal freshly fetched `origin/main` and its complete dirty set to be exactly:
 
 - `data-model/digests.json`
 - `data-model/digest-data.js`
 
-The runner verifies the acknowledged local hashes, then replays that exact packet onto the latest remote dataset rather than copying an older complete dataset over it. The deterministic branch is `codex/digest-YYYY-MM-DD-<edition>-rN`; PR metadata and the public-smoke target derive from the packet identity and SHA-256. State transitions are `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, `PAGES_PASSED`, then `PUBLISHED`. Recovery resumes from durable state and searches for the deterministic branch's existing PR before creating one.
+The runner verifies the acknowledged local hashes, then replays that exact packet onto the latest remote dataset rather than copying an older complete dataset over it. The deterministic branch is `codex/digest-YYYY-MM-DD-<edition>-rN`, using `marketDate` for daily editions and Monday `weekStart` for weekly. PR metadata and the public-smoke target derive from the packet identity and SHA-256. State transitions are `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, `PAGES_PASSED`, then `PUBLISHED`. Recovery resumes from durable state and searches for the deterministic branch's existing PR before creating one.
 
 Unexpected changes, identity or hash drift, missing authentication, API errors, failed checks, merge conflicts, absent or failed Pages runs, and public-smoke failures stop the release. Runtime credentials are never stored in this repository.
 
 ## Authorization boundary
 
-Code support for all daily editions does not itself authorize their public release. The already approved close route continues unchanged. Morning and midday release wakes must be activated only after the exact public destination, schedule, packet handoff, command, and fail-closed scope are separately reviewed and approved.
+Code support does not itself authorize a new public release route. Weekly release wakes must be activated only after the exact public destination, schedule, packet handoff, command, and fail-closed scope are separately reviewed and approved.
 
 ## Reporting
 
