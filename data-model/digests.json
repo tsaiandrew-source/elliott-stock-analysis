@@ -1,6 +1,6 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-11T23:22:04.713Z",
+  "generatedAt": "2026-09-13T23:50:24.316Z",
   "records": [
     {
       "id": "daily-2026-09-11-close",
@@ -1026,6 +1026,226 @@
         {
           "label": "AP房貸利率",
           "url": "https://apnews.com/article/mortgages-interest-rates-economy-housing-real-estate-b0b8520fb475e712c400062658306cd4"
+        }
+      ]
+    },
+    {
+      "id": "weekly-2026-09-07",
+      "cadence": "weekly",
+      "edition": "weekly",
+      "weekStart": "2026-09-07",
+      "publishedAt": "2026-09-13T16:00:29-07:00",
+      "updatedAt": "2026-09-13T16:00:29-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-13T16:00:00-07:00",
+      "retrievedAt": "2026-09-13T16:00:29-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "每週總結與展望｜2026-09-07—2026-09-13",
+      "summary": "上週真正改變定價的，不是單一通膨數字，而是市場開始接受能源衝擊可能延長、央行必須重新收緊、長端利率難以快速下降的組合。美股週五反彈但未扭轉週線下跌，10年期殖利率逼近5%，小型股明顯落後。週末霍爾木茲與紅海風險再度升級，使週一開盤首先面對油價跳空，接著才是週三Fed決策。",
+      "sections": [
+        {
+          "heading": "1. 能源衝擊已從價格事件變成雙航道風險",
+          "paragraphs": [
+            "事實：Brent上週一度逼近110美元，週五回落至104.61美元；但週末伊朗商船在霍爾木茲附近遭襲，伊朗延後與鄰國討論航運管理。葉門戰事同時升級，胡塞武裝威脅曼德海峽及沙烏地能源設施。",
+            "判斷：市場不能再把問題視為單一海峽暫時受阻。霍爾木茲、紅海、沙烏地替代出口路線與俄羅斯柴油供應正同時承壓。原油即使不再大漲，航運、保險、柴油與庫存成本仍可能上升。信心：高。",
+            "反證：霍爾木茲通行量持續恢復、沙烏地替代管線重啟、紅海衝突降溫，而且Brent跌破100美元。"
+          ],
+          "links": [
+            {
+              "label": "AP霍爾木茲",
+              "url": "https://apnews.com/article/aa034da0d8226f5a3b4794b10afb8b3b"
+            },
+            {
+              "label": "AP葉門與紅海",
+              "url": "https://apnews.com/article/90dc86201ef51410ebcdd913837d741d"
+            }
+          ]
+        },
+        {
+          "heading": "2. 通膨數據確認能源已傳入實體價格",
+          "paragraphs": [
+            "事實：8月CPI月增0.4%、年增3.4%；汽油月增3.9%，能源年增16.3%。PPI月增0.4%、年增5.4%，柴油價格單月跳升24.1%。",
+            "判斷：CPI接近預期避免了更猛烈的市場衝擊，但沒有提供降溫證據。能源、貨運與服務價格同時偏高，代表Fed面對的不只是一次性汽油波動。",
+            "反證：9月能源價格急跌，而且服務、住房、薪資與通膨預期同步降溫。"
+          ],
+          "links": [
+            {
+              "label": "BLS CPI",
+              "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+            },
+            {
+              "label": "BLS PPI",
+              "url": "https://www.bls.gov/news.release/ppi.nr0.htm"
+            }
+          ]
+        },
+        {
+          "heading": "3. 債市已把Fed升息重新放回基準情境",
+          "paragraphs": [
+            "事實：10年期美債殖利率上週逼近5%，兩年期亦明顯上升；市場隱含的9月升息機率在CPI後升至約85%至87%。",
+            "判斷：真正的風險不是升息25個基點本身，而是Fed升息後，長端殖利率仍因能源、債券供給和財政風險維持高位。這會同時壓縮科技估值、住房需求、小型股融資與政府利息支出。",
+            "反證：Fed升息但措辭溫和、點陣圖沒有追加緊縮，而且10年期殖利率回落至4.75%以下。"
+          ],
+          "links": [
+            {
+              "label": "T. Rowe Price週報",
+              "url": "https://www.troweprice.com/financial-intermediary/us/en/insights/articles/global-markets-weekly-update.html"
+            }
+          ]
+        },
+        {
+          "heading": "4. 美國股票仍具韌性，但內部訊號轉弱",
+          "paragraphs": [
+            "事實：週五S&P 500反彈0.9%，但全週仍跌0.8%；道瓊跌1.6%、Nasdaq跌0.7%、Russell 2000跌2.4%。",
+            "判斷：大型股仍有資金承接，但小型股落後顯示融資與景氣敏感度正在成為約束。消費非必需品、旅遊與低毛利企業最容易先反映能源成本。",
+            "反證：Russell 2000重新領先、等權重指數改善、信用利差下降，而且運輸與消費股同步回升。"
+          ],
+          "links": [
+            {
+              "label": "AP指數表",
+              "url": "https://apnews.com/article/67a463295d9ea178d7802ca4338a6eb5"
+            }
+          ]
+        },
+        {
+          "heading": "5. 歐洲加入重新收緊，而非提供政策緩衝",
+          "paragraphs": [
+            "事實：ECB上週提高利率，存款利率升至2.50%，並將2026年通膨預測設為3.0%。",
+            "判斷：全球能源衝擊正限制央行提供成長支援的空間。歐洲企業同時面對較高能源與資金成本，全球債券殖利率因此更容易互相強化。",
+            "反證：歐洲能源價格下降、通膨預期回落，ECB明確表示本次升息不是新循環的開始。"
+          ],
+          "links": [
+            {
+              "label": "ECB決策",
+              "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html"
+            }
+          ]
+        },
+        {
+          "heading": "6. 週末新增訊號偏向風險升級",
+          "paragraphs": [
+            "事實：胡塞武裝與葉門政府軍交戰升級；沙烏地能源與紅海航運面臨更多威脅。俄羅斯柴油供應同時因烏克蘭攻擊而受限，IEA資料顯示海灣國家8月柴油與gasoil淨出口僅約戰前四分之一。",
+            "判斷：週一最容易先反映在原油、柴油、航空、航運與通膨損益兩平，而不是一般企業新聞。",
+            "反證：週日晚間能源價格未上漲，航運流量正常，而且沒有新的設施或油輪受損。"
+          ],
+          "links": [
+            {
+              "label": "AP柴油供應",
+              "url": "https://apnews.com/article/17bb6a0401abc3eaa7d4586150a41d7d"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "狀態",
+              "下週判讀"
+            ],
+            "rows": [
+              [
+                "原油與成品油",
+                "偏熱",
+                "雙航道與柴油供應風險"
+              ],
+              [
+                "美國大型股",
+                "中性偏弱",
+                "尚有承接，但受利率上限約束"
+              ],
+              [
+                "美國小型股",
+                "偏弱",
+                "融資成本與內需敏感度較高"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "5%附近是核心風險門檻"
+              ],
+              [
+                "美元",
+                "訊號混合",
+                "高利率支撐，財政溢價限制"
+              ],
+              [
+                "歐洲資產",
+                "偏弱",
+                "ECB與能源成本同時收緊"
+              ],
+              [
+                "黃金",
+                "訊號混合",
+                "地緣避險對抗高實質利率"
+              ],
+              [
+                "信用與加密",
+                "無足夠訊號",
+                "等待方向確認"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "下週行事曆與三種路徑",
+          "paragraphs": [
+            "週一美國沒有一級經濟數據，先消化週末能源與航運消息。週二05:30 PT公布Empire State製造業指數，FOMC兩日會議開始。",
+            "週三05:30 PT公布零售銷售與進口價格，07:00 PT公布商業庫存與NAHB住房指數，11:00 PT公布FOMC決策與經濟預測，11:30 PT舉行Fed記者會。",
+            "週四05:30 PT公布初領失業救濟、費城Fed、建築許可與新屋開工；週五06:15 PT公布工業生產與產能利用率。財報焦點為週二Trip.com、週三盤後Lennar、週四Carnival。",
+            "基準：Fed升息25個基點，Brent維持100至110美元，10年期停留4.85%至5%；美股震盪，能源相對領先，小型股與房地產落後。",
+            "偏強：週末風險降溫、Brent跌破100美元；Fed升息但不暗示連續緊縮，10年期跌破4.75%。",
+            "偏弱：Brent突破110美元、10年期突破5%，Fed點陣圖顯示後續仍需升息；股票、信用、住房與消費同步轉弱。"
+          ],
+          "links": [
+            {
+              "label": "Fed行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "美國人口普查局",
+              "url": "https://www.census.gov/economic-indicators/calendar-listview.html"
+            },
+            {
+              "label": "財報日曆",
+              "url": "https://www.kiplinger.com/investing/stocks/17494/next-week-earnings-calendar-stocks"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP霍爾木茲",
+          "url": "https://apnews.com/article/aa034da0d8226f5a3b4794b10afb8b3b"
+        },
+        {
+          "label": "AP葉門與紅海",
+          "url": "https://apnews.com/article/90dc86201ef51410ebcdd913837d741d"
+        },
+        {
+          "label": "BLS CPI",
+          "url": "https://www.bls.gov/news.release/cpi.nr0.htm"
+        },
+        {
+          "label": "BLS PPI",
+          "url": "https://www.bls.gov/news.release/ppi.nr0.htm"
+        },
+        {
+          "label": "T. Rowe Price週報",
+          "url": "https://www.troweprice.com/financial-intermediary/us/en/insights/articles/global-markets-weekly-update.html"
+        },
+        {
+          "label": "AP指數表",
+          "url": "https://apnews.com/article/67a463295d9ea178d7802ca4338a6eb5"
+        },
+        {
+          "label": "ECB決策",
+          "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html"
+        },
+        {
+          "label": "Fed行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
         }
       ]
     }
