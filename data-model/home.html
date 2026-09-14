@@ -30,9 +30,6 @@
     .network { display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; color:var(--muted); font-size:11px; }
     .network::before { width:7px; height:7px; border-radius:50%; background:var(--lime); content:""; }
     .network.is-offline::before { background:var(--amber); }
-    .view-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; width:min(360px,100%); margin:0 0 14px; padding:5px; border:1px solid var(--line); border-radius:13px; background:rgba(13,26,37,.84); }
-    .view-tab { min-height:40px; border:0; border-radius:9px; color:var(--muted); background:transparent; font-weight:800; cursor:pointer; }
-    .view-tab[aria-selected="true"] { color:#071018; background:var(--aqua); }
     .calendar-menu { display:grid; gap:10px; margin:0 0 18px; padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.84); overflow-x:auto; }
     .calendar-menu[hidden], .selected-date[hidden] { display:none; }
     .calendar-week { display:grid; grid-template-columns:repeat(7,minmax(34px,1fr)); align-items:center; gap:3px; min-width:252px; }
@@ -108,15 +105,11 @@
 <body>
   <main class="shell">
     <header class="masthead">
-      <div><div class="eyebrow">ELLIOTT+ · MARKET BRIEF</div><h1>跨市場摘要</h1><p class="dek">每日訊號與每週展望，集中閱讀。</p></div>
+      <div><div class="eyebrow">ELLIOTT+ · MARKET BRIEF</div><h1>跨市場摘要</h1><p class="dek">每日摘要整合週線判讀，集中閱讀。</p></div>
       <span class="network" id="network-state" role="status">已連線</span>
     </header>
 
     <div class="list-view" id="list-view">
-      <div class="view-tabs" role="tablist" aria-label="摘要週期">
-        <button class="view-tab" type="button" role="tab" data-view="daily" aria-selected="true">Daily · 每日</button>
-        <button class="view-tab" type="button" role="tab" data-view="weekly" aria-selected="false">Weekly · 每週</button>
-      </div>
       <div class="calendar-menu" id="calendar-menu" aria-label="最近兩週摘要日期"></div>
       <p class="selected-date" id="selected-date"></p>
       <div class="digest-list" id="digest-list" aria-live="polite">
@@ -144,7 +137,6 @@
       const dateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       const fromDateKey = (value) => new Date(`${value}T12:00:00`);
       const today = dateKey(new Date());
-      let view = query.get('view') === 'weekly' ? 'weekly' : 'daily';
       let selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(query.get('date') || '') ? query.get('date') : today;
 
       const text = (tag, value, className) => {
@@ -164,12 +156,20 @@
         const date = new Date(value || '');
         return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('zh-TW', { hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Los_Angeles' }).format(date);
       };
+      const displayDateFor = (record) => {
+        if (record.cadence === 'weekly') {
+          const published = new Date(record.publishedAt || '');
+          return Number.isNaN(published.getTime()) ? '' : dateKey(published);
+        }
+        return record.marketDate || '';
+      };
+      const editionLabel = (edition) => edition === 'weekly' ? '週線整合' : model.EDITION_LABELS[edition];
       const updateUrl = (changes, mode = 'push') => {
         const url = new URL(window.location.href);
         Object.entries(changes).forEach(([key, value]) => value ? url.searchParams.set(key, value) : url.searchParams.delete(key));
         history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', url);
       };
-      const scrollKey = () => `digest-scroll-${view}-${view === 'daily' ? selectedDate : 'list'}`;
+      const scrollKey = () => `digest-scroll-daily-${selectedDate}`;
       const saveScroll = () => sessionStorage.setItem(scrollKey(), String(window.scrollY));
       const restoreScroll = () => requestAnimationFrame(() => window.scrollTo({ top:Number(sessionStorage.getItem(scrollKey()) || 0), behavior:'auto' }));
 
@@ -189,7 +189,7 @@
       }
 
       function renderCalendar() {
-        const daysWithDigests = new Set(dataset.records.filter((record) => record.cadence === 'daily').map((record) => record.marketDate));
+        const daysWithDigests = new Set(dataset.records.map(displayDateFor).filter(Boolean));
         calendar.replaceChildren();
         calendarWeeks().forEach((days) => {
           const row = text('div', '', 'calendar-week');
@@ -228,57 +228,23 @@
 
       function renderList() {
         listView.hidden = false;
-        document.querySelectorAll('[data-view]').forEach((button) => button.setAttribute('aria-selected', String(button.dataset.view === view)));
-        calendar.hidden = view !== 'daily';
-        selectedDateLabel.hidden = view !== 'daily';
-        if (view === 'weekly') {
-          const groups = model.groupRecords(dataset.records, 'weekly');
-          list.replaceChildren();
-          if (!groups.length) { emptyState(); return; }
-          groups.forEach((group) => {
-            const section = text('section', '', 'group');
-            const head = text('div', '', 'group-head');
-            head.append(text('time', `週起 · ${formatDate(group.key)}`));
-            head.append(text('span', `${group.items.length} 篇`));
-            section.append(head);
-            const editions = text('div', '', 'edition-list');
-            group.items.forEach((record) => {
-              const button = text('button', '', 'edition-card');
-              button.type = 'button';
-              button.dataset.edition = record.edition;
-              button.dataset.recordId = record.id;
-              button.setAttribute('aria-expanded', 'false');
-              button.setAttribute('aria-label', `開啟 ${model.EDITION_LABELS[record.edition]}：${record.title}`);
-              button.append(text('span', model.EDITION_LABELS[record.edition], 'edition-badge'));
-              const copy = text('span', '', 'edition-copy');
-              copy.append(text('strong', record.title));
-              copy.append(text('span', record.summary || '開啟閱讀完整摘要'));
-              button.append(copy);
-              button.append(text('time', formatTime(record.publishedAt), 'edition-time'));
-              button.addEventListener('click', () => {
-                if (button.getAttribute('aria-expanded') === 'true') closeReader(true);
-                else openReader(record, true);
-              });
-              editions.append(button);
-            });
-            section.append(editions);
-            list.append(section);
-          });
-          return;
-        }
+        calendar.hidden = false;
+        selectedDateLabel.hidden = false;
         selectedDateLabel.textContent = formatDate(selectedDate, { weekday:'long' });
         const records = dataset.records.filter((record) => record.cadence === 'daily' && record.marketDate === selectedDate);
+        const weeklyRecords = dataset.records.filter((record) => record.cadence === 'weekly' && displayDateFor(record) === selectedDate);
         list.replaceChildren();
-        const byEdition = new Map(records.map((record) => [record.edition, record]));
-        if (!records.length) { emptyState(); return; }
+        const byEdition = new Map([...records, ...weeklyRecords].map((record) => [record.edition, record]));
+        if (!records.length && !weeklyRecords.length) { emptyState(); return; }
         const editionOrder = ['close', 'midday', 'morning'];
         const available = editionOrder.map((edition) => byEdition.get(edition)).filter(Boolean);
-        const missing = editionOrder.filter((edition) => !byEdition.has(edition)).map((edition) => ({ edition }));
+        weeklyRecords.forEach((record) => available.push(record));
+        const missing = records.length ? editionOrder.filter((edition) => !byEdition.has(edition)).map((edition) => ({ edition })) : [];
         [{ key:selectedDate, items:[...available, ...missing] }].forEach((group) => {
           const section = text('section', '', 'group');
           const head = text('div', '', 'group-head');
-          head.append(text('time', 'Daily · 每日摘要'));
-          head.append(text('span', `${records.length} / 3 篇`));
+          head.append(text('time', 'Daily · 每日摘要（含週線整合）'));
+          head.append(text('span', `${records.length ? `${records.length} / 3 篇` : '僅週線整合'}${weeklyRecords.length ? ' · 含週線整合' : ''}`));
           section.append(head);
           const editions = text('div', '', 'edition-list');
           group.items.forEach((record) => {
@@ -288,13 +254,13 @@
             if (!record.id) {
               button.disabled = true;
               button.classList.add('is-missing');
-              button.setAttribute('aria-label', `${model.EDITION_LABELS[record.edition]}尚未發布`);
+              button.setAttribute('aria-label', `${editionLabel(record.edition)}尚未發布`);
             } else {
             button.dataset.recordId = record.id;
             button.setAttribute('aria-expanded', 'false');
-            button.setAttribute('aria-label', `開啟 ${model.EDITION_LABELS[record.edition]}：${record.title}`);
+            button.setAttribute('aria-label', `開啟 ${editionLabel(record.edition)}：${record.title}`);
             }
-            button.append(text('span', model.EDITION_LABELS[record.edition], 'edition-badge'));
+            button.append(text('span', editionLabel(record.edition), 'edition-badge'));
             const copy = text('span', '', 'edition-copy');
             copy.append(text('strong', record.title || '尚未發布'));
             copy.append(text('span', record.id ? (record.summary || '開啟閱讀完整摘要') : '這個時段目前沒有摘要'));
@@ -347,9 +313,9 @@
       }
 
       function openReader(record, push) {
-        view = record.cadence;
-        if (record.marketDate && record.marketDate !== selectedDate) {
-          selectedDate = record.marketDate;
+        const recordDate = displayDateFor(record);
+        if (recordDate && recordDate !== selectedDate) {
+          selectedDate = recordDate;
           renderCalendar();
         }
         renderList();
@@ -384,31 +350,20 @@
           article.append(section);
         }
         button.after(article);
-        if (record.marketDate) selectedDate = record.marketDate;
-        if (push) updateUrl({ view:record.cadence, date:record.marketDate || null, digest:record.id });
+        if (recordDate) selectedDate = recordDate;
+        if (push) updateUrl({ view:'daily', date:selectedDate, digest:record.id });
         document.title = `${record.title} · 股市分析`;
       }
 
       function closeReader(push) {
-        if (push) updateUrl({ view, date:view === 'daily' ? selectedDate : null, digest:null });
+        if (push) updateUrl({ view:'daily', date:selectedDate, digest:null });
         document.title = '股市分析';
         list.querySelectorAll('.edition-details').forEach((node) => node.remove());
         list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
       }
 
-      document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
-        if (view === button.dataset.view) return;
-        saveScroll();
-        view = button.dataset.view;
-        updateUrl({ view, date:view === 'daily' ? selectedDate : null, digest:null });
-        renderCalendar();
-        renderList();
-        restoreScroll();
-      }));
-
       window.addEventListener('popstate', () => {
         const current = new URLSearchParams(window.location.search);
-        view = current.get('view') === 'weekly' ? 'weekly' : 'daily';
         selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(current.get('date') || '') ? current.get('date') : today;
         renderCalendar();
         renderList();
@@ -427,13 +382,12 @@
 
       const initial = model.recordById(dataset.records, query.get('digest'));
       if (initial) {
-        view = initial.cadence;
-        if (initial.marketDate) selectedDate = initial.marketDate;
+        if (displayDateFor(initial)) selectedDate = displayDateFor(initial);
         renderCalendar();
         renderList();
         openReader(initial, false);
       } else {
-        updateUrl({ view, date:view === 'daily' ? selectedDate : null, digest:null }, 'replace');
+        updateUrl({ view:'daily', date:selectedDate, digest:null }, 'replace');
         renderCalendar();
         renderList();
         restoreScroll();
