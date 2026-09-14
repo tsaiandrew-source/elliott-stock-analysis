@@ -112,8 +112,8 @@ for (const file of htmlFiles) {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
   }
   if (file === 'data-model/home.html') {
-    if (!html.includes('data-view="weekly"') || !html.includes("model.groupRecords(dataset.records, 'weekly')")) failures.push(`${file}: weekly digest view is not wired`);
-    if (!html.includes("view = initial.cadence") || !html.includes("date:record.marketDate || null")) failures.push(`${file}: direct weekly digest links are not preserved`);
+    if (html.includes('data-view="weekly"') || html.includes("model.groupRecords(dataset.records, 'weekly')")) failures.push(`${file}: separate weekly digest view is still exposed`);
+    if (!html.includes("record.cadence === 'weekly' && displayDateFor(record) === selectedDate") || !html.includes("edition === 'weekly' ? '週線整合'") || !html.includes("updateUrl({ view:'daily'")) failures.push(`${file}: weekly digest is not nested into the canonical Daily view`);
   }
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
     failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
