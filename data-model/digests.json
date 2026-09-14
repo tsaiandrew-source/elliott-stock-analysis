@@ -1,6 +1,6 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-14T12:50:45.829Z",
+  "generatedAt": "2026-09-14T17:06:51.347Z",
   "records": [
     {
       "id": "daily-2026-09-14-morning",
@@ -1255,15 +1255,30 @@
       "edition": "weekly",
       "weekStart": "2026-09-07",
       "publishedAt": "2026-09-13T16:00:29-07:00",
-      "updatedAt": "2026-09-13T16:00:29-07:00",
+      "updatedAt": "2026-09-14T17:05:56.319Z",
       "timezone": "America/Los_Angeles",
       "sourceCutoffAt": "2026-09-13T16:00:00-07:00",
-      "retrievedAt": "2026-09-13T16:00:29-07:00",
+      "retrievedAt": "2026-09-14T17:05:56.319Z",
       "status": "complete",
-      "revision": 1,
+      "revision": 2,
       "title": "每週總結與展望｜2026-09-07—2026-09-13",
       "summary": "上週真正改變定價的，不是單一通膨數字，而是市場開始接受能源衝擊可能延長、央行必須重新收緊、長端利率難以快速下降的組合。美股週五反彈但未扭轉週線下跌，10年期殖利率逼近5%，小型股明顯落後。週末霍爾木茲與紅海風險再度升級，使週一開盤首先面對油價跳空，接著才是週三Fed決策。",
       "sections": [
+        {
+          "heading": "週末新變化：AI主線加入「發展節奏與監管」風險",
+          "paragraphs": [
+            "事實：Anthropic執行長Dario Amodei週六發布〈We Must Pace the Frontier〉，主張刻意放慢前沿AI能力提升速度，並提出常駐第三方評估、民主國家產業協調與全球協調三個層次。這並非停止模型訓練，而是限制缺乏安全驗證的能力加速。",
+            "為何重要：AI投資主線因此不再只有需求與資本支出，新增安全規範、開發速度與政策協調風險。半導體、伺服器、資料中心、電力需求及持有AI公司股權的企業最敏感。",
+            "截至週日截稿：現貨市場尚未開盤，不能宣稱價格已確認。週一需觀察AI硬體、亞洲供應鏈與資本支出受益股是否同步轉弱。",
+            "反證：其他主要實驗室沒有實質跟進、政策未形成約束，而且AI資本支出與企業指引維持不變。"
+          ],
+          "links": [
+            {
+              "label": "Amodei原文",
+              "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+            }
+          ]
+        },
         {
           "heading": "1. 能源衝擊已從價格事件變成雙航道風險",
           "paragraphs": [
@@ -1466,6 +1481,10 @@
         {
           "label": "Fed行事曆",
           "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Amodei原文",
+          "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
         }
       ]
     }
