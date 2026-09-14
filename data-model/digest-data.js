@@ -1,7 +1,216 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-14T17:06:51.347Z",
+  "generatedAt": "2026-09-14T18:50:47.186Z",
   "records": [
+    {
+      "id": "daily-2026-09-14-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-14",
+      "publishedAt": "2026-09-14T11:31:53-07:00",
+      "updatedAt": "2026-09-14T11:31:53-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-14T11:31:30-07:00",
+      "retrievedAt": "2026-09-14T11:31:53-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "午間訊號｜2026-09-14",
+      "summary": "晨間的能源、利率與AI估值三重壓力得到確認，但沒有同步惡化成全面避險。新增的核心是：Amodei的文章確實觸發AI基礎建設重新定價，然而美國市場正在區分晶片與資料中心供應商、以及可能因開發節奏放慢而獲得成本緩衝的雲端平台。油價與10年期殖利率也從日內高點回落。現在較像產業與久期再分配，不是流動性事件。",
+      "sections": [
+        {
+          "heading": "1. 新確認：Amodei文章已成為可交易的AI資本支出風險",
+          "paragraphs": [
+            "事實：Anthropic執行長Dario Amodei週六發布〈We Must Pace the Frontier〉，主張放慢前沿模型能力提升，讓安全、對齊與第三方評估有時間追上。他明確表示這不等於停止模型訓練或技術進步。",
+            "午間市場確認：Nvidia約跌2.8%至3%，Intel、AMD與Marvell一度跌約5%至6%，費城半導體指數跌幅接近6%。亞洲的SoftBank收跌10.7%，Kospi跌3.3%。市場把文章先翻譯成晶片、伺服器與資料中心建設速度可能下降。",
+            "判斷：晨間只看到亞洲供應鏈受壓；午間已確認美國AI基礎建設鏈跟跌，因此這不是單一地區事件。但市場可能把『放慢能力提升』過度簡化成『停止算力投資』，兩者並不相同。信心：高。",
+            "反證：半導體跌幅快速收斂、主要雲端平台維持資本支出指引，而且安全評估增加的是驗證算力而非削減總算力需求。"
+          ],
+          "links": [
+            {
+              "label": "Amodei原文",
+              "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+            },
+            {
+              "label": "AP市場反應",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            },
+            {
+              "label": "Fortune產業分化",
+              "url": "https://fortune.com/2026/09/14/ai-slowdown-stocks-nvidia-meta/"
+            }
+          ]
+        },
+        {
+          "heading": "2. 新分化：市場不是賣掉所有科技，而是在重估誰承擔AI競賽成本",
+          "paragraphs": [
+            "事實：晶片與高槓桿資料中心鏈明顯下跌，但Alphabet約升2%、Microsoft升1.6%、Meta升1.4%；Amazon約跌1.6%，仍優於多數半導體。Intuit、Autodesk與Adobe也分別上漲約5.1%、7.2%與4.2%。",
+            "判斷：投資人正在區分『依賴持續加速資本支出的供應商』與『可選擇放慢支出、仍保有平台收入的買家』。軟體反彈則顯示市場暫時下修AI快速取代既有應用的機率。這比單純的科技風險偏好下降更具結構性。信心：中高。",
+            "反證：雲端平台轉跌並接近半導體跌幅，或企業明確下修AI服務需求與營收預期。"
+          ],
+          "links": [
+            {
+              "label": "Fortune產業分化",
+              "url": "https://fortune.com/2026/09/14/ai-slowdown-stocks-nvidia-meta/"
+            },
+            {
+              "label": "AP美股盤中",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "3. 晨間壓力被確認，但大盤沒有確認恐慌",
+          "paragraphs": [
+            "事實：截至美東時間14:02，S&P 500約跌0.3%、道瓊跌0.2%、Nasdaq僅跌0.1%；Nasdaq早盤一度跌1.3%。S&P 500上漲家數仍多於下跌家數。",
+            "判斷：AI硬體跌勢很深，但沒有演變成無差別去風險。市場寬度與Nasdaq自低點回升否定了晨間最壞的『全球久期同步失速』路徑。信心：高。",
+            "升級警報：若尾盤大盤跌幅重新擴大、上漲家數轉為少數，且信用利差與波動率同步惡化，才升級為金融條件事件。"
+          ],
+          "links": [
+            {
+              "label": "AP美股盤中",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "4. 油價與10年期觸及晨間警戒線後回落",
+          "paragraphs": [
+            "事實：Brent盤中接近110美元，午間仍漲約2.7%至107.46美元。10年期美債殖利率一度突破5%，為2023年以來首次，之後隨油價降溫回到約4.95%。",
+            "判斷：晨間設定的兩個壓力門檻都曾觸發，但未能持續。這降低了立即失序的機率，卻沒有消除能源通膨與高折現率的上限。長久期資產仍需油價或殖利率至少一項進一步下降。信心：高。",
+            "反證：Brent收盤重新逼近110美元、10年期站穩5%以上，且美元同步走強。"
+          ],
+          "links": [
+            {
+              "label": "AP油價與殖利率",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "5. 政策訊號降低了立即協調減速的機率，卻提高監管不確定性",
+          "paragraphs": [
+            "事實：美國總統Trump公開反對新的AI護欄，理由是不能把領先優勢讓給中國；中國外交部也批評Amodei要求限制中國AI能力的主張。",
+            "判斷：產業領袖支持放慢節奏，不等於政府已形成可執行的全球協議。短期內，正式限制AI投資的機率可能低於早盤價格所暗示；但美中競爭、安全審查與晶片管制會讓政策風險溢價維持。信心：中。",
+            "反證：美國政府或主要AI實驗室提出具體、可驗證且有時間表的共同限制。"
+          ],
+          "links": [
+            {
+              "label": "AP美國政策回應",
+              "url": "https://apnews.com/article/b85df16775ff7e9611a456b061a0e4b9"
+            },
+            {
+              "label": "AP中國回應",
+              "url": "https://apnews.com/article/3da458d2c078da3e60900728d59f1ae8"
+            }
+          ]
+        },
+        {
+          "heading": "6. 午間結論：主線從三重同步壓力轉為兩個相對交易",
+          "paragraphs": [
+            "第一個相對交易是AI基礎建設供應商落後雲端平台與既有軟體；第二個是能源維持領先，但油價高點回落使大盤壓力受控。信用與波動率尚無足夠可靠的新訊號證明風險全面擴散。",
+            "晨間基準沒有被完全否定，但已下修為『產業再分配與估值壓縮』。只有油價、10年期與市場寬度再次同步惡化，才重新升級。"
+          ],
+          "links": [
+            {
+              "label": "AP跨資產盤中",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產變化表",
+          "table": {
+            "columns": [
+              "資產",
+              "相較晨間",
+              "午間判讀"
+            ],
+            "rows": [
+              [
+                "AI晶片與基礎建設",
+                "更弱",
+                "文章觸發的資本支出風險已由亞洲傳到美國"
+              ],
+              [
+                "雲端平台與既有軟體",
+                "更強",
+                "受益於成本選擇權與替代威脅下修"
+              ],
+              [
+                "美股大盤",
+                "較晨間預期穩健",
+                "跌幅收斂且市場寬度仍正向"
+              ],
+              [
+                "原油",
+                "仍偏熱但離高",
+                "Brent約107美元，未守住近110美元高點"
+              ],
+              [
+                "長天期美債",
+                "先弱後穩",
+                "10年期觸及5%後回到約4.95%"
+              ],
+              [
+                "美元",
+                "無足夠新訊號",
+                "沒有可靠盤中資料支持新增方向"
+              ],
+              [
+                "信用與波動率",
+                "尚未確認惡化",
+                "不足以定義為流動性事件"
+              ],
+              [
+                "黃金與加密",
+                "無足夠新訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "收盤前看什麼",
+          "paragraphs": [
+            "觀察Nvidia與費城半導體指數能否自低點回升，以及Alphabet、Microsoft、Meta相對強勢能否維持；這決定今天是AI內部輪動，還是更廣泛的科技撤退。",
+            "觀察10年期是否收在5%以下、Brent是否守在105至108美元區間，以及S&P 500上漲家數能否保持多數。",
+            "週三11:00 PT的FOMC決策與經濟預測仍是本週主催化劑。若今日尾盤未出現信用與波動率同步惡化，午間結論維持『估值與產業再分配，尚非金融條件失序』。"
+          ],
+          "links": [
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Amodei原文",
+          "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+        },
+        {
+          "label": "AP市場反應",
+          "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+        },
+        {
+          "label": "Fortune產業分化",
+          "url": "https://fortune.com/2026/09/14/ai-slowdown-stocks-nvidia-meta/"
+        },
+        {
+          "label": "AP美國政策回應",
+          "url": "https://apnews.com/article/b85df16775ff7e9611a456b061a0e4b9"
+        },
+        {
+          "label": "AP中國回應",
+          "url": "https://apnews.com/article/3da458d2c078da3e60900728d59f1ae8"
+        },
+        {
+          "label": "Fed九月行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-14-morning",
       "cadence": "daily",
