@@ -10,6 +10,7 @@ const requiredFiles = [
   'manifest.webmanifest',
   'service-worker.js',
   'pwa-register.js',
+  'pwa-register-v27.js',
   'shared-menu.js',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
@@ -110,9 +111,18 @@ for (const file of htmlFiles) {
   if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
   }
+  if (file === 'data-model/home.html') {
+    if (!html.includes('data-view="weekly"') || !html.includes("model.groupRecords(dataset.records, 'weekly')")) failures.push(`${file}: weekly digest view is not wired`);
+    if (!html.includes("view = initial.cadence") || !html.includes("date:record.marketDate || null")) failures.push(`${file}: direct weekly digest links are not preserved`);
+  }
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
     failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
   }
+}
+
+if (await exists('pwa-register-v27.js')) {
+  const registration = await read('pwa-register-v27.js');
+  if (!registration.includes("new URL('./service-worker.js'")) failures.push('pwa-register-v27.js: canonical service worker is not registered');
 }
 
 if (await exists('chart-surface/gex-market-overview.js')) {

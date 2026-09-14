@@ -54,7 +54,7 @@ if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-maskable
 const htmlFiles = ['index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html'];
 for (const file of htmlFiles) {
   const html = await read(file);
-  for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register.js']) {
+  for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register-v27.js']) {
     if (!html.includes(marker)) failures.push(`${file}: missing ${marker}`);
   }
   if (!html.includes('apple-mobile-web-app-title" content="E+"')) failures.push(`${file}: installed iOS title must be E+`);
