@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v26';
+const CACHE_VERSION = 'elliott-pwa-v27';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -30,7 +30,7 @@ const CORE_ASSETS = [
   './assets/elliott-asterisk-maskable-512.png',
   './assets/elliott-asterisk-apple-touch-icon.png',
   './assets/lightweight-charts-5.2.0.min.js',
-  './pwa-register.js',
+  './pwa-register-v27.js',
   './coverage-order.js',
   './shared-menu.js',
   './data-model/home.html',
