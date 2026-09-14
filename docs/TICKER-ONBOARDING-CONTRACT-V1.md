@@ -1,0 +1,99 @@
+# Universal ticker onboarding contract v1
+
+This is the single process for adding a ticker to Elliott+ Stock Analysis. A
+ticker is not considered onboarded until the roster, UI, data contract and
+refresh validation all agree.
+
+## Required inputs
+
+Before implementation, resolve these requirements with the owner:
+
+1. **Symbol and identity** — exact ticker, company display name, exchange, and
+   whether the symbol is a tracked ticker or an exploration candidate.
+2. **Scope** — daily analysis, weekly analysis, GEX, or all three. The default
+   is all three for a tracked ticker.
+3. **Data policy** — allow partial/provisional fields on the first refresh?
+   The standing policy is yes: ingest available data, label missing fields in
+   the backend, and let the next refresh firm up validations.
+4. **Freshness** — the first eligible completed trading session. Never invent
+   a close price or carry forward a close as today's value.
+5. **Sources** — market/chart source and options/GEX source. A source may be
+   delayed, but its cutoff and limitations must be retained.
+6. **Schedule and release** — include in the next Universal Refresh, and
+   whether a catch-up is needed after the primary run.
+7. **Change control** — add the ticker to the contract, run the validator,
+   create a PR, pass QA, then merge to `main`.
+
+For OKLO, the resolved answers were: `OKLO`, `Oklo`, NYSE, tracked, all three
+views, partial data allowed, Nasdaq chart API for market data, Cboe delayed
+options data for GEX, and inclusion in the next Universal Refresh.
+
+## Implementation contract
+
+The ticker must be added to every authoritative surface below:
+
+- `coverage-order.js` — one ordered roster entry.
+- `data-model/app.html` — classification/tracking set.
+- `data-model/coverage.html` — classification/tracking set and live/fallback
+  coverage merge.
+- `chart-surface/index.html` — classification/tracking set and live/fallback
+  coverage merge.
+- `chart-surface/data-contract.js` — fallback coverage row with identity,
+  exchange, default view, market source, GEX source, freshness and explicit
+  limitations.
+- Universal Refresh backend/bridge — the same symbol must be selected by the
+  refresh roster and written to the canonical analysis, market and GEX fields.
+
+The live payload wins for a duplicate ticker; fallback data remains available
+for fields that live data does not provide. Rows are deduplicated by ticker.
+This prevents a partial live payload from making a newly added ticker vanish.
+
+## Universal Refresh sequence
+
+1. Load the canonical roster and validate the symbol and source identifiers.
+2. Fetch market/chart data through the configured credential/bridge path.
+3. Fetch analysis fields and GEX fields independently; one unavailable source
+   must not cancel the other available fields.
+4. Write a durable run record containing ticker, run ID, retrieval time,
+   completed-session date, field statuses, source cutoffs and errors.
+5. Accept available fields as `approved` or `provisional`; keep unavailable
+   fields backend-only rather than exposing internal uncertainty/codenames in
+   the reader UI.
+6. Re-run only provisional/partial fields at the scheduled catch-up. Do not
+   replace a newer completed-session close with an older close.
+7. Publish the payload used by the UI and verify the public pages.
+
+The UI must show the ticker even when its first run is partial. It should show
+real values only when the corresponding field has a completed-session source;
+otherwise it should use the established compact empty state. The backend keeps
+the detailed reason and retry state.
+
+## Verification gates
+
+Before merge, run:
+
+```sh
+node scripts/validate-ticker-onboarding.mjs OKLO
+node scripts/static-qa.mjs
+```
+
+After merge, verify both URLs for the new ticker:
+
+- `/data-model/coverage.html?ticker=<TICKER>`
+- `/chart-surface/index.html?ticker=<TICKER>&view=daily`
+- `/chart-surface/index.html?ticker=<TICKER>&view=weekly`
+- `/chart-surface/index.html?ticker=<TICKER>&view=gex`
+
+Confirm: roster presence, company name, completed-session date, closing price,
+daily/weekly direction, analysis content, GEX key metrics (current price,
+magnet, call wall, put wall), and no raw agent names, version identifiers or
+backend uncertainty text in the reader-facing analysis.
+
+## Change record: OKLO
+
+OKLO exposed the failure mode this contract prevents: adding a symbol only to
+one UI roster is insufficient. The completed work added OKLO to the ordered
+roster, tracked classification, fallback contract and market/GEX source
+metadata, then merged it through PR #72. The remaining public smoke-test
+failure was a separate read-proxy marker check and did not remove OKLO from
+the deployed UI; it remains a deployment QA issue to track independently.
