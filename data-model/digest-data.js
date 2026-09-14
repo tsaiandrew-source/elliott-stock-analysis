@@ -1,7 +1,227 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-13T23:50:24.316Z",
+  "generatedAt": "2026-09-14T12:50:45.829Z",
   "records": [
+    {
+      "id": "daily-2026-09-14-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-14",
+      "publishedAt": "2026-09-14T05:32:44-07:00",
+      "updatedAt": "2026-09-14T05:32:44-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-14T05:32:00-07:00",
+      "retrievedAt": "2026-09-14T05:32:44-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "晨間設定｜2026-09-14",
+      "summary": "今天的風險不是單一事件，而是能源、利率與AI估值同時收緊。Brent重返107美元附近、10年期美債殖利率升至4.96%，亞洲AI供應鏈明顯下跌；美股期貨也小幅走弱。市場在週三Fed決策前沒有足夠緩衝，基準情境是能源領先、長久期科技與小型股承壓，除非油價與長債殖利率至少有一項明確回落。",
+      "sections": [
+        {
+          "heading": "1. 雙航道風險讓油價重新成為第一定價因子",
+          "paragraphs": [
+            "事實：Brent早盤上漲2.6%至107.28美元，WTI上漲2.5%至102.57美元。沙烏地用來繞過霍爾木茲海峽的重要管線遭攻擊後關閉；胡塞武裝又控制紅海哈尼什群島，進一步靠近曼德海峽。",
+            "判斷：市場面對的是霍爾木茲、紅海與替代管線同時受限，而不是一條航道的暫時中斷。能源股相對受益；航空、航運、化工、零售與消費則承受成本和需求的雙重壓力。信心：高。",
+            "反證：沙烏地替代管線恢復、曼德海峽通行未受影響，而且Brent重新跌破100美元。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            },
+            {
+              "label": "AP紅海進展",
+              "url": "https://apnews.com/article/yemen-houthis-saudi-shipping-mandeb-8c18d82c109a8ea91347ce53c0096c53"
+            }
+          ]
+        },
+        {
+          "heading": "2. 10年期逼近5%，Fed前的估值門檻再次升高",
+          "paragraphs": [
+            "事實：10年期美債殖利率約4.96%，高於上週四的4.95%，即使財政部擴大回購仍未明顯穩住長債。Fed將在週二至週三開會，週三11:00 PT公布決策與經濟預測，11:30 PT舉行記者會。",
+            "判斷：若油價維持三位數而10年期突破5%，市場會把通膨、債券供給與政策收緊合併定價。科技、房地產、公用事業與高槓桿小型股最敏感。信心：高。",
+            "反證：10年期回落至4.85%以下，且Fed預期沒有進一步轉鷹。"
+          ],
+          "links": [
+            {
+              "label": "AP市場與殖利率",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            },
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            }
+          ]
+        },
+        {
+          "heading": "3. 亞洲AI供應鏈先反映監管與久期壓力",
+          "paragraphs": [
+            "事實：韓國Kospi下跌3.3%，SK Hynix跌6.4%、Samsung跌4.1%；SoftBank跌10.7%，日經跌0.8%，台股跌0.7%、台積電跌1.2%。美股期貨小幅走低。",
+            "判斷：AI安全與可能放慢開發的討論是直接觸媒，但高殖利率放大了估值反應。若美國半導體與大型科技開盤後跟跌，壓力將由亞洲個股事件升級為全球久期交易。信心：中高。",
+            "反證：美國AI與半導體股開盤後守住相對強勢，Nasdaq市場寬度改善，而且殖利率停止上升。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "4. 美元走強，避險開始具有跨資產一致性",
+          "paragraphs": [
+            "事實：美元兌日圓升至154.56，歐元由1.1598美元降至約1.1542美元；同時油價與美債殖利率上升、全球多數股市走弱。",
+            "判斷：這比上週更接近典型的金融條件收緊組合。美元走強會加重非美市場的資金壓力，也使以美元計價的商品衝擊更難被匯率吸收。信心：中高。",
+            "反證：美元回吐升幅、信用利差保持穩定，且美股市場寬度沒有惡化。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "5. 上週通膨資料與ECB升息限制政策緩衝",
+          "paragraphs": [
+            "事實：美國8月CPI月增0.4%、年增3.4%，汽油月增3.9%；PPI月增0.4%、年增5.4%。ECB上週升息25個基點，並預估2026年通膨3.0%。",
+            "判斷：今天油價再升使這些資料不只是落後訊號，而是Fed本週決策的起點。歐美央行都難以在能源供給衝擊下快速提供成長支援。信心：高。",
+            "反證：能源價格快速逆轉、服務與住房通膨同步降溫，且央行明確把衝擊視為不需追趕的一次性事件。"
+          ],
+          "links": [
+            {
+              "label": "BLS CPI",
+              "url": "https://www.bls.gov/news.release/archives/cpi_09112026.htm"
+            },
+            {
+              "label": "BLS PPI",
+              "url": "https://www.bls.gov/news.release/ppi.nr0.htm"
+            },
+            {
+              "label": "ECB聲明",
+              "url": "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html"
+            }
+          ]
+        },
+        {
+          "heading": "6. 今天資料清淡，價格本身就是訊號",
+          "paragraphs": [
+            "事實：今天沒有一級美國經濟資料，重要財報也有限；本週核心事件從週二的Empire State製造業指數開始，週三則有零售銷售、進口價格與Fed決策。",
+            "判斷：缺少數據緩衝意味著今日交易更容易被油價、航運消息與長債殖利率主導。若早盤出現股票、信用與波動率同步惡化，不能用『等待Fed』忽略。信心：高。",
+            "反證：油價與殖利率回落，美股開盤後市場寬度改善，信用利差沒有加入避險。"
+          ],
+          "links": [
+            {
+              "label": "本週經濟日曆",
+              "url": "https://www.kiplinger.com/investing/economy/this-weeks-economic-calendar"
+            },
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "狀態",
+              "晨間判讀"
+            ],
+            "rows": [
+              [
+                "原油",
+                "偏熱",
+                "Brent約107美元，雙航道與管線風險"
+              ],
+              [
+                "美股期貨",
+                "小幅偏弱",
+                "能源與AI估值壓力疊加"
+              ],
+              [
+                "亞洲科技",
+                "明顯偏弱",
+                "韓國記憶體與SoftBank領跌"
+              ],
+              [
+                "歐股",
+                "分化偏弱",
+                "英國較強，法德下跌"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期殖利率約4.96%"
+              ],
+              [
+                "美元",
+                "偏強",
+                "兌日圓與歐元同步走高"
+              ],
+              [
+                "信用債",
+                "無足夠訊號",
+                "等待美國現貨市場確認"
+              ],
+              [
+                "黃金與加密",
+                "無足夠訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "今日催化劑與失效條件",
+          "paragraphs": [
+            "開盤前至上午：追蹤沙烏地替代管線、曼德海峽與霍爾木茲航運消息；觀察Brent能否守住105美元、10年期是否突破5%，以及美國AI與半導體股是否接續亞洲跌勢。",
+            "今日沒有一級美國數據。基準情境是大盤偏弱震盪、能源相對領先、科技與小型股落後。若Brent跌回103美元以下、10年期回落至4.90%以下且半導體止跌，基準壓力可下修；若油價、殖利率、美元與波動率同步上升，則升級為更廣泛的金融條件衝擊。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            },
+            {
+              "label": "本週經濟日曆",
+              "url": "https://www.kiplinger.com/investing/economy/this-weeks-economic-calendar"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP全球市場",
+          "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+        },
+        {
+          "label": "AP紅海進展",
+          "url": "https://apnews.com/article/yemen-houthis-saudi-shipping-mandeb-8c18d82c109a8ea91347ce53c0096c53"
+        },
+        {
+          "label": "Fed九月行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "BLS CPI",
+          "url": "https://www.bls.gov/news.release/archives/cpi_09112026.htm"
+        },
+        {
+          "label": "BLS PPI",
+          "url": "https://www.bls.gov/news.release/ppi.nr0.htm"
+        },
+        {
+          "label": "ECB聲明",
+          "url": "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html"
+        },
+        {
+          "label": "本週經濟日曆",
+          "url": "https://www.kiplinger.com/investing/economy/this-weeks-economic-calendar"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-11-close",
       "cadence": "daily",
