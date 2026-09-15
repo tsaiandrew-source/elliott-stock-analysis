@@ -9,6 +9,7 @@ import { loadCoverageRoster } from './coverage-roster.mjs';
 
 const READ_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
 const PUBLIC_BASE = 'https://tsaiandrew-source.github.io/elliott-stock-analysis';
+const GITHUB_REPOSITORY = 'tsaiandrew-source/elliott-stock-analysis';
 const DATA_FILE = 'chart-surface/data-contract.js';
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -253,28 +254,29 @@ async function release(options) {
       'Scope', '',
       `- ${DATA_FILE}`
     ].join('\n');
-    const prUrl = (await run('gh', ['pr', 'create', '--base', 'main', '--head', branch, '--title', title, '--body', body], { cwd: worktree, env: githubEnv })).stdout.trim();
+    const prUrl = (await run('gh', ['pr', 'create', '--repo', GITHUB_REPOSITORY, '--base', 'main', '--head', branch, '--title', title, '--body', body], { cwd: worktree, env: githubEnv })).stdout.trim();
     let mergeable = null;
     for (let attempt = 0; attempt < 30; attempt += 1) {
-      mergeable = JSON.parse((await run('gh', ['pr', 'view', prUrl, '--json', 'state,mergeable,mergeStateStatus'], { cwd: worktree, env: githubEnv })).stdout);
+      mergeable = JSON.parse((await run('gh', ['pr', 'view', prUrl, '--repo', GITHUB_REPOSITORY, '--json', 'state,mergeable,mergeStateStatus'], { cwd: stateDir, env: githubEnv })).stdout);
       if (mergeable.state === 'OPEN' && mergeable.mergeable === 'MERGEABLE' && !['BLOCKED', 'DIRTY'].includes(mergeable.mergeStateStatus)) break;
       await sleep(10_000);
     }
     if (mergeable?.mergeable !== 'MERGEABLE') throw new Error(`PR did not become mergeable: ${JSON.stringify(mergeable)}`);
-    try { await run('gh', ['pr', 'checks', prUrl, '--watch', '--interval', '10'], { cwd: worktree, env: githubEnv }); }
+    try { await run('gh', ['pr', 'checks', prUrl, '--repo', GITHUB_REPOSITORY, '--watch', '--interval', '10'], { cwd: stateDir, env: githubEnv }); }
     catch (error) { if (!/no checks reported/i.test(error.message)) throw error; }
-    await run('gh', ['pr', 'merge', prUrl, '--squash', '--delete-branch'], { cwd: worktree, env: githubEnv });
-    const merged = JSON.parse((await run('gh', ['pr', 'view', prUrl, '--json', 'state,mergedAt,mergeCommit'], { cwd: worktree, env: githubEnv })).stdout);
+    try { await run('gh', ['pr', 'merge', prUrl, '--repo', GITHUB_REPOSITORY, '--squash', '--delete-branch'], { cwd: stateDir, env: githubEnv }); }
+    catch (_) { /* The API may merge successfully before a local cleanup error; verify state below. */ }
+    const merged = JSON.parse((await run('gh', ['pr', 'view', prUrl, '--repo', GITHUB_REPOSITORY, '--json', 'state,mergedAt,mergeCommit'], { cwd: stateDir, env: githubEnv })).stdout);
     if (merged.state !== 'MERGED' || !merged.mergeCommit?.oid) throw new Error('PR did not reach MERGED state');
     let pages = null;
     for (let attempt = 0; attempt < 30; attempt += 1) {
-      const list = JSON.parse((await run('gh', ['run', 'list', '--commit', merged.mergeCommit.oid, '--workflow', 'pages-build-deployment', '--limit', '5', '--json', 'databaseId,status,conclusion,url,headSha'], { cwd: worktree, env: githubEnv })).stdout || '[]');
+      const list = JSON.parse((await run('gh', ['run', 'list', '--repo', GITHUB_REPOSITORY, '--commit', merged.mergeCommit.oid, '--workflow', 'pages-build-deployment', '--limit', '5', '--json', 'databaseId,status,conclusion,url,headSha'], { cwd: stateDir, env: githubEnv })).stdout || '[]');
       pages = list.find((item) => item.headSha === merged.mergeCommit.oid) || null;
       if (pages) break;
       await sleep(10_000);
     }
     if (!pages) throw new Error('Pages deployment was not found for the merge commit');
-    if (pages.status !== 'completed') await run('gh', ['run', 'watch', String(pages.databaseId), '--exit-status'], { cwd: worktree, env: githubEnv });
+    if (pages.status !== 'completed') await run('gh', ['run', 'watch', String(pages.databaseId), '--repo', GITHUB_REPOSITORY, '--exit-status'], { cwd: stateDir, env: githubEnv });
     else if (pages.conclusion !== 'success') throw new Error(`Pages deployment failed: ${pages.conclusion}`);
     await run(process.execPath, ['scripts/public-smoke.mjs'], { cwd: worktree, env: { PUBLIC_BASE_URL: PUBLIC_BASE } });
     const result = { status: 'PUBLISHED_AND_VERIFIED', slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, ...sync, completedAt: new Date().toISOString() };
