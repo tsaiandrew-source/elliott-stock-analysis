@@ -1,0 +1,48 @@
+name: Tauri desktop QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'src-tauri/**'
+      - 'shared-menu.css'
+      - 'shared-menu.js'
+      - 'chart-surface/index.html'
+      - 'data-model/home.html'
+      - 'data-model/coverage.html'
+      - 'data-model/app.html'
+      - 'scripts/build-tauri-web.mjs'
+      - 'scripts/tauri-qa.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/desktop-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  desktop-qa:
+    runs-on: macos-latest
+    steps:
+      - name: Check out prototype
+        uses: actions/checkout@v4
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install desktop dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify staged desktop runtime
+        run: pnpm desktop:qa
+      - name: Check Tauri host
+        run: cargo check --manifest-path src-tauri/Cargo.toml

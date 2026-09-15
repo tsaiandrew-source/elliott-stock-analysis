@@ -23,7 +23,7 @@ const CORE_ASSETS = [
   './assets/elliott-asterisk-icon-32.png', './assets/elliott-asterisk-icon-192.png',
   './assets/elliott-asterisk-icon-512.png', './assets/elliott-asterisk-maskable-512.png',
   './assets/elliott-asterisk-apple-touch-icon.png', './lightweight-charts-5.2.0.min.js',
-  './pwa-register.js', './coverage-order.js', './shared-menu.js', './data-model/home.html',
+  './pwa-register.js', './coverage-order.js', './shared-menu.css', './shared-menu.js', './data-model/home.html',
   './data-model/coverage.html', './data-model/digest-model.js', './data-model/app.html',
   './chart-surface/index.html', './chart-surface/data-contract.js',
   './chart-surface/analysis-localization.js', './chart-surface/analysis-geometry.js',
