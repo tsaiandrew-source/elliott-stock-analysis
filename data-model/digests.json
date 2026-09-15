@@ -1,7 +1,266 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-14T23:22:23.291Z",
+  "generatedAt": "2026-09-15T16:21:18.921Z",
   "records": [
+    {
+      "id": "daily-2026-09-15-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-15",
+      "publishedAt": "2026-09-15T08:35:00-07:00",
+      "updatedAt": "2026-09-15T08:35:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-15T08:34:30-07:00",
+      "retrievedAt": "2026-09-15T08:34:35-07:00",
+      "status": "complete",
+      "revision": 2,
+      "title": "晨間設定｜2026-09-15",
+      "summary": "晨間主線已獲價格確認，而且新增一個不利組合：紐約製造業活動降溫，但投入與售價壓力反而加速。Empire State指數由20.6降至7.6，低於約15的共識；同時10年期殖利率約5.01%、油價維持三位數，美股早盤S&P 500跌0.4%、道瓊跌1%、Nasdaq跌0.6%。這不是乾淨的成長降溫利多，而是更接近停滯性通膨訊號。今日20年期美債標售將檢驗長端是否有足夠需求；明日Fed決策前，市場仍缺乏可靠的估值緩衝。",
+      "sections": [
+        {
+          "heading": "1. 油價續升：替代供應線本身也成為風險",
+          "paragraphs": [
+            "事實：Brent晨間約106.96美元、WTI約102.68美元，均較前一交易時段再升約1.2%。沙烏地能源部已確認東西向管線遭多次攻擊後預防性停運；AP進一步報導，這條可繞過霍爾木茲的管線多數運能可能停擺數週。",
+            "判斷：市場現在定價的不是單一海峽短缺，而是替代路徑也不可靠。能源股相對受益；航空、運輸、化工、低毛利消費與長久期資產承受成本與折現率雙重壓力。信心：高。",
+            "反證：管線提前恢復、航運流量改善，而且Brent跌回103美元以下。"
+          ],
+          "links": [
+            {
+              "label": "沙烏地通訊社官方聲明",
+              "url": "https://www.spa.gov.sa/en/N2674017"
+            },
+            {
+              "label": "AP管線與油市",
+              "url": "https://apnews.com/article/efa431e2fa771e34880c8453c62ffb92"
+            },
+            {
+              "label": "亞洲市場與油價",
+              "url": "https://www.businesstoday.com.my/2026/09/15/asian-shares-waver-as-oil-and-bond-yields-rise-ahead-of-fed/"
+            }
+          ]
+        },
+        {
+          "heading": "2. 10年期站上5%附近，Fed還沒開會市場已先收緊",
+          "paragraphs": [
+            "事實：10年期美債殖利率晨間約5.01%，高於昨日收盤附近的4.98%，並處於19年高位附近。德國10年期殖利率也升破3.51%，為2009年以來高位。",
+            "判斷：這不是單純的政策利率預期，而是能源通膨、政府債供給與期限溢價一起抬升。高殖利率會先壓科技估值、住房與小型股融資，再透過美元和全球債券擴散。信心：高。",
+            "反證：10年期跌回4.90%以下，且油價與通膨損益兩平同步回落。"
+          ],
+          "links": [
+            {
+              "label": "AP晨間市場",
+              "url": "https://apnews.com/article/123ddc2d8ba06c324cbbd899f7eeebd2"
+            },
+            {
+              "label": "RTHK亞洲市場",
+              "url": "https://news.rthk.hk/rthk/en/component/k2/1870041-20260915.htm"
+            }
+          ]
+        },
+        {
+          "heading": "3. Fed升息預期成為基準，但真正風險在長端反應",
+          "paragraphs": [
+            "事實：FOMC今日開始兩日會議；官方行事曆顯示，決策與經濟預測於明日11:00 PT公布，記者會於11:30 PT舉行。市場普遍預期升息一碼，且已開始定價之後仍可能升息。",
+            "判斷：若Fed升息但長債殖利率仍上升，代表市場擔心政策不足以壓住通膨；若Fed不升息，長端反而可能因可信度風險急升。因此明日最重要的不是升或不升本身，而是10年與30年期是否把政策解讀為足夠。信心：中高。",
+            "反證：Fed訊號令長端殖利率、美元與油價同步降溫，而信用利差維持穩定。"
+          ],
+          "links": [
+            {
+              "label": "Fed九月官方行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "AP Fed前瞻",
+              "url": "https://apnews.com/article/ffd60cca8bb045bb9b1c389f5f1b73af"
+            }
+          ]
+        },
+        {
+          "heading": "4. 美股開盤後跌幅擴大，晨間壓力獲得確認",
+          "paragraphs": [
+            "事實：截至美東時間10:30，S&P 500跌0.4%、道瓊跌約1%、Nasdaq跌0.6%；10年期殖利率由昨日約4.97%升至5.01%。隔夜亞洲仍分化，日本Nikkei一度轉升，而香港、澳洲與韓國較弱；歐洲早盤亦偏弱。",
+            "判斷：晨間期貨的小跌已擴大為更廣泛的估值壓力，道瓊弱於科技也顯示問題不只AI。市場仍未失序，但若銀行、工業與小型股同步惡化，將由產業輪動升級為金融條件衝擊。信心：高。",
+            "反證：美股開盤後市場寬度轉正、半導體止跌，而且10年期不再創高。"
+          ],
+          "links": [
+            {
+              "label": "AP全球市場",
+              "url": "https://apnews.com/article/123ddc2d8ba06c324cbbd899f7eeebd2"
+            },
+            {
+              "label": "AP亞洲市場",
+              "url": "https://in.marketscreener.com/news/asian-shares-trade-mixed-as-markets-continue-to-watch-ai-stocks-and-oil-prices-ce785bddd98af122"
+            },
+            {
+              "label": "Reuters歐洲市場",
+              "url": "https://sa.marketscreener.com/news/europe-shares-slip-as-banks-drag-oil-driven-inflation-fears-weigh-ce785bddd881f424"
+            }
+          ]
+        },
+        {
+          "heading": "5. 美元開始配合高殖利率，全球金融條件更緊",
+          "paragraphs": [
+            "事實：美元指數昨日升約0.6%，一度觸及99.648；歐元跌至約1.153美元的一個月低位，英鎊約跌0.5%。",
+            "判斷：與上週『殖利率升、美元未明顯跟上』不同，美元現在開始確認避險與利差交易。這對非美風險資產、美元融資與大宗商品進口國更不友善，也削弱美國跨國公司的換算收益。信心：中高。",
+            "反證：美元指數跌回近期區間，並在美債殖利率仍高時無法續強。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美元與油價",
+              "url": "https://www.marketscreener.com/news/dollar-rallies-as-oil-prices-jump-and-ai-fears-knock-markets-ce785bdcda8bf225"
+            }
+          ]
+        },
+        {
+          "heading": "6. 第一手敘事掃描：沒有新的AI承諾，但供應風險有官方確認",
+          "paragraphs": [
+            "事實：自昨日收盤截稿後，未發現足以改變盈餘、資本支出或監管機率的全新CEO／公司官方AI文章。Amodei週末文章的價格反應已在昨日版本處理；今日新增的可定價第一手訊號，是沙烏地官方確認東西向管線停運。",
+            "判斷：今天不應再次把AI文章當作新消息重複交易；真正的新邊際變化是能源供應冗餘下降。若晶片續跌，需要新的資本支出、政策或供應鏈證據，不能只沿用週末敘事。信心：中高。",
+            "反證：AI實驗室、雲端平台或政府在美股開盤前發布具體限制、投資調整或執行時間表。"
+          ],
+          "links": [
+            {
+              "label": "Amodei原文",
+              "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+            },
+            {
+              "label": "沙烏地通訊社官方聲明",
+              "url": "https://www.spa.gov.sa/en/N2674017"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "晨間狀態",
+              "基準判讀"
+            ],
+            "rows": [
+              [
+                "美股大型股",
+                "偏冷",
+                "期貨小跌，尚未失序"
+              ],
+              [
+                "AI晶片／資料中心",
+                "偏冷",
+                "昨日敘事仍在消化，等待新證據"
+              ],
+              [
+                "能源股",
+                "偏熱",
+                "供應冗餘下降的直接受益者"
+              ],
+              [
+                "長天期美債",
+                "偏冷",
+                "10年期約5.01%，金融條件收緊"
+              ],
+              [
+                "美元",
+                "轉強",
+                "避險與利差開始同向"
+              ],
+              [
+                "信用",
+                "無足夠惡化訊號",
+                "尚未確認流動性事件"
+              ],
+              [
+                "黃金",
+                "訊號混合",
+                "通膨避險與高實質利率拉扯"
+              ],
+              [
+                "加密資產",
+                "無足夠新訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "今日催化劑與三條路徑",
+          "paragraphs": [
+            "05:30 PT已公布：Empire State一般商業狀況指數由20.6降至7.6，低於約15的共識。新訂單僅小幅增加、出貨轉為小幅下降；但交貨時間明顯拉長、供應可得性惡化，投入價格指數升至63.1、售價指數升至28.1。這是需求降溫與價格壓力升高並存，對Fed與長債不是乾淨的鴿派訊號。",
+            "10:00 PT：美國20年期公債標售。尾差、間接投標人占比與得標利率將檢驗5%附近是否有真實需求。13:30 PT：API原油庫存；供應端消息仍比單週庫存更重要。美股收盤後Trip.com公布業績，17:00 PT舉行電話會議。",
+            "基準路徑：Brent維持105至109美元、10年期在4.95%至5.05%；美股震盪偏弱，能源領先，AI硬體落後但不全面擴散。",
+            "偏強路徑：油價跌破103美元、10年期回到4.90%以下、Empire State溫和而非急墜，半導體止跌且市場寬度轉正。",
+            "偏弱路徑：Brent逼近110美元、20年期標售疲弱、10年期站穩5.05%以上，AI與利率敏感產業跌勢擴散，信用利差與波動率同步惡化。"
+          ],
+          "links": [
+            {
+              "label": "CME今日經濟日曆",
+              "url": "https://www.cmegroup.com/education/events/econoday/704887"
+            },
+            {
+              "label": "紐約Fed九月製造業調查",
+              "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+            },
+            {
+              "label": "Fed九月官方行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "Trip.com官方公告",
+              "url": "https://ctripcominternationalltd.gcs-web.com/news-releases/news-release-details/tripcom-group-limited-report-second-quarter-and-first-half-2026"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "沙烏地通訊社官方聲明",
+          "url": "https://www.spa.gov.sa/en/N2674017"
+        },
+        {
+          "label": "AP管線與油市",
+          "url": "https://apnews.com/article/efa431e2fa771e34880c8453c62ffb92"
+        },
+        {
+          "label": "AP晨間市場",
+          "url": "https://apnews.com/article/123ddc2d8ba06c324cbbd899f7eeebd2"
+        },
+        {
+          "label": "AP Fed前瞻",
+          "url": "https://apnews.com/article/ffd60cca8bb045bb9b1c389f5f1b73af"
+        },
+        {
+          "label": "RTHK亞洲市場",
+          "url": "https://news.rthk.hk/rthk/en/component/k2/1870041-20260915.htm"
+        },
+        {
+          "label": "Reuters歐洲市場",
+          "url": "https://sa.marketscreener.com/news/europe-shares-slip-as-banks-drag-oil-driven-inflation-fears-weigh-ce785bddd881f424"
+        },
+        {
+          "label": "Reuters美元與油價",
+          "url": "https://www.marketscreener.com/news/dollar-rallies-as-oil-prices-jump-and-ai-fears-knock-markets-ce785bdcda8bf225"
+        },
+        {
+          "label": "Amodei原文",
+          "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+        },
+        {
+          "label": "CME今日經濟日曆",
+          "url": "https://www.cmegroup.com/education/events/econoday/704887"
+        },
+        {
+          "label": "紐約Fed九月製造業調查",
+          "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+        },
+        {
+          "label": "Fed九月官方行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Trip.com官方公告",
+          "url": "https://ctripcominternationalltd.gcs-web.com/news-releases/news-release-details/tripcom-group-limited-report-second-quarter-and-first-half-2026"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-14-close",
       "cadence": "daily",
