@@ -21,18 +21,29 @@ remain backend-only.
    appends it to the private Apps Script bridge, and waits until every run ID is
    visible through the canonical read proxy. The token is never printed or
    persisted. A failed or ambiguous write remains in the inbox for recovery.
-3. `sync-universal-refresh.mjs` reads the canonical proxy and overlays it on
-   the bundled last-good contract. An unavailable optional lane cannot replace
-   a populated prior lane with an empty value.
-4. A clean isolated worktree may change only
-   `chart-surface/data-contract.js`. Static and PWA QA must pass before the
+3. `sync-market-data.mjs` resolves the hash-backed completed-session OHLCV
+   artifact named by every daily packet and atomically publishes one
+   `chart-surface/partial-market-data/<TICKER>.json` file for every canonical
+   ticker. The whole release fails closed if a source hash is wrong, a ticker
+   is absent, OHLCV is empty, packet `dataThrough` differs from the final bar
+   date, or the packet close differs from the final bar close. `MANIFEST.json`
+   records the exact per-ticker date, close and public file hash.
+4. `sync-universal-refresh.mjs` reads the canonical proxy and overlays it on
+   the bundled last-good contract. Coverage date, closing price, daily chart
+   and weekly aggregation all derive from the same completed-session market
+   dataset. An unavailable optional lane cannot replace a populated prior lane
+   with an empty value.
+5. A clean isolated worktree may change only
+   `chart-surface/data-contract.js` and
+   `chart-surface/partial-market-data/*.json`. Static and PWA QA must pass before the
    exact `tsaiandrew-source` credential wrapper creates and merges a PR; the
    runner never depends on the globally active `gh` account.
-5. The runner records a pending release, waits for GitHub Pages, verifies the
-   exact SHA-256 of the published data contract, and runs the public smoke
-   matrix across the canonical roster. Proxy checks use bounded retries. A
-   later replay re-verifies an unchanged pending release; only a complete pass
-   records `PUBLISHED_AND_VERIFIED` or `NOOP_VERIFIED`.
+6. The runner records a pending release, waits for GitHub Pages, verifies the
+   exact SHA-256 of the published data contract and market manifest, then
+   verifies every public ticker file's hash, final bar date and closing price.
+   The public smoke matrix still covers the canonical roster. Proxy checks use
+   bounded retries. A later replay re-verifies an unchanged pending release;
+   only a complete pass records `PUBLISHED_AND_VERIFIED` or `NOOP_VERIFIED`.
 
 The run state, processed packets, locks, logs and release receipt are durable
 under `~/Library/Application Support/Elliott+/universal-refresh`; none are

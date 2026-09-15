@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "elliott-completed-session-market-data-v1",
+  "sourceBatchId": "COVERAGE-20260914-EOD-BACKFILL-V1",
+  "tickerOrder": [
+    "LITE",
+    "NBIS",
+    "PLTR",
+    "IREN",
+    "NOK",
+    "ACHR",
+    "CSCO",
+    "AMKR",
+    "ONDS",
+    "NVDA",
+    "MRVL",
+    "SNDK",
+    "AVGO",
+    "OKLO",
+    "2646",
+    "2330"
+  ],
+  "tickers": {
+    "2330": {
+      "dataThrough": "2026-09-14",
+      "close": 2380,
+      "sha256": "4d5f59bc96d9f0d92d7e1c63bd1a48d13d0cc9ea4573c5e949eacbc73f8c4d44"
+    },
+    "2646": {
+      "dataThrough": "2026-09-14",
+      "close": 20.1,
+      "sha256": "18586696ea82822a327c78c10a60b357bb72e20618c594adc9cabc8fabf4e909"
+    },
+    "LITE": {
+      "dataThrough": "2026-09-14",
+      "close": 835.03,
+      "sha256": "c246873ee423249669b573272a6129f9d24d321aeb0c76ad37d749bdda2c397e"
+    },
+    "NBIS": {
+      "dataThrough": "2026-09-14",
+      "close": 212.19,
+      "sha256": "7774cfad1b3a5e05e9e51bd2ad7c20c2d4c940fa724bc611254eb79e0f6aed44"
+    },
+    "PLTR": {
+      "dataThrough": "2026-09-14",
+      "close": 173.31,
+      "sha256": "5a38a4604fecfe48165cd78e520a4a6e071c5ae74e13551fc8f866bcc5993574"
+    },
+    "IREN": {
+      "dataThrough": "2026-09-14",
+      "close": 43.17,
+      "sha256": "0072b4dea1ec2307d2c0fd3af2107aa62caef1719d30942ebdd9bd55c9ec174b"
+    },
+    "NOK": {
+      "dataThrough": "2026-09-14",
+      "close": 9.65,
+      "sha256": "06bbf145777bcf9ffb5088ed4a5f27309eba8a3f60d58da9a9e6517b8e826bb5"
+    },
+    "ACHR": {
+      "dataThrough": "2026-09-14",
+      "close": 5.51,
+      "sha256": "e942d64bd33e3dc2f749a977171c797ad0732a1118ebc62e79730697d4aa1d12"
+    },
+    "CSCO": {
+      "dataThrough": "2026-09-14",
+      "close": 110.06,
+      "sha256": "c428adc72bdf8001497f0b8b172a360a505d31e5ad66918f1ff802c1eea3bb4e"
+    },
+    "AMKR": {
+      "dataThrough": "2026-09-14",
+      "close": 47.12,
+      "sha256": "8b580a7c2a3e84a5dc719ad57b5117099d0f5f2792b89f130eaca462dcbeba5b"
+    },
+    "ONDS": {
+      "dataThrough": "2026-09-14",
+      "close": 7.23,
+      "sha256": "fe807df8dfd402ec3676cb53d6eb82df3d9dfedfa56c271178227f001a0d731c"
+    },
+    "NVDA": {
+      "dataThrough": "2026-09-14",
+      "close": 210.96,
+      "sha256": "c8912d9c4077d4db1d731befa0380c0e33712ca8feb8b63a94c70de774ac5141"
+    },
+    "MRVL": {
+      "dataThrough": "2026-09-14",
+      "close": 218.82,
+      "sha256": "8c21f30215af96e5116085c88ae3a2feff35ddeaec3aa6b1c815202c0bccbc14"
+    },
+    "SNDK": {
+      "dataThrough": "2026-09-14",
+      "close": 1551.99,
+      "sha256": "9c4fc1928bd4beae348569e693c2813caf6d1650d11644605c1078bc60c0945f"
+    },
+    "AVGO": {
+      "dataThrough": "2026-09-14",
+      "close": 344.7200012207031,
+      "sha256": "434b4748292a8fe36ecf784c600d782edce21dbacfdfb0773f5df45ad4fc919f"
+    },
+    "OKLO": {
+      "dataThrough": "2026-09-14",
+      "close": 36.209999084472656,
+      "sha256": "057599948591d9f84fc0b2bb9bf022a0c26d2d8a2f4fd6502c76d0506b50fd06"
+    }
+  }
+}

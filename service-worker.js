@@ -9,6 +9,7 @@ const DIGEST_FRESH_PATHS = new Set([
 ]);
 const LIVE_DATA_PATHS = new Set([
   ...DIGEST_FRESH_PATHS,
+  new URL('chart-surface/data-contract.js', APP_ROOT).pathname,
   new URL('chart-surface/analysis-packets-v2.js', APP_ROOT).pathname,
   new URL('chart-surface/analysis-live-fallback.js', APP_ROOT).pathname,
   new URL('chart-surface/analysis-details.js', APP_ROOT).pathname,

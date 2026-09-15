@@ -85,6 +85,7 @@ for (const marker of ['self.addEventListener(\'install\'', 'self.addEventListene
 for (const marker of ['DIGEST_FRESH_PATHS', 'freshDigestResponse', "cache:'no-store'"]) {
   if (!worker.includes(marker)) failures.push(`service-worker.js: digest network-first cache policy is missing ${marker}`);
 }
+if (!worker.includes("new URL('chart-surface/data-contract.js', APP_ROOT).pathname")) failures.push('service-worker.js: Universal Refresh data contract is not network-first');
 if (/script\.google\.com|AKfy/i.test(worker)) failures.push('service-worker.js: must not cache or rewrite the live analysis proxy');
 if (/request\.method\s*!==\s*['"]GET['"]/.test(worker) === false) failures.push('service-worker.js: non-GET bypass is missing');
 if (!(await read('chart-surface/index.html')).includes('../assets/lightweight-charts-5.2.0.min.js')) failures.push('chart surface must use the offline-capable local chart library');

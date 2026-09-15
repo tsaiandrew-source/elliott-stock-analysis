@@ -268,14 +268,10 @@
         }
       };
       const datasets = activeContract.datasets?.benchmark || {};
-      const partialChartSources = {
-        '2330': '../chart-surface/partial-market-data/2330.json', '2646': '../chart-surface/partial-market-data/2646.json', 'NBIS': '../chart-surface/partial-market-data/NBIS.json', 'IREN': '../chart-surface/partial-market-data/IREN.json',
-        'ACHR': '../chart-surface/partial-market-data/ACHR.json', 'AMKR': '../chart-surface/partial-market-data/AMKR.json',
-        'CSCO': '../chart-surface/partial-market-data/CSCO.json', 'LITE': '../chart-surface/partial-market-data/LITE.json',
-        'MRVL': '../chart-surface/partial-market-data/MRVL.json', 'NOK': '../chart-surface/partial-market-data/NOK.json',
-        'NVDA': '../chart-surface/partial-market-data/NVDA.json', 'ONDS': '../chart-surface/partial-market-data/ONDS.json',
-        'PLTR': '../chart-surface/partial-market-data/PLTR.json', 'SNDK': '../chart-surface/partial-market-data/SNDK.json', 'AVGO': '../chart-surface/partial-market-data/AVGO.json'
-      };
+      const partialChartSources = Object.fromEntries((activeContract.coverage || []).map((item) => {
+        const ticker = String(item.ticker || '').trim().toUpperCase();
+        return [ticker, `../chart-surface/partial-market-data/${encodeURIComponent(ticker)}.json`];
+      }).filter(([ticker]) => ticker));
       const partialDatasets = {};
       await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
         try {
@@ -348,7 +344,7 @@
       };
       const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
       const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
-      const partialChartTickers = new Set(Object.keys(partialChartSources));
+      const partialChartTickers = new Set(Object.keys(partialDatasets));
       const hasChartData = (ticker) => Boolean(datasets[ticker]?.bars?.length || partialChartTickers.has(String(ticker || '').trim().toUpperCase()));
       const canOpenChart = (ticker, run) => Boolean(run) && run.chartRenderable !== false && (run.chartRenderable === true || hasChartData(ticker));
       const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
