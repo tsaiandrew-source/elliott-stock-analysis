@@ -1,8 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import vm from 'node:vm';
+import { createHash } from 'node:crypto';
 import { UNIVERSE, validatePacket } from './validate-universal-refresh-gex.mjs';
 import { parsePorcelainPaths } from './sync-universal-refresh.mjs';
+import { loadCoverageRoster } from './coverage-roster.mjs';
+import { verifyMarketDataset } from './sync-market-data.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -40,6 +43,7 @@ const requiredFiles = [
   'scripts/run-universal-refresh-gex-cycle.mjs',
   'scripts/ingest-private-analysis.mjs',
   'scripts/sync-universal-refresh.mjs',
+  'scripts/sync-market-data.mjs',
   'scripts/run-autonomous-universal-refresh.command',
   'automation/macos/com.tsaiandrew.elliott-universal-refresh.plist',
   'chart-surface/gex-market-overview.js',
@@ -273,11 +277,29 @@ for (const file of ['chart-surface/data-contract.js', 'chart-surface/benchmark-d
 const partialDir = path.join(root, 'chart-surface/partial-market-data');
 if (await exists('chart-surface/partial-market-data')) {
   const files = (await fs.readdir(partialDir)).filter((file) => file.endsWith('.json'));
-  if (!files.length) failures.push('partial-market-data: no JSON datasets found');
-  for (const file of files) {
+  const { order } = await loadCoverageRoster(root);
+  const expectedFiles = [...order.map((ticker) => `${ticker}.json`), 'MANIFEST.json'];
+  const missingFiles = expectedFiles.filter((file) => !files.includes(file));
+  const extraFiles = files.filter((file) => !expectedFiles.includes(file));
+  if (missingFiles.length || extraFiles.length) failures.push(`partial-market-data roster drift; missing=${missingFiles.join(',') || 'none'} extra=${extraFiles.join(',') || 'none'}`);
+  let manifest = null;
+  try {
+    manifest = JSON.parse(await fs.readFile(path.join(partialDir, 'MANIFEST.json'), 'utf8'));
+    if (manifest.schemaVersion !== 'elliott-completed-session-market-data-v1') failures.push('partial-market-data manifest schema is invalid');
+    if ((manifest.tickerOrder || []).join(',') !== order.join(',')) failures.push('partial-market-data manifest ticker order does not match canonical roster');
+    if (new Set(Object.keys(manifest.tickers || {})).size !== order.length || order.some((ticker) => !manifest.tickers?.[ticker])) failures.push('partial-market-data manifest ticker set does not match canonical roster');
+  } catch (error) {
+    failures.push(`invalid partial-market-data manifest: ${error.message}`);
+  }
+  for (const ticker of order) {
+    const file = `${ticker}.json`;
     try {
-      const data = JSON.parse(await fs.readFile(path.join(partialDir, file), 'utf8'));
-      if (!data || typeof data !== 'object') failures.push(`partial dataset is not an object: ${file}`);
+      const contents = await fs.readFile(path.join(partialDir, file), 'utf8');
+      const data = JSON.parse(contents);
+      verifyMarketDataset(data, { ticker });
+      const expected = manifest?.tickers?.[ticker];
+      if (!expected || expected.dataThrough !== data.dataThrough) failures.push(`${ticker}: market manifest date mismatch`);
+      if (expected?.sha256 !== createHash('sha256').update(contents).digest('hex')) failures.push(`${ticker}: market manifest hash mismatch`);
     } catch (error) {
       failures.push(`invalid partial dataset ${file}: ${error.message}`);
     }
@@ -288,5 +310,5 @@ if (failures.length) {
   console.error(JSON.stringify({ status: 'FAIL', failures }, null, 2));
   process.exitCode = 1;
 } else {
-  console.log(JSON.stringify({ status: 'PASS', checkedFiles: requiredFiles.length, partialDatasets: (await fs.readdir(partialDir)).filter((file) => file.endsWith('.json')).length }, null, 2));
+  console.log(JSON.stringify({ status: 'PASS', checkedFiles: requiredFiles.length, partialDatasets: (await fs.readdir(partialDir)).filter((file) => file.endsWith('.json') && file !== 'MANIFEST.json').length }, null, 2));
 }

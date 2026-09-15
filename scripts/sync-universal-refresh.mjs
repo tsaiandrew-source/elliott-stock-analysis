@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadCoverageRoster } from './coverage-roster.mjs';
+import { readMarketDatasets, synchronizeMarketData } from './sync-market-data.mjs';
 
 const READ_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
 const PUBLIC_BASE = 'https://tsaiandrew-source.github.io/elliott-stock-analysis';
@@ -71,8 +72,9 @@ function sanitizeLocalValues(value, key = '') {
   return output;
 }
 
-export async function buildCandidate(live, previous, repoRoot) {
+export async function buildCandidate(live, previous, repoRoot, marketDatasets = null) {
   const { order, companies } = await loadCoverageRoster(repoRoot);
+  const completedMarketData = marketDatasets || await readMarketDatasets(repoRoot);
   const liveCoverage = Array.isArray(live.coverage) ? live.coverage : [];
   const liveActive = liveCoverage.filter((item) => item.active !== false).map((item) => String(item.ticker || item.Ticker || '').toUpperCase());
   const missing = order.filter((ticker) => !liveActive.includes(ticker));
@@ -85,6 +87,7 @@ export async function buildCandidate(live, previous, repoRoot) {
   const coverage = order.map((ticker) => {
     const prior = previousCoverage.get(ticker) || {};
     const fresh = currentCoverage.get(ticker) || {};
+    const market = completedMarketData[ticker];
     return {
       ...prior,
       ...fresh,
@@ -92,7 +95,10 @@ export async function buildCandidate(live, previous, repoRoot) {
       company: fresh.company || fresh.Company || prior.company || companies[ticker] || ticker,
       exchange: fresh.exchange || fresh.Exchange || prior.exchange || (ticker === 'OKLO' ? 'NYSE' : ''),
       active: true,
-      chartSource: `public-contract://chart-source/${ticker}`
+      latestChartDate: market.dataThrough,
+      marketSource: market.chartSource || fresh.marketSource || fresh.MarketSource || prior.marketSource || '',
+      chartSource: `partial-market-data/${ticker}.json`,
+      freshness: `${market.dataThrough} · completed-session OHLCV`
     };
   });
 
@@ -108,19 +114,21 @@ export async function buildCandidate(live, previous, repoRoot) {
   for (const ticker of order) {
     const prior = previousBenchmark[ticker] || {};
     const fresh = liveBenchmark[ticker] || {};
+    const market = completedMarketData[ticker];
     const priorGex = prior.gexViews || {};
     const freshGex = fresh.gexViews || {};
     benchmark[ticker] = {
       ...prior,
       ...fresh,
-      bars: usableArray(fresh.bars, prior.bars),
+      bars: [],
+      dataThrough: market.dataThrough,
       gexViews: {
         ...priorGex,
         ...freshGex,
         current: profileUsable(freshGex.current) ? freshGex.current : priorGex.current,
         next: profileUsable(freshGex.next) ? freshGex.next : priorGex.next
       },
-      chartSource: `public-contract://chart-source/${ticker}`
+      chartSource: `partial-market-data/${ticker}.json`
     };
   }
 
@@ -177,10 +185,14 @@ async function fileSha256(file) {
   return sha256(await fs.readFile(file));
 }
 
-async function verifyPublishedContract(repoRoot, expectedHash) {
+async function verifyPublishedContract(repoRoot, expectedHash, expectedMarketManifestHash) {
   return run(process.execPath, ['scripts/public-smoke.mjs'], {
     cwd: repoRoot,
-    env: { PUBLIC_BASE_URL: PUBLIC_BASE, EXPECTED_DATA_CONTRACT_SHA256: expectedHash }
+    env: {
+      PUBLIC_BASE_URL: PUBLIC_BASE,
+      EXPECTED_DATA_CONTRACT_SHA256: expectedHash,
+      EXPECTED_MARKET_MANIFEST_SHA256: expectedMarketManifestHash
+    }
   });
 }
 
@@ -188,7 +200,8 @@ async function synchronize(repoRoot, check) {
   const output = path.join(repoRoot, DATA_FILE);
   const previous = await readBrowserContract(output);
   const live = await fetchLiveContract();
-  const candidate = await buildCandidate(live, previous, repoRoot);
+  const marketDatasets = await readMarketDatasets(repoRoot);
+  const candidate = await buildCandidate(live, previous, repoRoot, marketDatasets);
   const unchanged = sha256(comparable(candidate)) === sha256(comparable(previous));
   const summary = {
     status: unchanged ? 'NO_CHANGE' : (check ? 'CANDIDATE_VALIDATED' : 'UPDATED'),
@@ -197,6 +210,7 @@ async function synchronize(repoRoot, check) {
     tickerCount: candidate.coverage.length,
     analysisRuns: candidate.analysisRuns.length,
     gexRows: candidate.tables?.GEXSnapshots?.length || 0,
+    completedMarketData: Object.fromEntries(Object.entries(marketDatasets).map(([ticker, dataset]) => [ticker, dataset.dataThrough])),
     oklo: candidate.coverage.find((item) => item.ticker === 'OKLO') || null
   };
   if (!check && !unchanged) {
@@ -239,11 +253,13 @@ async function release(options) {
     worktree = path.join(stateDir, 'worktrees', safe(branch));
     await fs.mkdir(path.dirname(worktree), { recursive: true });
     await run('/usr/bin/git', ['worktree', 'add', '-b', branch, worktree, 'origin/main'], { cwd: options.repoRoot });
+    const marketData = await synchronizeMarketData({ repoRoot: worktree, stateDir });
     const sync = await synchronize(worktree, false);
     const expectedDataContractSha256 = await fileSha256(path.join(worktree, DATA_FILE));
-    if (sync.status === 'NO_CHANGE') {
-      await verifyPublishedContract(worktree, expectedDataContractSha256);
-      const result = { status: 'NOOP_VERIFIED', slot: options.slot, expectedDataContractSha256, ...sync, completedAt: new Date().toISOString() };
+    const expectedMarketManifestSha256 = await fileSha256(path.join(worktree, 'chart-surface/partial-market-data/MANIFEST.json'));
+    if (sync.status === 'NO_CHANGE' && marketData.changedFiles.length === 0) {
+      await verifyPublishedContract(worktree, expectedDataContractSha256, expectedMarketManifestSha256);
+      const result = { status: 'NOOP_VERIFIED', slot: options.slot, expectedDataContractSha256, expectedMarketManifestSha256, ...sync, completedAt: new Date().toISOString() };
       await atomicWrite(path.join(stateDir, 'last-release.json'), `${JSON.stringify(result, null, 2)}\n`);
       await fs.rm(path.join(stateDir, 'pending-release.json'), { force: true });
       return result;
@@ -252,8 +268,9 @@ async function release(options) {
     await run(process.execPath, ['scripts/pwa-qa.mjs'], { cwd: worktree });
     const statusOutput = (await run('/usr/bin/git', ['status', '--porcelain=v1'], { cwd: worktree })).stdout;
     const changed = parsePorcelainPaths(statusOutput);
-    if (changed.length !== 1 || changed[0] !== DATA_FILE) throw new Error(`release scope drift: ${changed.join(', ')}`);
-    await run('/usr/bin/git', ['add', '--', DATA_FILE], { cwd: worktree });
+    const allowed = changed.every((file) => file === DATA_FILE || /^chart-surface\/partial-market-data\/[A-Z0-9.-]+\.json$/.test(file));
+    if (!allowed || !changed.length) throw new Error(`release scope drift: ${changed.join(', ')}`);
+    await run('/usr/bin/git', ['add', '--', DATA_FILE, 'chart-surface/partial-market-data'], { cwd: worktree });
     await run('/usr/bin/git', ['diff', '--cached', '--check'], { cwd: worktree });
     const githubEnv = await githubEnvironment(worktree);
     await run('/usr/bin/git', ['commit', '-m', `Publish Universal Refresh ${options.slot}`], { cwd: worktree });
@@ -266,11 +283,13 @@ async function release(options) {
       `- canonical roster: ${sync.tickerCount} tickers`,
       `- analysis runs: ${sync.analysisRuns}`,
       `- GEX rows: ${sync.gexRows}`,
+      `- completed-session OHLCV: ${marketData.tickerCount} tickers`,
       '- optional missing lanes preserve the bundled last-good value',
       '- static QA: PASS',
       '- PWA QA: PASS', '',
       'Scope', '',
-      `- ${DATA_FILE}`
+      `- ${DATA_FILE}`,
+      '- chart-surface/partial-market-data/*.json'
     ].join('\n');
     const prUrl = (await run('gh', ['pr', 'create', '--repo', GITHUB_REPOSITORY, '--base', 'main', '--head', branch, '--title', title, '--body', body], { cwd: worktree, env: githubEnv })).stdout.trim();
     let mergeable = null;
@@ -292,6 +311,7 @@ async function release(options) {
       prUrl,
       mergeCommit: merged.mergeCommit.oid,
       expectedDataContractSha256,
+      expectedMarketManifestSha256,
       mergedAt: merged.mergedAt
     }, null, 2)}\n`);
     let pages = null;
@@ -304,8 +324,8 @@ async function release(options) {
     if (!pages) throw new Error('Pages deployment was not found for the merge commit');
     if (pages.status !== 'completed') await run('gh', ['run', 'watch', String(pages.databaseId), '--repo', GITHUB_REPOSITORY, '--exit-status'], { cwd: stateDir, env: githubEnv });
     else if (pages.conclusion !== 'success') throw new Error(`Pages deployment failed: ${pages.conclusion}`);
-    await verifyPublishedContract(worktree, expectedDataContractSha256);
-    const result = { status: 'PUBLISHED_AND_VERIFIED', slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, expectedDataContractSha256, ...sync, completedAt: new Date().toISOString() };
+    await verifyPublishedContract(worktree, expectedDataContractSha256, expectedMarketManifestSha256);
+    const result = { status: 'PUBLISHED_AND_VERIFIED', slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, expectedDataContractSha256, expectedMarketManifestSha256, ...sync, completedAt: new Date().toISOString() };
     await atomicWrite(path.join(stateDir, 'last-release.json'), `${JSON.stringify(result, null, 2)}\n`);
     await fs.rm(path.join(stateDir, 'pending-release.json'), { force: true });
     return result;
