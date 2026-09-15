@@ -185,6 +185,10 @@ const canonicalProxyMarker = 'AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-
 for (const file of ['chart-surface/index.html', 'data-model/coverage.html', 'scripts/public-smoke.mjs']) {
   if (!(await read(file)).includes(canonicalProxyMarker)) failures.push(`${file}: canonical read proxy marker is missing`);
 }
+const publicSmoke = await read('scripts/public-smoke.mjs');
+for (const marker of ['attempts: 5', 'cacheBustOnRetry: true', "searchParams.set('smokeRetry'"]) {
+  if (!publicSmoke.includes(marker)) failures.push(`scripts/public-smoke.mjs: Apps Script retry hardening is missing ${marker}`);
+}
 
 if (await exists('data-model/home.html')) {
   const home = await read('data-model/home.html');
