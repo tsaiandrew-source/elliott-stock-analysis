@@ -73,8 +73,32 @@ async function postBatch(batch, token) {
   return { httpStatus: response.status, acknowledged: response.ok && result?.status !== 'error' };
 }
 
+const packetDate = (packet) => String(packet?.dataThrough || packet?.analysisDate || '');
+const rowDate = (row) => String(row?.dataThrough || row?.DataThrough || row?.analysisDate || row?.AnalysisDate || '');
+const rowType = (row) => String(row?.runType || row?.RunType || '').toLowerCase();
+const tickerOf = (value) => String(value?.ticker || value?.Ticker || '').toUpperCase();
+
+export function unresolvedVisiblePackets(batch, runs) {
+  const expected = [
+    ...batch.dailyPackets.map((packet) => ({ ...packet, lane: 'daily' })),
+    ...batch.weeklyPackets.map((packet) => ({ ...packet, lane: 'weekly' }))
+  ];
+  return expected.filter((packet) => !runs.some((row) => {
+    if (tickerOf(row) !== tickerOf(packet)) return false;
+    const observedRunId = String(row.runId || row.RunID || '');
+    if (observedRunId === packet.runId || observedRunId.startsWith(`${packet.runId}-`)) return true;
+    const isCarryForward = packet.lane === 'weekly' && /-CARRY-/i.test(String(packet.runId || ''));
+    return isCarryForward && rowType(row) === 'weekly' && rowDate(row) === packetDate(packet);
+  })).map((packet) => ({
+    ticker: packet.ticker,
+    runId: packet.runId,
+    lane: packet.lane,
+    dataThrough: packetDate(packet)
+  }));
+}
+
 async function verifyVisible(batch, attempts = 8) {
-  const expected = [...batch.dailyPackets, ...batch.weeklyPackets].map((packet) => ({ ticker: packet.ticker, runId: packet.runId }));
+  const expectedCount = batch.dailyPackets.length + batch.weeklyPackets.length;
   let last = null;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
@@ -84,15 +108,11 @@ async function verifyVisible(batch, attempts = 8) {
       const response = await fetch(url, { signal: AbortSignal.timeout(120_000), cache: 'no-store' });
       const contract = response.ok ? await response.json() : {};
       const runs = Array.isArray(contract.analysisRuns) ? contract.analysisRuns : [];
-      const missing = expected.filter(({ ticker, runId }) => !runs.some((row) => {
-        const rowTicker = String(row.ticker || row.Ticker || '').toUpperCase();
-        const rowRunId = String(row.runId || row.RunID || '');
-        return rowTicker === ticker && (rowRunId === runId || rowRunId.startsWith(`${runId}-`));
-      }));
-      last = { attempt, visible: expected.length - missing.length, expected: expected.length, missing };
+      const missing = unresolvedVisiblePackets(batch, runs);
+      last = { attempt, visible: expectedCount - missing.length, expected: expectedCount, missing };
       if (!missing.length) return last;
     } catch (error) {
-      last = { attempt, error: error.message, visible: 0, expected: expected.length };
+      last = { attempt, error: error.message, visible: 0, expected: expectedCount };
     }
     if (attempt < attempts) await sleep(10_000);
   }
