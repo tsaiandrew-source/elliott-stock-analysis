@@ -11,8 +11,11 @@ The local LaunchAgent runs on U.S. trading weekdays at 15:50 PT (primary) and
 the catch-up firms up delayed validation lanes. Detailed missing-field reasons
 remain backend-only.
 
-1. A complete `iris-analysis-contract-v2` packet may be placed atomically in
-   `~/Library/Application Support/Elliott+/universal-refresh/inbox`.
+1. The Iris producer writes a complete `iris-analysis-contract-v2` packet
+   atomically to the canonical local handoff outbox at
+   `/Users/andrtsai/Documents/ChatGPT/P F Social/handoffs/elliott-universal-refresh/outbox`.
+   The scheduled consumer creates the directory when absent and never scans an
+   ambiguous workspace-wide location.
 2. `ingest-private-analysis.mjs` validates the packet against the canonical
    roster, reads `elliott-ingest-token` / `INGEST_TOKEN` from macOS Keychain,
    appends it to the private Apps Script bridge, and waits until every run ID is
