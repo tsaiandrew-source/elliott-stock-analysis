@@ -37,10 +37,12 @@ assert(config.identifier === 'com.tsaiandrew.elliottplus', 'Desktop bundle ident
 assert(config.app?.windows?.[0]?.visible === true, 'The main window must be visible on first launch.');
 assert(typeof csp === 'string' && csp.includes("object-src 'none'"), 'Desktop content security policy is missing.');
 assert(connectSrc.includes("'self'"), 'Desktop connect-src must allow staged same-origin JSON data.');
+assert(connectSrc.includes('https://tsaiandrew-source.github.io'), 'Desktop connect-src must allow the canonical published-data origin.');
 assert(packageJson.scripts?.['desktop:build'] === 'tauri build', 'Desktop build command is missing.');
 assert(files.includes('index.html'), 'Desktop entry page is missing.');
 assert(files.includes('desktop/tauri-entry.js'), 'Desktop restore bridge is missing.');
 assert(files.includes('desktop/tauri-persistence.js'), 'Desktop persistence bridge is missing.');
+assert(files.includes('desktop/tauri-fresh-data.js'), 'Desktop published-data bridge is missing.');
 assert(files.includes('data-model/digests.json'), 'Digest data was not staged.');
 assert(files.includes('chart-surface/index.html'), 'Chart surface was not staged.');
 assert(files.includes('shared-menu.css') && files.includes('shared-menu.js'), 'Shared navigation assets were not staged.');
@@ -55,9 +57,12 @@ for (const page of ['data-model/home.html', 'data-model/coverage.html', 'data-mo
 for (const page of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
   const html = await text(page, distRoot);
   assert(html.includes('shared-menu.css') && html.includes('shared-menu.js') && html.includes('<elliott-shared-menu'), `${page} is missing shared navigation.`);
+  assert(html.includes('tauri-fresh-data.js'), `${page} is missing the published-data bridge.`);
+  assert(html.includes('__ELLIOTT_DESKTOP_DATA_READY__'), `${page} does not wait for validated published data.`);
+  assert(html.includes('__ELLIOTT_DESKTOP_APPLY_DATA__'), `${page} does not reapply accepted data after bundled scripts load.`);
 }
 
-const marketDataFiles = files.filter((file) => /^chart-surface\/partial-market-data\/[^/]+\.json$/.test(file));
+const marketDataFiles = files.filter((file) => /^chart-surface\/partial-market-data\/(?!MANIFEST\.json$)[^/]+\.json$/.test(file));
 assert(marketDataFiles.length >= 15, 'Desktop staging omitted one or more tracked market-data payloads.');
 for (const file of marketDataFiles) {
   const payload = JSON.parse(await text(file, distRoot));
@@ -69,5 +74,9 @@ for (const file of marketDataFiles) {
 const entry = await text('index.html', distRoot);
 assert(entry.includes('tauri-entry.js'), 'Desktop entry does not restore state before navigation.');
 assert((await stat(path.join(distRoot, 'desktop/tauri-entry.js'))).size > 1000, 'Desktop restore bridge is unexpectedly small.');
+const freshDataBridge = await text('desktop/tauri-fresh-data.js', distRoot);
+assert(freshDataBridge.includes('tsaiandrew-source.github.io/elliott-stock-analysis'), 'Desktop bridge does not use the canonical published-data origin.');
+assert(freshDataBridge.includes('partial-market-data/MANIFEST.json'), 'Desktop bridge does not validate the market-data manifest.');
+assert(freshDataBridge.includes('elliott-plus-data.json'), 'Desktop bridge does not keep an offline accepted-data cache.');
 
 console.log(`Tauri desktop QA passed (${files.length} embedded files).`);

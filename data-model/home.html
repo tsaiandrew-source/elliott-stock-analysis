@@ -127,7 +127,9 @@
   <script src="digest-model.js?v=20260910-2"></script>
   <script src="digest-data.js?v=20260910-2"></script>
   <script>
-    (() => {
+    (async () => {
+      await (window.__ELLIOTT_DESKTOP_DATA_READY__ || Promise.resolve());
+      window.__ELLIOTT_DESKTOP_APPLY_DATA__?.();
       const model = window.ELLIOTT_DIGEST_MODEL;
       const dataset = model.normalizeDataset(window.ELLIOTT_CROSS_MARKET_DIGESTS);
       const listView = document.getElementById('list-view');

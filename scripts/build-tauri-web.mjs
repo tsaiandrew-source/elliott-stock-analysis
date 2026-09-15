@@ -17,11 +17,11 @@ const copiedFiles = [
 ];
 
 const appPages = [
-  ['data-model/home.html', '../desktop/tauri-persistence.js'],
-  ['data-model/coverage.html', '../desktop/tauri-persistence.js'],
-  ['data-model/app.html', '../desktop/tauri-persistence.js'],
-  ['chart-surface/index.html', '../desktop/tauri-persistence.js'],
-  ['offline.html', './desktop/tauri-persistence.js']
+  ['data-model/home.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
+  ['data-model/coverage.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
+  ['data-model/app.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
+  ['chart-surface/index.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
+  ['offline.html', './desktop/tauri-persistence.js', null]
 ];
 
 const pwaRegistration = /\s*<script\b[^>]*\bsrc=["'][^"']*pwa-register(?:-v\d+)?\.js["'][^>]*><\/script>/gi;
@@ -43,7 +43,8 @@ async function bundleDesktopBridge() {
   await build({
     entryPoints: {
       'tauri-entry': path.join(projectRoot, 'desktop/tauri-entry.js'),
-      'tauri-persistence': path.join(projectRoot, 'desktop/tauri-persistence.js')
+      'tauri-persistence': path.join(projectRoot, 'desktop/tauri-persistence.js'),
+      'tauri-fresh-data': path.join(projectRoot, 'desktop/tauri-fresh-data.js')
     },
     bundle: true,
     entryNames: '[name]',
@@ -55,16 +56,17 @@ async function bundleDesktopBridge() {
   });
 }
 
-async function preparePage(relativePath, scriptPath) {
+async function preparePage(relativePath, scriptPath, freshDataPath) {
   const outputPath = path.join(distRoot, relativePath);
   const source = await readFile(outputPath, 'utf8');
-  const script = `  <script src="${scriptPath}" defer></script>\n`;
+  const freshData = freshDataPath ? `  <script src="${freshDataPath}"></script>\n` : '';
+  const script = `${freshData}  <script src="${scriptPath}" defer></script>\n`;
   const staged = source.replace(pwaRegistration, '').replace('</head>', `${script}</head>`);
   await writeFile(outputPath, staged);
 }
 
 await copyRuntime();
 await bundleDesktopBridge();
-await Promise.all(appPages.map(([page, script]) => preparePage(page, script)));
+await Promise.all(appPages.map(([page, script, freshData]) => preparePage(page, script, freshData)));
 
 console.log(`Staged Elliott+ desktop web assets in ${path.relative(projectRoot, distRoot)}/`);

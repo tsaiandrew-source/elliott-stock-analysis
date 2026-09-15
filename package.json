@@ -1,13 +1,13 @@
 {
   "name": "elliott-stock-analysis",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
     "web:stage": "node scripts/build-tauri-web.mjs",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",
-    "desktop:qa": "pnpm web:stage && node scripts/tauri-qa.mjs",
+    "desktop:qa": "pnpm web:stage && node scripts/tauri-qa.mjs && node scripts/tauri-fresh-data-qa.mjs",
     "tauri": "tauri"
   },
   "dependencies": {

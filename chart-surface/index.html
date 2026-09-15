@@ -576,6 +576,8 @@
   <script>document.write('<script src="data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
     (async () => {
+      await (window.__ELLIOTT_DESKTOP_DATA_READY__ || Promise.resolve());
+      window.__ELLIOTT_DESKTOP_APPLY_DATA__?.();
       const L = window.LightweightCharts;
       const bundledContract = window.PROTOTYPE_DATA_CONTRACT || {}; const browserFallback = window.PROTOTYPE_LIVE_FALLBACK || {};
       const liveProxyUrl = 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
@@ -634,8 +636,9 @@
         const ticker = String(item.ticker || '').trim().toUpperCase();
         return [ticker, `partial-market-data/${encodeURIComponent(ticker)}.json`];
       }).filter(([ticker]) => ticker));
-      const partialDatasets = {};
+      const partialDatasets = { ...(window.__ELLIOTT_DESKTOP_MARKET_DATA__ || {}) };
       await Promise.all(Object.entries(partialChartSources).map(async ([ticker, source]) => {
+        if (partialDatasets[ticker]) return;
         try {
           const data = await fetchJsonWithTimeout(source, 1200);
           if (data) partialDatasets[ticker] = { ...data, _partialMarketData: true };
