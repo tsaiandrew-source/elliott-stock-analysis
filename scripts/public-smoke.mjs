@@ -35,12 +35,13 @@ const routes = [
 const failures = [];
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-async function fetchWithRetry(url, { attempts = 2, timeoutMs = 20_000, headers = {} } = {}) {
+async function fetchWithRetry(url, { attempts = 2, timeoutMs = 20_000, headers = {}, retryStatuses = [] } = {}) {
   let lastError = null;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const response = await fetch(url, { headers, cache: 'no-store', signal: AbortSignal.timeout(timeoutMs) });
-      if (response.ok || attempt === attempts || response.status < 500) return response;
+      const retryableStatus = response.status >= 500 || retryStatuses.includes(response.status);
+      if (response.ok || attempt === attempts || !retryableStatus) return response;
       lastError = new Error(`HTTP ${response.status}`);
     } catch (error) {
       lastError = error;
@@ -130,7 +131,11 @@ try {
   const response = await fetchWithRetry(proxyUrl, {
     attempts: 3,
     timeoutMs: 120_000,
-    headers: { 'User-Agent': 'elliott-stock-analysis-release-smoke/1.0' }
+    headers: { 'User-Agent': 'elliott-stock-analysis-release-smoke/1.0' },
+    // Apps Script deployments can briefly answer 404 while their redirect
+    // target is warming or being replaced. Retry only the transient statuses;
+    // the final response still fails the release gate if it is not healthy.
+    retryStatuses: [404, 408, 425, 429]
   });
   if (!response.ok) {
     failures.push(`proxy ${response.status}`);
