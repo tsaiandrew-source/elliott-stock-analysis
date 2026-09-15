@@ -139,7 +139,9 @@
   <script src="../chart-surface/eod-digest-20260908.js?v=20260909-v1"></script>
   <script>document.write('<script src="../chart-surface/data-contract.js?open=' + Date.now() + '"><\/script>');</script>
   <script>
-    (() => {
+    (async () => {
+      await (window.__ELLIOTT_DESKTOP_DATA_READY__ || Promise.resolve());
+      window.__ELLIOTT_DESKTOP_APPLY_DATA__?.();
       const contract = window.PROTOTYPE_DATA_CONTRACT || {};
       const datasets = contract.datasets?.benchmark || {};
       const irisV2 = window.PROTOTYPE_IRIS_V2 || {};

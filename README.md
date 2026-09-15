@@ -71,12 +71,23 @@ gated producer releases land. The staging QA verifies that the shared navigation
 digest bundle, and all tracked same-origin OHLCV payloads are embedded, and it
 fails when a payload's declared `dataThrough` date is later than its final bar.
 
+Before rendering a primary surface, the desktop app also checks the canonical
+GitHub Pages publication. It accepts market data only when the manifest,
+per-ticker SHA-256 hashes, completed-session dates, closing prices, and analysis
+contract dates agree. It checks again every five minutes and whenever the app
+regains focus. A newer validated publication is applied with a reload; an
+unavailable, incomplete, stale, or invalid publication cannot replace newer
+accepted data.
+
 Desktop-only persistence remembers the last valid Home, Coverage, or Chart
 route, coverage overrides, and native window geometry between launches. Live
-contract/session caches are deliberately excluded so an old market snapshot is
-not promoted to durable state. The source PWA is unchanged; service-worker
-registration is removed only from the staged Tauri copy. Public source links
-open in the system browser, keeping the embedded application route intact.
+session caches are deliberately excluded so an unvalidated market snapshot is
+not promoted to durable state. The validated analysis contract, ticker OHLCV
+payloads, and digest dataset are kept in a separate Tauri Store cache for offline
+launches, with the bundled snapshot as the final fallback. The source PWA is
+unchanged; service-worker registration is removed only from the staged Tauri
+copy. Public source links open in the system browser, keeping the embedded
+application route intact.
 
 Requirements: Node.js 24+, pnpm 11+, Rust 1.77.2+, and the platform prerequisites
 listed in the Tauri v2 documentation.

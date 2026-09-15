@@ -1,6 +1,6 @@
 [package]
 name = "elliott-plus"
-version = "0.1.0"
+version = "0.1.1"
 description = "Durable desktop shell for Elliott+ stock analysis"
 authors = ["Andrew Tsai"]
 edition = "2021"

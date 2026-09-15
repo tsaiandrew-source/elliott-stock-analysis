@@ -14,6 +14,7 @@ on:
       - 'data-model/app.html'
       - 'scripts/build-tauri-web.mjs'
       - 'scripts/tauri-qa.mjs'
+      - 'scripts/tauri-fresh-data-qa.mjs'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
