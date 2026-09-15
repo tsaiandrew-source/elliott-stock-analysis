@@ -1,7 +1,224 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-15T16:21:18.921Z",
+  "generatedAt": "2026-09-15T19:46:19.444Z",
   "records": [
+    {
+      "id": "daily-2026-09-15-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-15",
+      "publishedAt": "2026-09-15T11:33:00-07:00",
+      "updatedAt": "2026-09-15T11:33:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-15T11:30:30-07:00",
+      "retrievedAt": "2026-09-15T11:32:20-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "午間訊號｜2026-09-15",
+      "summary": "晨間主線未變，但壓力來源已從『預期』變成三個市場確認：Brent升至約109.35美元、10年期殖利率守在約5.01%、美股三大指數同步下跌。新增的共識落差是Empire State製造業指數降至7.6，低於約15的預期，但價格與供應壓力反而惡化；這不是乾淨的成長降溫，而是偏停滯性通膨。最重要的背離是AI晶片止跌，而消費與旅遊相關個股轉弱，說明午間賣壓已由週末AI敘事轉向能源、利率與可支配所得。",
+      "sections": [
+        {
+          "heading": "1. 新增：製造業降溫，但價格壓力升高",
+          "paragraphs": [
+            "事實：紐約Fed的9月Empire State一般商業狀況指數由20.6降至7.6，低於約14至15的市場共識。新訂單指數為2.0、出貨指數為-3.2；交貨時間拉長、供應可得性惡化。價格支付指數升至63.1、收取價格指數升至28.1。",
+            "判斷：這組數據同時否定『需求仍很強』與『成長降溫會自然壓低通膨』。對Fed而言，成長放慢不足以抵銷能源與供應端價格壓力；對市場而言，長債、低毛利製造與利率敏感產業仍缺乏緩衝。信心：高。",
+            "反證：後續全國性數據顯示價格指數明顯回落，且供應與交貨時間迅速改善。"
+          ],
+          "links": [
+            {
+              "label": "紐約Fed官方調查",
+              "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+            }
+          ]
+        },
+        {
+          "heading": "2. 惡化：油價由晨間約107美元升至109美元以上",
+          "paragraphs": [
+            "事實：截至美東時間14:03，Brent上漲3.5%至約109.35美元，接近昨日盤中高位；東西向管線仍停運，霍爾木茲與替代出口路徑同時帶有風險。",
+            "判斷：晨間『供應冗餘下降』劇本被價格確認。能源股相對占優，但航空、運輸、餐飲、零售與低毛利製造承受成本與消費力雙重壓力。只要Brent維持108美元以上，Fed明日很難把通膨風險淡化。信心：高。",
+            "反證：Brent跌回105美元以下，且沙烏地管線或海運流量出現可驗證的恢復。"
+          ],
+          "links": [
+            {
+              "label": "AP午間市場",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            },
+            {
+              "label": "沙烏地官方管線聲明",
+              "url": "https://www.spa.gov.sa/en/N2674017"
+            }
+          ]
+        },
+        {
+          "heading": "3. 確認：10年期殖利率約5.01%，股票沒有得到債券緩衝",
+          "paragraphs": [
+            "事實：10年期美債殖利率由昨日約4.97%升至約5.01%，隔夜一度觸及5.04%。今日20年期公債標售已完成；官方結果頁可查，但截稿時無法從可讀頁面可靠核對完整分配，因此不先下標售強弱定論。",
+            "判斷：重要的是標售後10年期仍守在5%附近，市場沒有給予明顯的期限溢價降溫。這會壓縮科技估值、房屋可負擔性與小型企業融資，並讓美元保持支撐。信心：高。",
+            "反證：10年期收盤前跌破4.95%，且信用利差與美元同步回落。"
+          ],
+          "links": [
+            {
+              "label": "AP美債與股市",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            },
+            {
+              "label": "美國財政部今日標售結果",
+              "url": "https://treasuryauctions.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/"
+            }
+          ]
+        },
+        {
+          "heading": "4. 市場重新分配：AI晶片止跌，消費股接棒走弱",
+          "paragraphs": [
+            "事實：S&P 500跌0.4%、道瓊跌0.8%、Nasdaq跌0.8%。但Nvidia升0.5%、AMD升2.2%，沒有延續昨日AI硬體的全面拋售。相反地，Chipotle跌6.3%、United Airlines跌2.2%、Dollar Tree跌4.2%。",
+            "判斷：午間賣壓不再主要由Amodei文章驅動，而是轉向油價、折現率與家庭可支配所得。這是比指數跌幅更重要的變化：晶片止跌並不能抵銷更廣泛的成本衝擊。信心：高。",
+            "反證：消費與運輸股在油價仍高時快速收復跌幅，且市場上漲家數重新占優。"
+          ],
+          "links": [
+            {
+              "label": "AP午間產業表現",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            }
+          ]
+        },
+        {
+          "heading": "5. 公司確認：可選消費疲弱不是只有宏觀想像",
+          "paragraphs": [
+            "事實：Dave & Buster's第二季營收年減2.4%、同店銷售年減2.9%，並由去年同期獲利轉為淨損1,250萬美元；股價午間跌19.7%。",
+            "判斷：這份第一手財報讓『高成本＋消費選擇性提高』有了公司層面的確認。單一公司不能代表整個消費，但它與餐飲、折扣零售和航空同步偏弱，使下行風險更可信。信心：中高。",
+            "反證：後續大型零售、旅遊與餐飲公司仍能維持客流、定價與利潤率指引。"
+          ],
+          "links": [
+            {
+              "label": "Dave & Buster's官方財報",
+              "url": "https://ir.daveandbusters.com/node/18151"
+            },
+            {
+              "label": "AP股價反應",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            }
+          ]
+        },
+        {
+          "heading": "6. 第一手敘事掃描：沒有新的AI政策承諾，市場焦點已轉移",
+          "paragraphs": [
+            "事實：自晨間截稿後，沒有發現足以改變AI資本支出或監管機率的新CEO／公司官方承諾。新增可定價的第一手資料是紐約Fed調查與Dave & Buster's財報。",
+            "判斷：因此不能把今日所有跌幅繼續歸因於週末AI文章。Nvidia與AMD反彈本身就是反證；真正擴散中的訊號是能源通膨與消費承壓。信心：中高。",
+            "反證：主要AI實驗室、雲端平台或政府在收盤前提出具體投資限制、監管條款或執行時間表。"
+          ],
+          "links": [
+            {
+              "label": "紐約Fed官方調查",
+              "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+            },
+            {
+              "label": "Dave & Buster's官方財報",
+              "url": "https://ir.daveandbusters.com/node/18151"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "相較晨間",
+              "午間判讀"
+            ],
+            "rows": [
+              [
+                "美股大盤",
+                "更弱",
+                "三大指數同步下跌，但尚未失序"
+              ],
+              [
+                "AI晶片",
+                "改善",
+                "Nvidia與AMD反彈，否定全面續跌"
+              ],
+              [
+                "消費／航空",
+                "惡化",
+                "成本與可支配所得壓力獲確認"
+              ],
+              [
+                "原油",
+                "更熱",
+                "Brent約109.35美元"
+              ],
+              [
+                "長天期美債",
+                "仍弱",
+                "10年期約5.01%，沒有避險緩衝"
+              ],
+              [
+                "美元",
+                "偏強",
+                "利差與避險支撐仍在"
+              ],
+              [
+                "信用與波動率",
+                "尚待確認",
+                "未取得足夠訊號證明全面失序"
+              ],
+              [
+                "黃金／加密",
+                "無足夠新訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "收盤前看什麼",
+          "paragraphs": [
+            "第一，Brent能否站穩109美元，或回吐至107美元以下。第二，10年期是否在20年期標售後仍守住5%。第三，Nvidia與AMD的反彈能否擴大至市場寬度，而不是只有少數大型股。",
+            "第四，信用利差與波動率是否加入跌勢；若兩者仍穩，今天仍屬估值與產業再分配。第五，美股收盤後Trip.com公布業績，17:00 PT舉行電話會議；中國與跨境旅遊需求、能源成本與利潤率是重點。",
+            "更新後失效條件：Brent跌破105美元、10年期降至4.95%以下、消費與運輸股收復大半跌幅，而且市場寬度轉正。若10年期站穩5.05%以上、Brent突破110美元並伴隨信用惡化，則由估值調整升級為金融條件衝擊。"
+          ],
+          "links": [
+            {
+              "label": "Fed九月官方行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "Trip.com官方公告",
+              "url": "https://ctripcominternationalltd.gcs-web.com/news-releases/news-release-details/tripcom-group-limited-report-second-quarter-and-first-half-2026"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP午間市場",
+          "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+        },
+        {
+          "label": "紐約Fed官方調查",
+          "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+        },
+        {
+          "label": "沙烏地官方管線聲明",
+          "url": "https://www.spa.gov.sa/en/N2674017"
+        },
+        {
+          "label": "美國財政部今日標售結果",
+          "url": "https://treasuryauctions.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/"
+        },
+        {
+          "label": "Dave & Buster's官方財報",
+          "url": "https://ir.daveandbusters.com/node/18151"
+        },
+        {
+          "label": "Fed九月官方行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Trip.com官方公告",
+          "url": "https://ctripcominternationalltd.gcs-web.com/news-releases/news-release-details/tripcom-group-limited-report-second-quarter-and-first-half-2026"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-15-morning",
       "cadence": "daily",
