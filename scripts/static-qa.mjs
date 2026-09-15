@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import vm from 'node:vm';
-import { validatePacket } from './validate-universal-refresh-gex.mjs';
+import { UNIVERSE, validatePacket } from './validate-universal-refresh-gex.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -31,6 +31,10 @@ const requiredFiles = [
   'scripts/validate-universal-refresh-gex.mjs',
   'scripts/ingest-universal-refresh-gex.mjs',
   'scripts/run-universal-refresh-gex-cycle.mjs',
+  'scripts/ingest-private-analysis.mjs',
+  'scripts/sync-universal-refresh.mjs',
+  'scripts/run-autonomous-universal-refresh.command',
+  'automation/macos/com.tsaiandrew.elliott-universal-refresh.plist',
   'chart-surface/gex-market-overview.js',
   'data-model/home.html',
   'data-model/coverage.html',
@@ -153,11 +157,16 @@ if (await exists('chart-surface/gex-market-overview.js')) {
 
 if (await exists('data-model/coverage.html')) {
   const home = await read('data-model/coverage.html');
-  const requiredPartialTickers = ['2330', '2646', 'ACHR', 'AMKR', 'AVGO', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK'];
+  const requiredPartialTickers = UNIVERSE;
   if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/coverage.html: partial-safe chart navigation gate is missing');
   for (const ticker of requiredPartialTickers) {
     if (!home.includes(`'${ticker}'`)) failures.push(`data-model/coverage.html: partial chart ticker missing from navigation fallback: ${ticker}`);
   }
+}
+
+const canonicalProxyMarker = 'AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg';
+for (const file of ['chart-surface/index.html', 'data-model/coverage.html', 'scripts/public-smoke.mjs']) {
+  if (!(await read(file)).includes(canonicalProxyMarker)) failures.push(`${file}: canonical read proxy marker is missing`);
 }
 
 if (await exists('data-model/home.html')) {
