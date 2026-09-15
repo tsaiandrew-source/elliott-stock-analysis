@@ -25,8 +25,11 @@ remain backend-only.
    `chart-surface/data-contract.js`. Static and PWA QA must pass before the
    exact `tsaiandrew-source` credential wrapper creates and merges a PR; the
    runner never depends on the globally active `gh` account.
-5. The runner waits for GitHub Pages and runs the public smoke matrix across
-   the canonical roster. Only then does it record `PUBLISHED_AND_VERIFIED`.
+5. The runner records a pending release, waits for GitHub Pages, verifies the
+   exact SHA-256 of the published data contract, and runs the public smoke
+   matrix across the canonical roster. Proxy checks use bounded retries. A
+   later replay re-verifies an unchanged pending release; only a complete pass
+   records `PUBLISHED_AND_VERIFIED` or `NOOP_VERIFIED`.
 
 The run state, processed packets, locks, logs and release receipt are durable
 under `~/Library/Application Support/Elliott+/universal-refresh`; none are

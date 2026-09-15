@@ -173,6 +173,17 @@ async function atomicWrite(file, contents) {
   await fs.rename(temporary, file);
 }
 
+async function fileSha256(file) {
+  return sha256(await fs.readFile(file));
+}
+
+async function verifyPublishedContract(repoRoot, expectedHash) {
+  return run(process.execPath, ['scripts/public-smoke.mjs'], {
+    cwd: repoRoot,
+    env: { PUBLIC_BASE_URL: PUBLIC_BASE, EXPECTED_DATA_CONTRACT_SHA256: expectedHash }
+  });
+}
+
 async function synchronize(repoRoot, check) {
   const output = path.join(repoRoot, DATA_FILE);
   const previous = await readBrowserContract(output);
@@ -229,7 +240,14 @@ async function release(options) {
     await fs.mkdir(path.dirname(worktree), { recursive: true });
     await run('/usr/bin/git', ['worktree', 'add', '-b', branch, worktree, 'origin/main'], { cwd: options.repoRoot });
     const sync = await synchronize(worktree, false);
-    if (sync.status === 'NO_CHANGE') return { status: 'NOOP', slot: options.slot, ...sync };
+    const expectedDataContractSha256 = await fileSha256(path.join(worktree, DATA_FILE));
+    if (sync.status === 'NO_CHANGE') {
+      await verifyPublishedContract(worktree, expectedDataContractSha256);
+      const result = { status: 'NOOP_VERIFIED', slot: options.slot, expectedDataContractSha256, ...sync, completedAt: new Date().toISOString() };
+      await atomicWrite(path.join(stateDir, 'last-release.json'), `${JSON.stringify(result, null, 2)}\n`);
+      await fs.rm(path.join(stateDir, 'pending-release.json'), { force: true });
+      return result;
+    }
     await run(process.execPath, ['scripts/static-qa.mjs'], { cwd: worktree });
     await run(process.execPath, ['scripts/pwa-qa.mjs'], { cwd: worktree });
     const statusOutput = (await run('/usr/bin/git', ['status', '--porcelain=v1'], { cwd: worktree })).stdout;
@@ -268,6 +286,14 @@ async function release(options) {
     catch (_) { /* The API may merge successfully before a local cleanup error; verify state below. */ }
     const merged = JSON.parse((await run('gh', ['pr', 'view', prUrl, '--repo', GITHUB_REPOSITORY, '--json', 'state,mergedAt,mergeCommit'], { cwd: stateDir, env: githubEnv })).stdout);
     if (merged.state !== 'MERGED' || !merged.mergeCommit?.oid) throw new Error('PR did not reach MERGED state');
+    await atomicWrite(path.join(stateDir, 'pending-release.json'), `${JSON.stringify({
+      status: 'PENDING_PUBLIC_VERIFICATION',
+      slot: options.slot,
+      prUrl,
+      mergeCommit: merged.mergeCommit.oid,
+      expectedDataContractSha256,
+      mergedAt: merged.mergedAt
+    }, null, 2)}\n`);
     let pages = null;
     for (let attempt = 0; attempt < 30; attempt += 1) {
       const list = JSON.parse((await run('gh', ['run', 'list', '--repo', GITHUB_REPOSITORY, '--commit', merged.mergeCommit.oid, '--workflow', 'pages-build-deployment', '--limit', '5', '--json', 'databaseId,status,conclusion,url,headSha'], { cwd: stateDir, env: githubEnv })).stdout || '[]');
@@ -278,9 +304,10 @@ async function release(options) {
     if (!pages) throw new Error('Pages deployment was not found for the merge commit');
     if (pages.status !== 'completed') await run('gh', ['run', 'watch', String(pages.databaseId), '--repo', GITHUB_REPOSITORY, '--exit-status'], { cwd: stateDir, env: githubEnv });
     else if (pages.conclusion !== 'success') throw new Error(`Pages deployment failed: ${pages.conclusion}`);
-    await run(process.execPath, ['scripts/public-smoke.mjs'], { cwd: worktree, env: { PUBLIC_BASE_URL: PUBLIC_BASE } });
-    const result = { status: 'PUBLISHED_AND_VERIFIED', slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, ...sync, completedAt: new Date().toISOString() };
+    await verifyPublishedContract(worktree, expectedDataContractSha256);
+    const result = { status: 'PUBLISHED_AND_VERIFIED', slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, expectedDataContractSha256, ...sync, completedAt: new Date().toISOString() };
     await atomicWrite(path.join(stateDir, 'last-release.json'), `${JSON.stringify(result, null, 2)}\n`);
+    await fs.rm(path.join(stateDir, 'pending-release.json'), { force: true });
     return result;
   } finally {
     if (worktree) {
