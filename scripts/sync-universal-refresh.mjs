@@ -158,6 +158,14 @@ const comparable = (contract) => {
   return JSON.stringify(copy);
 };
 
+export function parsePorcelainPaths(stdout) {
+  return String(stdout || '').split(/\r?\n/).filter(Boolean).map((line) => {
+    const pathValue = line.slice(3);
+    const renameSeparator = pathValue.lastIndexOf(' -> ');
+    return renameSeparator >= 0 ? pathValue.slice(renameSeparator + 4) : pathValue;
+  });
+}
+
 async function atomicWrite(file, contents) {
   const temporary = `${file}.tmp-${process.pid}`;
   await fs.writeFile(temporary, contents, 'utf8');
@@ -223,8 +231,8 @@ async function release(options) {
     if (sync.status === 'NO_CHANGE') return { status: 'NOOP', slot: options.slot, ...sync };
     await run(process.execPath, ['scripts/static-qa.mjs'], { cwd: worktree });
     await run(process.execPath, ['scripts/pwa-qa.mjs'], { cwd: worktree });
-    const status = (await run('/usr/bin/git', ['status', '--porcelain=v1'], { cwd: worktree })).stdout.trim().split(/\r?\n/).filter(Boolean);
-    const changed = status.map((line) => line.slice(3));
+    const statusOutput = (await run('/usr/bin/git', ['status', '--porcelain=v1'], { cwd: worktree })).stdout;
+    const changed = parsePorcelainPaths(statusOutput);
     if (changed.length !== 1 || changed[0] !== DATA_FILE) throw new Error(`release scope drift: ${changed.join(', ')}`);
     await run('/usr/bin/git', ['add', '--', DATA_FILE], { cwd: worktree });
     await run('/usr/bin/git', ['diff', '--cached', '--check'], { cwd: worktree });

@@ -2,9 +2,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import vm from 'node:vm';
 import { UNIVERSE, validatePacket } from './validate-universal-refresh-gex.mjs';
+import { parsePorcelainPaths } from './sync-universal-refresh.mjs';
 
 const root = process.cwd();
 const failures = [];
+
+const porcelainFixture = ' M chart-surface/data-contract.js\n?? path with spaces.json\n';
+const porcelainPaths = parsePorcelainPaths(porcelainFixture);
+if (porcelainPaths[0] !== 'chart-surface/data-contract.js' || porcelainPaths[1] !== 'path with spaces.json') {
+  failures.push('autonomous release porcelain parser does not preserve the first path character');
+}
 const requiredFiles = [
   'index.html',
   'manifest.webmanifest',
