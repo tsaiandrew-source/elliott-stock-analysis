@@ -18,6 +18,7 @@ const requiredFiles = [
   'service-worker.js',
   'pwa-register.js',
   'pwa-register-v27.js',
+  'shared-menu.css',
   'shared-menu.js',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
@@ -102,6 +103,7 @@ for (const file of htmlFiles) {
     if (!html.includes('buildGexOptionSummaryHtml(data)') || !html.includes(".join('<br><br>')")) failures.push(`${file}: options summary does not reuse current- and next-week GEX scenarios across views`);
     if (html.includes('履約價 × 到期日熱圖') || html.includes('heatmapMarkup')) failures.push(`${file}: discarded GEX heatmap is still wired`);
     if (!html.includes('data-gex-map-analysis') || !html.includes('本週優先 · 壓力座標 × Ely 情境')) failures.push(`${file}: consolidated GEX market-map watch analysis is not wired`);
+    if (!html.includes('.gex-landmark-reading { grid-column: 1 / -1;') || html.includes('style="grid-column:2 / -1"')) failures.push(`${file}: GEX priority-watch reading does not span the full row`);
     if (!html.includes('Math.min(4, marketProfiles.length)') || !html.includes('marketProfiles.slice(0, 4)')) failures.push(`${file}: GEX market map is not capped and laid out for four expirations`);
     for (const label of ['日線投影', '日線確認', '週線投影', '週線確認']) {
       if (!html.includes(label)) failures.push(`${file}: persistent direction label is missing: ${label}`);
@@ -199,7 +201,7 @@ if (await exists('shared-menu.js')) {
   }
   for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
     const html = await read(file);
-    if (!html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted`);
+  if (!html.includes('shared-menu.css') || !html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted with its static stylesheet`);
     if (!html.includes('data-ticker-page-href=')) failures.push(`${file}: shared swipe navigation destinations are incomplete`);
   }
 }

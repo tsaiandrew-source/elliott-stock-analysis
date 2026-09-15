@@ -65,7 +65,7 @@ for (const file of htmlFiles) {
 
 for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
   const html = await read(file);
-  if (!html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu module is missing`);
+  if (!html.includes('shared-menu.css') || !html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu assets are missing`);
 }
 
 if (!(await read('data-model/home.html')).includes('<title>股市分析</title>')) failures.push('home document title must be 股市分析');

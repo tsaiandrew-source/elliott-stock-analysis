@@ -55,3 +55,39 @@ The public smoke check covers the home page, chart modes, and all 15 covered
 ticker routes. The Apps Script proxy and the production data-control plane are
 separate release gates; this repository does not contain their credentials or
 private source archives.
+
+## Durable desktop app (Tauri v2)
+
+The repository also contains a Tauri v2 desktop shell. The desktop build embeds
+a staged copy of the same static application, so it can start without GitHub
+Pages or a network connection. Live market refreshes still use the public proxy
+when available and retain the existing bundled-data fallback when it is not.
+
+Desktop releases follow the same producer boundaries as the web app. June's
+digest release runner remains the only writer of `data-model/digests.json` and
+`data-model/digest-data.js`; Universal Refresh remains the only writer of the
+published analysis contract. Build the desktop app from `main` only after those
+gated producer releases land. The staging QA verifies that the shared navigation,
+digest bundle, and all tracked same-origin OHLCV payloads are embedded, and it
+fails when a payload's declared `dataThrough` date is later than its final bar.
+
+Desktop-only persistence remembers the last valid Home, Coverage, or Chart
+route, coverage overrides, and native window geometry between launches. Live
+contract/session caches are deliberately excluded so an old market snapshot is
+not promoted to durable state. The source PWA is unchanged; service-worker
+registration is removed only from the staged Tauri copy. Public source links
+open in the system browser, keeping the embedded application route intact.
+
+Requirements: Node.js 24+, pnpm 11+, Rust 1.77.2+, and the platform prerequisites
+listed in the Tauri v2 documentation.
+
+```text
+pnpm install
+pnpm desktop:qa
+pnpm desktop:dev
+pnpm desktop:build
+```
+
+`desktop:build` creates the platform application and installer bundles under
+`src-tauri/target/release/bundle/`. Public distribution still requires the
+appropriate platform signing and, on macOS, notarization credentials.
