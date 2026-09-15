@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
+import { loadCoverageRoster } from './coverage-roster.mjs';
 
 export const SCHEMA_VERSION = 'universal-refresh-gex-v1';
-export const UNIVERSE = Object.freeze([
-  'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR',
-  'ONDS', 'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'
-]);
+export const UNIVERSE = Object.freeze((await loadCoverageRoster()).order);
+const OKLO_ONBOARDING_DATE = '2026-09-15';
+const universeFor = (analysisDate) => analysisDate < OKLO_ONBOARDING_DATE
+  ? UNIVERSE.filter((ticker) => ticker !== 'OKLO')
+  : UNIVERSE;
 
 const STATUSES = new Set(['renderable', 'aggregate_only', 'not_available', 'not_applicable']);
 const REQUIRED_EXPIRATION_FIELDS = [
@@ -82,14 +84,15 @@ export function validatePacket(packet, location = 'packet') {
   if (!isDate(packet.analysisDate)) fail(location, 'analysisDate must be YYYY-MM-DD');
   if (!isNonEmptyString(packet.createdAt)) fail(location, 'createdAt is required');
   if (packet.appendOnly !== true) fail(location, 'appendOnly must be true');
-  if (!Array.isArray(packet.records) || packet.records.length !== UNIVERSE.length) fail(location, `records must contain exactly ${UNIVERSE.length} tickers`);
+  const requiredUniverse = universeFor(packet.analysisDate);
+  if (!Array.isArray(packet.records) || packet.records.length !== requiredUniverse.length) fail(location, `records must contain exactly ${requiredUniverse.length} tickers for ${packet.analysisDate}`);
   if (packet.tickerCount !== packet.records.length) fail(location, 'tickerCount must match records length');
 
   const seen = new Set();
   packet.records.forEach((record, index) => {
     const recordLocation = `${location}.records[${index}]`;
     if (!isObject(record)) fail(recordLocation, 'must be an object');
-    if (!isNonEmptyString(record.ticker) || !UNIVERSE.includes(record.ticker)) fail(recordLocation, 'ticker is outside the locked universe');
+    if (!isNonEmptyString(record.ticker) || !requiredUniverse.includes(record.ticker)) fail(recordLocation, 'ticker is outside the roster effective for this batch');
     if (seen.has(record.ticker)) fail(recordLocation, `duplicate ticker ${record.ticker}`);
     seen.add(record.ticker);
     if (!isNonEmptyString(record.runId)) fail(recordLocation, 'runId is required');
@@ -102,8 +105,8 @@ export function validatePacket(packet, location = 'packet') {
     validateExpiration(record.nextExpiration, `${recordLocation}.nextExpiration`, record.status);
   });
 
-  const expectedOrder = [...UNIVERSE].sort((a, b) => UNIVERSE.indexOf(a) - UNIVERSE.indexOf(b));
-  assert.deepEqual([...seen].sort((a, b) => UNIVERSE.indexOf(a) - UNIVERSE.indexOf(b)), expectedOrder, `${location}: universe is incomplete`);
+  const expectedOrder = [...requiredUniverse].sort((a, b) => requiredUniverse.indexOf(a) - requiredUniverse.indexOf(b));
+  assert.deepEqual([...seen].sort((a, b) => requiredUniverse.indexOf(a) - requiredUniverse.indexOf(b)), expectedOrder, `${location}: universe is incomplete`);
   return packet;
 }
 

@@ -1,8 +1,10 @@
+import { loadCoverageRoster } from './coverage-roster.mjs';
+
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
 const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
 const expectedDigestId = process.env.EXPECTED_DIGEST_ID || '';
 const skipProxy = process.env.PUBLIC_SMOKE_SKIP_PROXY === '1';
-const tickers = ['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'NVDA', 'MRVL', 'SNDK', '2330', 'AVGO'];
+const tickers = (await loadCoverageRoster()).order;
 const routes = [
   '/',
   '/manifest.webmanifest',
@@ -50,7 +52,7 @@ for (const route of routes) {
       if (!body.includes('partialChartTickers') || !body.includes('hasChartData')) {
         failures.push('coverage navigation fallback marker missing');
       }
-      for (const ticker of ['2646', 'ACHR', 'AMKR', 'CSCO', 'LITE', 'MRVL', 'NOK', 'NVDA', 'ONDS', 'PLTR', 'SNDK', '2330']) {
+      for (const ticker of tickers) {
         if (!body.includes(`'${ticker}'`)) failures.push(`coverage partial ticker fallback missing ${ticker}`);
       }
     }
