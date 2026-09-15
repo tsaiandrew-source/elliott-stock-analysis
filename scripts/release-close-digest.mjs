@@ -250,7 +250,19 @@ async function promote(context, state, options, run, sleep) {
   }
   state = await saveState(context, state, { status:'PR_OPEN', prUrl:pr.url, prObservedState:pr.state });
   if (pr.state !== 'MERGED') {
-    await run('gh', ['pr', 'checks', pr.url, '--watch', '--interval', '10'], { cwd:state.worktree });
+    let checksObserved = false;
+    const checkDiscoveryAttempts = options.checkDiscoveryAttempts || 30;
+    for (let attempt = 0; attempt < checkDiscoveryAttempts; attempt += 1) {
+      try {
+        await run('gh', ['pr', 'checks', pr.url, '--watch', '--interval', '10'], { cwd:state.worktree });
+        checksObserved = true;
+        break;
+      } catch (error) {
+        if (!/no checks reported/i.test(error.message)) throw error;
+        if (attempt + 1 < checkDiscoveryAttempts) await sleep(options.checkDiscoveryIntervalMs || 5000);
+      }
+    }
+    if (!checksObserved) throw new Error('PR checks were not reported before timeout');
     const view = json(output(await run('gh', ['pr', 'view', pr.url, '--json', 'mergeable,mergeStateStatus,state'], { cwd:state.worktree })), 'gh pr view');
     if (view.state !== 'OPEN' || view.mergeable !== 'MERGEABLE' || view.mergeStateStatus !== 'CLEAN') throw new Error('PR is not cleanly mergeable after checks');
     await run('gh', ['pr', 'merge', pr.url, '--squash'], { cwd:state.worktree });

@@ -68,6 +68,7 @@ await fs.writeFile(path.join(worktree, 'data-model/digests.json'), baseStoreText
 await fs.writeFile(path.join(worktree, 'data-model/digest-data.js'), browserText);
 let worktreeRevParseCount = 0;
 let prViewCount = 0;
+let prChecksCount = 0;
 const calls = [];
 const fakeRun = async (command, args, options = {}) => {
   calls.push({ command, args:[...args], cwd:options.cwd, env:options.env });
@@ -80,6 +81,11 @@ const fakeRun = async (command, args, options = {}) => {
   if (command === 'git' && args[0] === 'branch') return { stdout:'' };
   if (command === 'gh' && args[0] === 'pr' && args[1] === 'list') return { stdout:'[]' };
   if (command === 'gh' && args[0] === 'pr' && args[1] === 'create') return { stdout:'https://github.com/example/repo/pull/1\n' };
+  if (command === 'gh' && args[0] === 'pr' && args[1] === 'checks') {
+    prChecksCount += 1;
+    if (prChecksCount === 1) throw new Error('no checks reported on the release branch');
+    return { stdout:'' };
+  }
   if (command === 'gh' && args[0] === 'pr' && args[1] === 'view') {
     prViewCount += 1;
     return { stdout:prViewCount === 1
@@ -95,8 +101,9 @@ const fakeRun = async (command, args, options = {}) => {
 const result = await releaseCloseDigest({
   repoRoot, stateDir, consumerResult:ackPath, packet:packetPath,
   now:'2026-09-10T16:20:00-07:00'
-}, { run:fakeRun });
+}, { run:fakeRun, sleep:async () => {} });
 assert.equal(result.status, 'PUBLISHED');
+assert.equal(prChecksCount, 2);
 assert.equal(result.publicSmokeDigestId, record.id);
 const releasedRecords = JSON.parse(await fs.readFile(path.join(worktree, 'data-model/digests.json'), 'utf8')).records;
 assert.deepEqual(new Set(releasedRecords.map((item) => item.id)), new Set([concurrentMorning.id, record.id]));
@@ -116,5 +123,5 @@ assert.equal(calls.filter((call) => call.command === 'gh' && call.args[1] === 'c
 console.log(JSON.stringify({
   status:'PASS', allowedDiff:true, deterministicMetadata:true, ackBinding:true,
   mockedGitHubBoundary:true, latestBaseReplay:true, concurrentDigestPreserved:true,
-  exactPublicSmoke:true, duplicateSafeRecovery:true
+  checksDiscoveryRetry:true, exactPublicSmoke:true, duplicateSafeRecovery:true
 }, null, 2));
