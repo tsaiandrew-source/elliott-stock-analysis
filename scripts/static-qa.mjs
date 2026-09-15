@@ -3,7 +3,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 import { UNIVERSE, validatePacket } from './validate-universal-refresh-gex.mjs';
-import { parsePorcelainPaths } from './sync-universal-refresh.mjs';
+import { buildReleaseReceipt, parsePorcelainPaths } from './sync-universal-refresh.mjs';
 import { loadCoverageRoster } from './coverage-roster.mjs';
 import { verifyMarketDataset } from './sync-market-data.mjs';
 
@@ -14,6 +14,10 @@ const porcelainFixture = ' M chart-surface/data-contract.js\n?? path with spaces
 const porcelainPaths = parsePorcelainPaths(porcelainFixture);
 if (porcelainPaths[0] !== 'chart-surface/data-contract.js' || porcelainPaths[1] !== 'path with spaces.json') {
   failures.push('autonomous release porcelain parser does not preserve the first path character');
+}
+for (const finalStatus of ['NOOP_VERIFIED', 'PUBLISHED_AND_VERIFIED']) {
+  const receipt = buildReleaseReceipt(finalStatus, { status: 'NO_CHANGE', tickerCount: 16 }, { status: 'STALE_DETAIL', slot: 'primary' });
+  if (receipt.status !== finalStatus) failures.push(`autonomous release receipt does not preserve terminal status ${finalStatus}`);
 }
 const requiredFiles = [
   'index.html',

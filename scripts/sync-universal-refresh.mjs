@@ -175,6 +175,10 @@ export function parsePorcelainPaths(stdout) {
   });
 }
 
+export function buildReleaseReceipt(status, sync, details = {}) {
+  return { ...sync, ...details, status };
+}
+
 async function atomicWrite(file, contents) {
   const temporary = `${file}.tmp-${process.pid}`;
   await fs.writeFile(temporary, contents, 'utf8');
@@ -259,7 +263,7 @@ async function release(options) {
     const expectedMarketManifestSha256 = await fileSha256(path.join(worktree, 'chart-surface/partial-market-data/MANIFEST.json'));
     if (sync.status === 'NO_CHANGE' && marketData.changedFiles.length === 0) {
       await verifyPublishedContract(worktree, expectedDataContractSha256, expectedMarketManifestSha256);
-      const result = { status: 'NOOP_VERIFIED', slot: options.slot, expectedDataContractSha256, expectedMarketManifestSha256, ...sync, completedAt: new Date().toISOString() };
+      const result = buildReleaseReceipt('NOOP_VERIFIED', sync, { slot: options.slot, expectedDataContractSha256, expectedMarketManifestSha256, completedAt: new Date().toISOString() });
       await atomicWrite(path.join(stateDir, 'last-release.json'), `${JSON.stringify(result, null, 2)}\n`);
       await fs.rm(path.join(stateDir, 'pending-release.json'), { force: true });
       return result;
@@ -325,7 +329,7 @@ async function release(options) {
     if (pages.status !== 'completed') await run('gh', ['run', 'watch', String(pages.databaseId), '--repo', GITHUB_REPOSITORY, '--exit-status'], { cwd: stateDir, env: githubEnv });
     else if (pages.conclusion !== 'success') throw new Error(`Pages deployment failed: ${pages.conclusion}`);
     await verifyPublishedContract(worktree, expectedDataContractSha256, expectedMarketManifestSha256);
-    const result = { status: 'PUBLISHED_AND_VERIFIED', slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, expectedDataContractSha256, expectedMarketManifestSha256, ...sync, completedAt: new Date().toISOString() };
+    const result = buildReleaseReceipt('PUBLISHED_AND_VERIFIED', sync, { slot: options.slot, prUrl, mergeCommit: merged.mergeCommit.oid, pagesUrl: pages.url, expectedDataContractSha256, expectedMarketManifestSha256, completedAt: new Date().toISOString() });
     await atomicWrite(path.join(stateDir, 'last-release.json'), `${JSON.stringify(result, null, 2)}\n`);
     await fs.rm(path.join(stateDir, 'pending-release.json'), { force: true });
     return result;
