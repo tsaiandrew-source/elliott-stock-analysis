@@ -25,6 +25,7 @@ jobs:
         run: node scripts/pwa-qa.mjs
       - name: Run digest automation QA
         run: |
+          node scripts/ingest-private-analysis-qa.mjs
           node scripts/close-digest-consumer-qa.mjs
           node scripts/close-digest-cycle-qa.mjs
           node scripts/close-digest-release-qa.mjs
