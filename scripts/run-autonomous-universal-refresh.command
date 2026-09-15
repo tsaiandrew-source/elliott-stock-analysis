@@ -5,7 +5,7 @@ umask 077
 ROOT="${ELLIOTT_APP_REPO:-/Users/andrtsai/src/elliott-stock-analysis}"
 NODE="${ELLIOTT_NODE:-/Users/andrtsai/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node}"
 STATE_DIR="${ELLIOTT_REFRESH_STATE_DIR:-${HOME}/Library/Application Support/Elliott+/universal-refresh}"
-INBOX="${ELLIOTT_ANALYSIS_INBOX:-${STATE_DIR}/inbox}"
+INBOX="${ELLIOTT_ANALYSIS_INBOX:-/Users/andrtsai/Documents/ChatGPT/P F Social/handoffs/elliott-universal-refresh/outbox}"
 GITHUB_WRAPPER="${ELLIOTT_GITHUB_WRAPPER:-/Users/andrtsai/Documents/ChatGPT/P F Social/handoffs/elliott-cross-market/consumer-state/credentials/with-tsaiandrew-source}"
 LOG_DIR="${STATE_DIR}/logs"
 mkdir -p "$LOG_DIR" "$INBOX"
