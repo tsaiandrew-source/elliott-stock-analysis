@@ -1,7 +1,235 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-14T18:50:47.186Z",
+  "generatedAt": "2026-09-14T23:22:23.291Z",
   "records": [
+    {
+      "id": "daily-2026-09-14-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-14",
+      "publishedAt": "2026-09-14T16:01:16-07:00",
+      "updatedAt": "2026-09-14T16:01:16-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-14T16:00:55-07:00",
+      "retrievedAt": "2026-09-14T16:01:16-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-14",
+      "summary": "今天市場真正學到兩件事。第一，Dario Amodei要求放慢前沿AI能力提升，確實足以重估晶片與資料中心供應鏈，但市場沒有把它解讀成整個科技需求崩塌；軟體與部分雲端平台反而受益。第二，Brent接近110美元、10年期殖利率短暫突破5%後雙雙回落，讓能源與利率衝擊沒有升級成全面流動性事件。大盤收低但市場寬度仍有韌性。明天的核心是製造業訊號、AI內部分化能否延續，以及週三Fed決策前殖利率是否站上5%。",
+      "sections": [
+        {
+          "heading": "1. AI風險被定價，但不是全科技崩塌",
+          "paragraphs": [
+            "事實：Amodei週六發布〈We Must Pace the Frontier〉，主張放慢前沿模型能力提升，讓安全、對齊與第三方評估追上；他也明確表示這不等於停止訓練或技術進步。Nvidia收跌3.4%，SpaceX跌2%，SoftBank在東京跌10.7%，韓國Kospi跌3.3%。",
+            "判斷：市場將文章先翻譯成晶片、伺服器與資料中心建設速度風險。這個觸媒是真實的，但價格反應比原文更接近『算力需求下降』，兩者尚未獲得企業資本支出指引的基本面確認。信心：高。",
+            "反證：主要雲端公司下修資本支出，或AI實驗室提出具體、具時間表的訓練規模限制。"
+          ],
+          "links": [
+            {
+              "label": "Amodei原文",
+              "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+            },
+            {
+              "label": "AP市場收盤",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "2. 產業分化比大盤跌幅更重要",
+          "paragraphs": [
+            "事實：S&P 500收跌0.5%、道瓊跌0.3%、Nasdaq跌0.6%、Russell 2000跌0.4%。Nasdaq早盤一度跌1.3%，但收盤跌幅縮小；S&P 500上漲家數仍多於下跌家數。Intuit升5.5%、Autodesk升7.8%、Adobe升5.3%。",
+            "判斷：收盤結果確認的是AI內部再分配，而非無差別去風險。既有軟體受益於AI快速取代風險下修，雲端平台保有降低支出速度的選擇權；最脆弱的是依賴持續加速資本支出的硬體與高槓桿基礎建設。信心：高。",
+            "反證：後續交易日雲端、軟體與非AI產業同步補跌，且市場寬度轉負。"
+          ],
+          "links": [
+            {
+              "label": "AP主要指數",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-8f72a301be85728018018735163f4dad"
+            },
+            {
+              "label": "AP產業表現",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            },
+            {
+              "label": "Axios收盤判讀",
+              "url": "https://www.axios.com/2026/09/14/ai-stocks-apocalypse-wall-street"
+            }
+          ]
+        },
+        {
+          "heading": "3. 10年期突破5%卻未站穩，利率仍是估值上限",
+          "paragraphs": [
+            "事實：10年期美債殖利率盤中短暫突破5%，為近三年首次，之後回落至約4.98%；上週五為4.96%，伊朗戰爭前為3.97%。",
+            "判斷：5%已從心理關卡變成可觸及的交易區間。今日回落避免了金融條件立即再緊一級，但高油價、通膨與政府債務供給仍使長端難以成為股票的緩衝。信心：高。",
+            "反證：10年期持續回落至4.85%以下，而且通膨預期與油價同步下降。"
+          ],
+          "links": [
+            {
+              "label": "AP殖利率收盤",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "4. 油價回吐大半升幅，但供應風險沒有解除",
+          "paragraphs": [
+            "事實：Brent早盤接近110美元，最終僅升1%，結算於105.68美元。油價回落與10年期殖利率降回5%以下同步發生。",
+            "判斷：市場沒有否定霍爾木茲、紅海與沙烏地替代管線的風險，只是降低了當日最極端的供應溢價。能源仍相對占優；航空、運輸、低毛利消費與住房仍承受成本。信心：高。",
+            "反證：Brent跌破100美元、航運流量恢復，而且替代管線重啟。"
+          ],
+          "links": [
+            {
+              "label": "AP油價收盤",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "5. 政府反對放慢AI，使市場把監管風險與產業承諾分開",
+          "paragraphs": [
+            "事實：Trump公開否定新增AI護欄，強調美國不能把競爭優勢讓給中國；中國官方也反對協調減速。",
+            "判斷：產業領袖的安全主張尚未形成可執行的全球政策。這解釋了Nasdaq從早盤低點反彈，也意味短期價格主要反映不確定性溢價，而非已確定的投資禁令。中期晶片管制、安全審查與美中競爭仍會提高波動。信心：中高。",
+            "反證：美國政府、主要AI實驗室與盟國提出共同標準、驗證機制與正式時間表。"
+          ],
+          "links": [
+            {
+              "label": "AP政策回應",
+              "url": "https://apnews.com/article/b85df16775ff7e9611a456b061a0e4b9"
+            },
+            {
+              "label": "Axios政策與市場",
+              "url": "https://www.axios.com/2026/09/14/ai-stocks-apocalypse-wall-street"
+            }
+          ]
+        },
+        {
+          "heading": "6. 全日結論：估值與產業重排，尚非信用或流動性衝擊",
+          "paragraphs": [
+            "事實：大盤四個主要指數均收低，但跌幅有限；油價與殖利率離開日內極端，市場寬度沒有全面轉差。信用、美元、黃金與加密資產缺乏足夠可靠的新訊號，不能硬補方向。",
+            "判斷：今天的最終劇本是『AI基礎建設去風險＋軟體與非AI股票承接＋能源通膨上限』。只有10年期站穩5%、Brent重返110美元附近，並伴隨市場寬度及信用同步惡化，才升級為全面金融條件衝擊。信心：高。"
+          ],
+          "links": [
+            {
+              "label": "AP全日市場",
+              "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產結果",
+          "table": {
+            "columns": [
+              "資產",
+              "收盤狀態",
+              "最終判讀"
+            ],
+            "rows": [
+              [
+                "美國大型股",
+                "小幅收低",
+                "大盤受壓但未失序"
+              ],
+              [
+                "AI晶片與基礎建設",
+                "明顯偏弱",
+                "資本支出速度風險被重新定價"
+              ],
+              [
+                "軟體與部分雲端",
+                "相對強",
+                "替代威脅下修與成本選擇權"
+              ],
+              [
+                "小型股",
+                "小幅偏弱",
+                "高融資成本仍是約束"
+              ],
+              [
+                "原油",
+                "偏熱但離高",
+                "Brent結算105.68美元"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期觸及5%後約4.98%"
+              ],
+              [
+                "信用與波動率",
+                "無足夠惡化訊號",
+                "尚未確認流動性事件"
+              ],
+              [
+                "美元、黃金、加密",
+                "無足夠新訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "明日展望｜9月15日週二",
+          "paragraphs": [
+            "05:30 PT：紐約Fed公布9月Empire State製造業調查。這是明日唯一一級美國數據；強於預期會加重長債與Fed收緊壓力，弱於預期則可能壓低殖利率，但若同時拖累景氣循環股，未必單純利多股票。",
+            "FOMC兩日會議明日開始；決策、經濟預測於週三11:00 PT公布，記者會於11:30 PT舉行。市場將持續測試升息後長端殖利率是否仍維持高位。",
+            "美股收盤後：Trip.com公布第二季與上半年業績；電話會議於17:00 PT舉行。焦點是中國與跨境旅遊需求、成本控制，以及高能源價格是否改變交通與住宿預期。",
+            "隔夜風險：霍爾木茲、紅海與沙烏地替代管線的任何新進展，都可能先反映在Brent、通膨損益兩平、航空與運輸；AI實驗室或政府若提出具體跟進，則先影響晶片、資料中心與雲端平台。",
+            "基準路徑：Brent維持103至108美元、10年期在4.90%至5%附近；AI硬體續弱但大盤震盪，能源與軟體相對領先。",
+            "偏強路徑：Brent跌破103美元、10年期降至4.90%以下、半導體止跌且市場寬度保持正向。",
+            "偏弱路徑：Brent重返110美元、10年期站穩5%以上，AI硬體跌勢擴散至雲端與非科技產業，信用和波動率同步惡化。"
+          ],
+          "links": [
+            {
+              "label": "FRED Empire State日曆",
+              "url": "https://fred.stlouisfed.org/releases/calendar?rid=321&y=2026"
+            },
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "Trip.com官方公告",
+              "url": "https://ctripcominternationalltd.gcs-web.com/news-releases/news-release-details/tripcom-group-limited-report-second-quarter-and-first-half-2026"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Amodei原文",
+          "url": "https://darioamodei.com/post/we-must-pace-the-frontier"
+        },
+        {
+          "label": "AP全日市場",
+          "url": "https://apnews.com/article/stocks-markets-oil-ai-rates-0b44bfb43960c6ae850567c0c4e5003a"
+        },
+        {
+          "label": "AP主要指數",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-8f72a301be85728018018735163f4dad"
+        },
+        {
+          "label": "Axios收盤判讀",
+          "url": "https://www.axios.com/2026/09/14/ai-stocks-apocalypse-wall-street"
+        },
+        {
+          "label": "AP政策回應",
+          "url": "https://apnews.com/article/b85df16775ff7e9611a456b061a0e4b9"
+        },
+        {
+          "label": "FRED Empire State日曆",
+          "url": "https://fred.stlouisfed.org/releases/calendar?rid=321&y=2026"
+        },
+        {
+          "label": "Fed九月行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Trip.com官方公告",
+          "url": "https://ctripcominternationalltd.gcs-web.com/news-releases/news-release-details/tripcom-group-limited-report-second-quarter-and-first-half-2026"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-14-midday",
       "cadence": "daily",
