@@ -17,6 +17,26 @@ async function exists(file) {
   try { await fs.access(file); return true; } catch { return false; }
 }
 
+async function publishedRecoveryState(options, consumer) {
+  if (options.mode !== 'recovery' || !Number.isInteger(consumer.revision) || !consumer.packetSha256) return null;
+  const statePath = path.join(
+    path.resolve(options.stateDir),
+    'releases',
+    `${consumer.digestId}-r${consumer.revision}.json`
+  );
+  if (!await exists(statePath)) return null;
+  const state = JSON.parse(await fs.readFile(statePath, 'utf8'));
+  if (state.status !== 'PUBLISHED') return null;
+  if (
+    state.digestId !== consumer.digestId
+    || state.revision !== consumer.revision
+    || state.packetSha256 !== consumer.packetSha256
+  ) {
+    throw new Error('published release state conflicts with consumer acknowledgement');
+  }
+  return state;
+}
+
 export async function runDigestCycle(options, dependencies = {}) {
   const consume = dependencies.consume || consumeDigest;
   const release = dependencies.release || releaseDigest;
@@ -49,6 +69,10 @@ export async function runDigestCycle(options, dependencies = {}) {
   if (consumer.status === 'NOOP') return { status:'NOOP', reason:consumer.reason, ...identity, edition };
   if (!['INGESTED', 'UNCHANGED'].includes(consumer.status)) throw new Error(`consumer did not succeed: ${consumer.status}`);
   if (!await exists(ackPath)) throw new Error('successful consumer acknowledgement is missing');
+  const published = await publishedRecoveryState(options, consumer);
+  if (published) {
+    return { status:'PUBLISHED', outcome:'NOOP', ...identity, edition, digestId:consumer.digestId, release:published };
+  }
   const promoted = await release({
     repoRoot:options.repoRoot,
     stateDir:options.stateDir,
