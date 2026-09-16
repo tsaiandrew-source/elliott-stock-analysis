@@ -213,9 +213,15 @@
       const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
       const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';
       const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
+      const runReadiness = (run) => {
+        const status = [run?.dataStatus, run?.status, run?.patternStatus].filter(Boolean).join(' ').toUpperCase();
+        const label = String(run?.patternLabel || run?.primaryCandidate?.patternLabel || '').trim();
+        const substantive = Boolean(label && !/^(?:主候選|次候選)$/u.test(label));
+        return (status.includes('DATA_PENDING') ? 0 : 2) + Number(substantive);
+      };
       const latestRun = () => {
         const candidates = runs.filter((run) => run.ticker === state.ticker);
-        return candidates.sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)))[0];
+        return candidates.sort((a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runReadiness(b) - runReadiness(a) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)) || String(b.runId || '').localeCompare(String(a.runId || '')))[0];
       };
       const detail = () => contract.datasets?.analysisDetails?.[state.ticker] || {};
       function closeTickerSheet() {

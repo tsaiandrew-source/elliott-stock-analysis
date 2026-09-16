@@ -595,7 +595,20 @@
         if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
-        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
+        const runtimeRunScore = (run) => {
+          const status = [run?.dataStatus, run?.status, run?.patternStatus].filter(Boolean).join(' ').toUpperCase();
+          const label = String(run?.patternLabel || run?.primaryCandidate?.patternLabel || '').trim();
+          const substantive = Boolean(label && !/^(?:主候選|次候選|日線主候選|週線主候選)$/u.test(label));
+          const confidence = run?.confidencePercent ?? run?.confidence;
+          return (status.includes('DATA_PENDING') ? 0 : 8) + (substantive ? 4 : 0) + (run?.primaryCandidate ? 2 : 0) + (confidence === null || confidence === undefined || String(confidence).trim() === '' ? 0 : 1) + (Array.isArray(run?.sourceEvidence) && run.sourceEvidence.length ? 1 : 0);
+        };
+        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => {
+          const key = runKey(run);
+          if (!key) return;
+          const prior = uniqueRuns.get(key);
+          if (!prior) uniqueRuns.set(key, run);
+          else uniqueRuns.set(key, runtimeRunScore(run) >= runtimeRunScore(prior) ? { ...prior, ...run } : { ...run, ...prior });
+        });
         return {
           ...fallback,
           ...live,
@@ -702,7 +715,13 @@
       const runDate = (run) => String(run?.analysisDate || run?.dataThrough || '').slice(0, 10);
       const isWeeklyRun = (run) => /weekly|week|週線|週報/i.test(String(run?.runType || ''));
       const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
-      const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || '')));
+      const runReadiness = (run) => {
+        const status = [run?.dataStatus, run?.status, run?.patternStatus].filter(Boolean).join(' ').toUpperCase();
+        const label = String(run?.patternLabel || run?.primaryCandidate?.patternLabel || '').trim();
+        const substantive = Boolean(label && !/^(?:主候選|次候選)$/u.test(label));
+        return (status.includes('DATA_PENDING') ? 0 : 2) + Number(substantive);
+      };
+      const sortRuns = (runs) => runs.sort((a, b) => String(runDate(b)).localeCompare(String(runDate(a))) || runReadiness(b) - runReadiness(a) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || '')));
       const tickerRuns = (ticker) => sortRuns(analysisRuns.filter((run) => run.ticker === ticker));
       const chartDataCutoff = (ticker) => {
         const bars = datasets[ticker]?.bars;
@@ -1291,12 +1310,14 @@
       function candidateButtonText(candidate, fallbackLabel = '候選', timeframe = '日線', patternName = '') {
         if (!candidate) return fallbackLabel;
         const cleanPatternName = String(patternName || candidate.patternLabel || candidate.text || '').replace(/形成中/g, '').trim();
+        const invalidated = /已失效|invalidated|failed/i.test(String(patternName || candidate.patternLabel || candidate.text || candidate.state || candidate.status || ''));
         const legacyStatus = String(candidate.status || '').trim();
         if (legacyStatus) {
-          const statusParts = legacyStatus.split(' · ').map((part) => part.trim()).filter((part) => part && !/(?:主候選|次候選)/u.test(part));
-          const patternState = /形成中/u.test(String(patternName || '')) && !statusParts.some((part) => /形成中|突破候選|突破確認|回測守住/u.test(part)) ? ['形成中'] : [];
+          const statusParts = legacyStatus.split(' · ').map((part) => part.trim()).filter((part) => part && !/(?:主候選|次候選)/u.test(part) && !(invalidated && /形成中|突破候選|突破確認|回測守住/u.test(part)));
+          const patternState = !invalidated && /形成中/u.test(String(patternName || '')) && !statusParts.some((part) => /形成中|突破候選|突破確認|回測守住/u.test(part)) ? ['形成中'] : [];
           const confidence = candidate.confidencePercent ?? candidate.confidence;
-          const confidencePart = Number.isFinite(Number(confidence)) && !statusParts.some((part) => /^信心\s*\d+/u.test(part)) ? [`信心 ${Number(confidence)}`] : [];
+          const hasConfidence = confidence !== null && confidence !== undefined && String(confidence).trim() !== '' && Number.isFinite(Number(confidence));
+          const confidencePart = hasConfidence && !statusParts.some((part) => /^信心\s*\d+/u.test(part)) ? [`信心 ${Number(confidence)}`] : [];
           return [`${timeframe}${cleanPatternName || fallbackLabel}`, ...patternState, ...statusParts, ...confidencePart].filter(Boolean).join(' · ');
         }
         const stateLabels = {
@@ -1306,9 +1327,10 @@
           retest_held: '回測守住'
         };
         const label = candidate.label || fallbackLabel;
-        const state = stateLabels[candidate.coordinates?.state] || '';
+        const state = invalidated ? '' : stateLabels[candidate.coordinates?.state] || '';
         const confidence = candidate.confidencePercent ?? candidate.confidence;
-        return [`${timeframe}${cleanPatternName || label}`, state, Number.isFinite(Number(confidence)) ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
+        const hasConfidence = confidence !== null && confidence !== undefined && String(confidence).trim() !== '' && Number.isFinite(Number(confidence));
+        return [`${timeframe}${cleanPatternName || label}`, state, hasConfidence ? `信心 ${Number(confidence)}` : ''].filter(Boolean).join(' · ');
       }
 
       function weeklyPattern(data) {

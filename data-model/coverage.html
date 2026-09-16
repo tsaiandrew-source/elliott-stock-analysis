@@ -233,7 +233,20 @@
         if (!live || live.error || (!Array.isArray(live.coverage) && !Array.isArray(live.analysisRuns))) return fallback;
         const uniqueRuns = new Map();
         const runKey = (run) => run.runId || run.RunID || [run.ticker || run.Ticker, run.analysisDate || run.AnalysisDate, run.runType || run.RunType].filter(Boolean).join('|');
-        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => { const key = runKey(run); if (key) uniqueRuns.set(key, run); });
+        const runtimeRunScore = (run) => {
+          const status = [run?.dataStatus, run?.status, run?.patternStatus].filter(Boolean).join(' ').toUpperCase();
+          const label = String(run?.patternLabel || run?.primaryCandidate?.patternLabel || '').trim();
+          const substantive = Boolean(label && !/^(?:主候選|次候選|日線主候選|週線主候選)$/u.test(label));
+          const confidence = run?.confidencePercent ?? run?.confidence;
+          return (status.includes('DATA_PENDING') ? 0 : 8) + (substantive ? 4 : 0) + (run?.primaryCandidate ? 2 : 0) + (confidence === null || confidence === undefined || String(confidence).trim() === '' ? 0 : 1) + (Array.isArray(run?.sourceEvidence) && run.sourceEvidence.length ? 1 : 0);
+        };
+        [...(fallback.analysisRuns || []), ...(live.analysisRuns || [])].forEach((run) => {
+          const key = runKey(run);
+          if (!key) return;
+          const prior = uniqueRuns.get(key);
+          if (!prior) uniqueRuns.set(key, run);
+          else uniqueRuns.set(key, runtimeRunScore(run) >= runtimeRunScore(prior) ? { ...prior, ...run } : { ...run, ...prior });
+        });
         return {
           ...fallback,
           ...live,
@@ -353,7 +366,13 @@
       const isWeeklyRun = (run) => String(run.runType || '').toLowerCase() === 'weekly' || /-W$/.test(String(run.runId || ''));
       const isRichAnalysisRun = (run) => run?.schemaVersion === 'iris-analysis-contract-v2' || Boolean(run?.patternLabel || run?.businessEvidence || run?.dailyDigest || run?.gexSummary);
       const runPriority = (run) => /-(D|W)$/.test(String(run.runId || '')) && !/-D-(D|W)$/.test(String(run.runId || '')) ? 1 : 0;
-      const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
+      const runReadiness = (run) => {
+        const status = [run?.dataStatus, run?.status, run?.patternStatus].filter(Boolean).join(' ').toUpperCase();
+        const label = String(run?.patternLabel || run?.primaryCandidate?.patternLabel || '').trim();
+        const substantive = Boolean(label && !/^(?:主候選|次候選)$/u.test(label));
+        return (status.includes('DATA_PENDING') ? 0 : 2) + Number(substantive);
+      };
+      const compareRuns = (a, b) => String(b.analysisDate || '').localeCompare(String(a.analysisDate || '')) || runReadiness(b) - runReadiness(a) || runPriority(b) - runPriority(a) || String(b.runId || '').localeCompare(String(a.runId || ''));
       const preferredRuns = (ticker) => {
         const candidates = runs.filter((run) => run.ticker === ticker);
         return candidates.sort((a, b) => compareRuns(a, b) || Number(isRichAnalysisRun(b)) - Number(isRichAnalysisRun(a)));
@@ -367,12 +386,18 @@
         return validDirection(run?.technicalEvidence?.patterns?.[`${timeframe}Primary`]?.watch_direction);
       };
       const confidenceFor = (run) => {
-        const value = Number(run?.confidencePercent ?? run?.confidence);
+        const raw = run?.confidencePercent ?? run?.confidence;
+        if (raw === null || raw === undefined || String(raw).trim() === '') return null;
+        const value = Number(raw);
         return Number.isFinite(value) ? value : null;
       };
       const directionRunFor = (ticker, timeframe) => {
         const weekly = timeframe === 'weekly';
-        return preferredRuns(ticker).find((run) => (weekly ? isWeeklyRun(run) : !isWeeklyRun(run)) && watchDirectionFor(run, timeframe)) || null;
+        const candidates = preferredRuns(ticker).filter((run) => weekly ? isWeeklyRun(run) : !isWeeklyRun(run));
+        const latest = candidates[0] || null;
+        const latestLabel = String(latest?.patternLabel || latest?.primaryCandidate?.patternLabel || '');
+        if (latest && (watchDirectionFor(latest, timeframe) || /已失效|invalidated|failed/i.test(latestLabel))) return latest;
+        return candidates.find((run) => watchDirectionFor(run, timeframe)) || null;
       };
       const priceSnapshotFor = (ticker, latest, coverageItem) => normalizePriceSnapshot(coverageItem?.priceSnapshot || latest?.priceSnapshot || latest?.currentPriceSnapshot, priceDatasets[ticker]?.bars?.at(-1));
       const list = document.getElementById('ticker-list');
