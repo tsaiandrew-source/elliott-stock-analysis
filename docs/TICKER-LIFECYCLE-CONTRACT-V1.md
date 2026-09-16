@@ -37,17 +37,19 @@ pnpm ticker:lifecycle add XYZ \
   --company "Example Corp" --exchange NASDAQ \
   --group exploration --market us --default-view daily \
   --market-source "https://authoritative.example/XYZ" \
-  --market-data /absolute/path/to/XYZ.json --after AVGO
+  --market-data /absolute/path/to/XYZ.json \
+  --gex-record /absolute/path/to/XYZ-gex-record.json --after AVGO
 
 pnpm ticker:lifecycle add XYZ ...same reviewed arguments... --apply
 ```
 
-An add fails closed if identity metadata or a valid completed-session market
-artifact is absent. The tool never invents prices or analysis. It creates a
-partial-safe coverage row; analysis and GEX appear only after their producer
-evidence arrives. A remove recursively prunes ticker-bearing rows and keyed
-objects, removes the market file, rebuilds and hashes the manifest, regenerates
-the browser bundle and increments the PWA cache version.
+An add fails closed if identity metadata, a valid completed-session market
+artifact or a reviewed GEX evidence record is absent. The tool never invents
+prices, analysis or signed dealer evidence. It creates a partial-safe coverage
+row and keeps unsigned GEX fail-closed. A remove recursively prunes
+ticker-bearing rows and keyed objects, removes the market file, rebuilds the
+roster-complete GEX packet and market manifest, regenerates the browser bundle
+and increments the PWA cache version.
 
 ## Operator sequence
 

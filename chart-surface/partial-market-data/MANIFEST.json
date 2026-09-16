@@ -15,6 +15,7 @@
     "MRVL",
     "SNDK",
     "AVGO",
+    "MU",
     "2646",
     "2330"
   ],
@@ -93,6 +94,11 @@
       "dataThrough": "2026-09-15",
       "close": 339.2699890136719,
       "sha256": "717976793c6434528bc6512f96ca72d56c5a18a5c3e7e9ec7bff9a8c420e0d9e"
+    },
+    "MU": {
+      "dataThrough": "2026-09-15",
+      "close": 927.6,
+      "sha256": "ed3cef702455c252bcd87a658c8a625766f95aa1bb72ba6e573b3ebb3bd79dd5"
     }
   }
 }
