@@ -1,7 +1,254 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-16T12:50:05.620Z",
+  "generatedAt": "2026-09-16T18:50:05.326Z",
   "records": [
+    {
+      "id": "daily-2026-09-16-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-16",
+      "publishedAt": "2026-09-16T11:35:00-07:00",
+      "updatedAt": "2026-09-16T11:35:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-16T11:34:15-07:00",
+      "retrievedAt": "2026-09-16T11:34:45-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "午間訊號｜2026-09-16",
+      "summary": "晨間主線在政策面獲得確認，但市場沒有照劇本全面轉弱。Fed一致決議升息一碼至3.75%至4.00%，並把2026年底政策利率中位數由3.8%上修至4.1%，等同暗示今年還有一次升息；2027年中位數也由3.6%大幅上修至4.1%。然而油價回落約2.6%、10年期殖利率由5.00%降至約4.95%，使S&P 500在決策後仍約漲0.4%。新增的關鍵背離是：消費與Fed成長預測偏強，但建商信心跌至32、企業庫存增速快於銷售。這不是風險解除，而是能源降溫暫時抵銷更鷹的政策路徑；Warsh記者會剛開始，收盤前仍有重新定價風險。",
+      "sections": [
+        {
+          "heading": "1. 新變化：Fed升息一碼，而且決策沒有異議",
+          "paragraphs": [
+            "事實：FOMC以12比0通過升息一碼，將聯邦基金利率目標區間提高至3.75%至4.00%。聲明稱經濟活動穩健擴張、國內支出有韌性、生產力成長強勁、資本投資穩健，並直言通膨仍偏高。",
+            "判斷：晨間『強需求使Fed難以轉鴿』的主線被正式確認。全票通過降低了市場把升息解讀為Warsh個人選擇的空間，也強化Fed對抗通膨與維持政治獨立性的訊號。信心：高。",
+            "反證：Warsh在記者會明確把本次升息界定為一次性校準，並反對點陣圖所暗示的後續收緊。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方FOMC聲明",
+              "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+            },
+            {
+              "label": "AP Fed決策",
+              "url": "https://apnews.com/article/federal-reserve-warsh-trump-inflation-bab1bcb07e973bfb2dd0c3e5fbbb73b1"
+            }
+          ]
+        },
+        {
+          "heading": "2. 新變化：點陣圖比單次升息更鷹",
+          "paragraphs": [
+            "事實：Fed把2026年底政策利率中位數由6月的3.8%上修至4.1%，2027年由3.6%上修至4.1%，2028年由3.4%上修至3.9%。18名官員中12人預期今年再升息一次，另有4人預期再升兩次。",
+            "判斷：這不是『升一次就停』的乾淨訊號。中位路徑是今年再升一碼、2027全年維持限制性利率，降息窗口被向後推。短端利率、美元與高槓桿資產最直接承壓；長端是否上升則取決於市場更在意政策可信度還是名目成長。信心：高。",
+            "反證：市場利率在記者會後明顯低於點陣圖路徑，而且Fed官員後續一致弱化2027年維持高利率的必要性。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方經濟預測",
+              "url": "https://www.federalreserve.gov/monetarypolicy/files/fomcprojtabl20260916.pdf"
+            },
+            {
+              "label": "Axios政策路徑整理",
+              "url": "https://www.axios.com/2026/09/16/fed-rates-warsh-trump"
+            }
+          ]
+        },
+        {
+          "heading": "3. 新變化：Fed上修成長、下修失業、同時上修通膨",
+          "paragraphs": [
+            "事實：2026年實質GDP成長中位數由2.2%上修至2.3%，失業率由4.3%下修至4.1%；整體PCE通膨由3.6%上修至3.7%，核心PCE由3.3%上修至3.4%。",
+            "判斷：Fed看到的是『更強成長＋更低失業＋更高通膨』，不是衰退式升息。這有利銀行信用品質與企業營收，但不利長久期估值；若盈餘能跟上，股市可以消化較高利率，若不能，估值壓縮會延後發生。信心：高。",
+            "反證：未來就業與實質消費快速轉弱，使成長預測失去基礎，而通膨也同步下降。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方經濟預測",
+              "url": "https://www.federalreserve.gov/monetarypolicy/files/fomcprojtabl20260916.pdf"
+            }
+          ]
+        },
+        {
+          "heading": "4. 市場沒有確認恐慌：油價與長債先提供緩衝",
+          "paragraphs": [
+            "事實：Fed決策後數分鐘，S&P 500約漲0.4%、道瓊近乎持平。決策前Brent跌2.6%至105.91美元，10年期殖利率由昨日5.00%降至約4.95%。",
+            "判斷：政策路徑比晨間更鷹，但資產反應沒有全面惡化，因為油價與長端殖利率同時回落。市場初步把升息視為提高政策可信度，而非立即的流動性衝擊。這只是第一反應；若記者會把10年期重新推上5%，科技與小型股仍可能反轉。信心：中高。",
+            "反證：記者會期間S&P轉跌、市場寬度惡化，且10年期升破5.05%、美元與信用利差同步走強。"
+          ],
+          "links": [
+            {
+              "label": "AP決策後市場",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            }
+          ]
+        },
+        {
+          "heading": "5. 能源壓力改善，但EIA沒有證明供應過剩",
+          "paragraphs": [
+            "事實：截至9月11日當週，美國商業原油庫存減少60萬桶至4.234億桶；汽油庫存增加80萬桶、餾分油增加160萬桶，總商業石油庫存增加260萬桶。過去四週成品油供應量年減0.6%，汽油年減1.0%、餾分油年減3.3%。",
+            "判斷：油價午間回落有需求降溫與成品庫存增加的支持，但不是原油供應大增造成。地緣與管線風險仍在，因此105美元附近是壓力緩解，不是能源通膨結束。信心：高。",
+            "反證：Brent重新突破110美元，或航運、管線與成品油庫存再度同步惡化。"
+          ],
+          "links": [
+            {
+              "label": "EIA每週石油摘要",
+              "url": "https://ir.eia.gov/wpsr/wpsrsummary.pdf"
+            },
+            {
+              "label": "EIA每週石油狀況報告",
+              "url": "https://www.eia.gov/petroleum/supply/weekly/"
+            }
+          ]
+        },
+        {
+          "heading": "6. 新背離：消費強，但住房與庫存已顯示高利率代價",
+          "paragraphs": [
+            "事實：8月零售銷售月增1.2%，高於FactSet共識0.7%，控制組月增1.4%。但9月NAHB建商信心指數下降3點至32，為2025年9月以來最低；38%建商降價、66%使用促銷。7月企業庫存月增0.8%，銷售僅增0.3%，庫存銷售比維持1.30。",
+            "判斷：家庭消費仍有韌性，但最利率敏感的住房已惡化，庫存累積也快於銷售。這支持Fed短期升息，卻增加政策滯後效應在第四季集中出現的風險。住宅建商、家居、區域銀行與低毛利零售要分開看。信心：高。",
+            "反證：房貸利率與長債殖利率持續下降、建商流量回升，且企業銷售重新快於庫存。"
+          ],
+          "links": [
+            {
+              "label": "人口普查局8月零售報告",
+              "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+            },
+            {
+              "label": "AP零售銷售",
+              "url": "https://apnews.com/article/retail-inflation-consumer-sentiment-economy-474ed13de492362589405a47ec044d29"
+            },
+            {
+              "label": "NAHB建商信心",
+              "url": "https://www.nahb.org/news-and-economics/press-releases/2026/09/builder-sentiment-falls-on-higher-interest-rates-and-costs"
+            },
+            {
+              "label": "人口普查局企業庫存",
+              "url": "https://www.census.gov/mtis/www/data/pdf/mtis_current.pdf"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產變化表",
+          "table": {
+            "columns": [
+              "資產",
+              "相較晨間",
+              "午間判讀"
+            ],
+            "rows": [
+              [
+                "美國大型股",
+                "較強",
+                "升息後仍小漲，尚未確認恐慌"
+              ],
+              [
+                "成長股／科技",
+                "較強",
+                "10年期回落暫時提供估值緩衝"
+              ],
+              [
+                "小型股",
+                "待確認",
+                "成長韌性利多，融資成本利空"
+              ],
+              [
+                "長天期美債",
+                "改善",
+                "10年期由5.00%回到約4.95%"
+              ],
+              [
+                "短端利率",
+                "偏緊",
+                "點陣圖暗示今年再升一次、2027維持"
+              ],
+              [
+                "原油",
+                "降溫",
+                "Brent跌至約105.91美元，但供應風險未消失"
+              ],
+              [
+                "住房",
+                "更弱",
+                "建商信心降至32，促銷與降價增加"
+              ],
+              [
+                "信用／美元／黃金",
+                "無足夠新訊號",
+                "等待記者會後確認"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "收盤前看什麼",
+          "paragraphs": [
+            "11:30 PT起：Warsh記者會。截稿時剛開始，尚未把即時問答包裝成已確認訊號。最重要的是他是否把本次升息描述為一次性校準、如何解釋2027年不降息，以及是否承認能源衝擊的暫時性。",
+            "10年期殖利率能否留在4.95%附近，而不是重新站上5%；這將決定科技與小型股能否守住漲幅。",
+            "Brent能否守在106美元以下。若油價反彈而Fed維持鷹派，晨間的雙重壓力會重新出現。",
+            "市場寬度、銀行與住宅建商的相對表現。大型科技上漲但住房與小型股惡化，代表金融條件壓力只是被指數權重遮蔽。",
+            "午間判斷：晨間的政策主線被確認，但價格反應被油價與長債回落部分抵銷。真正的升級警報是10年期、美元、信用利差與波動率在記者會期間同步轉差。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方記者會頁",
+              "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm"
+            },
+            {
+              "label": "Fed官方FOMC聲明",
+              "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+            },
+            {
+              "label": "AP決策後市場",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Fed官方FOMC聲明",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+        },
+        {
+          "label": "Fed官方經濟預測",
+          "url": "https://www.federalreserve.gov/monetarypolicy/files/fomcprojtabl20260916.pdf"
+        },
+        {
+          "label": "Fed官方記者會頁",
+          "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm"
+        },
+        {
+          "label": "AP Fed決策",
+          "url": "https://apnews.com/article/federal-reserve-warsh-trump-inflation-bab1bcb07e973bfb2dd0c3e5fbbb73b1"
+        },
+        {
+          "label": "Axios政策路徑整理",
+          "url": "https://www.axios.com/2026/09/16/fed-rates-warsh-trump"
+        },
+        {
+          "label": "AP決策後市場",
+          "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+        },
+        {
+          "label": "人口普查局8月零售報告",
+          "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+        },
+        {
+          "label": "AP零售銷售",
+          "url": "https://apnews.com/article/retail-inflation-consumer-sentiment-economy-474ed13de492362589405a47ec044d29"
+        },
+        {
+          "label": "NAHB建商信心",
+          "url": "https://www.nahb.org/news-and-economics/press-releases/2026/09/builder-sentiment-falls-on-higher-interest-rates-and-costs"
+        },
+        {
+          "label": "人口普查局企業庫存",
+          "url": "https://www.census.gov/mtis/www/data/pdf/mtis_current.pdf"
+        },
+        {
+          "label": "EIA每週石油摘要",
+          "url": "https://ir.eia.gov/wpsr/wpsrsummary.pdf"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-16-morning",
       "cadence": "daily",
