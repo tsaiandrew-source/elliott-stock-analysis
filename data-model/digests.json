@@ -1,7 +1,341 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-16T18:50:05.326Z",
+  "generatedAt": "2026-09-16T23:20:00.393Z",
   "records": [
+    {
+      "id": "daily-2026-09-16-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-16",
+      "publishedAt": "2026-09-16T16:06:00-07:00",
+      "updatedAt": "2026-09-16T16:06:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-16T16:04:30-07:00",
+      "retrievedAt": "2026-09-16T16:05:45-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-16",
+      "summary": "今天市場最終確認的不是單次升息，而是『需求仍強、進口通膨升溫、Fed還要更久維持限制性利率』。Fed一致升息一碼至3.75%至4.00%，點陣圖暗示今年還有一次升息、2027年底利率中位數仍為4.1%；Warsh記者會後，S&P 500由漲轉跌0.4%、道瓊跌1.2%，但Nasdaq近乎持平。2年期殖利率升至4.74%、10年期回到5.01%、美元指數升約0.6%，而Brent跌2.7%至105.83美元，顯示能源降溫不足以抵銷政策重新定價。盤後Lennar以訂單年減9%、每股盈餘低於預期，進一步證明高利率代價已進入住房。整體仍是有秩序的估值與產業再分配，不是流動性恐慌；明日英國央行、美國就業與住房數據將檢驗這條主線能否延續。",
+      "sections": [
+        {
+          "heading": "1. 全日反轉：Fed升息後，Warsh把市場從初步樂觀拉回『更高更久』",
+          "paragraphs": [
+            "事實：FOMC以12比0升息一碼至3.75%至4.00%。2026年底政策利率中位數由3.8%上修至4.1%，2027年底也由3.6%上修至4.1%；Warsh在記者會反覆強調通膨仍過高、經濟正在轉強。",
+            "判斷：午間市場曾把升息理解為提高政策可信度，並由油價與長債回落提供緩衝；收盤前的反轉證明真正主線不是『升一次就停』，而是需求韌性讓Fed有能力把限制性利率維持更久。信心：高。",
+            "反證：後續官員一致淡化點陣圖、2年期殖利率回落至4.60%以下，而且通膨與需求數據同步降溫。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方FOMC聲明",
+              "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+            },
+            {
+              "label": "Fed官方經濟預測",
+              "url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm"
+            },
+            {
+              "label": "AP Fed與收盤市場",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            }
+          ]
+        },
+        {
+          "heading": "2. 指數分化但沒有失序：道瓊承壓，AI大型股托住Nasdaq",
+          "paragraphs": [
+            "事實：S&P 500跌0.4%至7,551.81；道瓊跌631.21點、跌幅1.2%至51,461.90；Nasdaq僅跌3.15點、近乎持平至25,978.42；Russell 2000跌0.4%至2,858.81。Nvidia漲0.8%、AMD漲1.6%。",
+            "判斷：利率衝擊已壓到金融、運輸與小型股，但AI晶片的相對韌性阻止了全面科技拋售。這仍是估值與產業再分配，不是無差別去槓桿；指數表面平靜也不能掩蓋道瓊與等權重市場的壓力。信心：高。",
+            "反證：AI領先股轉為補跌、Russell與信用利差同步惡化，且VIX突破近期區間。"
+          ],
+          "links": [
+            {
+              "label": "AP全日市場",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            },
+            {
+              "label": "AP主要指數收盤",
+              "url": "https://apnews.com/article/b082e78c9b572b6b0a94b8033a0ee96b"
+            }
+          ]
+        },
+        {
+          "heading": "3. 跨資產確認：短端、長端與美元同向收緊，油價降溫只抵銷一部分",
+          "paragraphs": [
+            "事實：2年期美債殖利率由4.67%升至4.74%，10年期由5.00%升至5.01%；美元指數升約0.6%至100.25。Brent則跌2.7%至105.83美元。黃金在Fed決策後由漲轉跌、跌幅超過1%。",
+            "判斷：這是典型的鷹派重新定價：短端先反映更多升息，長端仍守在5%附近，美元吸收利差優勢，無收益黃金受壓。油價回落降低當期通膨壓力，但105美元以上仍不足以宣告能源衝擊結束。信心：高。",
+            "反證：10年期跌破4.90%、美元回到100以下、Brent跌破105美元，而且信用與波動率沒有跟進。"
+          ],
+          "links": [
+            {
+              "label": "AP殖利率與油價",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            },
+            {
+              "label": "Reuters美元與Fed反應",
+              "url": "https://www.fidelity.com/news/article/us-markets/202609161415RTRSNEWSCOMBINED_KBN3V227Z-OUSBS_1"
+            },
+            {
+              "label": "Reuters黃金反應",
+              "url": "https://www.marketscreener.com/news/gold-falls-more-than-1-after-fed-hikes-interest-rates-ce785bd2d18bf223"
+            }
+          ]
+        },
+        {
+          "heading": "4. 宏觀組合更難處理：消費強、進口價格升，Fed不是在衰退裡升息",
+          "paragraphs": [
+            "事實：8月零售銷售月增1.2%，控制組月增1.4%；8月進口價格月增0.7%、年增7.0%，為2022年8月以來最大年增幅。Fed同時把2026年GDP成長中位數上修至2.3%、失業率下修至4.1%，並上修整體與核心PCE通膨。",
+            "判斷：今天的升息建立在更強需求與更高輸入成本上，不是為了應對短期市場波動。強成長可支撐營收與信用，但也推遲降息、提高折現率；這是股市能分化卻難全面擴張估值的原因。信心：高。",
+            "反證：實質消費與就業快速轉弱，而且進口、能源與供應鏈價格在未來兩個月同步回落。"
+          ],
+          "links": [
+            {
+              "label": "人口普查局8月零售報告",
+              "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+            },
+            {
+              "label": "BLS進出口價格",
+              "url": "https://www.bls.gov/news.release/ximpim.nr0.htm"
+            },
+            {
+              "label": "Fed官方經濟預測",
+              "url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm"
+            }
+          ]
+        },
+        {
+          "heading": "5. 產業出口：銀行與運輸先替更高利率和成本買單",
+          "paragraphs": [
+            "事實：Huntington Bancshares跌5.6%、Citizens Financial跌4.8%、JPMorgan跌1.0%。J.B. Hunt跌13.3%，公司財務長預期第三季獲利將因成本上升而較上季低5%至10%。",
+            "判斷：銀行下跌顯示升息不會自動轉成淨息差利多，市場同時擔心資金成本、貸款需求與信用週期；運輸股則把能源、工資與需求的不對稱直接寫進盈餘。這兩組訊號比大型科技指數更接近實體金融條件。信心：中高。",
+            "反證：銀行存款成本回落、貸款成長回升，或運輸公司能以價格與效率完全抵銷成本。"
+          ],
+          "links": [
+            {
+              "label": "AP產業收盤",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            }
+          ]
+        },
+        {
+          "heading": "6. 盤後確認：Lennar證明住房壓力不只存在於建商信心調查",
+          "paragraphs": [
+            "事實：Lennar第三季每股盈餘1.19美元，低於市場約1.30美元預期；營收80億美元，新訂單年減9%、交屋年減3%，住宅銷售毛利率由17.5%降至15.8%。公司表示營運環境自上次財報電話會議以來已惡化。",
+            "判斷：午間NAHB信心降至32的調查訊號，現在得到公司層面的訂單、價格與毛利證據。即使美國住房供給仍結構性不足，7%以上房貸與長債5%會先壓購買力、促銷與建商回報。信心：高。",
+            "反證：明日電話會議揭示9月流量與訂單明顯回升，或長端殖利率快速回落並帶動房貸利率下降。"
+          ],
+          "links": [
+            {
+              "label": "Lennar官方第三季財報",
+              "url": "https://newsroom.lennar.com/2026-09-16-Lennar-Reports-Third-Quarter-2026-Results"
+            },
+            {
+              "label": "Lennar官方財報電話會議",
+              "url": "https://investors.lennar.com/events-and-presentations"
+            }
+          ]
+        },
+        {
+          "heading": "7. 收盤後監測：NBIS調價訊號合理，但尚未達到公司公開確認標準",
+          "paragraphs": [
+            "事實：一則客戶通知的社群轉載稱，Nebius將自10月1日起把H100、H200、B200與B300隨需GPU費率分別提高約17%、20%、19%與21%，Genoa CPU與記憶體費率也將上調。截稿時Nebius公開價格頁與文件仍顯示舊價格，公司新聞室與SEC文件未見同日公告。",
+            "判斷：若通知真實且涵蓋新訂單，代表AI運算需求與供給緊張正在轉化為更高單位價格，對雲端收入與毛利是正面訊號；但目前只能把它列為『很可能、未完成公開驗證』的催化劑，不能把社群截圖當成已確認公司指引。信心：中。",
+            "確認條件：Nebius官方價格頁在10月1日前後更新、客戶通知由公司確認，或後續財報說明調價範圍與合約影響。反證：公司否認通知、調價只適用極小區域／短期容量，或既有承諾合約不受影響且新增需求沒有改善。"
+          ],
+          "links": [
+            {
+              "label": "Nebius公開價格頁",
+              "url": "https://nebius.com/prices"
+            },
+            {
+              "label": "Nebius官方計算資源定價文件",
+              "url": "https://docs.nebius.com/compute/resources/pricing"
+            },
+            {
+              "label": "客戶通知社群轉載（未驗證）",
+              "url": "https://www.reddit.com/r/NBIS_Stock/comments/1wi91jl/nebius_updating_prices_starting_october_1/"
+            }
+          ]
+        },
+        {
+          "heading": "8. 全日結論：政策可信度提高，但金融條件沒有變鬆",
+          "paragraphs": [
+            "事實：Fed一致升息、點陣圖上移、短端與美元上升；油價回落、Nasdaq近乎持平，顯示市場仍能做產業選擇而非全面避險。住房與運輸則提供實體壓力證據。信用利差缺乏足夠可靠的收盤新訊號，不硬補方向。",
+            "判斷：最終劇本是『非衰退式升息＋更高更久＋內部分化』。短期好消息是沒有流動性事件；壞消息是企業必須同時面對更高資金成本、仍高的能源與進口成本。明日若住房與就業同時弱化，市場會開始討論政策過度收緊；若數據仍強，長端5%將成為估值上限。信心：高。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方FOMC聲明",
+              "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+            },
+            {
+              "label": "AP全日市場",
+              "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產結果",
+          "table": {
+            "columns": [
+              "資產",
+              "收盤狀態",
+              "最終判讀"
+            ],
+            "rows": [
+              [
+                "美國大型股",
+                "偏弱",
+                "S&P跌0.4%、道瓊跌1.2%"
+              ],
+              [
+                "Nasdaq／AI晶片",
+                "相對抗跌",
+                "Nasdaq近乎持平，Nvidia與AMD上漲"
+              ],
+              [
+                "小型股",
+                "偏弱",
+                "Russell 2000跌0.4%，融資成本仍高"
+              ],
+              [
+                "短天期美債",
+                "更弱",
+                "2年期殖利率升至4.74%"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期回到5.01%"
+              ],
+              [
+                "美元",
+                "轉強",
+                "美元指數約升0.6%至100.25"
+              ],
+              [
+                "原油",
+                "降溫但仍高",
+                "Brent跌2.7%至105.83美元"
+              ],
+              [
+                "黃金",
+                "決策後轉弱",
+                "高利率與強美元壓過早盤避險"
+              ],
+              [
+                "住房",
+                "更弱",
+                "Lennar訂單、毛利與獲利皆承壓"
+              ],
+              [
+                "信用／波動率",
+                "待確認",
+                "缺乏足夠可靠的收盤新訊號"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "明日展望｜9月17日週四",
+          "paragraphs": [
+            "04:00 PT：英國央行公布9月利率決策與會議紀錄。現行Bank Rate為3.75%；市場將檢驗英國是否與Fed同步偏鷹，以及英鎊與全球長端殖利率是否外溢至美股開盤。",
+            "05:30 PT：美國初領失業救濟金、8月新屋開工與建照、9月費城Fed製造業指數。就業與製造若仍強，將支持Fed後續升息；住房若進一步走弱，則與Lennar財報形成雙重確認。",
+            "07:00 PT：美國7月待售成屋銷售；08:00 PT：Lennar財報電話會議。優先看房貸利率、促銷、9月訂單、售價與第四季毛利，而不只看單季EPS。",
+            "隔夜至週五：日本央行9月17至18日會議。任何殖利率曲線或匯率政策訊號，都可能透過日圓融資與全球長債影響美國風險資產。",
+            "基準路徑：10年期在4.98%至5.05%、美元守在100附近、Brent在104至107美元，股票維持指數偏弱但AI相對抗跌。",
+            "偏強路徑：就業與住房溫和降溫、英國央行沒有追加鷹派訊號，10年期跌破4.90%、美元回落、Brent跌破105美元，市場寬度改善。",
+            "偏弱路徑：初領救濟金仍低、費城Fed與住房價格壓力偏強，或英國央行意外鷹派；10年期升破5.05%、美元續強，銀行、住房與小型股進一步落後。"
+          ],
+          "links": [
+            {
+              "label": "英國央行2026年MPC日曆",
+              "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"
+            },
+            {
+              "label": "英國央行本週事件時間",
+              "url": "https://www.bankofengland.co.uk/events/upcoming-events"
+            },
+            {
+              "label": "紐約Fed九月經濟日曆",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            },
+            {
+              "label": "Lennar官方財報電話會議",
+              "url": "https://investors.lennar.com/events-and-presentations"
+            },
+            {
+              "label": "日本央行會議日曆",
+              "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Fed官方FOMC聲明",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+        },
+        {
+          "label": "Fed官方經濟預測",
+          "url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm"
+        },
+        {
+          "label": "Fed官方記者會頁",
+          "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm"
+        },
+        {
+          "label": "AP全日市場",
+          "url": "https://apnews.com/article/stocks-markets-fed-rate-decision-oil-e2e82957e490b7be205db6013f621c3d"
+        },
+        {
+          "label": "AP主要指數收盤",
+          "url": "https://apnews.com/article/b082e78c9b572b6b0a94b8033a0ee96b"
+        },
+        {
+          "label": "人口普查局8月零售報告",
+          "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+        },
+        {
+          "label": "BLS進出口價格",
+          "url": "https://www.bls.gov/news.release/ximpim.nr0.htm"
+        },
+        {
+          "label": "Reuters美元與Fed反應",
+          "url": "https://www.fidelity.com/news/article/us-markets/202609161415RTRSNEWSCOMBINED_KBN3V227Z-OUSBS_1"
+        },
+        {
+          "label": "Reuters黃金反應",
+          "url": "https://www.marketscreener.com/news/gold-falls-more-than-1-after-fed-hikes-interest-rates-ce785bd2d18bf223"
+        },
+        {
+          "label": "Lennar官方第三季財報",
+          "url": "https://newsroom.lennar.com/2026-09-16-Lennar-Reports-Third-Quarter-2026-Results"
+        },
+        {
+          "label": "Nebius公開價格頁",
+          "url": "https://nebius.com/prices"
+        },
+        {
+          "label": "Nebius官方計算資源定價文件",
+          "url": "https://docs.nebius.com/compute/resources/pricing"
+        },
+        {
+          "label": "NBIS客戶通知社群轉載（未驗證）",
+          "url": "https://www.reddit.com/r/NBIS_Stock/comments/1wi91jl/nebius_updating_prices_starting_october_1/"
+        },
+        {
+          "label": "英國央行MPC日曆",
+          "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"
+        },
+        {
+          "label": "紐約Fed九月經濟日曆",
+          "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+        },
+        {
+          "label": "日本央行會議日曆",
+          "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-16-midday",
       "cadence": "daily",
