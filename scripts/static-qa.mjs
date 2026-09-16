@@ -51,6 +51,10 @@ const requiredFiles = [
   'scripts/sync-market-data.mjs',
   'scripts/run-autonomous-universal-refresh.command',
   'automation/macos/com.tsaiandrew.elliott-universal-refresh.plist',
+  'scripts/run-autonomous-cross-market-digest.mjs',
+  'scripts/run-autonomous-cross-market-digest.command',
+  'scripts/autonomous-cross-market-digest-qa.mjs',
+  'automation/macos/com.tsaiandrew.elliott-cross-market-digest.plist',
   'chart-surface/gex-market-overview.js',
   'data-model/home.html',
   'data-model/coverage.html',
@@ -66,6 +70,35 @@ const read = (relative) => fs.readFile(path.join(root, relative), 'utf8');
 
 for (const file of requiredFiles) {
   if (!(await exists(file))) failures.push(`missing required file: ${file}`);
+}
+
+if (await exists('scripts/run-autonomous-cross-market-digest.mjs')) {
+  const runner = await read('scripts/run-autonomous-cross-market-digest.mjs');
+  for (const marker of [
+    'America/Los_Angeles',
+    "edition:'morning'",
+    "edition:'midday'",
+    "edition:'close'",
+    "edition:'weekly'",
+    'with-tsaiandrew-source',
+    'run-close-digest-cycle.mjs',
+    "status:'FAILED_GATE'"
+  ]) {
+    if (!runner.includes(marker)) failures.push(`autonomous digest runner is missing ${marker}`);
+  }
+}
+
+if (await exists('automation/macos/com.tsaiandrew.elliott-cross-market-digest.plist')) {
+  const launchAgent = await read('automation/macos/com.tsaiandrew.elliott-cross-market-digest.plist');
+  for (const marker of [
+    'com.tsaiandrew.elliott-cross-market-digest',
+    'run-autonomous-cross-market-digest.command',
+    'ELLIOTT_GITHUB_WRAPPER',
+    'ELLIOTT_DIGEST_NOTIFY_FAILURES',
+    '<key>RunAtLoad</key>'
+  ]) {
+    if (!launchAgent.includes(marker)) failures.push(`autonomous digest LaunchAgent is missing ${marker}`);
+  }
 }
 
 for (const file of ['manifest.webmanifest', 'chart-surface/data-contract.js']) {
