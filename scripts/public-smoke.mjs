@@ -86,7 +86,7 @@ for (const route of routes) {
       if (!body.includes('partialChartTickers') || !body.includes('hasChartData')) {
         failures.push('coverage navigation fallback marker missing');
       }
-      if (!body.includes('Object.fromEntries((activeContract.coverage || [])')) failures.push('coverage partial ticker sources are not derived from the canonical roster');
+      if (!body.includes('Object.fromEntries(canonicalRoster.map')) failures.push('coverage partial ticker sources are not derived from the canonical roster');
     }
     if (route === '/data-model/coverage.html' || route.includes('/chart-surface/index.html')) {
       if (!skipProxy && !body.includes('AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg')) failures.push(`read proxy marker missing ${route}`);

@@ -1,6 +1,8 @@
 # Universal ticker onboarding contract v1
 
-This is the single process for adding a ticker to Elliott+ Stock Analysis. A
+This document contains the add-specific evidence requirements. The canonical
+end-to-end add/remove procedure is
+[`TICKER-LIFECYCLE-CONTRACT-V1.md`](TICKER-LIFECYCLE-CONTRACT-V1.md). A
 ticker is not considered onboarded until the roster, UI, data contract and
 refresh validation all agree.
 
@@ -30,14 +32,13 @@ refresh or validation code after onboarding is complete.
 
 ## Implementation contract
 
-The ticker must be added to every authoritative surface below:
+The ticker must be added to the canonical registry and generated surfaces:
 
-- `coverage-order.js` — one ordered roster entry.
-- `data-model/app.html` — classification/tracking set.
-- `data-model/coverage.html` — classification/tracking set and live/fallback
-  coverage merge.
-- `chart-surface/index.html` — classification/tracking set and live/fallback
-  coverage merge.
+- `coverage-roster.json` — one ordered identity and classification entry.
+- `coverage-order.js` — generated browser bundle; never hand-edit.
+- `data-model/app.html`, `data-model/coverage.html`, and
+  `chart-surface/index.html` — consume the generated registry without a second
+  hard-coded ticker list.
 - `chart-surface/data-contract.js` — fallback coverage row with identity,
   exchange, default view, market source, GEX source, freshness and explicit
   limitations.
@@ -101,11 +102,9 @@ backend uncertainty text in the reader-facing analysis.
 
 ## Offboarding contract
 
-Removing a ticker is the inverse of onboarding. Remove it from the canonical
-ordered roster, UI classification fallbacks, generated public contract,
-completed-session market-data directory and manifest, producer roster, and
-refresh validation exceptions. The public QA gate must reject both a retired
-ticker and a stray retired-ticker market-data file.
+Removing a ticker follows the lifecycle contract. Use the dry-run/apply command
+rather than manually editing the generated files. The public QA gate rejects
+both a retired ticker and a stray retired-ticker market-data file.
 
 OKLO was removed from the active coverage universe on 2026-09-16. Its dated
 historical research remains in repository history and archival source packets;

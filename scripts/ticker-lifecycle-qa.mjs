@@ -1,0 +1,50 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { applyTickerLifecycle, planTickerLifecycle, pruneTicker } from './ticker-lifecycle-lib.mjs';
+
+const sourceRoot = process.cwd();
+const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'elliott-ticker-lifecycle-'));
+const fixtureRoot = path.join(tempRoot, 'repo');
+await fs.mkdir(path.join(fixtureRoot, 'chart-surface/partial-market-data'), { recursive:true });
+for (const relative of ['coverage-roster.json', 'coverage-order.js', 'chart-surface/data-contract.js', 'chart-surface/partial-market-data/MANIFEST.json', 'service-worker.js']) {
+  await fs.copyFile(path.join(sourceRoot, relative), path.join(fixtureRoot, relative));
+}
+const roster = JSON.parse(await fs.readFile(path.join(sourceRoot, 'coverage-roster.json'), 'utf8'));
+for (const { ticker } of roster.tickers) {
+  await fs.copyFile(path.join(sourceRoot, 'chart-surface/partial-market-data', `${ticker}.json`), path.join(fixtureRoot, 'chart-surface/partial-market-data', `${ticker}.json`));
+}
+
+const nested = pruneTicker({ rows:[{ Ticker:'OKLO' }, { ticker:'LITE' }], maps:{ OKLO:{ ticker:'OKLO' }, LITE:{} } }, 'OKLO');
+assert.equal(JSON.stringify(nested).includes('OKLO'), false);
+
+const before = await fs.readFile(path.join(fixtureRoot, 'coverage-roster.json'), 'utf8');
+await planTickerLifecycle({ repoRoot:fixtureRoot, action:'remove', ticker:'LITE', effectiveDate:'2026-09-16' });
+assert.equal(await fs.readFile(path.join(fixtureRoot, 'coverage-roster.json'), 'utf8'), before, 'dry run changed the registry');
+
+await applyTickerLifecycle({ repoRoot:fixtureRoot, action:'remove', ticker:'LITE', effectiveDate:'2026-09-16' });
+const removedRoster = JSON.parse(await fs.readFile(path.join(fixtureRoot, 'coverage-roster.json'), 'utf8'));
+assert.equal(removedRoster.tickers.some((entry) => entry.ticker === 'LITE'), false);
+await assert.rejects(fs.access(path.join(fixtureRoot, 'chart-surface/partial-market-data/LITE.json')));
+const removedManifest = JSON.parse(await fs.readFile(path.join(fixtureRoot, 'chart-surface/partial-market-data/MANIFEST.json'), 'utf8'));
+assert.equal(Boolean(removedManifest.tickers.LITE), false);
+assert.equal((await fs.readFile(path.join(fixtureRoot, 'chart-surface/data-contract.js'), 'utf8')).includes('LITE'), false);
+
+await assert.rejects(
+  planTickerLifecycle({ repoRoot:fixtureRoot, action:'add', ticker:'TEST', effectiveDate:'2026-09-16', metadata:{} }),
+  /required/
+);
+await applyTickerLifecycle({
+  repoRoot:fixtureRoot,
+  action:'add', ticker:'LITE', effectiveDate:'2026-09-16', after:'NBIS',
+  marketDataPath:path.join(sourceRoot, 'chart-surface/partial-market-data/LITE.json'),
+  metadata:{ company:'Lumentum Holdings', exchange:'NASDAQ', coverageGroup:'tracking', marketGroup:'us', defaultView:'daily', marketSource:'https://example.invalid/LITE' }
+});
+const restoredRoster = JSON.parse(await fs.readFile(path.join(fixtureRoot, 'coverage-roster.json'), 'utf8'));
+assert.equal(restoredRoster.tickers.findIndex((entry) => entry.ticker === 'LITE'), restoredRoster.tickers.findIndex((entry) => entry.ticker === 'NBIS') + 1);
+assert.equal((await fs.readFile(path.join(fixtureRoot, 'coverage-order.js'), 'utf8')).includes('"ticker": "LITE"'), true);
+assert.equal((await fs.readFile(path.join(fixtureRoot, 'chart-surface/data-contract.js'), 'utf8')).includes('"ticker": "LITE"'), true);
+
+await fs.rm(tempRoot, { recursive:true, force:true });
+console.log(JSON.stringify({ status:'PASS', checks:['dry-run-no-write', 'recursive-remove', 'manifest-prune', 'missing-input-fail-closed', 'add-round-trip'] }, null, 2));

@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { UNIVERSE, validatePacket } from './validate-universal-refresh-gex.mjs';
 import { buildReleaseReceipt, parsePorcelainPaths, pruneToCoverage } from './sync-universal-refresh.mjs';
 import { loadCoverageRoster } from './coverage-roster.mjs';
+import { readCoverageRegistry, renderCoverageOrderBrowser } from './coverage-registry.mjs';
 import { verifyMarketDataset } from './sync-market-data.mjs';
 
 const root = process.cwd();
@@ -30,6 +31,8 @@ for (const finalStatus of ['NOOP_VERIFIED', 'PUBLISHED_AND_VERIFIED']) {
   if (receipt.status !== finalStatus) failures.push(`autonomous release receipt does not preserve terminal status ${finalStatus}`);
 }
 const requiredFiles = [
+  'coverage-roster.json',
+  'coverage-order.js',
   'index.html',
   'manifest.webmanifest',
   'service-worker.js',
@@ -59,6 +62,11 @@ const requiredFiles = [
   'scripts/ingest-private-analysis.mjs',
   'scripts/sync-universal-refresh.mjs',
   'scripts/sync-market-data.mjs',
+  'scripts/coverage-registry.mjs',
+  'scripts/generate-coverage-order.mjs',
+  'scripts/ticker-lifecycle.mjs',
+  'scripts/ticker-lifecycle-lib.mjs',
+  'scripts/ticker-lifecycle-qa.mjs',
   'scripts/with-tsaiandrew-source',
   'scripts/run-autonomous-universal-refresh.command',
   'automation/macos/com.tsaiandrew.elliott-universal-refresh.plist',
@@ -218,11 +226,8 @@ if (await exists('chart-surface/gex-market-overview.js')) {
 
 if (await exists('data-model/coverage.html')) {
   const home = await read('data-model/coverage.html');
-  const requiredPartialTickers = UNIVERSE;
   if (!home.includes('partialChartTickers') || !home.includes('hasChartData')) failures.push('data-model/coverage.html: partial-safe chart navigation gate is missing');
-  for (const ticker of requiredPartialTickers) {
-    if (!home.includes(`'${ticker}'`)) failures.push(`data-model/coverage.html: partial chart ticker missing from navigation fallback: ${ticker}`);
-  }
+  if (!home.includes('PROTOTYPE_COVERAGE_ROSTER') || !home.includes('PROTOTYPE_COVERAGE_BY_TICKER')) failures.push('data-model/coverage.html: canonical coverage registry is not wired');
 }
 
 const canonicalProxyMarker = 'AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg';
@@ -345,6 +350,27 @@ const activeTickerFiles = [
   'scripts/sync-universal-refresh.mjs',
   'scripts/validate-universal-refresh-gex.mjs'
 ];
+
+try {
+  const registry = await readCoverageRegistry(root);
+  const generatedCoverage = await read('coverage-order.js');
+  if (generatedCoverage !== renderCoverageOrderBrowser(registry)) failures.push('coverage-order.js has drifted from coverage-roster.json');
+  if (registry.tickers.map((entry) => entry.ticker).join(',') !== UNIVERSE.join(',')) failures.push('Universal Refresh validator has drifted from coverage-roster.json');
+} catch (error) {
+  failures.push(`coverage registry: ${error.message}`);
+}
+try {
+  const event = JSON.parse(await read('docs/ticker-lifecycle-events/2026-09-16-remove-OKLO.json'));
+  if (event.schemaVersion !== 'elliott-ticker-lifecycle-event-v1' || event.action !== 'remove' || event.ticker !== 'OKLO') failures.push('OKLO lifecycle event identity is invalid');
+  if (event.liveSource?.legacyCoverage?.active !== false || event.liveSource?.coverageMembership?.some((row) => row.active !== false || row.status !== 'inactive')) failures.push('OKLO lifecycle event does not prove inactive live-source state');
+  if (!event.producer?.commit || !event.publicApplication?.removalCommit) failures.push('OKLO lifecycle event lacks cross-plane commit evidence');
+} catch (error) {
+  failures.push(`OKLO lifecycle event: ${error.message}`);
+}
+for (const file of ['data-model/app.html', 'data-model/coverage.html', 'chart-surface/index.html']) {
+  const source = await read(file);
+  if (/const\s+(?:trackingTickers|explorationTickers|twseTickers)\s*=/.test(source)) failures.push(`${file}: contains a duplicate hard-coded ticker roster`);
+}
 for (const file of activeTickerFiles) {
   const source = await read(file);
   for (const ticker of retiredTickers) {

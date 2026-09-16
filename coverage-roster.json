@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "elliott-coverage-roster-v1",
+  "updatedAt": "2026-09-16",
+  "tickers": [
+    { "ticker": "LITE", "company": "Lumentum Holdings", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "NBIS", "company": "Nebius Group", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "PLTR", "company": "Palantir Technologies", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "IREN", "company": "IREN Limited", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "NOK", "company": "Nokia", "exchange": "NYSE", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "ACHR", "company": "Archer Aviation", "exchange": "NYSE", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "CSCO", "company": "Cisco Systems", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "AMKR", "company": "Amkor Technology", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "ONDS", "company": "Ondas Holdings", "exchange": "NASDAQ", "coverageGroup": "tracking", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "NVDA", "company": "NVIDIA", "exchange": "NASDAQ", "coverageGroup": "exploration", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "MRVL", "company": "Marvell Technology", "exchange": "NASDAQ", "coverageGroup": "exploration", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "SNDK", "company": "Sandisk", "exchange": "NASDAQ", "coverageGroup": "exploration", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "AVGO", "company": "Broadcom", "exchange": "NASDAQ", "coverageGroup": "exploration", "marketGroup": "us", "defaultView": "daily" },
+    { "ticker": "2646", "company": "星宇航空", "exchange": "TWSE", "coverageGroup": "tracking", "marketGroup": "twse", "defaultView": "daily" },
+    { "ticker": "2330", "company": "台積電", "exchange": "TWSE", "coverageGroup": "exploration", "marketGroup": "twse", "defaultView": "daily" }
+  ]
+}
