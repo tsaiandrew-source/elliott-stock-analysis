@@ -38,6 +38,11 @@ remain backend-only.
    `chart-surface/partial-market-data/*.json`. Static and PWA QA must pass before the
    exact `tsaiandrew-source` credential wrapper creates and merges a PR; the
    runner never depends on the globally active `gh` account.
+   The LaunchAgent invokes the repo-native `scripts/with-tsaiandrew-source`
+   wrapper, which asks `gh` for the personal `tsaiandrew-source` credential
+   stored by macOS Keychain. The wrapper contains no token and deliberately
+   lives beside the runner so background execution never depends on a
+   TCC-protected `Documents` path.
 6. The runner records a pending release, waits for GitHub Pages, verifies the
    exact SHA-256 of the published data contract and market manifest, then
    verifies every public ticker file's hash, final bar date and closing price.
