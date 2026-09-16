@@ -45,8 +45,14 @@
   },
   "liveSource": {
     "spreadsheetId": "1EaMUEZVdGH6Ag5Xw0r2etAwkNZBcoCQ3Viw_xSXvzDE",
-    "status": "pending_review_and_approval",
-    "requiredChange": "Add active MU Coverage and CoverageMembership rows; deactivate every active AVGO exploration membership; append a current active AVGO tracking membership; leave the empty WatchlistEntry table unchanged"
+    "status": "applied_and_verified",
+    "appliedAtUtc": "2026-09-16T17:13:55Z",
+    "muCoverageRow": 18,
+    "muMembershipRow": 185,
+    "avgoTrackingMembershipRow": 184,
+    "deactivatedAvgoExplorationMembershipRows": [46, 76, 91, 106, 121, 136, 151, 164, 180],
+    "watchlistEntryRowCount": 1,
+    "verification": "Workbook re-export confirmed MU active/tracking, AVGO active/tracking, all historical AVGO exploration memberships inactive, and WatchlistEntry header-only"
   },
   "producer": {
     "repository": "P F Social",
