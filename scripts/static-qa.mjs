@@ -49,6 +49,7 @@ const requiredFiles = [
   'scripts/ingest-private-analysis.mjs',
   'scripts/sync-universal-refresh.mjs',
   'scripts/sync-market-data.mjs',
+  'scripts/with-tsaiandrew-source',
   'scripts/run-autonomous-universal-refresh.command',
   'automation/macos/com.tsaiandrew.elliott-universal-refresh.plist',
   'chart-surface/gex-market-overview.js',
@@ -189,6 +190,13 @@ const publicSmoke = await read('scripts/public-smoke.mjs');
 for (const marker of ['attempts: 5', 'cacheBustOnRetry: true', "searchParams.set('smokeRetry'"]) {
   if (!publicSmoke.includes(marker)) failures.push(`scripts/public-smoke.mjs: Apps Script retry hardening is missing ${marker}`);
 }
+const universalRunner = await read('scripts/run-autonomous-universal-refresh.command');
+const personalCredentialWrapper = await read('scripts/with-tsaiandrew-source');
+if (!universalRunner.includes('${ROOT}/scripts/with-tsaiandrew-source')) failures.push('Universal Refresh runner must use the repo-native credential wrapper by default');
+for (const marker of ['auth token --user tsaiandrew-source', 'export GH_TOKEN=', 'export GITHUB_TOKEN=']) {
+  if (!personalCredentialWrapper.includes(marker)) failures.push(`scripts/with-tsaiandrew-source: missing ${marker}`);
+}
+if (/ghp_|github_pat_/i.test(personalCredentialWrapper)) failures.push('scripts/with-tsaiandrew-source: credential material must never be committed');
 
 if (await exists('data-model/home.html')) {
   const home = await read('data-model/home.html');

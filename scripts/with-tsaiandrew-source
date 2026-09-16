@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+gh_bin="${ELLIOTT_GH_BIN:-/opt/homebrew/bin/gh}"
+if [ ! -x "$gh_bin" ]; then
+  printf '%s\n' "Personal GitHub credential helper is unavailable: $gh_bin" >&2
+  exit 2
+fi
+
+personal_github_token="$($gh_bin auth token --user tsaiandrew-source)"
+if [ -z "$personal_github_token" ]; then
+  printf '%s\n' "Personal GitHub credential is unavailable for tsaiandrew-source" >&2
+  exit 2
+fi
+
+export GH_TOKEN="$personal_github_token"
+export GITHUB_TOKEN="$personal_github_token"
+exec "$@"
