@@ -17,13 +17,28 @@
   "producer": {
     "repository": "P F Social",
     "commit": "5048128",
-    "result": "OKLO removed from refresh roster and GEX fixture"
+    "lifecycleCommit": "3bf9580",
+    "result": "OKLO removed from refresh selection; producer roster and add/remove tooling operationalized"
   },
   "publicApplication": {
     "repository": "tsaiandrew-source/elliott-stock-analysis",
     "removalCommit": "9322e36",
+    "lifecycleCommit": "74617ec",
     "branch": "codex/remove-oklo-globally",
+    "pullRequest": 107,
+    "mergeCommit": "13c867044edf33232306515c1a63d5fc49f85fb8",
+    "mergedAt": "2026-09-16T16:33:49Z",
     "result": "Removed from active registry, UI, contract, refresh target, market file and manifest",
-    "releaseStatus": "pending reviewed PR"
+    "releaseStatus": "deployed_and_verified"
+  },
+  "productionVerification": {
+    "verifiedAt": "2026-09-16T16:37:10Z",
+    "pagesRunId": 35122695188,
+    "pagesConclusion": "success",
+    "publicSmokeCheckedRoutes": 34,
+    "activeCoverageCount": 15,
+    "okloActive": false,
+    "coverageRosterSha256": "523a2a026096eb5e16c9eeebdd6710f23f2eeea3b5b2e6e37cb7ed50ff7bce80",
+    "pwaCacheVersion": "elliott-pwa-v30"
   }
 }
