@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "elliott-ticker-lifecycle-event-v1",
+  "action": "add",
+  "ticker": "MU",
+  "effectiveDate": "2026-09-16",
+  "reason": "Owner-requested addition to global tracked coverage",
+  "relatedRosterChange": {
+    "ticker": "AVGO",
+    "fromCoverageGroup": "exploration",
+    "toCoverageGroup": "tracking",
+    "activeExplorationMembershipPolicy": "Deactivate every active AVGO exploration membership while retaining the rows as history; append a current active tracking membership"
+  },
+  "candidateListDisposition": {
+    "ticker": "MU",
+    "activePotentialCandidate": false,
+    "evidence": "The production WatchlistEntry table has only its header and contains no MU row",
+    "policy": "Tracked membership supersedes potential-candidate eligibility; historical research references remain archival"
+  },
+  "identity": {
+    "company": "Micron Technology",
+    "exchange": "NASDAQ",
+    "coverageGroup": "tracking",
+    "marketGroup": "us",
+    "defaultView": "daily",
+    "insertAfter": "AVGO"
+  },
+  "marketEvidence": {
+    "provider": "Nasdaq",
+    "sourceUrl": "https://api.nasdaq.com/api/quote/MU/chart?assetclass=stocks&fromdate=2026-03-16&todate=2026-09-15",
+    "dataThrough": "2026-09-15",
+    "completedSessionClose": 927.6,
+    "normalizedBars": 102,
+    "normalizedArtifactSha256": "ed3cef702455c252bcd87a658c8a625766f95aa1bb72ba6e573b3ebb3bd79dd5"
+  },
+  "gexEvidence": {
+    "provider": "Cboe delayed options chain",
+    "sourceUrl": "https://cdn.cboe.com/api/global/delayed_quotes/options/MU.json",
+    "retrievedAtUtc": "2026-09-16T16:53:07Z",
+    "status": "aggregate_only",
+    "currentExpiration": "2026-09-18",
+    "nextExpiration": "2026-09-25",
+    "signedDealerEvidenceAvailable": false,
+    "renderPolicy": "Fail closed; retain unsigned sensitivity without rendering signed GEX",
+    "reviewedRecordSha256": "4b80e2d705c128d60620960154991a8296e6e0c31d83a6ea539a2668d4aa3655"
+  },
+  "liveSource": {
+    "spreadsheetId": "1EaMUEZVdGH6Ag5Xw0r2etAwkNZBcoCQ3Viw_xSXvzDE",
+    "status": "pending_review_and_approval",
+    "requiredChange": "Add active MU Coverage and CoverageMembership rows; deactivate every active AVGO exploration membership; append a current active AVGO tracking membership; leave the empty WatchlistEntry table unchanged"
+  },
+  "producer": {
+    "repository": "P F Social",
+    "status": "staged_and_qa_passed",
+    "registrySha256": "c62e1378a4bc333cd02d297f6a2ca96976b086c3295487d2978204eb721450ff",
+    "tickerCount": 16
+  },
+  "publicApplication": {
+    "repository": "tsaiandrew-source/elliott-stock-analysis",
+    "branch": "codex/add-mu-20260916",
+    "status": "staged_and_qa_passed",
+    "registrySha256": "c62e1378a4bc333cd02d297f6a2ca96976b086c3295487d2978204eb721450ff",
+    "tickerCount": 16,
+    "pwaCacheVersion": "elliott-pwa-v31",
+    "releaseStatus": "not_released"
+  },
+  "rollbackPolicy": "Deactivate MU in live source, remove it through the lifecycle command, restore AVGO group metadata if directed, and preserve source and repository history"
+}

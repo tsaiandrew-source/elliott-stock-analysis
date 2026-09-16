@@ -23,6 +23,7 @@ const effectiveDate = values['effective-date'] || new Date().toISOString().slice
 const options = {
   repoRoot, action, ticker, effectiveDate,
   marketDataPath: values['market-data'],
+  gexRecordPath: values['gex-record'],
   after: values.after,
   metadata: {
     company: values.company,

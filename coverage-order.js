@@ -101,7 +101,15 @@
     "ticker": "AVGO",
     "company": "Broadcom",
     "exchange": "NASDAQ",
-    "coverageGroup": "exploration",
+    "coverageGroup": "tracking",
+    "marketGroup": "us",
+    "defaultView": "daily"
+  },
+  {
+    "ticker": "MU",
+    "company": "Micron Technology",
+    "exchange": "NASDAQ",
+    "coverageGroup": "tracking",
     "marketGroup": "us",
     "defaultView": "daily"
   },

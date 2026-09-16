@@ -247,6 +247,23 @@ window.PROTOTYPE_DATA_CONTRACT = {
       "optionsFreshness": "",
       "analysisAvailable": true,
       "intakeStatus": "complete"
+    },
+    {
+      "ticker": "MU",
+      "company": "Micron Technology",
+      "exchange": "NASDAQ",
+      "coverageGroup": "tracking",
+      "marketGroup": "us",
+      "defaultView": "daily",
+      "active": true,
+      "latestChartDate": "2026-09-15",
+      "marketSource": "https://api.nasdaq.com/api/quote/MU/chart?assetclass=stocks&fromdate=2026-03-16&todate=2026-09-15",
+      "chartSource": "partial-market-data/MU.json",
+      "gexSource": "https://cdn.cboe.com/api/global/delayed_quotes/options/MU.json",
+      "freshness": "2026-09-15 · completed-session OHLCV",
+      "optionsFreshness": "",
+      "analysisAvailable": false,
+      "intakeStatus": "partial"
     }
   ],
   "analysisRuns": [
