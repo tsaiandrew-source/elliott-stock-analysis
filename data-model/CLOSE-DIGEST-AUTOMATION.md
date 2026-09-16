@@ -4,11 +4,12 @@ This contract provides one fail-closed ingestion and release path for the weekda
 
 ## Ownership
 
-- The digest heartbeat is the producer. After research and editorial gates pass, it atomically writes one completed `elliott-cross-market-digest-v1` packet to the producer-owned outbox.
+- The digest heartbeat is the producer only. After research and editorial gates pass, it atomically writes one completed `elliott-cross-market-digest-v1` packet to the producer-owned outbox.
 - The Elliott app consumer validates the packet and writes acknowledged local copies of `data-model/digests.json` and `data-model/digest-data.js`.
 - The consumer never pushes, opens a PR, merges, changes settings, or deploys.
 - The release runner is the sole GitHub promotion owner. It replays the acknowledged packet into only those two outputs in an isolated worktree based on the latest `origin/main`, preserving editions or revisions that merged after the local consumer checkout was created.
 - `run-close-digest-cycle.mjs` joins the stages and accepts `--edition morning|midday|close|weekly`. The filename is retained so the activated close command does not break.
+- The user-authorized local LaunchAgent is the scheduler and invokes the deterministic consumer/release runner. Codex consumer wakes must remain disabled so there is only one promotion owner.
 
 ## Cadence
 
@@ -68,7 +69,22 @@ Recommended handoff root:
 
 Consumer state is edition-scoped and contains `locks/`, `processing/`, `archive/YYYY-MM-DD/`, `quarantine/`, `acks/<digest-id>.json`, `releases/<digest-id>-rN.json`, and append-only `runs.ndjson`.
 
-## Heartbeat commands
+## Autonomous LaunchAgent
+
+`automation/macos/com.tsaiandrew.elliott-cross-market-digest.plist` runs the local wrapper at every primary and recovery checkpoint. `RunAtLoad` provides catch-up after login or restart. The scheduler resolves all due editions in `America/Los_Angeles`, so a wake after sleep retries earlier same-day editions before the current one.
+
+The wrapper is `scripts/run-autonomous-cross-market-digest.command`. It writes a private per-run log under `consumer-state/autonomous-logs/` and invokes `scripts/run-autonomous-cross-market-digest.mjs`. The Node scheduler:
+
+- uses only the Keychain-backed `with-tsaiandrew-source` credential wrapper;
+- runs the existing fail-closed cycle for each due edition;
+- continues to later editions when an earlier edition fails, then reports an aggregate failed gate;
+- records an append-only `autonomous-runs.ndjson` receipt;
+- remains quiet for successful and idempotent runs;
+- shows a local macOS notification only when one or more routes fail.
+
+Install the checked-in plist at `~/Library/LaunchAgents/com.tsaiandrew.elliott-cross-market-digest.plist`, validate it with `plutil`, then bootstrap it in the current GUI domain. The installed job must point to `/Users/andrtsai/src/elliott-stock-analysis` and the credential wrapper at `/Users/andrtsai/Library/Application Support/Elliott+/credentials/with-tsaiandrew-source`.
+
+## Manual recovery command
 
 Primary check for an edition:
 
@@ -101,7 +117,9 @@ Unexpected changes, identity or hash drift, missing authentication, API errors, 
 
 ## Authorization boundary
 
-Code support does not itself authorize a new public release route. Weekly release wakes must be activated only after the exact public destination, schedule, packet handoff, command, and fail-closed scope are separately reviewed and approved.
+Andrew activated this exact scheduled route on 2026-09-15. No per-run review is required while the schedule, repository, GitHub identity, packet schema, two-file output scope, PR/check/squash-merge/Pages sequence, and recovery behavior remain unchanged.
+
+The standing authority is limited to `tsaiandrew-source/elliott-stock-analysis`, `data-model/digests.json`, `data-model/digest-data.js`, the morning/midday/close/weekly cadence above, and its same-day recovery. A changed repository, account, schedule, schema, output file, action type, or publication series requires new review. Every validation or platform gate still fails closed.
 
 ## Reporting
 
@@ -112,4 +130,4 @@ Stay quiet for `NOOP` and `consumer_locked`. Report only:
 - `FAILED_GATE` for persistent absence, malformed or unsafe data, stale/conflicting/duplicate packets, QA rollback, or Pages verification failure;
 - required user action for repository access, credentials, branch protection, or deployment repair.
 
-The heartbeat must never rewrite producer analysis, bypass a failed gate, make the producer write the app store directly, or cross into Iris/AppSheet or social publishing.
+The producer heartbeat must never run the consumer, rewrite producer analysis, bypass a failed gate, write the app store directly, or cross into Iris/AppSheet or social publishing.
