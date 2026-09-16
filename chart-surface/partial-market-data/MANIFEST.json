@@ -1,6 +1,6 @@
 {
   "schemaVersion": "elliott-completed-session-market-data-v1",
-  "sourceBatchId": "COVERAGE-20260914-EOD-BACKFILL-V1",
+  "sourceBatchId": "COVERAGE-20260915-EOD-V1",
   "tickerOrder": [
     "LITE",
     "NBIS",
@@ -21,84 +21,84 @@
   ],
   "tickers": {
     "2330": {
-      "dataThrough": "2026-09-14",
-      "close": 2380,
-      "sha256": "4d5f59bc96d9f0d92d7e1c63bd1a48d13d0cc9ea4573c5e949eacbc73f8c4d44"
+      "dataThrough": "2026-09-15",
+      "close": 2385,
+      "sha256": "dc5cf4a5d3f1c3dcc5baf57a57b7c309d355acdcb7ab046d67974620b8d60104"
     },
     "2646": {
-      "dataThrough": "2026-09-14",
-      "close": 20.1,
-      "sha256": "18586696ea82822a327c78c10a60b357bb72e20618c594adc9cabc8fabf4e909"
+      "dataThrough": "2026-09-15",
+      "close": 20.100000381469727,
+      "sha256": "6133d849fb327c32e1f72678e50d99363b561578feea55c5e16db39237274aed"
     },
     "LITE": {
-      "dataThrough": "2026-09-14",
-      "close": 835.03,
-      "sha256": "c246873ee423249669b573272a6129f9d24d321aeb0c76ad37d749bdda2c397e"
+      "dataThrough": "2026-09-15",
+      "close": 838.9600219726562,
+      "sha256": "58858c9cbfcb14a44522f01db5f430b3db4f3f02dc24cec7a61da7f12ada5249"
     },
     "NBIS": {
-      "dataThrough": "2026-09-14",
-      "close": 212.19,
-      "sha256": "7774cfad1b3a5e05e9e51bd2ad7c20c2d4c940fa724bc611254eb79e0f6aed44"
+      "dataThrough": "2026-09-15",
+      "close": 207.3699951171875,
+      "sha256": "4cefa7d6274040af81e69b4bea063f6d22a0df00b5ad5bcd7814789bc0409144"
     },
     "PLTR": {
-      "dataThrough": "2026-09-14",
-      "close": 173.31,
-      "sha256": "5a38a4604fecfe48165cd78e520a4a6e071c5ae74e13551fc8f866bcc5993574"
+      "dataThrough": "2026-09-15",
+      "close": 172.55999755859375,
+      "sha256": "7b3ce6ab2c6be8695b43586e0e9882a10b41a9f126f0a3cc6c9152d47f3cd52d"
     },
     "IREN": {
-      "dataThrough": "2026-09-14",
-      "close": 43.17,
-      "sha256": "0072b4dea1ec2307d2c0fd3af2107aa62caef1719d30942ebdd9bd55c9ec174b"
+      "dataThrough": "2026-09-15",
+      "close": 41.58000183105469,
+      "sha256": "9f57c5efa50d646c538914f767df8571ae8d4e84c7a942bd7527b71e24401f21"
     },
     "NOK": {
-      "dataThrough": "2026-09-14",
-      "close": 9.65,
-      "sha256": "06bbf145777bcf9ffb5088ed4a5f27309eba8a3f60d58da9a9e6517b8e826bb5"
+      "dataThrough": "2026-09-15",
+      "close": 9.84000015258789,
+      "sha256": "1314628d4e05d6572b8d5755c5e0adec7bb6224ce0820f26914cd5f4be703b4b"
     },
     "ACHR": {
-      "dataThrough": "2026-09-14",
-      "close": 5.51,
-      "sha256": "e942d64bd33e3dc2f749a977171c797ad0732a1118ebc62e79730697d4aa1d12"
+      "dataThrough": "2026-09-15",
+      "close": 5.46999979019165,
+      "sha256": "f9b5bb9f070c81ddd27505401204df135bb1c53d2bafc493407ddcc40ea77af1"
     },
     "CSCO": {
-      "dataThrough": "2026-09-14",
-      "close": 110.06,
-      "sha256": "c428adc72bdf8001497f0b8b172a360a505d31e5ad66918f1ff802c1eea3bb4e"
+      "dataThrough": "2026-09-15",
+      "close": 110.06999969482422,
+      "sha256": "3623e72285a69c5112b4d25bbcfbc0a88d8c40af786896f2375a655ee4a43768"
     },
     "AMKR": {
-      "dataThrough": "2026-09-14",
-      "close": 47.12,
-      "sha256": "8b580a7c2a3e84a5dc719ad57b5117099d0f5f2792b89f130eaca462dcbeba5b"
+      "dataThrough": "2026-09-15",
+      "close": 46.380001068115234,
+      "sha256": "bf993aab55b7a72d6df48388d593fded863a65a9455509f37cd0384e1c467d36"
     },
     "ONDS": {
-      "dataThrough": "2026-09-14",
-      "close": 7.23,
-      "sha256": "fe807df8dfd402ec3676cb53d6eb82df3d9dfedfa56c271178227f001a0d731c"
+      "dataThrough": "2026-09-15",
+      "close": 7.239999771118164,
+      "sha256": "ed50a79eddc275c220df4c6bc1bc1049e4cb0cac70ddcb7090038bf542bb0066"
     },
     "NVDA": {
-      "dataThrough": "2026-09-14",
-      "close": 210.96,
-      "sha256": "c8912d9c4077d4db1d731befa0380c0e33712ca8feb8b63a94c70de774ac5141"
+      "dataThrough": "2026-09-15",
+      "close": 212.1699981689453,
+      "sha256": "5667de577e2fdd47c22e3bfcf30c35ee2c407d04cc2ce6f841e5e99c3a7aba4f"
     },
     "MRVL": {
-      "dataThrough": "2026-09-14",
-      "close": 218.82,
-      "sha256": "8c21f30215af96e5116085c88ae3a2feff35ddeaec3aa6b1c815202c0bccbc14"
+      "dataThrough": "2026-09-15",
+      "close": 221.6999969482422,
+      "sha256": "3464ffdb0eddd876b0d47bf70d8363967fff015a91a190244c9f030f73797023"
     },
     "SNDK": {
-      "dataThrough": "2026-09-14",
-      "close": 1551.99,
-      "sha256": "9c4fc1928bd4beae348569e693c2813caf6d1650d11644605c1078bc60c0945f"
+      "dataThrough": "2026-09-15",
+      "close": 1530.89501953125,
+      "sha256": "0b4a4dceb7691f8490df34730309732918cb0d6fe36a86bb54a9fcfebc11aa88"
     },
     "AVGO": {
-      "dataThrough": "2026-09-14",
-      "close": 344.7200012207031,
-      "sha256": "434b4748292a8fe36ecf784c600d782edce21dbacfdfb0773f5df45ad4fc919f"
+      "dataThrough": "2026-09-15",
+      "close": 339.2699890136719,
+      "sha256": "717976793c6434528bc6512f96ca72d56c5a18a5c3e7e9ec7bff9a8c420e0d9e"
     },
     "OKLO": {
-      "dataThrough": "2026-09-14",
-      "close": 36.209999084472656,
-      "sha256": "057599948591d9f84fc0b2bb9bf022a0c26d2d8a2f4fd6502c76d0506b50fd06"
+      "dataThrough": "2026-09-15",
+      "close": 35.97999954223633,
+      "sha256": "7ce5bf710449700d91425e4f6a6ddd8f19c61f6bef4f99870c7bab320bde9c0b"
     }
   }
 }
