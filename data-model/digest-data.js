@@ -1,7 +1,281 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-15T19:46:19.444Z",
+  "generatedAt": "2026-09-16T02:15:13.678Z",
   "records": [
+    {
+      "id": "daily-2026-09-15-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-15",
+      "publishedAt": "2026-09-15T16:03:00-07:00",
+      "updatedAt": "2026-09-15T19:13:04-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-15T16:01:40-07:00",
+      "retrievedAt": "2026-09-15T19:12:40-07:00",
+      "status": "complete",
+      "revision": 2,
+      "title": "收盤綜合判讀｜2026-09-15",
+      "summary": "今天市場最終確認的不是AI全面退潮，而是能源通膨與5%長債殖利率正在把壓力擴散到消費、餐飲、小型股與加密相關資產。S&P 500跌0.4%、道瓊跌0.6%、Nasdaq與Russell 2000各跌0.8%；Brent升2.9%至108.75美元，10年期殖利率收在約5.00%。Empire State製造業降溫但價格壓力升高，形成偏停滯性通膨的組合。AI晶片反而止跌，Nvidia與AMD上漲，證明昨日的AI敘事不是今天大盤走弱的核心。明日Fed決策前，零售銷售與長端殖利率將先決定市場能否承受升息。",
+      "sections": [
+        {
+          "heading": "1. 全日主線：油價與5%長債利率共同收緊金融條件",
+          "paragraphs": [
+            "事實：Brent上漲2.9%，結算於108.75美元；10年期美債殖利率由昨日約4.97%升至約5.00%，隔夜一度觸及5.04%。",
+            "判斷：高油價抬升通膨與企業成本，高殖利率同時壓縮估值與融資能力。兩者同向，比單獨的AI情緒更能解釋今天大盤、消費與小型股的弱勢。信心：高。",
+            "反證：Brent跌破105美元、10年期回到4.90%以下，而且信用利差未惡化。"
+          ],
+          "links": [
+            {
+              "label": "AP全日市場",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            },
+            {
+              "label": "沙烏地官方管線聲明",
+              "url": "https://www.spa.gov.sa/en/N2674017"
+            }
+          ]
+        },
+        {
+          "heading": "2. 指數收低但未失序，壓力已擴散至小型股",
+          "paragraphs": [
+            "事實：S&P 500跌0.4%至7,585.73；道瓊跌0.6%至52,093.11；Nasdaq跌0.8%至25,981.57；Russell 2000跌0.8%至2,870.29。",
+            "判斷：跌幅仍屬有秩序調整，但Russell與Nasdaq同步落後，顯示高融資成本已同時壓住長久期與資產負債表較脆弱的公司。只有信用與波動率同步明顯惡化，才升級為流動性事件。信心：高。",
+            "反證：明日市場寬度轉正，小型股相對反彈，而且10年期不再站上5%。"
+          ],
+          "links": [
+            {
+              "label": "AP主要指數收盤",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-b1b1bc9f943da62c6a639a8761b4eca3"
+            }
+          ]
+        },
+        {
+          "heading": "3. Empire State揭示偏停滯性通膨，而非乾淨降溫",
+          "paragraphs": [
+            "事實：9月Empire State一般商業狀況指數由20.6降至7.6；新訂單僅小幅增加、出貨小幅下降。價格支付指數升至63.1、收取價格指數升至28.1，供應可得性持續惡化。",
+            "判斷：成長放慢卻沒有帶來價格舒緩，使Fed明日難以單靠需求降溫轉鴿。這也解釋了為何弱於預期的製造業數據沒有把長端殖利率壓回5%以下。信心：高。",
+            "反證：明日零售銷售與後續全國調查顯示需求有序放緩、價格與交貨時間同步改善。"
+          ],
+          "links": [
+            {
+              "label": "紐約Fed官方調查",
+              "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+            }
+          ]
+        },
+        {
+          "heading": "4. 消費與餐飲成為最清楚的壓力出口",
+          "paragraphs": [
+            "事實：Chipotle跌5.9%、Darden Restaurants跌4.3%、Dollar Tree跌5.4%。Dave & Buster's跌19%；公司第二季營收年減2.4%、同店銷售年減2.9%，並由去年同期獲利轉為淨損。",
+            "判斷：這組表現把宏觀壓力轉成公司層面的證據：能源與利率不只壓估值，也開始影響家庭可支配所得與體驗型消費。信心：中高。",
+            "反證：後續大型零售、餐飲與旅遊公司仍能維持客流、定價與利潤率指引。"
+          ],
+          "links": [
+            {
+              "label": "Dave & Buster's官方財報",
+              "url": "https://ir.daveandbusters.com/node/18151"
+            },
+            {
+              "label": "AP產業收盤",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            }
+          ]
+        },
+        {
+          "heading": "5. AI晶片止跌，否定了『全科技崩塌』的延伸劇本",
+          "paragraphs": [
+            "事實：Nvidia上漲0.6%、AMD上漲2.2%，在昨日AI安全敘事引發的賣壓後出現分化。Gates Foundation另宣布未來兩年投入至少10億美元，擴大AI在醫療、教育與農業的可及性。",
+            "判斷：市場把前沿模型風險與實際應用需求分開定價。10億美元相對整體AI資本支出不大，不能扭轉大盤，但它支持『應用投資持續、最前沿訓練速度可能受限』的雙軌敘事。信心：中高。",
+            "反證：主要雲端平台下修資本支出，或AI晶片明日重新領跌並擴散到軟體與平台公司。"
+          ],
+          "links": [
+            {
+              "label": "Gates Foundation第一手公告",
+              "url": "https://www.publicnow.com/view/892BC03F80C57F505FC2B17C9CEA4F5A47948F9C"
+            },
+            {
+              "label": "AP AI市場與基金會反應",
+              "url": "https://apnews.com/article/26ce25f9be20574a4fa04a5f983521ae"
+            },
+            {
+              "label": "AP晶片收盤",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            }
+          ]
+        },
+        {
+          "heading": "6. 加密監管受阻，政策不確定性直接進入價格",
+          "paragraphs": [
+            "事實：美國參議院以49比50否決對H.R. 3633動議進行程序性終止辯論，未達60票門檻。Coinbase跌10.1%、Robinhood跌3.4%。",
+            "判斷：市場失去短期建立全國性加密資產監管框架的基準路徑。這不是單純風險偏好下滑，而是產業專屬的政策折價；監管友善的行政措施無法完全替代可持久的國會立法。信心：高。",
+            "反證：兩黨迅速就倫理限制與州級執法權達成新文本，並重新排入可通過的表決。"
+          ],
+          "links": [
+            {
+              "label": "美國參議院官方表決",
+              "url": "https://www.senate.gov/legislative/LIS/roll_call_votes/vote1192/vote_119_2_00234.htm"
+            },
+            {
+              "label": "AP立法與股價反應",
+              "url": "https://apnews.com/article/e3caf262dc138147941787299e5f0a66"
+            }
+          ]
+        },
+        {
+          "heading": "7. 全日結論：市場在等Fed，但已先把政策代價寫進價格",
+          "paragraphs": [
+            "事實：油價、長債殖利率與美元方向一致地收緊金融條件；股市下跌但沒有全面恐慌；AI晶片相對改善，消費與加密相關資產惡化。黃金與信用沒有足夠可靠的新訊號，不硬補方向。",
+            "判斷：今天最終劇本是『停滯性通膨風險＋產業再分配』。若明日Fed升息後長端殖利率下降，市場可得到喘息；若升息仍無法壓低10年期與油價，金融條件衝擊會更持久。信心：高。"
+          ],
+          "links": [
+            {
+              "label": "AP全日市場",
+              "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+            },
+            {
+              "label": "AP Fed前瞻",
+              "url": "https://apnews.com/article/ffd60cca8bb045bb9b1c389f5f1b73af"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產結果",
+          "table": {
+            "columns": [
+              "資產",
+              "收盤狀態",
+              "最終判讀"
+            ],
+            "rows": [
+              [
+                "美國大型股",
+                "小幅收低",
+                "油價與長債壓住估值"
+              ],
+              [
+                "小型股",
+                "偏弱",
+                "Russell 2000跌0.8%，融資敏感"
+              ],
+              [
+                "AI晶片",
+                "相對改善",
+                "Nvidia與AMD反彈"
+              ],
+              [
+                "消費／餐飲",
+                "明顯偏弱",
+                "可支配所得與成本壓力"
+              ],
+              [
+                "原油",
+                "偏熱",
+                "Brent結算108.75美元"
+              ],
+              [
+                "長天期美債",
+                "偏弱",
+                "10年期約5.00%"
+              ],
+              [
+                "加密相關股",
+                "明顯偏弱",
+                "監管立法受阻"
+              ],
+              [
+                "黃金／信用",
+                "無足夠新訊號",
+                "不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "明日展望｜9月16日週三",
+          "paragraphs": [
+            "05:30 PT：美國8月零售銷售、進出口價格與紐約Fed服務業調查公布。零售若強於預期，可能進一步抬高升息與長債壓力；若弱於預期但價格仍高，則加重停滯性通膨判讀。07:00 PT：7月企業庫存與9月NAHB房市指數。",
+            "11:00 PT：FOMC公布利率決策、聲明與經濟預測；11:30 PT：主席Kevin Warsh記者會。市場普遍預期升息一碼。真正關鍵是點陣圖、通膨預測、未來升息次數，以及10年與30年期殖利率是否在決策後下降。",
+            "今日收盤後：Trip.com公布第二季與上半年業績，17:00 PT電話會議。重點是中國與跨境旅遊需求、能源成本、監管影響與利潤率。",
+            "隔夜風險：霍爾木茲、紅海與沙烏地替代管線任何新進展，都會先反映在Brent、通膨預期、航空與運輸；加密立法協商若重啟，則影響Coinbase、Robinhood與Bitcoin。",
+            "基準路徑：Fed升息一碼、點陣圖維持偏鷹；Brent在106至110美元，10年期在4.95%至5.05%，股市震盪偏弱，能源相對領先。",
+            "偏強路徑：零售溫和、Fed升息但明確反對連續快速收緊，10年期跌破4.90%、Brent回落至105美元以下，市場寬度改善。",
+            "偏弱路徑：零售與價格同時偏強，Fed暗示更多升息，或不升息卻引發可信度疑慮；10年期站穩5.05%以上、Brent突破110美元，信用與波動率加入避險。"
+          ],
+          "links": [
+            {
+              "label": "美國人口普查局零售日曆",
+              "url": "https://www.census.gov/economic-indicators/calendar-listview.html"
+            },
+            {
+              "label": "紐約Fed九月經濟日曆",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            },
+            {
+              "label": "Fed會議官方日曆",
+              "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+            },
+            {
+              "label": "Trip.com官方公告",
+              "url": "https://investors.trip.com/news-events/news-releases"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP全日市場",
+          "url": "https://apnews.com/article/stock-markets-oil-rates-inflation-ai-123ddc2d8ba06c324cbbd899f7eeebd2"
+        },
+        {
+          "label": "AP主要指數收盤",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-b1b1bc9f943da62c6a639a8761b4eca3"
+        },
+        {
+          "label": "紐約Fed官方調查",
+          "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+        },
+        {
+          "label": "沙烏地官方管線聲明",
+          "url": "https://www.spa.gov.sa/en/N2674017"
+        },
+        {
+          "label": "Dave & Buster's官方財報",
+          "url": "https://ir.daveandbusters.com/node/18151"
+        },
+        {
+          "label": "Gates Foundation第一手公告",
+          "url": "https://www.publicnow.com/view/892BC03F80C57F505FC2B17C9CEA4F5A47948F9C"
+        },
+        {
+          "label": "AP Gates Foundation市場背景",
+          "url": "https://apnews.com/article/26ce25f9be20574a4fa04a5f983521ae"
+        },
+        {
+          "label": "美國參議院官方表決",
+          "url": "https://www.senate.gov/legislative/LIS/roll_call_votes/vote1192/vote_119_2_00234.htm"
+        },
+        {
+          "label": "AP加密立法與市場",
+          "url": "https://apnews.com/article/e3caf262dc138147941787299e5f0a66"
+        },
+        {
+          "label": "AP Fed前瞻",
+          "url": "https://apnews.com/article/ffd60cca8bb045bb9b1c389f5f1b73af"
+        },
+        {
+          "label": "人口普查局零售日曆",
+          "url": "https://www.census.gov/economic-indicators/calendar-listview.html"
+        },
+        {
+          "label": "Fed會議官方日曆",
+          "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+        },
+        {
+          "label": "Trip.com官方公告",
+          "url": "https://investors.trip.com/news-events/news-releases"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-15-midday",
       "cadence": "daily",
