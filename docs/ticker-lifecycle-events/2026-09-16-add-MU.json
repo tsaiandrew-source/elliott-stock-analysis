@@ -52,7 +52,13 @@
     "avgoTrackingMembershipRow": 184,
     "deactivatedAvgoExplorationMembershipRows": [46, 76, 91, 106, 121, 136, 151, 164, 180],
     "watchlistEntryRowCount": 1,
-    "verification": "Workbook re-export confirmed MU active/tracking, AVGO active/tracking, all historical AVGO exploration memberships inactive, and WatchlistEntry header-only"
+    "verification": "Workbook re-export confirmed MU active/tracking, AVGO active/tracking, all historical AVGO exploration memberships inactive, and WatchlistEntry header-only",
+    "proxyVerification": {
+      "generatedAtUtc": "2026-09-16T17:18:16.365Z",
+      "coverageCount": 17,
+      "mu": "active/tracking",
+      "avgo": "active/tracking"
+    }
   },
   "producer": {
     "repository": "P F Social",
