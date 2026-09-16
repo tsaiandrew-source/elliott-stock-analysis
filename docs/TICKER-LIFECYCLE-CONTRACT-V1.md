@@ -38,7 +38,9 @@ pnpm ticker:lifecycle add XYZ \
   --group exploration --market us --default-view daily \
   --market-source "https://authoritative.example/XYZ" \
   --market-data /absolute/path/to/XYZ.json \
-  --gex-record /absolute/path/to/XYZ-gex-record.json --after AVGO
+  --gex-record /absolute/path/to/XYZ-gex-record.json \
+  --refresh-receipt /protected/production_state/rob-stock-analysis/ticker-follow-ups/XYZ/universal-refresh-latest.json \
+  --after AVGO
 
 pnpm ticker:lifecycle add XYZ ...same reviewed arguments... --apply
 ```
@@ -51,6 +53,14 @@ ticker-bearing rows and keyed objects, removes the market file, rebuilds the
 roster-complete GEX packet and market manifest, regenerates the browser bundle
 and increments the PWA cache version.
 
+An add also fails closed until `--refresh-receipt` points to the durable latest
+receipt from a single-ticker Universal Refresh run. The receipt must use
+`universal-refresh-run-v1`, match the added ticker, have a
+`ticker-add-<TICKER>-<DATE>` cycle key, cover exactly one ticker, contain no
+failed or partial ticker, and finish `READY`. This makes the new ticker's first
+market, daily/weekly technical, Wyckoff, options/GEX and consumer-readiness
+cycle a release gate instead of an optional cleanup step.
+
 ## Operator sequence
 
 1. Prepare and review the lifecycle event (identity, reason, effective date,
@@ -59,10 +69,14 @@ and increments the PWA cache version.
    same before/after ticker counts.
 3. Apply the live Sheet state and verify the exact rows.
 4. Apply the private producer change and run its self-test.
-5. Apply the public change and run all gates below.
-6. Commit each plane separately. Open the public PR only after the exact release
+5. Refresh the secure Sheet export, run the producer command's emitted
+   single-ticker Universal Refresh follow-up, and retain its durable `READY`
+   receipt. `PARTIAL`, `WAITING_FOR_RETRY`, or `BLOCKED_MAX_ATTEMPTS` keeps the
+   public release closed and follows the recorded retry path.
+6. Apply the public change with `--refresh-receipt` and run all gates below.
+7. Commit each plane separately. Open the public PR only after the exact release
    scope is reviewed and explicitly approved.
-7. After merge, wait for Pages and smoke-test Coverage plus daily, weekly and
+8. After merge, wait for Pages and smoke-test Coverage plus daily, weekly and
    GEX routes. Update the lifecycle event with the merge and public evidence.
 
 ## Required gates

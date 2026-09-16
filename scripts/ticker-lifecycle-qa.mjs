@@ -15,6 +15,20 @@ const gexSource = await fs.readFile(path.join(sourceRoot, 'chart-surface/univers
 const gexPacket = JSON.parse(gexSource.slice(gexSource.indexOf('{'), gexSource.lastIndexOf('}') + 1));
 const liteGexPath = path.join(tempRoot, 'LITE-gex-record.json');
 await fs.writeFile(liteGexPath, JSON.stringify(gexPacket.records.find((record) => record.ticker === 'LITE')), 'utf8');
+const liteRefreshReceiptPath = path.join(tempRoot, 'LITE-refresh-receipt.json');
+await fs.writeFile(liteRefreshReceiptPath, JSON.stringify({
+  recordType:'universal_refresh_run',
+  schemaVersion:'universal-refresh-run-v1',
+  runId:'universal-refresh-ticker-add-LITE-2026-09-16',
+  cycleKey:'ticker-add-LITE-2026-09-16',
+  status:'READY',
+  requestedTicker:'LITE',
+  tickerCount:1,
+  reportPath:'/protected/production_state/rob-stock-analysis/ticker-follow-ups/LITE/report.json',
+  reportSha256:'a'.repeat(64),
+  failedTickers:[],
+  partialTickers:[]
+}), 'utf8');
 const roster = JSON.parse(await fs.readFile(path.join(sourceRoot, 'coverage-roster.json'), 'utf8'));
 for (const { ticker } of roster.tickers) {
   await fs.copyFile(path.join(sourceRoot, 'chart-surface/partial-market-data', `${ticker}.json`), path.join(fixtureRoot, 'chart-surface/partial-market-data', `${ticker}.json`));
@@ -40,13 +54,26 @@ await assert.rejects(
   planTickerLifecycle({ repoRoot:fixtureRoot, action:'add', ticker:'TEST', effectiveDate:'2026-09-16', metadata:{} }),
   /required/
 );
-await applyTickerLifecycle({
+await assert.rejects(
+  planTickerLifecycle({
+    repoRoot:fixtureRoot,
+    action:'add', ticker:'LITE', effectiveDate:'2026-09-16', after:'NBIS',
+    marketDataPath:path.join(sourceRoot, 'chart-surface/partial-market-data/LITE.json'),
+    gexRecordPath:liteGexPath,
+    metadata:{ company:'Lumentum Holdings', exchange:'NASDAQ', coverageGroup:'tracking', marketGroup:'us', defaultView:'daily', marketSource:'https://example.invalid/LITE' }
+  }),
+  /refresh-receipt/
+);
+const addResult = await applyTickerLifecycle({
   repoRoot:fixtureRoot,
   action:'add', ticker:'LITE', effectiveDate:'2026-09-16', after:'NBIS',
   marketDataPath:path.join(sourceRoot, 'chart-surface/partial-market-data/LITE.json'),
   gexRecordPath:liteGexPath,
+  refreshReceiptPath:liteRefreshReceiptPath,
   metadata:{ company:'Lumentum Holdings', exchange:'NASDAQ', coverageGroup:'tracking', marketGroup:'us', defaultView:'daily', marketSource:'https://example.invalid/LITE' }
 });
+assert.equal(addResult.oneOffRefresh.requestedTicker, 'LITE');
+assert.equal(addResult.oneOffRefresh.status, 'READY');
 const restoredRoster = JSON.parse(await fs.readFile(path.join(fixtureRoot, 'coverage-roster.json'), 'utf8'));
 assert.equal(restoredRoster.tickers.findIndex((entry) => entry.ticker === 'LITE'), restoredRoster.tickers.findIndex((entry) => entry.ticker === 'NBIS') + 1);
 assert.equal((await fs.readFile(path.join(fixtureRoot, 'coverage-order.js'), 'utf8')).includes('"ticker": "LITE"'), true);
@@ -54,4 +81,4 @@ assert.equal((await fs.readFile(path.join(fixtureRoot, 'chart-surface/data-contr
 assert.equal((await fs.readFile(path.join(fixtureRoot, 'chart-surface/universal-refresh-gex-data.js'), 'utf8')).includes('"ticker":"LITE"'), true);
 
 await fs.rm(tempRoot, { recursive:true, force:true });
-console.log(JSON.stringify({ status:'PASS', checks:['dry-run-no-write', 'recursive-remove', 'manifest-prune', 'gex-roster-sync', 'missing-input-fail-closed', 'add-round-trip'] }, null, 2));
+console.log(JSON.stringify({ status:'PASS', checks:['dry-run-no-write', 'recursive-remove', 'manifest-prune', 'gex-roster-sync', 'missing-input-fail-closed', 'post-add-refresh-required', 'add-round-trip'] }, null, 2));

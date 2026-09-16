@@ -62,6 +62,26 @@ async function readGexRecord(gexRecordPath, ticker) {
   return validateGexRecord(JSON.parse(await fs.readFile(gexRecordPath, 'utf8')), ticker);
 }
 
+async function readRefreshReceipt(refreshReceiptPath, ticker) {
+  if (!refreshReceiptPath) throw new Error('--refresh-receipt is required for add; the new ticker must complete its one-off Universal Refresh before public release');
+  const receipt = JSON.parse(await fs.readFile(refreshReceiptPath, 'utf8'));
+  if (receipt?.schemaVersion !== 'universal-refresh-run-v1') throw new Error('--refresh-receipt has an invalid schemaVersion');
+  if (normalizeTicker(receipt.requestedTicker) !== ticker) throw new Error('--refresh-receipt requestedTicker does not match add ticker');
+  if (receipt.status !== 'READY' || Number(receipt.tickerCount) !== 1) throw new Error('--refresh-receipt must be READY for exactly one ticker');
+  if (!String(receipt.cycleKey || '').startsWith(`ticker-add-${ticker}-`)) throw new Error('--refresh-receipt cycleKey is not an add-ticker follow-up');
+  if (!receipt.runId || !/^[a-f0-9]{64}$/.test(String(receipt.reportSha256 || ''))) throw new Error('--refresh-receipt is missing durable run evidence');
+  if ((receipt.failedTickers || []).length || (receipt.partialTickers || []).length) throw new Error('--refresh-receipt still contains failed or partial ticker state');
+  return {
+    schemaVersion:receipt.schemaVersion,
+    runId:receipt.runId,
+    cycleKey:receipt.cycleKey,
+    status:receipt.status,
+    requestedTicker:ticker,
+    reportPath:receipt.reportPath,
+    reportSha256:receipt.reportSha256
+  };
+}
+
 async function updateGexPacket(repoRoot, { action, ticker, registry, gexRecordPath, effectiveDate }) {
   const file = path.join(repoRoot, 'chart-surface/universal-refresh-gex-data.js');
   const parsed = parseBrowserAssignment(await fs.readFile(file, 'utf8'), 'UNIVERSAL_REFRESH_GEX');
@@ -130,7 +150,7 @@ function insertAfter(entries, entry, after) {
   return [...entries.slice(0, index + 1), entry, ...entries.slice(index + 1)];
 }
 
-export async function planTickerLifecycle({ repoRoot, action, ticker, metadata = {}, marketDataPath = '', gexRecordPath = '', after = '', effectiveDate }) {
+export async function planTickerLifecycle({ repoRoot, action, ticker, metadata = {}, marketDataPath = '', gexRecordPath = '', refreshReceiptPath = '', after = '', effectiveDate }) {
   const symbol = normalizeTicker(ticker);
   if (!/^[A-Z0-9.:-]+$/.test(symbol)) throw new Error('ticker is invalid');
   const registry = await readCoverageRegistry(repoRoot);
@@ -152,6 +172,7 @@ export async function planTickerLifecycle({ repoRoot, action, ticker, metadata =
   if (!marketDataPath) throw new Error('--market-data is required for add');
   const dataset = verifyMarketDataset(JSON.parse(await fs.readFile(marketDataPath, 'utf8')), { ticker: symbol });
   await readGexRecord(gexRecordPath, symbol);
+  const oneOffRefresh = await readRefreshReceipt(refreshReceiptPath, symbol);
   const entry = {
     ticker: symbol,
     company: metadata.company,
@@ -166,6 +187,7 @@ export async function planTickerLifecycle({ repoRoot, action, ticker, metadata =
     registryBefore: registry.tickers.length,
     registryAfter: registry.tickers.length + 1,
     dataThrough: dataset.dataThrough,
+    oneOffRefresh,
     files: ['coverage-roster.json', 'coverage-order.js', 'chart-surface/data-contract.js', 'chart-surface/universal-refresh-gex-data.js', `chart-surface/partial-market-data/${symbol}.json`, 'chart-surface/partial-market-data/MANIFEST.json', 'service-worker.js']
   };
 }
