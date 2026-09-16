@@ -69,11 +69,29 @@
   "publicApplication": {
     "repository": "tsaiandrew-source/elliott-stock-analysis",
     "branch": "codex/add-mu-20260916",
-    "status": "staged_and_qa_passed",
+    "status": "released_and_verified",
     "registrySha256": "c62e1378a4bc333cd02d297f6a2ca96976b086c3295487d2978204eb721450ff",
     "tickerCount": 16,
     "pwaCacheVersion": "elliott-pwa-v31",
-    "releaseStatus": "not_released"
+    "releaseStatus": "production_live",
+    "pullRequest": "https://github.com/tsaiandrew-source/elliott-stock-analysis/pull/109",
+    "mergedAtUtc": "2026-09-16T17:22:48Z",
+    "mergeCommit": "279ec5f2088a61290ac7c2c4ead46530fa0b2af7",
+    "mainStaticQaRun": "https://github.com/tsaiandrew-source/elliott-stock-analysis/actions/runs/35127814464",
+    "pagesDeploymentRun": "https://github.com/tsaiandrew-source/elliott-stock-analysis/actions/runs/35127812982",
+    "productionRosterUrl": "https://tsaiandrew-source.github.io/elliott-stock-analysis/coverage-roster.json",
+    "publicSmoke": {
+      "status": "PASS",
+      "checkedRoutes": 35,
+      "tickerCount": 16,
+      "muMarketDataThrough": "2026-09-15",
+      "muBarCount": 102,
+      "muCompletedSessionClose": 927.6,
+      "verifiedGroups": {
+        "MU": "tracking",
+        "AVGO": "tracking"
+      }
+    }
   },
   "rollbackPolicy": "Deactivate MU in live source, remove it through the lifecycle command, restore AVGO group metadata if directed, and preserve source and repository history"
 }
