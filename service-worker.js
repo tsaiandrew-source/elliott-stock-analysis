@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v28';
+const CACHE_VERSION = 'elliott-pwa-v30';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -9,6 +9,7 @@ const DIGEST_FRESH_PATHS = new Set([
 ]);
 const LIVE_DATA_PATHS = new Set([
   ...DIGEST_FRESH_PATHS,
+  new URL('coverage-order.js', APP_ROOT).pathname,
   new URL('chart-surface/data-contract.js', APP_ROOT).pathname,
   new URL('chart-surface/analysis-packets-v2.js', APP_ROOT).pathname,
   new URL('chart-surface/analysis-live-fallback.js', APP_ROOT).pathname,

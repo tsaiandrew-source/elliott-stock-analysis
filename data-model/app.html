@@ -132,7 +132,7 @@
     <div class="ticker-sheet-head"><div><strong>選擇代號</strong><span>上下捲動或點選以開啟分析</span></div><button type="button" class="ticker-sheet-close" id="ticker-sheet-close" aria-label="關閉代號選單">×</button></div>
     <div class="ticker-wheel" id="ticker-wheel" role="listbox" aria-label="選擇目前代號"></div>
   </section>
-  <script src="../coverage-order.js?v=20260911-labels-v1"></script>
+  <script src="../coverage-order.js?v=20260916-registry-v1"></script>
   <script src="../shared-menu.js?v=20260912-menu-stability-v1"></script>
   <elliott-shared-menu data-current="ticker" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
   <script src="../chart-surface/analysis-packets-v2.js?v=20260911-refresh-fix"></script>
@@ -150,26 +150,25 @@
         ...(batch.dailyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'daily', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.daily, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews })),
         ...(batch.weeklyPackets || []).map((packet) => ({ ...packet, schemaVersion: batch.schemaVersion, batchId: batch.batchId, runType: 'weekly', pattern: packet.patternLabel, confidence: packet.confidencePercent, wyckoff: packet.wyckoffPhase?.weekly, options: packet.gexSummary?.displayText, business: packet.fundamentalsNews }))
       ]);
-      const trackingTickers = new Set(['2646', 'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS', 'OKLO']);
-      const explorationTickers = new Set(['NVDA', 'MRVL', 'SNDK', '2330', 'AVGO']);
-      const twseTickers = new Set(['2330', '2646']);
+      const canonicalRoster = window.PROTOTYPE_COVERAGE_ROSTER || [];
+      const canonicalByTicker = window.PROTOTYPE_COVERAGE_BY_TICKER || {};
       const canonicalCoverageGroup = (ticker) => {
         const symbol = String(ticker || '').trim().toUpperCase();
-        if (trackingTickers.has(symbol)) return 'tracking';
-        if (explorationTickers.has(symbol)) return 'exploration';
-        return null;
+        return canonicalByTicker[symbol]?.coverageGroup || null;
       };
       const inferredCoverageGroup = (ticker) => canonicalCoverageGroup(ticker) || 'tracking';
-      const inferredMarketGroup = (ticker) => twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
-      const baseCoverage = [
-        ...(contract.coverage || []).map((item) => ({ ...item, coverageGroup: canonicalCoverageGroup(item.ticker) || item.coverageGroup || item.CoverageGroup || inferredCoverageGroup(item.ticker), marketGroup: item.marketGroup || item.MarketGroup || inferredMarketGroup(item.ticker) })),
-        ...[...new Set(v2Runs.map((run) => run.ticker))].map((ticker) => ({ ticker, company: v2Runs.find((run) => run.ticker === ticker)?.company || ticker, active: true, coverageGroup: inferredCoverageGroup(ticker), marketGroup: inferredMarketGroup(ticker) }))
-      ].filter((item, index, rows) => rows.findIndex((candidate) => candidate.ticker === item.ticker) === index);
+      const inferredMarketGroup = (ticker) => canonicalByTicker[String(ticker || '').trim().toUpperCase()]?.marketGroup || 'us';
+      const contractByTicker = new Map((contract.coverage || []).map((item) => [String(item.ticker || '').trim().toUpperCase(), item]));
+      const baseCoverage = canonicalRoster.map((metadata) => {
+        const item = contractByTicker.get(metadata.ticker) || {};
+        const packet = v2Runs.find((run) => run.ticker === metadata.ticker) || {};
+        return { ...item, ...metadata, company: item.company || packet.company || metadata.company, active: item.active !== false };
+      });
       let coverageOverrides = {};
       try { coverageOverrides = JSON.parse(localStorage.getItem('stock-analysis-coverage-overrides') || '{}'); } catch { coverageOverrides = {}; }
       const coverageRows = () => {
         const rows = new Map(baseCoverage.map((item) => [item.ticker, { ...item }]));
-        Object.entries(coverageOverrides).forEach(([ticker, item]) => rows.set(ticker, { ...(rows.get(ticker) || { ticker }), ...item }));
+        Object.entries(coverageOverrides).forEach(([ticker, item]) => { if (canonicalByTicker[String(ticker).toUpperCase()]) rows.set(ticker, { ...(rows.get(ticker) || { ticker }), ...item }); });
         return [...rows.values()];
       };
       const activeCoverage = () => window.PROTOTYPE_SORT_COVERAGE(coverageRows()
@@ -202,14 +201,14 @@
         const normalized = String(value ?? '').trim().toLowerCase();
         if (['exploration', 'explore', 'exploratory'].includes(normalized)) return 'exploration';
         if (['tracking', 'tracked', 'track'].includes(normalized)) return 'tracking';
-        return explorationTickers.has(String(ticker || '').trim().toUpperCase()) ? 'exploration' : 'tracking';
+        return canonicalCoverageGroup(ticker) || 'tracking';
       };
       const coverageGroupLabel = (group) => normalizeCoverageGroup(group) === 'exploration' ? 'Exploration · 探索' : 'Tracked · 追蹤';
       const coverageGroup = (item) => normalizeCoverageGroup(item.coverageGroup || item.CoverageGroup || item.group, item.ticker);
       const normalizeMarketGroup = (value, ticker = '') => {
         const normalized = String(value ?? '').trim().toLowerCase();
         if (['twse', 'taiwan', 'taiwan stock exchange', 'taiwan-stock-exchange'].includes(normalized)) return 'twse';
-        return twseTickers.has(String(ticker || '').trim().toUpperCase()) ? 'twse' : 'us';
+        return inferredMarketGroup(ticker);
       };
       const marketGroup = (item) => normalizeMarketGroup(item.marketGroup || item.MarketGroup || item.exchange, item.ticker);
       const marketGroupLabel = (group) => normalizeMarketGroup(group) === 'twse' ? 'Taiwan Stock Exchange · 台灣證券交易所' : 'US Markets · 美國市場';

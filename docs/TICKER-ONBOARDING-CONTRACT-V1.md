@@ -1,6 +1,8 @@
 # Universal ticker onboarding contract v1
 
-This is the single process for adding a ticker to Elliott+ Stock Analysis. A
+This document contains the add-specific evidence requirements. The canonical
+end-to-end add/remove procedure is
+[`TICKER-LIFECYCLE-CONTRACT-V1.md`](TICKER-LIFECYCLE-CONTRACT-V1.md). A
 ticker is not considered onboarded until the roster, UI, data contract and
 refresh validation all agree.
 
@@ -24,20 +26,19 @@ Before implementation, resolve these requirements with the owner:
 7. **Change control** — add the ticker to the contract, run the validator,
    create a PR, pass QA, then merge to `main`.
 
-For OKLO, the resolved answers were: `OKLO`, `Oklo`, NYSE, tracked, all three
-views, partial data allowed, Nasdaq chart API for market data, Cboe delayed
-options data for GEX, and inclusion in the next Universal Refresh.
+Record the resolved answers in the onboarding change or pull request before
+editing the roster. Do not leave a ticker-specific exception in the canonical
+refresh or validation code after onboarding is complete.
 
 ## Implementation contract
 
-The ticker must be added to every authoritative surface below:
+The ticker must be added to the canonical registry and generated surfaces:
 
-- `coverage-order.js` — one ordered roster entry.
-- `data-model/app.html` — classification/tracking set.
-- `data-model/coverage.html` — classification/tracking set and live/fallback
-  coverage merge.
-- `chart-surface/index.html` — classification/tracking set and live/fallback
-  coverage merge.
+- `coverage-roster.json` — one ordered identity and classification entry.
+- `coverage-order.js` — generated browser bundle; never hand-edit.
+- `data-model/app.html`, `data-model/coverage.html`, and
+  `chart-surface/index.html` — consume the generated registry without a second
+  hard-coded ticker list.
 - `chart-surface/data-contract.js` — fallback coverage row with identity,
   exchange, default view, market source, GEX source, freshness and explicit
   limitations.
@@ -82,7 +83,7 @@ the detailed reason and retry state.
 Before merge, run:
 
 ```sh
-node scripts/validate-ticker-onboarding.mjs OKLO
+node scripts/validate-ticker-onboarding.mjs <TICKER>
 node scripts/sync-market-data-qa.mjs
 node scripts/static-qa.mjs
 ```
@@ -99,11 +100,12 @@ daily/weekly direction, analysis content, GEX key metrics (current price,
 magnet, call wall, put wall), and no raw agent names, version identifiers or
 backend uncertainty text in the reader-facing analysis.
 
-## Change record: OKLO
+## Offboarding contract
 
-OKLO exposed the failure mode this contract prevents: adding a symbol only to
-one UI roster is insufficient. The completed work added OKLO to the ordered
-roster, tracked classification, fallback contract and market/GEX source
-metadata, then merged it through PR #72. The remaining public smoke-test
-failure was a separate read-proxy marker check and did not remove OKLO from
-the deployed UI; it remains a deployment QA issue to track independently.
+Removing a ticker follows the lifecycle contract. Use the dry-run/apply command
+rather than manually editing the generated files. The public QA gate rejects
+both a retired ticker and a stray retired-ticker market-data file.
+
+OKLO was removed from the active coverage universe on 2026-09-16. Its dated
+historical research remains in repository history and archival source packets;
+it is no longer an active UI, refresh, market-data, analysis, or GEX target.

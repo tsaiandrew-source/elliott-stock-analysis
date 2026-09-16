@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "coverage:generate": "node scripts/generate-coverage-order.mjs",
+    "coverage:check": "node scripts/generate-coverage-order.mjs --check",
+    "ticker:lifecycle": "node scripts/ticker-lifecycle.mjs",
+    "ticker:lifecycle:qa": "node scripts/ticker-lifecycle-qa.mjs",
     "web:stage": "node scripts/build-tauri-web.mjs",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",

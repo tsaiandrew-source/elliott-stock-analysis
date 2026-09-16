@@ -2,7 +2,7 @@
 
 Version: `universal-refresh-gex-v1`
 
-This append-only contract is the sole machine-loadable shape for Universal Refresh GEX packets. It covers the canonical coverage roster, currently `LITE, NBIS, PLTR, IREN, NOK, ACHR, CSCO, AMKR, ONDS, NVDA, MRVL, SNDK, AVGO, OKLO, 2646, 2330`, and always carries both `currentExpiration` and `nextExpiration`. The roster must be validated from `coverage-order.js`; it must not be copied into a second hard-coded list.
+This append-only contract is the sole machine-loadable shape for Universal Refresh GEX packets. It covers the canonical coverage roster from `coverage-roster.json` and always carries both `currentExpiration` and `nextExpiration`. The browser bundle `coverage-order.js` is generated from that registry; the roster must not be copied into a second hard-coded list.
 
 ## Status and rendering
 

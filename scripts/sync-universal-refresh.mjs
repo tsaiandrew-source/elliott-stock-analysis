@@ -72,10 +72,33 @@ function sanitizeLocalValues(value, key = '') {
   return output;
 }
 
+export function pruneToCoverage(value, allowedTickers, knownTickers) {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item) => {
+        const ticker = item && typeof item === 'object' ? String(item.ticker || item.Ticker || '').trim().toUpperCase() : '';
+        return !ticker || allowedTickers.has(ticker);
+      })
+      .map((item) => pruneToCoverage(item, allowedTickers, knownTickers));
+  }
+  if (!value || typeof value !== 'object') return value;
+  const output = {};
+  for (const [childKey, childValue] of Object.entries(value)) {
+    const normalizedKey = String(childKey).trim().toUpperCase();
+    if (knownTickers.has(normalizedKey) && !allowedTickers.has(normalizedKey)) continue;
+    output[childKey] = pruneToCoverage(childValue, allowedTickers, knownTickers);
+  }
+  return output;
+}
+
 export async function buildCandidate(live, previous, repoRoot, marketDatasets = null) {
   const { order, companies } = await loadCoverageRoster(repoRoot);
+  const allowedTickers = new Set(order);
   const completedMarketData = marketDatasets || await readMarketDatasets(repoRoot);
   const liveCoverage = Array.isArray(live.coverage) ? live.coverage : [];
+  const knownTickers = new Set([...(previous.coverage || []), ...liveCoverage]
+    .map((item) => String(item.ticker || item.Ticker || '').trim().toUpperCase())
+    .filter(Boolean));
   const liveActive = liveCoverage.filter((item) => item.active !== false).map((item) => String(item.ticker || item.Ticker || '').toUpperCase());
   const missing = order.filter((ticker) => !liveActive.includes(ticker));
   const extra = liveActive.filter((ticker) => !order.includes(ticker));
@@ -93,7 +116,7 @@ export async function buildCandidate(live, previous, repoRoot, marketDatasets = 
       ...fresh,
       ticker,
       company: fresh.company || fresh.Company || prior.company || companies[ticker] || ticker,
-      exchange: fresh.exchange || fresh.Exchange || prior.exchange || (ticker === 'OKLO' ? 'NYSE' : ''),
+      exchange: fresh.exchange || fresh.Exchange || prior.exchange || '',
       active: true,
       latestChartDate: market.dataThrough,
       marketSource: market.chartSource || fresh.marketSource || fresh.MarketSource || prior.marketSource || '',
@@ -136,7 +159,7 @@ export async function buildCandidate(live, previous, repoRoot, marketDatasets = 
   const liveTables = live.tables || {};
   const tables = {};
   for (const name of new Set([...Object.keys(previousTables), ...Object.keys(liveTables)])) tables[name] = usableArray(liveTables[name], previousTables[name]);
-  const candidate = sanitizeLocalValues({
+  const candidate = pruneToCoverage(sanitizeLocalValues({
     ...previous,
     ...live,
     mode: 'sanitized-public-contract',
@@ -154,7 +177,7 @@ export async function buildCandidate(live, previous, repoRoot, marketDatasets = 
       weeklyHistory: { ...(previous.datasets?.weeklyHistory || {}), ...(live.datasets?.weeklyHistory || {}) },
       analysisDetails: { ...(previous.datasets?.analysisDetails || {}), ...(live.datasets?.analysisDetails || {}) }
     }
-  });
+  }), allowedTickers, knownTickers);
   const gexRows = candidate.tables?.GEXSnapshots || [];
   if (!gexRows.length && !order.every((ticker) => candidate.datasets?.benchmark?.[ticker]?.gexViews)) throw new Error('candidate has neither GEX snapshot rows nor last-good GEX views');
   return candidate;
@@ -214,8 +237,7 @@ async function synchronize(repoRoot, check) {
     tickerCount: candidate.coverage.length,
     analysisRuns: candidate.analysisRuns.length,
     gexRows: candidate.tables?.GEXSnapshots?.length || 0,
-    completedMarketData: Object.fromEntries(Object.entries(marketDatasets).map(([ticker, dataset]) => [ticker, dataset.dataThrough])),
-    oklo: candidate.coverage.find((item) => item.ticker === 'OKLO') || null
+    completedMarketData: Object.fromEntries(Object.entries(marketDatasets).map(([ticker, dataset]) => [ticker, dataset.dataThrough]))
   };
   if (!check && !unchanged) {
     const json = JSON.stringify(candidate, null, 2);
