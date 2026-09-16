@@ -24,9 +24,9 @@ Before implementation, resolve these requirements with the owner:
 7. **Change control** — add the ticker to the contract, run the validator,
    create a PR, pass QA, then merge to `main`.
 
-For OKLO, the resolved answers were: `OKLO`, `Oklo`, NYSE, tracked, all three
-views, partial data allowed, Nasdaq chart API for market data, Cboe delayed
-options data for GEX, and inclusion in the next Universal Refresh.
+Record the resolved answers in the onboarding change or pull request before
+editing the roster. Do not leave a ticker-specific exception in the canonical
+refresh or validation code after onboarding is complete.
 
 ## Implementation contract
 
@@ -82,7 +82,7 @@ the detailed reason and retry state.
 Before merge, run:
 
 ```sh
-node scripts/validate-ticker-onboarding.mjs OKLO
+node scripts/validate-ticker-onboarding.mjs <TICKER>
 node scripts/sync-market-data-qa.mjs
 node scripts/static-qa.mjs
 ```
@@ -99,11 +99,14 @@ daily/weekly direction, analysis content, GEX key metrics (current price,
 magnet, call wall, put wall), and no raw agent names, version identifiers or
 backend uncertainty text in the reader-facing analysis.
 
-## Change record: OKLO
+## Offboarding contract
 
-OKLO exposed the failure mode this contract prevents: adding a symbol only to
-one UI roster is insufficient. The completed work added OKLO to the ordered
-roster, tracked classification, fallback contract and market/GEX source
-metadata, then merged it through PR #72. The remaining public smoke-test
-failure was a separate read-proxy marker check and did not remove OKLO from
-the deployed UI; it remains a deployment QA issue to track independently.
+Removing a ticker is the inverse of onboarding. Remove it from the canonical
+ordered roster, UI classification fallbacks, generated public contract,
+completed-session market-data directory and manifest, producer roster, and
+refresh validation exceptions. The public QA gate must reject both a retired
+ticker and a stray retired-ticker market-data file.
+
+OKLO was removed from the active coverage universe on 2026-09-16. Its dated
+historical research remains in repository history and archival source packets;
+it is no longer an active UI, refresh, market-data, analysis, or GEX target.

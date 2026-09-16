@@ -1,13 +1,13 @@
 (() => {
   const order = Object.freeze([
     'LITE', 'NBIS', 'PLTR', 'IREN', 'NOK', 'ACHR', 'CSCO', 'AMKR', 'ONDS',
-    'NVDA', 'MRVL', 'SNDK', 'AVGO', 'OKLO', '2646', '2330'
+    'NVDA', 'MRVL', 'SNDK', 'AVGO', '2646', '2330'
   ]);
   const companies = Object.freeze({
     LITE: 'Lumentum Holdings', NBIS: 'Nebius Group', PLTR: 'Palantir Technologies',
     IREN: 'IREN Limited', NOK: 'Nokia', ACHR: 'Archer Aviation', CSCO: 'Cisco Systems',
     AMKR: 'Amkor Technology', ONDS: 'Ondas Holdings', NVDA: 'NVIDIA',
-    MRVL: 'Marvell Technology', SNDK: 'Sandisk', AVGO: 'Broadcom', OKLO: 'Oklo',
+    MRVL: 'Marvell Technology', SNDK: 'Sandisk', AVGO: 'Broadcom',
     '2646': '星宇航空', '2330': '台積電'
   });
   const rankByTicker = new Map(order.map((ticker, index) => [ticker, index]));

@@ -3,12 +3,22 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 import { UNIVERSE, validatePacket } from './validate-universal-refresh-gex.mjs';
-import { buildReleaseReceipt, parsePorcelainPaths } from './sync-universal-refresh.mjs';
+import { buildReleaseReceipt, parsePorcelainPaths, pruneToCoverage } from './sync-universal-refresh.mjs';
 import { loadCoverageRoster } from './coverage-roster.mjs';
 import { verifyMarketDataset } from './sync-market-data.mjs';
 
 const root = process.cwd();
 const failures = [];
+const retiredTickers = ['OKLO'];
+
+const pruneFixture = pruneToCoverage({
+  coverage: [{ ticker:'LITE' }, { ticker:'OKLO' }],
+  tables: { Sources:[{ Ticker:'LITE' }, { Ticker:'OKLO' }] },
+  datasets: { benchmark:{ LITE:{ ticker:'LITE' }, OKLO:{ ticker:'OKLO' } } }
+}, new Set(['LITE']), new Set(['LITE', 'OKLO']));
+if (JSON.stringify(pruneFixture).includes('OKLO') || pruneFixture.coverage.length !== 1 || pruneFixture.tables.Sources.length !== 1 || pruneFixture.datasets.benchmark.OKLO) {
+  failures.push('Universal Refresh does not prune retired tickers from append-only live data');
+}
 
 const porcelainFixture = ' M chart-surface/data-contract.js\n?? path with spaces.json\n';
 const porcelainPaths = parsePorcelainPaths(porcelainFixture);
@@ -16,7 +26,7 @@ if (porcelainPaths[0] !== 'chart-surface/data-contract.js' || porcelainPaths[1] 
   failures.push('autonomous release porcelain parser does not preserve the first path character');
 }
 for (const finalStatus of ['NOOP_VERIFIED', 'PUBLISHED_AND_VERIFIED']) {
-  const receipt = buildReleaseReceipt(finalStatus, { status: 'NO_CHANGE', tickerCount: 16 }, { status: 'STALE_DETAIL', slot: 'primary' });
+  const receipt = buildReleaseReceipt(finalStatus, { status: 'NO_CHANGE', tickerCount: 15 }, { status: 'STALE_DETAIL', slot: 'primary' });
   if (receipt.status !== finalStatus) failures.push(`autonomous release receipt does not preserve terminal status ${finalStatus}`);
 }
 const requiredFiles = [
@@ -323,6 +333,23 @@ for (const file of ['chart-surface/data-contract.js', 'chart-surface/benchmark-d
   if (!(await exists(file))) continue;
   const source = await read(file);
   if (/\/Users\/|[A-Z]:\\\\|P F Social|shared_research/i.test(source)) failures.push(`${file}: contains a local workspace path`);
+}
+
+const activeTickerFiles = [
+  'coverage-order.js',
+  'data-model/app.html',
+  'data-model/coverage.html',
+  'chart-surface/index.html',
+  'chart-surface/data-contract.js',
+  'chart-surface/partial-market-data/MANIFEST.json',
+  'scripts/sync-universal-refresh.mjs',
+  'scripts/validate-universal-refresh-gex.mjs'
+];
+for (const file of activeTickerFiles) {
+  const source = await read(file);
+  for (const ticker of retiredTickers) {
+    if (new RegExp(`\\b${ticker}\\b`, 'i').test(source)) failures.push(`${file}: retired ticker ${ticker} is still active`);
+  }
 }
 
 const partialDir = path.join(root, 'chart-surface/partial-market-data');

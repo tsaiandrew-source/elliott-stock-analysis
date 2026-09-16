@@ -3,10 +3,7 @@ import { loadCoverageRoster } from './coverage-roster.mjs';
 
 export const SCHEMA_VERSION = 'universal-refresh-gex-v1';
 export const UNIVERSE = Object.freeze((await loadCoverageRoster()).order);
-const OKLO_ONBOARDING_DATE = '2026-09-15';
-const universeFor = (analysisDate) => analysisDate < OKLO_ONBOARDING_DATE
-  ? UNIVERSE.filter((ticker) => ticker !== 'OKLO')
-  : UNIVERSE;
+const universeFor = () => UNIVERSE;
 
 const STATUSES = new Set(['renderable', 'aggregate_only', 'not_available', 'not_applicable']);
 const REQUIRED_EXPIRATION_FIELDS = [
