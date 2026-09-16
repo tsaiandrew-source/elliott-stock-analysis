@@ -1,7 +1,269 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-16T02:15:13.678Z",
+  "generatedAt": "2026-09-16T12:50:05.620Z",
   "records": [
+    {
+      "id": "daily-2026-09-16-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-16",
+      "publishedAt": "2026-09-16T05:34:15-07:00",
+      "updatedAt": "2026-09-16T05:34:15-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-16T05:34:00-07:00",
+      "retrievedAt": "2026-09-16T05:34:10-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "晨間設定｜2026-09-16",
+      "summary": "今天的核心不是市場是否已經準備好迎接Fed升息，而是剛公布的零售數據讓Fed更難提供溫和訊號。美國8月零售與餐飲銷售月增1.2%、年增6.0%，汽車除外更月增1.4%；這是廣泛的名目需求反彈，不只是汽油價格。決策前10年期殖利率仍約4.99%、Brent約108美元，美股期貨在數據公布前小漲約0.2%。因此基準路徑是升息一碼，但真正的方向將由點陣圖、通膨預測與長端殖利率反應決定；若10年期在升息後仍站上5%，今天的短暫風險偏好改善很可能反轉。",
+      "sections": [
+        {
+          "heading": "1. 零售銷售強彈，Fed獲得需求仍有韌性的第一手證據",
+          "paragraphs": [
+            "事實：美國人口普查局公布，8月零售與餐飲銷售為7,739億美元，月增1.2%、年增6.0%；7月跌幅由0.6%修正為0.5%。汽車除外月增1.4%，汽車與汽油除外仍月增1.2%。數據未經通膨調整。",
+            "判斷：這不是只靠汽油價格抬高的表面成長。非店面零售月增2.6%、餐飲月增1.2%、電子家電月增1.6%，顯示名目需求反彈相當廣泛。對Fed而言，強需求與高能源成本並存，降低了升息後立即轉鴿的空間。信心：高。",
+            "反證：後續實質消費、信用卡與企業營收顯示本次成長主要是價格而非銷量，且9月高頻消費快速轉弱。"
+          ],
+          "links": [
+            {
+              "label": "人口普查局8月零售報告",
+              "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+            },
+            {
+              "label": "人口普查局零售頁面",
+              "url": "https://www.census.gov/retail/sales.html"
+            }
+          ]
+        },
+        {
+          "heading": "2. Fed升息接近基準情境，真正風險在點陣圖與長端",
+          "paragraphs": [
+            "事實：Fed官方行事曆顯示，FOMC聲明與經濟預測於11:00 PT公布，主席Kevin Warsh記者會於11:30 PT舉行。市場在會前高度押注升息一碼，這將是三年多來首次升息。",
+            "判斷：零售數據把焦點從『會不會升』推向『還要升幾次』。若點陣圖提高未來利率路徑、上修通膨或Warsh淡化一次性升息，2年期與10年期都可能再上；若Fed升息但強調觀察能源衝擊，曲線可能先平坦化。信心：高。",
+            "反證：Fed升息後明確反對連續收緊，且10年期跌破4.90%、美元與通膨預期同步回落。"
+          ],
+          "links": [
+            {
+              "label": "Fed九月官方行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "Fed FOMC官方會議頁",
+              "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+            },
+            {
+              "label": "AP Fed前瞻",
+              "url": "https://apnews.com/article/bab1bcb07e973bfb2dd0c3e5fbbb73b1"
+            }
+          ]
+        },
+        {
+          "heading": "3. 油價回落是暫停，不是供應風險解除",
+          "paragraphs": [
+            "事實：Brent隔夜回落約0.8%至107.86美元附近，為本週首次降溫；但沙烏地官方仍確認東西向管線因多次攻擊而預防性停運，這條路徑原本可繞過霍爾木茲海峽。",
+            "判斷：油價從高位小跌只能降低當日壓力，不能消除能源通膨與航運風險。Brent仍接近108美元，約20%的月度漲幅也意味著企業成本與家庭可支配所得壓力將延後反映。能源股仍具相對支撐，航空、運輸、化工與低毛利消費仍脆弱。信心：高。",
+            "反證：管線與海運流量恢復、保險與運費回落，而且Brent持續跌破105美元。"
+          ],
+          "links": [
+            {
+              "label": "沙烏地官方管線聲明",
+              "url": "https://www.spa.gov.sa/en/N2674017"
+            },
+            {
+              "label": "AP供應風險解讀",
+              "url": "https://apnews.com/article/efa431e2fa771e34880c8453c62ffb92"
+            },
+            {
+              "label": "Reuters亞洲市場與油價",
+              "url": "https://uk.marketscreener.com/news/asian-markets-brittle-ahead-of-fed-decision-oil-slips-ce785bd2d88af125"
+            }
+          ]
+        },
+        {
+          "heading": "4. 隔夜風險偏好改善，但發生在零售數據公布之前",
+          "paragraphs": [
+            "事實：零售數據公布前，S&P 500期貨約漲0.2%，歐洲STOXX 600約漲0.4%；亞洲指數溫和上升但內部分化。10年期美債殖利率約4.99%，仍緊貼5%的心理關卡。",
+            "判斷：股市反彈主要反映油價暫停上升與Fed事件前的部位調整，不能視為強零售數據後的市場確認。開盤前最重要的即時驗證，是殖利率、美元與成長股能否承受需求上修。信心：中高。",
+            "反證：零售數據後美股期貨擴大漲幅、10年期不升反跌，且市場寬度改善。"
+          ],
+          "links": [
+            {
+              "label": "AP晨間全球市場",
+              "url": "https://apnews.com/article/e2e82957e490b7be205db6013f621c3d"
+            },
+            {
+              "label": "Reuters歐洲市場",
+              "url": "https://www.investing.com/news/economy-news/european-shares-rise-as-oil-rally-pauses-all-eyes-on-fed-4902994"
+            },
+            {
+              "label": "Reuters亞洲市場",
+              "url": "https://uk.marketscreener.com/news/asian-markets-brittle-ahead-of-fed-decision-oil-slips-ce785bd2d88af125"
+            }
+          ]
+        },
+        {
+          "heading": "5. Trip.com證明跨境旅遊需求強，但成本與監管仍吃掉獲利",
+          "paragraphs": [
+            "事實：Trip.com第二季淨營收157億元人民幣、年增6%；國際平台收入年增逾50%，入境旅遊收入維持高雙位數成長。公司同時報告每ADS虧損3.89元，主要受52億元人民幣反壟斷罰款影響；非GAAP每ADS盈餘7.27元。",
+            "判斷：這份財報支持跨境旅遊與中國入境需求仍有結構性成長，但運輸票務年減1%、能源與地緣風險拖累季增表現，說明旅遊需求強不等於整條產業鏈利潤率安全。航空、OTA與飯店需分開定價。信心：高。",
+            "反證：後續同業顯示國際訂單降速、取消率上升，或燃油與合規成本無法轉嫁。"
+          ],
+          "links": [
+            {
+              "label": "Trip.com官方第二季財報",
+              "url": "https://investors.trip.com/news-releases/news-release-details/tripcom-group-limited-reports-unaudited-second-quarter-and-4"
+            }
+          ]
+        },
+        {
+          "heading": "6. 晨間結論：強需求讓Fed更難提供估值緩衝",
+          "paragraphs": [
+            "事實：需求面出現1.2%的零售反彈，供給面仍有約108美元的Brent與受損替代管線，長端殖利率則守在5%附近。股票尚未失序，但這三組訊號同時限制Fed轉鴿空間。",
+            "判斷：今日基準是升息一碼後維持偏鷹觀望，市場先震盪、再由長端利率決定方向。若10年期升破5.05%、Brent回到110美元以上，科技與小型股壓力會加速；若升息後10年期反而跌破4.90%，才是可靠的風險資產緩衝。信心：高。"
+          ],
+          "links": [
+            {
+              "label": "人口普查局8月零售報告",
+              "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+            },
+            {
+              "label": "Fed九月官方行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "AP晨間全球市場",
+              "url": "https://apnews.com/article/e2e82957e490b7be205db6013f621c3d"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "晨間狀態",
+              "基準判讀"
+            ],
+            "rows": [
+              [
+                "美股大型股",
+                "中性偏脆弱",
+                "期貨數據前小漲，尚未吸收強零售"
+              ],
+              [
+                "成長股／AI",
+                "偏冷",
+                "5%長債與偏鷹Fed限制估值"
+              ],
+              [
+                "小型股",
+                "偏冷",
+                "需求改善有利營收，但融資成本更關鍵"
+              ],
+              [
+                "能源股",
+                "偏熱",
+                "油價高位與供應冗餘下降"
+              ],
+              [
+                "航空／運輸",
+                "偏冷",
+                "需求仍強，但燃料與路線成本上升"
+              ],
+              [
+                "長天期美債",
+                "偏冷",
+                "10年期約4.99%，Fed後反應最關鍵"
+              ],
+              [
+                "美元",
+                "偏熱",
+                "強需求與升息預期提供支撐"
+              ],
+              [
+                "黃金／信用",
+                "待確認",
+                "缺乏足夠新訊號，不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "今日催化劑與分岔",
+          "paragraphs": [
+            "07:00 PT：7月企業庫存與9月NAHB房市指數。若庫存增加而終端銷售放慢，將削弱零售強彈的延續性；房市指數則檢驗高殖利率是否進一步壓低建商信心。",
+            "07:30 PT：EIA每週石油庫存。商業原油與成品油庫存若意外下降，Brent可能重新挑戰110美元；若庫存大增且供應路徑改善，油價壓力才可能真正緩和。",
+            "11:00 PT：FOMC利率決策、聲明與經濟預測；11:30 PT：Warsh記者會。優先看2026與2027政策利率中位數、核心通膨預測、異議票，以及主席是否把升息描述為一次性校準。",
+            "偏強路徑：升息一碼但點陣圖沒有追加收緊，10年期跌破4.90%、美元轉弱、Brent跌破105美元，市場寬度改善。",
+            "偏弱路徑：點陣圖上移或Warsh保留連續升息，10年期站穩5.05%以上、Brent重返110美元，信用利差與波動率同步上升。"
+          ],
+          "links": [
+            {
+              "label": "人口普查局經濟日曆",
+              "url": "https://www.census.gov/economic-indicators/calendar-listview.html"
+            },
+            {
+              "label": "Fed九月官方行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "EIA石油狀況週報",
+              "url": "https://www.eia.gov/petroleum/supply/weekly/"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "人口普查局8月零售報告",
+          "url": "https://www.census.gov/retail/marts/www/marts_current.pdf"
+        },
+        {
+          "label": "人口普查局經濟日曆",
+          "url": "https://www.census.gov/economic-indicators/calendar-listview.html"
+        },
+        {
+          "label": "Fed九月官方行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Fed FOMC官方會議頁",
+          "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+        },
+        {
+          "label": "AP Fed前瞻",
+          "url": "https://apnews.com/article/bab1bcb07e973bfb2dd0c3e5fbbb73b1"
+        },
+        {
+          "label": "AP晨間全球市場",
+          "url": "https://apnews.com/article/e2e82957e490b7be205db6013f621c3d"
+        },
+        {
+          "label": "Reuters亞洲市場",
+          "url": "https://uk.marketscreener.com/news/asian-markets-brittle-ahead-of-fed-decision-oil-slips-ce785bd2d88af125"
+        },
+        {
+          "label": "Reuters歐洲市場",
+          "url": "https://www.investing.com/news/economy-news/european-shares-rise-as-oil-rally-pauses-all-eyes-on-fed-4902994"
+        },
+        {
+          "label": "沙烏地官方管線聲明",
+          "url": "https://www.spa.gov.sa/en/N2674017"
+        },
+        {
+          "label": "AP供應風險解讀",
+          "url": "https://apnews.com/article/efa431e2fa771e34880c8453c62ffb92"
+        },
+        {
+          "label": "Trip.com官方第二季財報",
+          "url": "https://investors.trip.com/news-releases/news-release-details/tripcom-group-limited-reports-unaudited-second-quarter-and-4"
+        },
+        {
+          "label": "EIA石油狀況週報",
+          "url": "https://www.eia.gov/petroleum/supply/weekly/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-15-close",
       "cadence": "daily",
