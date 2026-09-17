@@ -26,6 +26,7 @@ jobs:
       - name: Run digest automation QA
         run: |
           node scripts/ingest-private-analysis-qa.mjs
+          node scripts/sync-universal-refresh-qa.mjs
           node scripts/sync-market-data-qa.mjs
           node scripts/close-digest-consumer-qa.mjs
           node scripts/close-digest-cycle-qa.mjs
