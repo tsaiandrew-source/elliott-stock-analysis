@@ -64,6 +64,23 @@ await assert.rejects(
   }),
   /refresh-receipt/
 );
+const shortHistoryPath = path.join(tempRoot, 'short-market-data.json');
+const shortBars = Array.from({ length:102 }, (_, index) => {
+  const date = new Date(Date.UTC(2026, 2, 16 + index));
+  return { time:date.getTime() / 1000, date:date.toISOString().slice(0, 10), open:10, high:12, low:9, close:11, volume:100 };
+});
+await fs.writeFile(shortHistoryPath, JSON.stringify({ dataThrough:shortBars.at(-1).date, bars:shortBars }), 'utf8');
+await assert.rejects(
+  planTickerLifecycle({
+    repoRoot:fixtureRoot,
+    action:'add', ticker:'LITE', effectiveDate:'2026-09-16', after:'NBIS',
+    marketDataPath:shortHistoryPath,
+    gexRecordPath:liteGexPath,
+    refreshReceiptPath:liteRefreshReceiptPath,
+    metadata:{ company:'Lumentum Holdings', exchange:'NASDAQ', coverageGroup:'tracking', marketGroup:'us', defaultView:'daily', marketSource:'https://example.invalid/LITE' }
+  }),
+  /initial sync requires at least 252 daily candles/
+);
 const addResult = await applyTickerLifecycle({
   repoRoot:fixtureRoot,
   action:'add', ticker:'LITE', effectiveDate:'2026-09-16', after:'NBIS',
@@ -74,6 +91,8 @@ const addResult = await applyTickerLifecycle({
 });
 assert.equal(addResult.oneOffRefresh.requestedTicker, 'LITE');
 assert.equal(addResult.oneOffRefresh.status, 'READY');
+assert.ok(addResult.marketHistory.dailyBars >= 252);
+assert.ok(addResult.marketHistory.weeklyBars >= 52);
 const restoredRoster = JSON.parse(await fs.readFile(path.join(fixtureRoot, 'coverage-roster.json'), 'utf8'));
 assert.equal(restoredRoster.tickers.findIndex((entry) => entry.ticker === 'LITE'), restoredRoster.tickers.findIndex((entry) => entry.ticker === 'NBIS') + 1);
 assert.equal((await fs.readFile(path.join(fixtureRoot, 'coverage-order.js'), 'utf8')).includes('"ticker": "LITE"'), true);
@@ -81,4 +100,4 @@ assert.equal((await fs.readFile(path.join(fixtureRoot, 'chart-surface/data-contr
 assert.equal((await fs.readFile(path.join(fixtureRoot, 'chart-surface/universal-refresh-gex-data.js'), 'utf8')).includes('"ticker":"LITE"'), true);
 
 await fs.rm(tempRoot, { recursive:true, force:true });
-console.log(JSON.stringify({ status:'PASS', checks:['dry-run-no-write', 'recursive-remove', 'manifest-prune', 'gex-roster-sync', 'missing-input-fail-closed', 'post-add-refresh-required', 'add-round-trip'] }, null, 2));
+console.log(JSON.stringify({ status:'PASS', checks:['dry-run-no-write', 'recursive-remove', 'manifest-prune', 'gex-roster-sync', 'missing-input-fail-closed', 'post-add-refresh-required', 'initial-history-required', 'add-round-trip'] }, null, 2));

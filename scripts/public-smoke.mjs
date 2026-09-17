@@ -1,5 +1,6 @@
 import { loadCoverageRoster } from './coverage-roster.mjs';
 import { createHash } from 'node:crypto';
+import { marketHistoryProfile } from './sync-market-data.mjs';
 
 const base = (process.env.PUBLIC_BASE_URL || 'https://tsaiandrew-source.github.io/elliott-stock-analysis').replace(/\/$/, '');
 const proxyBaseUrl = process.env.PUBLIC_PROXY_URL || 'https://script.google.com/macros/s/AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg/exec';
@@ -118,8 +119,10 @@ try {
     if (actualHash !== expected.sha256) failures.push(`${ticker}: published market data hash mismatch`);
     const dataset = JSON.parse(bytes.toString('utf8'));
     const last = Array.isArray(dataset.bars) ? dataset.bars.at(-1) : null;
+    const history = marketHistoryProfile(dataset);
     if (!last || dataset.dataThrough !== last.date || dataset.dataThrough !== expected.dataThrough) failures.push(`${ticker}: published final OHLCV date mismatch`);
     if (!last || Math.abs(Number(last.close) - Number(expected.close)) > Math.max(0.011, Math.abs(Number(expected.close)) * 0.000001)) failures.push(`${ticker}: published closing price mismatch`);
+    if (history.dailyBars < 252 || history.weeklyBars < 52) failures.push(`${ticker}: published Daily/Weekly history is incomplete (${history.dailyBars}/${history.weeklyBars})`);
   }
 } catch (error) {
   failures.push(`market data verification: ${error.message}`);

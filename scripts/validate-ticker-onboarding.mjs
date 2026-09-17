@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { readCoverageRegistry } from './coverage-registry.mjs';
-import { verifyMarketDataset } from './sync-market-data.mjs';
+import { marketHistoryProfile, verifyInitialMarketDataset } from './sync-market-data.mjs';
 
 const ticker = String(process.argv[2] || '').trim().toUpperCase();
 if (!/^[A-Z0-9.:-]+$/.test(ticker)) {
@@ -26,7 +26,9 @@ if (tickerStart >= 0) {
   }
 }
 try {
-  verifyMarketDataset(JSON.parse(read(`chart-surface/partial-market-data/${ticker}.json`)), { ticker });
+  const dataset = verifyInitialMarketDataset(JSON.parse(read(`chart-surface/partial-market-data/${ticker}.json`)), { ticker });
+  const history = marketHistoryProfile(dataset);
+  if (history.dailyBars < 252 || history.weeklyBars < 52) failures.push(`partial market data: insufficient Daily/Weekly history (${history.dailyBars}/${history.weeklyBars})`);
 } catch (error) {
   failures.push(`partial market data: ${error.message}`);
 }
@@ -35,4 +37,4 @@ if (failures.length) {
   console.error(JSON.stringify({ status: 'FAIL', ticker, failures }, null, 2));
   process.exit(1);
 }
-console.log(JSON.stringify({ status: 'PASS', ticker, checks: ['registry', 'generated-browser-bundle', 'UI-registry-wiring', 'contract', 'market-data'] }, null, 2));
+console.log(JSON.stringify({ status: 'PASS', ticker, checks: ['registry', 'generated-browser-bundle', 'UI-registry-wiring', 'contract', 'market-data', 'daily-weekly-history'] }, null, 2));

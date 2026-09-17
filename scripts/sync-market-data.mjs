@@ -7,6 +7,10 @@ import { loadCoverageRoster } from './coverage-roster.mjs';
 const moduleRoot = fileURLToPath(new URL('..', import.meta.url));
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const isoPattern = /^\d{4}-\d{2}-\d{2}$/;
+export const INITIAL_MARKET_HISTORY_MINIMUMS = Object.freeze({
+  dailyBars: 252,
+  weeklyBars: 52
+});
 
 function isoDate(value) {
   const text = String(value || '').trim();
@@ -101,6 +105,36 @@ export function verifyMarketDataset(dataset, { ticker, expectedDate, expectedClo
   return dataset;
 }
 
+function weekStart(date) {
+  const monday = new Date(`${date}T00:00:00Z`);
+  const day = monday.getUTCDay() || 7;
+  monday.setUTCDate(monday.getUTCDate() - day + 1);
+  return monday.toISOString().slice(0, 10);
+}
+
+export function marketHistoryProfile(dataset) {
+  const bars = Array.isArray(dataset?.bars) ? dataset.bars : [];
+  return {
+    dailyBars: bars.length,
+    weeklyBars: new Set(bars.map((bar) => weekStart(bar.date))).size,
+    firstDate: bars[0]?.date || '',
+    lastDate: bars.at(-1)?.date || ''
+  };
+}
+
+export function verifyInitialMarketDataset(dataset, options) {
+  const verified = verifyMarketDataset(dataset, options);
+  const profile = marketHistoryProfile(verified);
+  const minimums = options.minimums || INITIAL_MARKET_HISTORY_MINIMUMS;
+  if (profile.dailyBars < minimums.dailyBars) {
+    throw new Error(`${options.ticker}: initial sync requires at least ${minimums.dailyBars} daily candles; found ${profile.dailyBars}`);
+  }
+  if (profile.weeklyBars < minimums.weeklyBars) {
+    throw new Error(`${options.ticker}: initial sync requires at least ${minimums.weeklyBars} weekly candles; found ${profile.weeklyBars}`);
+  }
+  return verified;
+}
+
 async function atomicWrite(file, contents) {
   const temporary = `${file}.tmp-${process.pid}`;
   await fs.writeFile(temporary, contents, 'utf8');
@@ -148,7 +182,7 @@ async function sourceDataset(packet, ticker) {
         chartSource: evidence.url || packet.priceSnapshot?.sourceEvidence?.find((item) => item.url)?.url || '',
         bars
       };
-      return verifyMarketDataset(dataset, { ticker, expectedDate, expectedClose: packet.priceSnapshot?.value });
+      return verifyInitialMarketDataset(dataset, { ticker, expectedDate, expectedClose: packet.priceSnapshot?.value });
     } catch (error) {
       errors.push(`${evidence.path}: ${error.message}`);
     }
@@ -162,7 +196,7 @@ export async function readMarketDatasets(repoRoot = moduleRoot) {
   for (const ticker of order) {
     const file = path.join(repoRoot, 'chart-surface', 'partial-market-data', `${ticker}.json`);
     const dataset = JSON.parse(await fs.readFile(file, 'utf8'));
-    result[ticker] = verifyMarketDataset(dataset, { ticker });
+    result[ticker] = verifyInitialMarketDataset(dataset, { ticker });
   }
   return result;
 }

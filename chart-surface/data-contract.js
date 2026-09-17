@@ -225,7 +225,7 @@ window.PROTOTYPE_DATA_CONTRACT = {
       "defaultView": "daily",
       "active": true,
       "latestChartDate": "2026-09-16",
-      "marketSource": "https://api.nasdaq.com/api/quote/MU/chart?assetclass=stocks&fromdate=2026-09-01&todate=2026-09-16",
+      "marketSource": "https://query1.finance.yahoo.com/v8/finance/chart/MU?range=2y&interval=1d&events=history",
       "chartSource": "partial-market-data/MU.json",
       "gexSource": "https://cdn.cboe.com/api/global/delayed_quotes/options/MU.json",
       "freshness": "2026-09-16 · completed-session OHLCV",
