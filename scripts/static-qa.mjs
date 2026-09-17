@@ -180,6 +180,9 @@ for (const file of htmlFiles) {
     if (!html.includes('lastValueVisible: false });')) failures.push(`${file}: stale candle last-value label is still exposed`);
     if (!html.includes('colors.currentPrice, 1, L.LineStyle.Dashed, true')) failures.push(`${file}: current price line does not expose the canonical price label`);
     if (!html.includes('const DAILY_VISIBLE_MONTHS = 4') || !html.includes('setDefaultChartWindow(bars)')) failures.push(`${file}: daily chart default window is not constrained to the recent four months`);
+    if (!html.includes('id="price-zero-floor"') || !html.includes('function updateZeroFloor()')) failures.push(`${file}: compressed zero-price floor is not wired below the candle pane`);
+    if (!html.includes('panes.slice(0, 1).reduce') || !html.includes('const monthStarts = []')) failures.push(`${file}: candle date axis is not positioned and sampled deterministically`);
+    if (!html.includes('function finitePrice(value)') || !html.includes('value !== null && value > 0') || !html.includes('const lowerBound = min > 0') || !html.includes('const minimumGap = getViewportWidth() <= 420 ? 72 : 88')) failures.push(`${file}: false zero levels, unused price space, or colliding date labels can distort the candle chart`);
   }
   if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
