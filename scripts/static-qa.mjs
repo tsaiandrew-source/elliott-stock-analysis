@@ -248,10 +248,14 @@ for (const marker of ['attempts: 5', 'cacheBustOnRetry: true', "searchParams.set
   if (!publicSmoke.includes(marker)) failures.push(`scripts/public-smoke.mjs: Apps Script retry hardening is missing ${marker}`);
 }
 const universalRunner = await read('scripts/run-autonomous-universal-refresh.command');
+const privateIngest = await read('scripts/ingest-private-analysis.mjs');
 const personalCredentialWrapper = await read('scripts/with-tsaiandrew-source');
 if (!universalRunner.includes('${ROOT}/scripts/with-tsaiandrew-source')) failures.push('Universal Refresh runner must use the repo-native credential wrapper by default');
 for (const marker of ['git -C "$ROOT" fetch origin main', 'worktree add --detach "$RUNTIME_DIR" origin/main', 'ELLIOTT_PACKET_WAIT_SECONDS', 'reconciling the live proxy with public state', '$RUNTIME_DIR/scripts/ingest-private-analysis.mjs', '$RUNTIME_DIR/scripts/sync-universal-refresh.mjs']) {
   if (!universalRunner.includes(marker)) failures.push(`Universal Refresh runner latest-main recovery is missing ${marker}`);
+}
+for (const marker of ['definitiveBridgeRejection', 'REJECTED_BY_PRIVATE_BRIDGE', 'WRITE_NOT_READ_VISIBLE', 'failure receipt written']) {
+  if (!privateIngest.includes(marker)) failures.push(`Private ingest failure receipt is missing ${marker}`);
 }
 for (const marker of ['auth token --user tsaiandrew-source', 'export GH_TOKEN=', 'export GITHUB_TOKEN=']) {
   if (!personalCredentialWrapper.includes(marker)) failures.push(`scripts/with-tsaiandrew-source: missing ${marker}`);
