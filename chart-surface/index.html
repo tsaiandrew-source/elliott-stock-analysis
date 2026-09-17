@@ -120,6 +120,10 @@
     .price-axis-label { position: absolute; top: 7px; color: var(--muted); font-size: 12px; line-height: 1; white-space: nowrap; transform: translateX(-50%); }
     .price-axis-label.is-left { transform: none; }
     .price-axis-label.is-right { transform: translateX(-100%); }
+    #price-zero-floor { position: absolute; left: 0; right: 0; z-index: 8; height: 18px; border-bottom: 1px solid color-mix(in srgb, var(--muted) 46%, transparent); background: linear-gradient(180deg, rgba(13,26,37,0), rgba(13,26,37,.94) 58%, var(--surface)); pointer-events: none; }
+    #price-zero-floor[hidden] { display: none; }
+    #price-zero-floor::before { content: ""; position: absolute; right: 57px; bottom: 3px; width: 12px; height: 7px; border-top: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: skewY(-28deg); opacity: .72; }
+    .price-zero-floor-label { position: absolute; right: 9px; bottom: 1px; color: var(--muted); font-size: 11px; font-weight: 700; line-height: 1; }
     #phase-overlay { position: absolute; top: 0; left: 0; right: 0; z-index: 8; pointer-events: none; overflow: hidden; }
     #gex-profile { position: relative; z-index: 12; min-height: 900px; height: 900px; overflow-y: auto; padding: 18px 70px 28px 18px; background: #0d1a25; }
     #gex-profile[hidden] { display: none; }
@@ -480,6 +484,7 @@
         <div id="chart-stack" role="img" aria-label="Interactive candlestick chart with volume, RSI, and MACD panes">
           <div id="price-chart" aria-hidden="true"></div>
           <div id="phase-overlay" aria-hidden="true"></div>
+          <div id="price-zero-floor" aria-label="價格軸由零起算；零至最低顯示價格的區間已壓縮" hidden><span class="price-zero-floor-label">$0</span></div>
           <div id="price-time-axis" aria-label="主圖日期軸" hidden></div>
           <div id="chart-empty-message" class="chart-empty-message" hidden></div>
           <div id="rsi-pane-label" class="pane-label">RSI (14)</div>
@@ -806,8 +811,26 @@
       const wyckoffPhaseFor = (run, timeframe) => {
         const structured = run?.technicalEvidence?.wyckoff?.[timeframe];
         if (structured && typeof structured === 'object') return structured;
+        const evidence = run?.wyckoffPhase?.[`${timeframe}Evidence`];
+        if (evidence && typeof evidence === 'object') return evidence;
         const legacy = run?.wyckoffPhase?.[timeframe];
         return legacy && typeof legacy === 'object' ? legacy : null;
+      };
+      const hasWyckoffSegments = (phase) => Array.isArray(phase?.segments) && phase.segments.length > 0;
+      const wyckoffPhaseEvidenceFor = (ticker, timeframe, currentRun) => {
+        const current = wyckoffPhaseFor(currentRun, timeframe);
+        if (hasWyckoffSegments(current)) return current;
+        const lastGood = tickerRuns(ticker)
+          .map((run) => ({ run, phase: wyckoffPhaseFor(run, timeframe) }))
+          .find(({ phase }) => hasWyckoffSegments(phase));
+        if (!lastGood) return current;
+        return {
+          ...lastGood.phase,
+          ...(current || {}),
+          segments: lastGood.phase.segments,
+          segmentsAsOf: runDate(lastGood.run),
+          segmentsStatus: 'last-valid'
+        };
       };
       const wyckoffTextFor = (run, timeframe) => {
         const structured = wyckoffPhaseFor(run, timeframe);
@@ -887,8 +910,12 @@
           wyckoff: wyckoffTextFor(dailyRun, 'daily'),
           weeklyWyckoff: wyckoffTextFor(weeklyRun || dailyRun, 'weekly'),
           wyckoffPhases: {
-            daily: wyckoffPhaseFor(dailyRun, 'daily'),
-            weekly: wyckoffPhaseFor(weeklyRun || dailyRun, 'weekly')
+            // Phase geometry is durable evidence. A newer partial refresh may
+            // update the reading without erasing the newest valid segments.
+            // Daily and Weekly are resolved independently; never substitute
+            // one timeframe's geometry for the other.
+            daily: wyckoffPhaseEvidenceFor(ticker, 'daily', dailyRun),
+            weekly: wyckoffPhaseEvidenceFor(ticker, 'weekly', weeklyRun || dailyRun)
           },
           wyckoffGate: null,
           patternGate: selectedRun.confirmation,
@@ -1149,9 +1176,15 @@
         return series;
       }
 
-      function levelData(bars, value) {
+      function finitePrice(value) {
+        if (value === null || value === undefined || value === '') return null;
         const numeric = Number(value);
-        return Number.isFinite(numeric) ? bars.map((bar) => ({ time: bar.time, value: numeric })) : [];
+        return Number.isFinite(numeric) ? numeric : null;
+      }
+
+      function levelData(bars, value) {
+        const numeric = finitePrice(value);
+        return numeric === null ? [] : bars.map((bar) => ({ time: bar.time, value: numeric }));
       }
 
       function aggregateWeeklyBars(bars) {
@@ -1460,7 +1493,7 @@
           const bar = bars.find((item) => Number(item.time) >= start);
           if (!bar) return null;
           const phase = String(segment.phase || String.fromCharCode(65 + index)).trim();
-          const label = String(segment.label_zh || segment.label || '').trim();
+          const label = String(segment.label_zh || segment.label || '').trim().replace(new RegExp(`^${phase}\\s*[｜|·:-]\\s*`, 'i'), '');
           return { time: bar.time, label: label ? 'Phase ' + phase + '｜' + label : 'Phase ' + phase };
         }).filter(Boolean);
       }
@@ -1492,17 +1525,22 @@
       }
 
       function freezePriceFrame(bars, data, pattern) {
-        const values = bars.flatMap((bar) => [bar.low, bar.high]);
+        const logicalRange = chart.timeScale().getVisibleLogicalRange?.();
+        const visibleFrom = Math.max(0, Math.floor(logicalRange?.from ?? 0));
+        const visibleTo = Math.min(bars.length - 1, Math.ceil(logicalRange?.to ?? bars.length - 1));
+        const frameBars = bars.slice(visibleFrom, visibleTo + 1);
+        const values = (frameBars.length ? frameBars : bars).flatMap((bar) => [bar.low, bar.high]);
         const gex = gexView(data);
         const priceSnapshot = priceSnapshotFor(data, bars, coverageRows().find((item) => normalizeTicker(item.ticker) === normalizeTicker(state.ticker)));
         values.push(priceSnapshot?.value, pattern.confirmation, pattern.invalidation, data.wyckoffGate, gex.flip, gex.callWall, gex.putWall);
-        const numericValues = values.map(Number).filter(Number.isFinite);
+        const numericValues = values.map(finitePrice).filter((value) => value !== null && value > 0);
         const min = Math.min(...numericValues);
         const max = Math.max(...numericValues);
         const padding = Math.max((max - min) * 0.06, 0.5);
+        const lowerBound = min > 0 ? Math.max(min - padding, min * 0.85) : min - padding;
         const scale = candleSeries.priceScale();
         scale.applyOptions({ autoScale: false, scaleMargins: { top: 0.08, bottom: 0.08 } });
-        scale.setVisibleRange({ from: min - padding, to: max + padding });
+        scale.setVisibleRange({ from: lowerBound, to: max + padding });
       }
 
       function freezeIndicatorFrame(series, values, min, max) {
@@ -1524,28 +1562,65 @@
         const panes = chart.panes();
         const datePane = panes[1];
         const datePaneElement = datePane?.getHTMLElement?.();
+        const paneTop = Number.isFinite(datePaneElement?.offsetTop)
+          ? datePaneElement.offsetTop
+          : panes.slice(0, 1).reduce((sum, pane) => sum + (pane.getHeight?.() || 0), 0);
         axis.hidden = false;
-        axis.style.top = `${datePaneElement?.offsetTop || 0}px`;
+        axis.style.top = `${paneTop}px`;
         axis.style.height = `${datePane?.getHeight?.() || 30}px`;
         const range = chart.timeScale().getVisibleLogicalRange?.();
         const from = Math.max(0, Math.floor(range?.from ?? 0));
         const to = Math.min(axisBars.length - 1, Math.ceil(range?.to ?? axisBars.length - 1));
         const count = getViewportWidth() <= 420 ? 4 : 6;
-        const indices = [...new Set(Array.from({ length: count }, (_, index) => Math.max(from, Math.min(to, Math.round(from + (to - from) * index / Math.max(count - 1, 1))))))];
+        const monthStarts = [];
+        let previousMonth = '';
+        for (let index = from; index <= to; index += 1) {
+          const date = new Date(axisBars[index].time * 1000);
+          const month = `${date.getUTCFullYear()}-${date.getUTCMonth()}`;
+          if (month === previousMonth) continue;
+          previousMonth = month;
+          monthStarts.push(index);
+        }
+        const candidates = [...new Set([from, ...monthStarts, to])];
+        const indices = candidates.length <= count
+          ? candidates
+          : [...new Set(Array.from({ length: count }, (_, index) => candidates[Math.round((candidates.length - 1) * index / Math.max(count - 1, 1))]))];
         const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
-        const seenLabels = new Set();
-        axis.innerHTML = indices.map((index, position) => {
+        const positioned = indices.map((index) => {
           const coordinate = chart.timeScale().timeToCoordinate(axisBars[index].time);
-          if (coordinate === null) return '';
+          if (coordinate === null) return null;
           const text = formatter.format(new Date(axisBars[index].time * 1000));
-          if (seenLabels.has(text)) return '';
-          seenLabels.add(text);
+          return { coordinate, text };
+        }).filter(Boolean);
+        const minimumGap = getViewportWidth() <= 420 ? 72 : 88;
+        const spaced = [];
+        positioned.forEach((label, index) => {
+          const previous = spaced.at(-1);
+          if (!previous || label.coordinate - previous.coordinate >= minimumGap) {
+            spaced.push(label);
+            return;
+          }
+          if (index === positioned.length - 1 && spaced.length > 1) spaced[spaced.length - 1] = label;
+        });
+        axis.innerHTML = spaced.map((item, position) => {
           const label = document.createElement('span');
-          label.className = `price-axis-label${position === 0 ? ' is-left' : ''}${position === indices.length - 1 ? ' is-right' : ''}`;
-          label.style.left = `${coordinate}px`;
-          label.textContent = text;
+          label.className = `price-axis-label${position === 0 ? ' is-left' : ''}${position === spaced.length - 1 ? ' is-right' : ''}`;
+          label.style.left = `${item.coordinate}px`;
+          label.textContent = item.text;
           return label.outerHTML;
         }).join('');
+      }
+
+      function updateZeroFloor() {
+        const floor = $('price-zero-floor');
+        if (!chart || state.view === 'gex' || !axisBars.length) {
+          floor.hidden = true;
+          return;
+        }
+        const pricePane = chart.panes()[0];
+        const pricePaneHeight = pricePane?.getHeight?.() || 0;
+        floor.hidden = false;
+        floor.style.top = `${Math.max(0, pricePaneHeight - 18)}px`;
       }
 
       function setPaneLayout() {
@@ -1572,6 +1647,7 @@
           const paneTop = paneElement ? paneElement.offsetTop : panes.slice(0, paneIndex).reduce((sum, pane) => sum + (pane.getHeight?.() || 0), 0);
           label.style.top = `${paneTop + 8}px`;
         });
+        updateZeroFloor();
         updateDateAxis();
         stack.dataset.paneHeights = panes.map((pane) => pane.getHeight?.() || 0).join(',');
       }
@@ -1873,6 +1949,7 @@
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
         $('price-time-axis').hidden = isGex;
+        $('price-zero-floor').hidden = isGex;
         // Keep the integrated technical analysis rail persistent across every view.
         $('structure-panel').hidden = false;
         renderGexProfile(data);
@@ -1890,6 +1967,7 @@
           axisBars = [];
           $('phase-overlay').hidden = true;
           $('price-time-axis').hidden = true;
+          $('price-zero-floor').hidden = true;
           $('chart-empty-message').hidden = true;
           $('chart-empty-message').textContent = '';
           setChartNotice('');
@@ -1958,14 +2036,15 @@
         layerSeries.gexFlip = addLine('gexFlip', levelData(bars, gex.flip), colors.gex, 3, L.LineStyle.Dotted);
         layerSeries.gexCallWall = addLine('gexCallWall', levelData(bars, gex.callWall), colors.patternConfirmation, 2, L.LineStyle.Dashed);
         layerSeries.gexPutWall = addLine('gexPutWall', levelData(bars, gex.putWall), colors.patternInvalidation, 2, L.LineStyle.Dashed);
-        freezePriceFrame(bars, data, pattern);
         freezeIndicatorFrame(rsiSeries.value, rsi.map((item) => item.value), 0, 100);
         const macdValues = [...macd.macd.map((item) => item.value), ...macd.signal.map((item) => item.value), ...histogram.map((item) => item.value), 0];
         freezeIndicatorFrame(macdSeries.macd, macdValues);
         setDefaultChartWindow(bars);
+        freezePriceFrame(bars, data, pattern);
         setPaneLayout();
         syncIndicatorRanges();
         chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+          freezePriceFrame(bars, data, pattern);
           syncIndicatorRanges();
         });
         drawPhaseOverlay(bars, phases);
@@ -2195,6 +2274,7 @@
         });
         setChartNotice(isGex ? publicGexText(data.gexSummary?.displayText) : '');
         $('price-time-axis').hidden = isGex;
+        $('price-zero-floor').hidden = isGex;
         $('chart-overlays').hidden = isGex;
         $('chart-legend').hidden = isGex;
       }

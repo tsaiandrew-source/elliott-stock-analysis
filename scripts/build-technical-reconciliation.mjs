@@ -184,7 +184,10 @@ function updateDailyPacket(packet, asset, context) {
     },
     wyckoff: {
       ...(isObject(updated.technicalEvidence?.wyckoff) ? updated.technicalEvidence.wyckoff : {}),
-      daily: wyckoffLabel(wyckoff),
+      // Preserve the complete structured phase evidence. Reducing this field
+      // to its display label drops the segment dates that draw the chart
+      // phases on the next Universal Refresh release.
+      daily: wyckoff,
       weekly: updated.technicalEvidence?.wyckoff?.weekly || 'carried-forward'
     },
     projectionSource: structuredClone(asset.projection_source),

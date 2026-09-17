@@ -173,6 +173,7 @@ for (const file of htmlFiles) {
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
     if (/shape:\s*'arrowUp'\s*,\s*text:\s*'watch'/i.test(html)) failures.push(`${file}: generic watch arrow marker must not be rendered on candle charts`);
     if (!html.includes("technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary']")) failures.push(`${file}: selected daily/weekly pattern coordinates are not wired to the chart`);
+    if (!html.includes('const wyckoffPhaseEvidenceFor') || !html.includes('segmentsStatus: \'last-valid\'') || !html.includes("wyckoffPhaseEvidenceFor(ticker, 'weekly'")) failures.push(`${file}: partial refreshes can erase timeframe-specific Wyckoff phase geometry`);
     if (/if \(state\.view === 'weekly' \|\| !bars\.length \|\| !pattern\) return \[\]/.test(html)) failures.push(`${file}: weekly pattern geometry is still disabled`);
     if (!html.includes("state.view === 'weekly' ? null")) failures.push(`${file}: weekly charts can still fall back to daily geometry sidecars`);
     if (!html.includes('const coveragePrice = coverageItem && Number.isFinite(Number(coverageItem.price))')) failures.push(`${file}: chart price snapshot is not wired to the canonical coverage price`);
@@ -180,6 +181,9 @@ for (const file of htmlFiles) {
     if (!html.includes('lastValueVisible: false });')) failures.push(`${file}: stale candle last-value label is still exposed`);
     if (!html.includes('colors.currentPrice, 1, L.LineStyle.Dashed, true')) failures.push(`${file}: current price line does not expose the canonical price label`);
     if (!html.includes('const DAILY_VISIBLE_MONTHS = 4') || !html.includes('setDefaultChartWindow(bars)')) failures.push(`${file}: daily chart default window is not constrained to the recent four months`);
+    if (!html.includes('id="price-zero-floor"') || !html.includes('function updateZeroFloor()')) failures.push(`${file}: compressed zero-price floor is not wired below the candle pane`);
+    if (!html.includes('panes.slice(0, 1).reduce') || !html.includes('const monthStarts = []')) failures.push(`${file}: candle date axis is not positioned and sampled deterministically`);
+    if (!html.includes('function finitePrice(value)') || !html.includes('value !== null && value > 0') || !html.includes('const lowerBound = min > 0') || !html.includes('const minimumGap = getViewportWidth() <= 420 ? 72 : 88')) failures.push(`${file}: false zero levels, unused price space, or colliding date labels can distort the candle chart`);
   }
   if (file === 'data-model/coverage.html') {
     if (/coverage-manage-tab|coverage-form|new-ticker|data-toggle-ticker|data-remove-ticker/i.test(html)) failures.push(`${file}: hidden coverage-management controls leaked into the public home page`);
@@ -196,6 +200,11 @@ for (const file of htmlFiles) {
 if (await exists('pwa-register-v27.js')) {
   const registration = await read('pwa-register-v27.js');
   if (!registration.includes("new URL('./service-worker.js'")) failures.push('pwa-register-v27.js: canonical service worker is not registered');
+}
+
+if (await exists('scripts/build-technical-reconciliation.mjs')) {
+  const reconciliation = await read('scripts/build-technical-reconciliation.mjs');
+  if (!reconciliation.includes('daily: wyckoff,')) failures.push('technical reconciliation drops Wyckoff phase segments from refreshed daily packets');
 }
 
 if (await exists('chart-surface/gex-market-overview.js')) {
