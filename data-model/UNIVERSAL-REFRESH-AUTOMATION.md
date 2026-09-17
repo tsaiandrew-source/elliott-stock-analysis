@@ -15,12 +15,29 @@ remain backend-only.
    atomically to the canonical local handoff outbox at
    `/Users/andrtsai/Documents/ChatGPT/P F Social/handoffs/elliott-universal-refresh/outbox`.
    The scheduled consumer creates the directory when absent and never scans an
-   ambiguous workspace-wide location.
+   ambiguous workspace-wide location. The consumer waits up to 15 minutes
+   inside both the primary and catch-up windows so a packet that finishes a
+   few minutes after the calendar trigger is still consumed in the same run.
+   Multiple unrelated packet heads remain fail-closed; when packets form an
+   explicit `supersedesBatchId` chain, only the newest head is eligible and
+   older inbox files are archived as superseded without being posted.
+   An empty outbox after the wait never ends the run before reconciliation:
+   the consumer still compares the live proxy with public state. This lets a
+   later schedule recover automatically when private insertion succeeded but
+   the subsequent public release failed before it could write a pending-release
+   receipt.
 2. `ingest-private-analysis.mjs` validates the packet against the canonical
    roster, reads `elliott-ingest-token` / `INGEST_TOKEN` from macOS Keychain,
    appends it to the private Apps Script bridge, and waits until every run ID is
    visible through the canonical read proxy. The token is never printed or
    persisted. A failed or ambiguous write remains in the inbox for recovery.
+   Before validation, the runner fetches `origin/main` and executes the
+   consumer from a clean detached latest-main runtime worktree. A dirty or
+   behind developer checkout therefore cannot supply an obsolete ticker
+   roster. A correction may reuse an already visible superseded row only when
+   it declares `correctionScope: roster-only`, names the exact
+   `supersedesRunId`, and the completed-session close still matches. Content
+   corrections require a newly visible run and cannot use this exception.
 3. `sync-market-data.mjs` resolves the hash-backed completed-session OHLCV
    artifact named by every daily packet and atomically publishes one
    `chart-surface/partial-market-data/<TICKER>.json` file for every canonical
@@ -32,7 +49,10 @@ remain backend-only.
    the bundled last-good contract. Coverage date, closing price, daily chart
    and weekly aggregation all derive from the same completed-session market
    dataset. An unavailable optional lane cannot replace a populated prior lane
-   with an empty value.
+   with an empty value. For a current daily run, the public core thesis is
+   rebuilt from that same date's structured EoD opening plus its confirmation
+   and invalidation. This prevents a carried last-good thesis from displaying
+   an older closing price as today's close while optional lanes remain pending.
 5. A clean isolated worktree may change only
    `chart-surface/data-contract.js` and
    `chart-surface/partial-market-data/*.json`. Static and PWA QA must pass before the

@@ -72,6 +72,30 @@ function sanitizeLocalValues(value, key = '') {
   return output;
 }
 
+function digestOpening(item) {
+  const digest = item?.dailyDigest?.endOfDay || item?.dailyDigest;
+  const sections = Array.isArray(digest?.sections) ? digest.sections : [];
+  const summary = sections.find((section) => /摘要|市場脈絡/.test(String(section?.heading || '')))?.points?.[0];
+  return String(summary || digest?.points?.[0] || '').trim();
+}
+
+export function normalizeRunForPublic(item, completedMarketData) {
+  const ticker = String(item?.ticker || item?.Ticker || '').toUpperCase();
+  const market = completedMarketData?.[ticker];
+  const analysisDate = String(item?.dataThrough || item?.analysisDate || '');
+  const digestDate = String(item?.dailyDigest?.dataThrough || item?.dailyDigest?.endOfDay?.date || '');
+  const isWeekly = String(item?.runType || '').toLowerCase() === 'weekly';
+  if (!market || isWeekly || analysisDate !== market.dataThrough || !digestDate.includes(market.dataThrough)) return item;
+  const opening = digestOpening(item);
+  if (!opening) return item;
+  const confirmation = String(item?.confirmation || '').trim();
+  const invalidation = String(item?.invalidation || '').trim();
+  return {
+    ...item,
+    thesis: [opening, confirmation && `確認：${confirmation}`, invalidation && `失效：${invalidation}`].filter(Boolean).join(' ')
+  };
+}
+
 export function pruneToCoverage(value, allowedTickers, knownTickers) {
   if (Array.isArray(value)) {
     return value
@@ -128,7 +152,8 @@ export async function buildCandidate(live, previous, repoRoot, marketDatasets = 
   const runs = new Map();
   for (const item of [...(previous.analysisRuns || []), ...(live.analysisRuns || [])]) {
     const key = runKey(item);
-    if (key) runs.set(key, { ...item, chartSource: `public-contract://chart-source/${item.ticker || item.Ticker || 'unknown'}` });
+    const normalized = normalizeRunForPublic(item, completedMarketData);
+    if (key) runs.set(key, { ...normalized, chartSource: `public-contract://chart-source/${item.ticker || item.Ticker || 'unknown'}` });
   }
 
   const previousBenchmark = previous.datasets?.benchmark || {};

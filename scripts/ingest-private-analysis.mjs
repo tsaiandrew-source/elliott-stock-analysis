@@ -77,6 +77,24 @@ const packetDate = (packet) => String(packet?.dataThrough || packet?.analysisDat
 const rowDate = (row) => String(row?.dataThrough || row?.DataThrough || row?.analysisDate || row?.AnalysisDate || '');
 const rowType = (row) => String(row?.runType || row?.RunType || '').toLowerCase();
 const tickerOf = (value) => String(value?.ticker || value?.Ticker || '').toUpperCase();
+const runIdOf = (value) => String(value?.runId || value?.RunID || '');
+const closeOf = (value) => Number(value?.priceSnapshot?.value ?? value?.PriceSnapshot?.value);
+
+function sameCompletedClose(packet, row) {
+  const expected = closeOf(packet);
+  const observed = closeOf(row);
+  if (!Number.isFinite(expected) || !Number.isFinite(observed)) return false;
+  return Math.abs(expected - observed) <= Math.max(0.011, Math.abs(expected) * 0.000001);
+}
+
+function rosterOnlySupersessionVisible(batch, packet, row) {
+  if (batch?.correctionScope !== 'roster-only') return false;
+  const supersededRunId = String(packet?.supersedesRunId || '');
+  if (!supersededRunId || runIdOf(row) !== supersededRunId) return false;
+  if (tickerOf(row) !== tickerOf(packet) || rowDate(row) !== packetDate(packet)) return false;
+  if (packet.lane === 'weekly') return rowType(row) === 'weekly';
+  return rowType(row) !== 'weekly' && sameCompletedClose(packet, row);
+}
 
 export function unresolvedVisiblePackets(batch, runs) {
   const expected = [
@@ -85,8 +103,9 @@ export function unresolvedVisiblePackets(batch, runs) {
   ];
   return expected.filter((packet) => !runs.some((row) => {
     if (tickerOf(row) !== tickerOf(packet)) return false;
-    const observedRunId = String(row.runId || row.RunID || '');
+    const observedRunId = runIdOf(row);
     if (observedRunId === packet.runId || observedRunId.startsWith(`${packet.runId}-`)) return true;
+    if (rosterOnlySupersessionVisible(batch, packet, row)) return true;
     const isCarryForward = packet.lane === 'weekly' && /-CARRY-/i.test(String(packet.runId || ''));
     return isCarryForward && rowType(row) === 'weekly' && rowDate(row) === packetDate(packet);
   })).map((packet) => ({
@@ -95,6 +114,17 @@ export function unresolvedVisiblePackets(batch, runs) {
     lane: packet.lane,
     dataThrough: packetDate(packet)
   }));
+}
+
+export function selectInboxPackets(entries) {
+  const parsed = entries.map(({ name, text }) => ({ name, text, batch: JSON.parse(text) }));
+  const supersededIds = new Set(parsed.map(({ batch }) => String(batch.supersedesBatchId || '')).filter(Boolean));
+  const active = parsed.filter(({ batch }) => !supersededIds.has(String(batch.batchId || '')));
+  if (active.length > 1) throw new Error(`inbox contains ${active.length} active packets; require one deterministic supersession head`);
+  return {
+    active,
+    superseded: parsed.filter(({ batch }) => supersededIds.has(String(batch.batchId || '')))
+  };
 }
 
 async function verifyVisible(batch, attempts = 8) {
@@ -131,12 +161,19 @@ export async function ingestInbox({ inbox, stateDir, check = false }) {
   const files = (await fs.readdir(inbox)).filter((name) => name.endsWith('.json')).sort();
   if (!files.length) return { status: 'NOOP', reason: 'no validated analysis packet in inbox', inbox };
   const roster = (await loadCoverageRoster()).order;
+  const entries = await Promise.all(files.map(async (name) => ({ name, text: await fs.readFile(path.join(inbox, name), 'utf8') })));
+  const selected = selectInboxPackets(entries);
+  if (!selected.active.length) throw new Error('inbox has no active supersession head');
   const credential = check ? { token: '', source: 'not-read-in-check-mode' } : await readKeychainToken();
-  const results = [];
-  for (const name of files) {
+  const results = selected.superseded.map(({ name, batch }) => ({
+    batchId: batch.batchId,
+    status: 'SUPERSEDED_IN_INBOX',
+    file: name,
+    supersededBy: selected.active[0].batch.batchId
+  }));
+  for (const { name, text, batch: candidate } of selected.active) {
     const packetPath = path.join(inbox, name);
-    const text = await fs.readFile(packetPath, 'utf8');
-    const batch = validateBatch(JSON.parse(text), roster);
+    const batch = validateBatch(candidate, roster);
     const packetHash = sha256(text);
     if (check) {
       results.push({ batchId: batch.batchId, packetHash, status: 'VALIDATED' });
@@ -151,6 +188,15 @@ export async function ingestInbox({ inbox, stateDir, check = false }) {
     const archivedPath = path.join(processedDir, `${safeName(batch.batchId)}-${packetHash.slice(0, 12)}.json`);
     await fs.rename(packetPath, archivedPath);
     results.push({ batchId: batch.batchId, packetHash, status: 'INGESTED_AND_READ_VISIBLE', post, visibility, archivedPath });
+  }
+  if (!check && selected.superseded.length) {
+    const supersededDir = path.join(stateDir, 'superseded');
+    await fs.mkdir(supersededDir, { recursive: true });
+    for (const { name, text, batch } of selected.superseded) {
+      const source = path.join(inbox, name);
+      const destination = path.join(supersededDir, `${safeName(batch.batchId)}-${sha256(text).slice(0, 12)}.json`);
+      await fs.rename(source, destination);
+    }
   }
   const record = { status: check ? 'VALIDATED' : 'COMPLETE', credentialSource: credential.source, completedAt: new Date().toISOString(), results };
   await atomicJson(path.join(stateDir, 'last-ingest.json'), record);
