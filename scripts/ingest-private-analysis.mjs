@@ -75,8 +75,18 @@ async function postBatch(batch, token) {
   const body = await response.text();
   let result = null;
   try { result = JSON.parse(body); } catch (_) { /* Read-side verification decides uncertain outcomes. */ }
-  if (result?.status === 'error') throw new Error(`private bridge rejected batch: ${result.message || 'unknown error'}`);
-  return { httpStatus: response.status, acknowledged: response.ok && result?.status !== 'error' };
+  if (result?.status === 'error') {
+    const error = new Error(`private bridge rejected batch: ${result.message || 'unknown error'}`);
+    error.definitiveBridgeRejection = true;
+    error.httpStatus = response.status;
+    throw error;
+  }
+  return {
+    httpStatus: response.status,
+    acknowledged: response.ok && result?.status !== 'error',
+    responseStatus: result?.status || null,
+    batchId: result?.batchId || null
+  };
 }
 
 const packetDate = (packet) => String(packet?.dataThrough || packet?.analysisDate || '');
@@ -187,8 +197,39 @@ export async function ingestInbox({ inbox, stateDir, check = false }) {
     }
     let post;
     try { post = await postBatch(batch, credential.token); }
-    catch (error) { post = { acknowledged: false, uncertain: true, error: error.message }; }
-    const visibility = await verifyVisible(batch);
+    catch (error) {
+      post = {
+        acknowledged: false,
+        uncertain: !error.definitiveBridgeRejection,
+        httpStatus: error.httpStatus || null,
+        error: error.message
+      };
+      if (error.definitiveBridgeRejection) {
+        const result = { batchId: batch.batchId, packetHash, status: 'REJECTED_BY_PRIVATE_BRIDGE', post };
+        const record = {
+          status: 'FAILED_GATE',
+          credentialSource: credential.source,
+          completedAt: new Date().toISOString(),
+          results: [...results, result]
+        };
+        await atomicJson(path.join(stateDir, 'last-ingest.json'), record);
+        throw new Error(`${error.message}; failure receipt written to ${path.join(stateDir, 'last-ingest.json')}`);
+      }
+    }
+    let visibility;
+    try {
+      visibility = await verifyVisible(batch);
+    } catch (error) {
+      const result = { batchId: batch.batchId, packetHash, status: 'WRITE_NOT_READ_VISIBLE', post, error: error.message };
+      const record = {
+        status: 'FAILED_GATE',
+        credentialSource: credential.source,
+        completedAt: new Date().toISOString(),
+        results: [...results, result]
+      };
+      await atomicJson(path.join(stateDir, 'last-ingest.json'), record);
+      throw new Error(`${error.message}; post=${JSON.stringify(post)}; failure receipt written to ${path.join(stateDir, 'last-ingest.json')}`);
+    }
     const processedDir = path.join(stateDir, 'processed');
     await fs.mkdir(processedDir, { recursive: true });
     const archivedPath = path.join(processedDir, `${safeName(batch.batchId)}-${packetHash.slice(0, 12)}.json`);
