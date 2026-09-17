@@ -26,6 +26,19 @@ remain backend-only.
    later schedule recover automatically when private insertion succeeded but
    the subsequent public release failed before it could write a pending-release
    receipt.
+   A hash-backed technical-chart handoff is an input to Iris's technical lane,
+   not a replacement roster and not a publication route. Build a
+   `correctionScope: technical-content` packet against the current canonical
+   roster: update only supplied daily technical fields, preserve every
+   unsupplied ticker and all non-technical fields, preserve completed-week
+   analysis unless a weekly artifact was supplied, and assign a new RunID to
+   every daily and weekly packet. The builder verifies the handoff, manifest,
+   source, image and QA hashes plus completed-session closes before emitting a
+   candidate. A technical handoff never authorizes Joanne, Clara, Drive or
+   social operations. The handoff must target the canonical Iris Universal
+   Refresh task and pass its routing-lock validator; applications must never
+   reconstruct the analytical verdict from chart text or a historical archive
+   handoff.
 2. `ingest-private-analysis.mjs` validates the packet against the canonical
    roster, reads `elliott-ingest-token` / `INGEST_TOKEN` from macOS Keychain,
    appends it to the private Apps Script bridge, and waits until every run ID is
@@ -38,6 +51,23 @@ remain backend-only.
    it declares `correctionScope: roster-only`, names the exact
    `supersedesRunId`, and the completed-session close still matches. Content
    corrections require a newly visible run and cannot use this exception.
+   `technical-content` corrections must name both `supersedesBatchId` and each
+   packet's `supersedesRunId`; reusing the superseded RunID fails validation.
+   Build a candidate with:
+
+   ```sh
+   node scripts/build-technical-reconciliation.mjs \
+     --base <current-iris-analysis-contract-v2.json> \
+     --handoff <iris-universal-refresh-technical-input.v1.json> \
+     --routing-correction <append-only-routing-correction.json> \
+     --routing-lock <locked-routing-contract.md> \
+     --output <technical-content-correction.json> \
+     --qa-output <qa.json>
+   ```
+
+   The output remains a private candidate until the normal ingest and release
+   gates run; the builder itself never calls Apps Script, GitHub or a social
+   destination.
 3. `sync-market-data.mjs` resolves the hash-backed completed-session OHLCV
    artifact named by every daily packet and atomically publishes one
    `chart-surface/partial-market-data/<TICKER>.json` file for every canonical

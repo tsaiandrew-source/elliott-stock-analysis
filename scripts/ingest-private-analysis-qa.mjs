@@ -62,6 +62,17 @@ const contentCorrectionMissing = unresolvedVisiblePackets({ ...rosterCorrection,
 assert.equal(contentCorrectionMissing.length, 1);
 assert.equal(contentCorrectionMissing[0].lane, 'daily');
 
+const completeContentCorrection = {
+  correctionScope:'technical-content',
+  supersedesBatchId:'COVERAGE-OLD',
+  dailyPackets:[{ ...rosterCorrection.dailyPackets[0], runId:'MU-20260916-EOD-TECH-R1-D' }],
+  weeklyPackets:[{ ...rosterCorrection.weeklyPackets[0], runId:'MU-20260911-EOW-TECH-R1-W' }]
+};
+assert.equal(unresolvedVisiblePackets(completeContentCorrection, [
+  { ticker:'MU', runId:'MU-20260916-EOD-TECH-R1-D', runType:'latest', dataThrough:'2026-09-16' },
+  { ticker:'MU', runId:'MU-20260911-EOW-TECH-R1-W', runType:'weekly', dataThrough:'2026-09-11' }
+]).length, 0);
+
 const selection = selectInboxPackets([
   { name:'v1.json', text:JSON.stringify({ batchId:'COVERAGE-V1' }) },
   { name:'v2.json', text:JSON.stringify({ batchId:'COVERAGE-V2', supersedesBatchId:'COVERAGE-V1' }) }
@@ -82,6 +93,7 @@ console.log(JSON.stringify({
   rosterOnlyCorrectionCanReuseExactSupersededRows:true,
   rosterOnlyCorrectionRequiresMatchingCompletedClose:true,
   contentCorrectionsCannotReuseSupersededRows:true,
+  contentCorrectionsRequireNewVisibleRunIds:true,
   newestSupersessionHeadSelected:true,
   ambiguousHeadsRejected:true
 }, null, 2));
