@@ -811,8 +811,26 @@
       const wyckoffPhaseFor = (run, timeframe) => {
         const structured = run?.technicalEvidence?.wyckoff?.[timeframe];
         if (structured && typeof structured === 'object') return structured;
+        const evidence = run?.wyckoffPhase?.[`${timeframe}Evidence`];
+        if (evidence && typeof evidence === 'object') return evidence;
         const legacy = run?.wyckoffPhase?.[timeframe];
         return legacy && typeof legacy === 'object' ? legacy : null;
+      };
+      const hasWyckoffSegments = (phase) => Array.isArray(phase?.segments) && phase.segments.length > 0;
+      const wyckoffPhaseEvidenceFor = (ticker, timeframe, currentRun) => {
+        const current = wyckoffPhaseFor(currentRun, timeframe);
+        if (hasWyckoffSegments(current)) return current;
+        const lastGood = tickerRuns(ticker)
+          .map((run) => ({ run, phase: wyckoffPhaseFor(run, timeframe) }))
+          .find(({ phase }) => hasWyckoffSegments(phase));
+        if (!lastGood) return current;
+        return {
+          ...lastGood.phase,
+          ...(current || {}),
+          segments: lastGood.phase.segments,
+          segmentsAsOf: runDate(lastGood.run),
+          segmentsStatus: 'last-valid'
+        };
       };
       const wyckoffTextFor = (run, timeframe) => {
         const structured = wyckoffPhaseFor(run, timeframe);
@@ -892,8 +910,12 @@
           wyckoff: wyckoffTextFor(dailyRun, 'daily'),
           weeklyWyckoff: wyckoffTextFor(weeklyRun || dailyRun, 'weekly'),
           wyckoffPhases: {
-            daily: wyckoffPhaseFor(dailyRun, 'daily'),
-            weekly: wyckoffPhaseFor(weeklyRun || dailyRun, 'weekly')
+            // Phase geometry is durable evidence. A newer partial refresh may
+            // update the reading without erasing the newest valid segments.
+            // Daily and Weekly are resolved independently; never substitute
+            // one timeframe's geometry for the other.
+            daily: wyckoffPhaseEvidenceFor(ticker, 'daily', dailyRun),
+            weekly: wyckoffPhaseEvidenceFor(ticker, 'weekly', weeklyRun || dailyRun)
           },
           wyckoffGate: null,
           patternGate: selectedRun.confirmation,
@@ -1471,7 +1493,7 @@
           const bar = bars.find((item) => Number(item.time) >= start);
           if (!bar) return null;
           const phase = String(segment.phase || String.fromCharCode(65 + index)).trim();
-          const label = String(segment.label_zh || segment.label || '').trim();
+          const label = String(segment.label_zh || segment.label || '').trim().replace(new RegExp(`^${phase}\\s*[｜|·:-]\\s*`, 'i'), '');
           return { time: bar.time, label: label ? 'Phase ' + phase + '｜' + label : 'Phase ' + phase };
         }).filter(Boolean);
       }

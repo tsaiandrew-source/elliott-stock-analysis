@@ -173,6 +173,7 @@ for (const file of htmlFiles) {
     if (!html.includes('const publicEvidenceLabel')) failures.push(`${file}: public source-label filter is missing`);
     if (/shape:\s*'arrowUp'\s*,\s*text:\s*'watch'/i.test(html)) failures.push(`${file}: generic watch arrow marker must not be rendered on candle charts`);
     if (!html.includes("technicalEvidence?.patterns?.[state.view === 'weekly' ? 'weeklyPrimary' : 'dailyPrimary']")) failures.push(`${file}: selected daily/weekly pattern coordinates are not wired to the chart`);
+    if (!html.includes('const wyckoffPhaseEvidenceFor') || !html.includes('segmentsStatus: \'last-valid\'') || !html.includes("wyckoffPhaseEvidenceFor(ticker, 'weekly'")) failures.push(`${file}: partial refreshes can erase timeframe-specific Wyckoff phase geometry`);
     if (/if \(state\.view === 'weekly' \|\| !bars\.length \|\| !pattern\) return \[\]/.test(html)) failures.push(`${file}: weekly pattern geometry is still disabled`);
     if (!html.includes("state.view === 'weekly' ? null")) failures.push(`${file}: weekly charts can still fall back to daily geometry sidecars`);
     if (!html.includes('const coveragePrice = coverageItem && Number.isFinite(Number(coverageItem.price))')) failures.push(`${file}: chart price snapshot is not wired to the canonical coverage price`);
@@ -199,6 +200,11 @@ for (const file of htmlFiles) {
 if (await exists('pwa-register-v27.js')) {
   const registration = await read('pwa-register-v27.js');
   if (!registration.includes("new URL('./service-worker.js'")) failures.push('pwa-register-v27.js: canonical service worker is not registered');
+}
+
+if (await exists('scripts/build-technical-reconciliation.mjs')) {
+  const reconciliation = await read('scripts/build-technical-reconciliation.mjs');
+  if (!reconciliation.includes('daily: wyckoff,')) failures.push('technical reconciliation drops Wyckoff phase segments from refreshed daily packets');
 }
 
 if (await exists('chart-surface/gex-market-overview.js')) {
