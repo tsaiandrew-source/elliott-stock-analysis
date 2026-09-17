@@ -24,6 +24,7 @@ const options = {
   repoRoot, action, ticker, effectiveDate,
   marketDataPath: values['market-data'],
   gexRecordPath: values['gex-record'],
+  refreshReceiptPath: values['refresh-receipt'],
   after: values.after,
   metadata: {
     company: values.company,

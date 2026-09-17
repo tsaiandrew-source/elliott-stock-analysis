@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { normalizeMarketArtifact, verifyMarketDataset } from './sync-market-data.mjs';
+import { marketHistoryProfile, normalizeMarketArtifact, verifyInitialMarketDataset, verifyMarketDataset } from './sync-market-data.mjs';
 
 const yahoo = {
   chart: {
@@ -31,7 +31,20 @@ assert.throws(() => verifyMarketDataset({ dataThrough: '2026-09-14', bars: nasda
   ticker: 'TEST', expectedDate: '2026-09-14', expectedClose: 99
 }), /does not equal final OHLCV close/);
 
+const completeBars = Array.from({ length: 260 }, (_, index) => {
+  const date = new Date(Date.UTC(2025, 0, 6 + index * 2));
+  const iso = date.toISOString().slice(0, 10);
+  return { time: date.getTime() / 1000, date: iso, open: 10, high: 12, low: 9, close: 11, volume: 100 };
+});
+const complete = { dataThrough: completeBars.at(-1).date, bars: completeBars };
+assert.equal(marketHistoryProfile(complete).dailyBars, 260);
+verifyInitialMarketDataset(complete, { ticker: 'COMPLETE', minimums:{ dailyBars:252, weeklyBars:52 } });
+assert.throws(
+  () => verifyInitialMarketDataset({ dataThrough:nasdaqBars.at(-1).date, bars:nasdaqBars }, { ticker:'SHORT' }),
+  /initial sync requires at least 252 daily candles/
+);
+
 console.log(JSON.stringify({
   status: 'PASS',
-  checks: ['Yahoo normalization and cutoff', 'Nasdaq normalization', 'date equality gate', 'close equality gate']
+  checks: ['Yahoo normalization and cutoff', 'Nasdaq normalization', 'date equality gate', 'close equality gate', 'initial daily/weekly history gate']
 }, null, 2));

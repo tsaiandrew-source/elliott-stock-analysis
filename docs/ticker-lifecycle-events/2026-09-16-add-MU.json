@@ -25,12 +25,21 @@
     "insertAfter": "AVGO"
   },
   "marketEvidence": {
-    "provider": "Nasdaq",
-    "sourceUrl": "https://api.nasdaq.com/api/quote/MU/chart?assetclass=stocks&fromdate=2026-03-16&todate=2026-09-15",
-    "dataThrough": "2026-09-15",
-    "completedSessionClose": 927.6,
-    "normalizedBars": 102,
-    "normalizedArtifactSha256": "ed3cef702455c252bcd87a658c8a625766f95aa1bb72ba6e573b3ebb3bd79dd5"
+    "provider": "Yahoo Finance chart API",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/MU?range=2y&interval=1d&events=history",
+    "dataThrough": "2026-09-16",
+    "completedSessionClose": 926.5499877929688,
+    "normalizedBars": 501,
+    "derivedWeeklyBars": 105,
+    "historyStart": "2024-09-17",
+    "normalizedArtifactSha256": "3111b46b0af763a5f75516ac32f1e489aead55298950dfa86a4dabf96daa2189",
+    "initialHistoryGate": "PASS · minimum 252 daily / 52 weekly",
+    "supersededEvidence": {
+      "provider": "Nasdaq chart API",
+      "dataThrough": "2026-09-15",
+      "normalizedBars": 102,
+      "reason": "The response was truncated and left large gaps in both Daily and derived Weekly charts"
+    }
   },
   "gexEvidence": {
     "provider": "Cboe delayed options chain",
@@ -74,6 +83,7 @@
     "tickerCount": 16,
     "pwaCacheVersion": "elliott-pwa-v31",
     "releaseStatus": "production_live",
+    "marketHistoryCorrection": "prepared_locally_pending_review",
     "pullRequest": "https://github.com/tsaiandrew-source/elliott-stock-analysis/pull/109",
     "mergedAtUtc": "2026-09-16T17:22:48Z",
     "mergeCommit": "279ec5f2088a61290ac7c2c4ead46530fa0b2af7",
