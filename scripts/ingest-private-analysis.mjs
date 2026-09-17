@@ -40,6 +40,8 @@ async function readKeychainToken() {
 function validateBatch(batch, roster) {
   if (!isObject(batch) || batch.schemaVersion !== 'iris-analysis-contract-v2') throw new Error('packet schemaVersion must be iris-analysis-contract-v2');
   if (!String(batch.batchId || '').trim()) throw new Error('packet batchId is required');
+  const isContentCorrection = batch.correctionScope === 'technical-content';
+  if (isContentCorrection && !String(batch.supersedesBatchId || '').trim()) throw new Error('technical-content correction must name supersedesBatchId');
   for (const lane of ['dailyPackets', 'weeklyPackets']) {
     if (!Array.isArray(batch[lane])) throw new Error(`${lane} must be an array`);
     const byTicker = new Set();
@@ -50,6 +52,10 @@ function validateBatch(batch, roster) {
       byTicker.add(packet.ticker);
       if (!Array.isArray(packet.sourceEvidence) || !Array.isArray(packet.missingFields)) throw new Error(`${lane}/${packet.ticker} has invalid evidence or missingFields`);
       if (!isObject(packet.priceSnapshot) || !Array.isArray(packet.priceSnapshot.sourceEvidence)) throw new Error(`${lane}/${packet.ticker} has invalid priceSnapshot`);
+      if (isContentCorrection) {
+        if (!String(packet.supersedesRunId || '').trim()) throw new Error(`${lane}/${packet.ticker} technical-content correction must name supersedesRunId`);
+        if (packet.runId === packet.supersedesRunId) throw new Error(`${lane}/${packet.ticker} technical-content correction must use a new runId`);
+      }
     }
     const missing = roster.filter((ticker) => !byTicker.has(ticker));
     const extra = [...byTicker].filter((ticker) => !roster.includes(ticker));
