@@ -3,7 +3,10 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { assertAllowedChanges, releaseCloseDigest, releaseMetadata, validateConsumerAck } from './release-close-digest.mjs';
+import {
+  assertAllowedChanges, partitionRepositoryChanges, releaseCloseDigest,
+  releaseMetadata, validateConsumerAck
+} from './release-close-digest.mjs';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const marketDate = '2026-09-10';
@@ -27,6 +30,15 @@ assert.deepEqual(assertAllowedChanges(' M data-model/digests.json\n M data-model
   'data-model/digests.json', 'data-model/digest-data.js'
 ]);
 assert.throws(() => assertAllowedChanges(' M service-worker.js\n'), /unexpected repository changes/);
+assert.deepEqual(partitionRepositoryChanges([
+  ' M data-model/digests.json',
+  ' M data-model/digest-data.js',
+  ' M scripts/in-progress-work.mjs',
+  '?? notes/local-debug.txt'
+].join('\n')), {
+  owned:['data-model/digests.json', 'data-model/digest-data.js'],
+  unrelated:['scripts/in-progress-work.mjs', 'notes/local-debug.txt']
+});
 const metadata = releaseMetadata(record, packetHash);
 assert.equal(metadata.branch, 'codex/digest-2026-09-10-close-r1');
 assert.equal(metadata.title, 'Publish close digest 2026-09-10 (r1)');
@@ -72,7 +84,11 @@ let prChecksCount = 0;
 const calls = [];
 const fakeRun = async (command, args, options = {}) => {
   calls.push({ command, args:[...args], cwd:options.cwd, env:options.env });
-  if (command === 'git' && args[0] === 'status') return { stdout:' M data-model/digests.json\n M data-model/digest-data.js\n' };
+  if (command === 'git' && args[0] === 'status') {
+    return options.cwd === repoRoot
+      ? { stdout:' M data-model/digests.json\n M data-model/digest-data.js\n M scripts/in-progress-work.mjs\n?? notes/local-debug.txt\n' }
+      : { stdout:' M data-model/digests.json\n M data-model/digest-data.js\n' };
+  }
   if (command === 'git' && args[0] === 'rev-parse' && args[1] === 'origin/main') return { stdout:'base-sha\n' };
   if (command === 'git' && args[0] === 'rev-parse' && args[1] === 'HEAD') {
     if (options.cwd === worktree) return { stdout:`${worktreeRevParseCount++ === 0 ? 'base-sha' : 'release-sha'}\n` };
@@ -103,6 +119,7 @@ const result = await releaseCloseDigest({
   now:'2026-09-10T16:20:00-07:00'
 }, { run:fakeRun, sleep:async () => {} });
 assert.equal(result.status, 'PUBLISHED');
+assert.deepEqual(result.sourceCheckoutUnrelatedChanges, ['scripts/in-progress-work.mjs', 'notes/local-debug.txt']);
 assert.equal(prChecksCount, 2);
 assert.equal(result.publicSmokeDigestId, record.id);
 const releasedRecords = JSON.parse(await fs.readFile(path.join(worktree, 'data-model/digests.json'), 'utf8')).records;
@@ -123,5 +140,6 @@ assert.equal(calls.filter((call) => call.command === 'gh' && call.args[1] === 'c
 console.log(JSON.stringify({
   status:'PASS', allowedDiff:true, deterministicMetadata:true, ackBinding:true,
   mockedGitHubBoundary:true, latestBaseReplay:true, concurrentDigestPreserved:true,
-  checksDiscoveryRetry:true, exactPublicSmoke:true, duplicateSafeRecovery:true
+  checksDiscoveryRetry:true, exactPublicSmoke:true, duplicateSafeRecovery:true,
+  unrelatedSourceCheckoutWorkIsolated:true
 }, null, 2));

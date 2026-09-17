@@ -62,11 +62,18 @@ export const releaseMetadata = (record, packetSha256) => ({
   ].join('\n')
 });
 
-export function assertAllowedChanges(statusText, allowed = DATA_FILES) {
+export function partitionRepositoryChanges(statusText, owned = DATA_FILES) {
   const files = String(statusText ?? '').replace(/\s+$/, '').split('\n').filter(Boolean).map((line) => line.slice(3).trim());
-  const unexpected = files.filter((file) => !allowed.includes(file));
-  if (unexpected.length) throw new Error(`unexpected repository changes: ${unexpected.join(', ')}`);
-  return files;
+  return {
+    owned:files.filter((file) => owned.includes(file)),
+    unrelated:files.filter((file) => !owned.includes(file))
+  };
+}
+
+export function assertAllowedChanges(statusText, allowed = DATA_FILES) {
+  const changes = partitionRepositoryChanges(statusText, allowed);
+  if (changes.unrelated.length) throw new Error(`unexpected repository changes: ${changes.unrelated.join(', ')}`);
+  return changes.owned;
 }
 
 export function validateConsumerAck(ack, record, packetHash) {
@@ -126,10 +133,19 @@ async function readReleaseInputs(options, run) {
   const browserHash = sha256(await fs.readFile(path.join(repoRoot, DATA_FILES[1])));
   if (storeHash !== ack.storeSha256 || browserHash !== ack.browserBundleSha256) throw new Error('consumer output hashes no longer match repository data');
   const status = output(await run('git', ['status', '--porcelain=v1', '--untracked-files=all'], { cwd:repoRoot }));
-  const changed = assertAllowedChanges(status);
+  // The shared source checkout can contain unrelated in-progress work. Release
+  // provenance comes from the validated acknowledgement, archived packet, and
+  // a clean latest-origin/main worktree; unrelated source files are audited
+  // here but are never copied, staged, or promoted.
+  const sourceChanges = partitionRepositoryChanges(status);
+  const changed = sourceChanges.owned;
   const metadata = releaseMetadata(record, packetHash);
   const statePath = path.join(stateDir, 'releases', `${safeKey(metadata.key)}.json`);
-  return { repoRoot, stateDir, ackPath, packetPath, packetHash, packet, record, ack, metadata, statePath, changed };
+  return {
+    repoRoot, stateDir, ackPath, packetPath, packetHash, packet, record, ack,
+    metadata, statePath, changed,
+    sourceCheckoutUnrelatedChanges:sourceChanges.unrelated
+  };
 }
 
 async function loadState(statePath) {
@@ -192,6 +208,7 @@ async function prepare(context, state, options, run) {
       branch:context.metadata.branch,
       title:context.metadata.title,
       body:context.metadata.body,
+      sourceCheckoutUnrelatedChanges:context.sourceCheckoutUnrelatedChanges,
       worktree,
       baseHead,
       publicSmokeDigestId:context.record.id,
@@ -222,6 +239,7 @@ async function prepare(context, state, options, run) {
     branch:context.metadata.branch,
     title:context.metadata.title,
     body:context.metadata.body,
+    sourceCheckoutUnrelatedChanges:context.sourceCheckoutUnrelatedChanges,
     worktree,
     baseHead,
     commitSha

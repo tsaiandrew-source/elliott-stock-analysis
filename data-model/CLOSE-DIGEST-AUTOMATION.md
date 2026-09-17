@@ -106,14 +106,28 @@ The consumer takes an exclusive per-date, per-edition lock; discovers exactly on
 
 The release runner accepts a consumer acknowledgement and its archived packet. It rejects anything except an `INGESTED` or `UNCHANGED` result whose digest ID, slot date (`marketDate` or `weekStart`), cadence, edition, revision, packet hash, output hashes, and three QA results all match.
 
-Before promotion it requires the consumer checkout's `HEAD` to equal freshly fetched `origin/main` and its complete dirty set to be exactly:
+Before promotion, the runner verifies that the shared consumer checkout contains the acknowledged record and that the SHA-256 hashes of these two local outputs still match the acknowledgement:
 
 - `data-model/digests.json`
 - `data-model/digest-data.js`
 
-The runner verifies the acknowledged local hashes, then replays that exact packet onto the latest remote dataset rather than copying an older complete dataset over it. The deterministic branch is `codex/digest-YYYY-MM-DD-<edition>-rN`, using `marketDate` for daily editions and Monday `weekStart` for weekly. PR metadata and the public-smoke target derive from the packet identity and SHA-256. State transitions are `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, `PAGES_PASSED`, then `PUBLISHED`. Recovery resumes from durable state and searches for the deterministic branch's existing PR before creating one.
+The shared checkout may also contain unrelated tracked or untracked in-progress work. Those paths are recorded in the release receipt for audit, but they do not block the digest and are never copied, staged, committed, or promoted. The runner instead fetches `origin/main`, creates an isolated worktree at that exact remote head, replays the archived packet there, and fails unless the complete dirty set in that release worktree is exactly the two digest outputs above. This separation keeps the promotion scope fail-closed without making unrelated developer work a permanent recovery blocker.
+
+The runner replays the exact acknowledged packet onto the latest remote dataset rather than copying an older complete dataset over it. The deterministic branch is `codex/digest-YYYY-MM-DD-<edition>-rN`, using `marketDate` for daily editions and Monday `weekStart` for weekly. PR metadata and the public-smoke target derive from the packet identity and SHA-256. State transitions are `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, `PAGES_PASSED`, then `PUBLISHED`. Recovery resumes from durable state and searches for the deterministic branch's existing PR before creating one.
 
 Unexpected changes, identity or hash drift, missing authentication, API errors, failed checks, merge conflicts, absent or failed Pages runs, and public-smoke failures stop the release. Runtime credentials are never stored in this repository.
+
+## Error handling and resolution
+
+The durable recovery boundary is the consumer acknowledgement plus its archived packet. Once ingestion and all three local QA gates produce a valid acknowledgement, recovery must not consume the producer packet again or depend on an otherwise clean shared checkout.
+
+1. **Failure before acknowledgement:** roll back both app outputs, quarantine the claimed packet, and report `FAILED_GATE`. Repair or replace the producer packet; do not publish partial state.
+2. **Failure after acknowledgement but before preparation:** retain the acknowledgement and archived packet. A recovery run validates their identity, revision, packet hash, output hashes, and QA evidence, then prepares from latest `origin/main`. Unrelated shared-checkout changes are audit evidence, not release inputs.
+3. **Failure during GitHub promotion:** retain the last state transition and deterministic branch/PR identity. Recovery resumes from `PREPARED`, `PUSHED`, `PR_OPEN`, `MERGED`, or `PAGES_PASSED` without opening a duplicate PR or repeating an already completed action.
+4. **Already published:** return `NOOP` from the durable `PUBLISHED` receipt. Do not reject a completed release because the original packet later exceeds the freshness window.
+5. **Fail-closed invariants:** identity/hash drift, missing QA, a release-worktree diff outside the two digest outputs, authentication failure, failed checks, merge conflict, failed Pages deployment, or failed exact-digest public smoke still stops publication.
+
+Resolution adopted on 2026-09-17: a valid morning packet was acknowledged and archived, but both primary and recovery stopped on unrelated tracked runner edits in the shared checkout. The release gate now partitions source-checkout changes, records unrelated paths, and preserves the strict two-file gate in the isolated latest-main release worktree. This prevents the same non-release condition from failing every retry while preserving provenance and publication scope.
 
 ## Authorization boundary
 
