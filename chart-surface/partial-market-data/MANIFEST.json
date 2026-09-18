@@ -1,6 +1,6 @@
 {
   "schemaVersion": "elliott-completed-session-market-data-v1",
-  "sourceBatchId": "COVERAGE-20260917-EOD-V2",
+  "sourceBatchId": "COVERAGE-20260917-EOD-CATCHUP-V3",
   "tickerOrder": [
     "LITE",
     "NBIS",
