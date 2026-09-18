@@ -1,7 +1,335 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-17T23:20:04.189Z",
+  "generatedAt": "2026-09-18T12:50:05.060Z",
   "records": [
+    {
+      "id": "daily-2026-09-18-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-18",
+      "publishedAt": "2026-09-18T05:35:00-07:00",
+      "updatedAt": "2026-09-18T05:35:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-18T05:33:30-07:00",
+      "retrievedAt": "2026-09-18T05:34:30-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "晨間設定｜2026-09-18",
+      "summary": "隔夜主線不是BOJ升息造成風險退潮，而是市場把這次升息解讀為已定價、近端路徑不夠鷹，同時油價回落延續美股估值修復。BOJ以7比2把政策利率升至1.25%，並表示若展望實現將繼續升息；但兩名反對者降低了連續快速緊縮的即時機率，日圓反而貶約1%至157.5附近，日經225上漲約1.4%。Brent回落約2%至每桶102至103美元，10年期美債殖利率仍約4.93%，Nasdaq 100期貨漲約0.5%。這是風險資產的有條件喘息，不是能源與通膨風險解除：荷莫茲海峽仍有油輪遇襲通報，實體原油緊張也未消失。昨收後Anthropic披露Claude已主導26%的內部模型研發任務、參與逾90%，強化AI自我加速與監管並行的中期敘事；科技期貨仍領漲，表示今晨尚未轉化為廣泛賣壓。基準情境是油價與殖利率維持降溫、科技股延續修復；若工業生產過熱把10年期推回5%，或Brent重返105美元以上，晨間判讀即失效。",
+      "sections": [
+        {
+          "heading": "1. 晨間結論：市場把BOJ升息當成已定價，油價回落才是風險資產真正的支撐",
+          "paragraphs": [
+            "事實：截至晨間截稿，美國期貨小幅走高，Nasdaq 100期貨約漲0.5%，S&P 500期貨約漲0.2%至0.3%；亞洲主要股市多數上漲，日經225約漲1.4%。Brent約跌2%至102至103美元，10年期美債殖利率維持約4.93%。",
+            "判斷：昨天美股靠油價與長債殖利率回落反彈，今晨這兩個條件仍在。BOJ升息沒有觸發套息交易無序平倉，科技期貨又領先，代表市場暫時願意延續估值修復。這仍是條件式反彈，不是全球金融條件全面轉鬆。信心：中高。",
+            "反證：Brent重返105美元以上、10年期殖利率突破5%，並伴隨美元、波動率與信用壓力同步上升；若發生，今晨的科技領漲最容易反轉。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球市場與央行反應",
+              "url": "https://www.lse.co.uk/news/global-markets-stocks-and-bonds-dip-as-central-banks-jack-up-rates-to-tame-inflation-ohnn2rfstwp2yar.html"
+            },
+            {
+              "label": "Reuters美股盤前",
+              "url": "https://www.investing.com/news/economy-news/nasdaq-futures-lead-wall-st-gains-as-oil-retreat-eases-inflation-worries-4906888"
+            },
+            {
+              "label": "AP亞洲市場與美股期貨",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            }
+          ]
+        },
+        {
+          "heading": "2. BOJ的政策訊號比表面更鷹：升至1.25%，並明說仍會繼續升息",
+          "paragraphs": [
+            "事實：日本銀行以7比2通過升息，將無擔保隔夜拆款利率由1.0%提高至約1.25%，9月24日起生效；補充存款利率為1.25%，基本貸款利率為1.5%。反對升息的Asada與Sato認為，目前成長與通膨不足以支持立即行動。",
+            "事實：BOJ認為日本經濟溫和復甦，薪資與價格傳導持續，AI需求同時支撐成長並推高半導體等生產者價格；若經濟與物價展望實現，將繼續提高政策利率、調整寬鬆程度。行長植田和男表示政策階段正轉向防止通膨超調，也未排除連續升息或較大幅度調整。",
+            "判斷：升息本身符合預期，但政策框架已從『確認2%通膨』轉向『提前防止超調』。今晨資產價格只交易兩名反對票與缺乏明確下次升息時點，尚未充分交易日本利率正常化的累積效應。信心：高。",
+            "反證：後續薪資、服務通膨或成長明顯放緩，促使BOJ延長觀望期；反之，日圓持續偏弱且輸入成本上升，可能迫使升息更快，推翻市場的溫和路徑。"
+          ],
+          "links": [
+            {
+              "label": "日本銀行9月政策決議",
+              "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf"
+            },
+            {
+              "label": "日本銀行經濟與物價評估",
+              "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+            },
+            {
+              "label": "Reuters植田記者會重點",
+              "url": "https://live.euronext.com/en/financial-news/boj-lifts-rates-31-year-high-pivots-towards-preemptive-inflation-fight"
+            }
+          ]
+        },
+        {
+          "heading": "3. 價格反應與政策方向分離：日圓跌、日股漲，不代表BOJ轉鴿",
+          "paragraphs": [
+            "事實：美元兌日圓升約1%至157.5附近，日圓本週跌幅約2.6%，可能寫下約兩年最差單週表現；日經225升至約65,019點。",
+            "判斷：兩名委員反對升息，加上BOJ沒有承諾近端連續升息，讓市場先平倉短日股、長日圓的鷹派交易。這是一個相對於預期的鴿派反應，不是政策絕對方向轉鴿。日圓越弱，輸入型通膨越容易延長，反而提高未來更快緊縮的尾端風險。信心：高。",
+            "反證：美元兌日圓跌破近期區間且日本長債殖利率有序下行，顯示市場相信通膨會自然降溫；若日圓跌破160附近而BOJ仍保持沉默，則今晨的風險偏好可能很快被政策不確定性取代。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球外匯與股市反應",
+              "url": "https://www.lse.co.uk/news/global-markets-stocks-and-bonds-dip-as-central-banks-jack-up-rates-to-tame-inflation-ohnn2rfstwp2yar.html"
+            },
+            {
+              "label": "AP日本升息與市場反應",
+              "url": "https://apnews.com/article/japan-economy-interest-rates-inflation-67e71246d3af41bcfc61aa788f9959c7"
+            }
+          ]
+        },
+        {
+          "heading": "4. 原油風險溢價下降，但荷莫茲海峽風險尚未解除",
+          "paragraphs": [
+            "事實：Brent今晨約跌2%至102.7美元附近，WTI約跌1.8%至100.1美元。市場交易沙烏地阿拉伯增加經阿曼出貨、主要地區成品油庫存上升、中國擴大燃料出口，以及中國據報要求伊朗約束胡塞武裝等緩和因素。",
+            "事實：伊朗宣稱在荷莫茲海峽擊中多哥籍油輪Trend，相關細節尚未獲獨立證實；英國海事貿易行動辦公室也通報區域事件，但船員安全、未見環境損害。實體原油報價仍明顯高於期貨基準，說明供應緊張尚未完全解除。",
+            "判斷：油價回落足以暫時降低通膨尾端風險與長久期折現壓力，卻仍是『物流與替代路線改善』，不是戰事消失。油價維持三位數時，美股估值修復的容錯率仍低。信心：價格高、地緣傳導中。",
+            "反證：Trend事件被證實造成重大供應或航運中斷、保險費再度上升，或Brent重新站上105至107美元；若沙烏地替代出貨順利且Brent跌破100美元，能源通膨警報才會實質下修。"
+          ],
+          "links": [
+            {
+              "label": "Reuters原油與供應路線",
+              "url": "https://www.lse.co.uk/news/oil-prices-fall-2-on-easing-fears-over-saudi-supply-disruption-itgz65un01eyvfh.html"
+            },
+            {
+              "label": "AP荷莫茲海峽與區域安全",
+              "url": "https://apnews.com/article/mideast-roundup-news-september-18-2026-024350a0820dfc5dd433b4e13445fab5"
+            }
+          ]
+        },
+        {
+          "heading": "5. 債券與黃金同時偏強：油價降溫帶來喘息，實質利率約束仍在",
+          "paragraphs": [
+            "事實：10年期美債殖利率今晨約4.93%，沒有重返昨天盤中5%以上；現貨黃金上漲約0.9%至每盎司4,378美元附近，創一週高點。",
+            "判斷：油價下跌降低近端通膨恐慌，使長債與黃金同時獲得支撐；但昨天10年期TIPS標售仍要求2.653%的高實質殖利率，說明資金並未接受全面寬鬆敘事。黃金上漲更像地緣風險與通膨尾端避險，不是單純美元走弱交易。信心：中高。",
+            "反證：美國工業生產顯著高於預期、Waller發言更鷹，推動10年期殖利率站上5%並使黃金回吐；若油價續跌且實質殖利率也下降，才支持更乾淨的風險資產重估。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球殖利率與市場",
+              "url": "https://www.lse.co.uk/news/global-markets-stocks-and-bonds-dip-as-central-banks-jack-up-rates-to-tame-inflation-ohnn2rfstwp2yar.html"
+            },
+            {
+              "label": "Reuters黃金市場",
+              "url": "https://es.marketscreener.com/noticias/el-oro-alcanza-m-ximo-de-una-semana-mientras-los-precios-del-crudo-caen-ce785adadb81ff2d"
+            }
+          ]
+        },
+        {
+          "heading": "6. 新增AI敘事：Anthropic量化『AI協助打造下一代AI』，但尚未形成負面盤面傳導",
+          "paragraphs": [
+            "事實：Anthropic披露，截至2026年8月，Claude在約26%的內部模型研發任務中扮演主導角色，較2月不到1%顯著上升；超過90%的工作至少屬於人與AI協作，但其量測樣本中仍沒有任何工作達到完全自主。Anthropic表示其最常用內部平台同時約有3萬個agent運作，所有行動均受監控，線上阻擋率約0.002%。",
+            "事實：公司另稱約6%的AI研發算力用於安全工作，而由AI驅動的AI研發算力中約12%配置給安全。這些數據主要來自單一公司內部與短期觀察窗口，不能直接外推為全產業生產力。",
+            "判斷：這項披露把『AI加速AI研發』從抽象論述推進到可量化的公司內部證據，對算力需求、生產力與監管速度都有中期含義。今晨科技期貨仍領漲，表示市場先交易需求與效率，尚未把治理風險視為立即的盈餘衝擊。信心：披露高、跨產業外推中低。",
+            "反證：其他實驗室無法重現類似效率、內部指標方法被質疑，或監管機構因自主性與安全風險限制部署；反之，若更多公司披露相似數據且資本支出上調，算力需求敘事將更強。"
+          ],
+          "links": [
+            {
+              "label": "Anthropic AI研發速度量測",
+              "url": "https://www.anthropic.com/institute/measuring-pace-of-ai-development"
+            },
+            {
+              "label": "AP Anthropic披露背景",
+              "url": "https://apnews.com/article/4d3a7430f57cbc7c39e1c5f2b7d7e132"
+            },
+            {
+              "label": "Reuters科技股盤前反應",
+              "url": "https://www.investing.com/news/economy-news/nasdaq-futures-lead-wall-st-gains-as-oil-retreat-eases-inflation-worries-4906888"
+            }
+          ]
+        },
+        {
+          "heading": "7. 公司治理訊號：Berkshire主席交棒完成，盤前平淡顯示市場已充分準備",
+          "paragraphs": [
+            "事實：Berkshire Hathaway宣布Warren Buffett即刻轉任榮譽主席，仍保留董事與顧問角色；Howard G. Buffett獲選為董事長，Greg Abel繼續擔任執行長，Susan Decker續任首席獨立董事。Berkshire盤前股價接近平盤。",
+            "判斷：這是重大治理里程碑，但職責切分與接班框架早已建立，盤前未見市場級衝擊。對Berkshire本身，接下來應觀察資本配置與子公司監督是否維持一致；對大盤，它不是今晨主要風險來源。信心：高。",
+            "反證：後續董事會、資本配置或大型持股政策出現未預期變化，使市場重新定價集團治理折價。"
+          ],
+          "links": [
+            {
+              "label": "Berkshire Hathaway官方公告",
+              "url": "https://www.berkshirehathaway.com/news/sep1826.pdf"
+            },
+            {
+              "label": "Reuters盤前公司動態",
+              "url": "https://www.investing.com/news/economy-news/nasdaq-futures-lead-wall-st-gains-as-oil-retreat-eases-inflation-worries-4906888"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "晨間狀態",
+              "判讀"
+            ],
+            "rows": [
+              [
+                "美國大型股期貨",
+                "小幅偏強",
+                "S&P 500期貨約漲0.2%至0.3%，油價回落支撐估值"
+              ],
+              [
+                "Nasdaq／半導體",
+                "相對強",
+                "Nasdaq 100期貨約漲0.5%，科技延續昨日修復"
+              ],
+              [
+                "日本股市",
+                "強",
+                "日經約漲1.4%，升息後日圓轉弱支撐出口股"
+              ],
+              [
+                "日圓",
+                "弱",
+                "美元兌日圓約157.5；兩名BOJ反對票壓低近端升息預期"
+              ],
+              [
+                "美國長債",
+                "持穩",
+                "10年期約4.93%，尚未解除高實質利率約束"
+              ],
+              [
+                "原油",
+                "降溫但仍高",
+                "Brent約102至103美元，供應替代改善但航運風險仍在"
+              ],
+              [
+                "黃金",
+                "偏強",
+                "現貨約漲0.9%至一週高點，反映地緣與通膨尾端避險"
+              ],
+              [
+                "歐洲股市",
+                "偏弱",
+                "早盤主要指數約跌0.3%至0.8%，央行緊縮壓力較直接"
+              ],
+              [
+                "信用",
+                "無足夠新訊號",
+                "尚未取得可靠即時資料確認壓力擴散"
+              ],
+              [
+                "加密資產",
+                "無足夠新訊號",
+                "不以零散價格變動補敘事"
+              ]
+            ]
+          },
+          "links": [
+            {
+              "label": "Reuters全球市場快照",
+              "url": "https://www.lse.co.uk/news/global-markets-stocks-and-bonds-dip-as-central-banks-jack-up-rates-to-tame-inflation-ohnn2rfstwp2yar.html"
+            },
+            {
+              "label": "AP全球市場快照",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            }
+          ]
+        },
+        {
+          "heading": "今日催化劑與三條路徑",
+          "paragraphs": [
+            "05:30 PT：Fed理事Christopher Waller接受Reuters經濟展望訪談。截稿時訪談剛開始，尚無足夠可核實內容，不先填入立場。市場將檢查他是否支持本週升息後的後續緊縮路徑，以及能源通膨是否改變反應函數。",
+            "06:15 PT：Fed公布8月工業生產與產能利用率。市場共識約為工業生產月增0.3%、產能利用率76.4%，前值分別為0.2%與76.3%。偏強數據可支持週期股與盈餘韌性，但若10年期殖利率因此突破5%，科技股可能先承壓。",
+            "06:30 PT：Fed監管副主席Michelle Bowman就壓力測試演講。07:00 PT：Conference Board公布8月領先經濟指數，市場共識約月增0.2%。今日同時是季度選擇權與期貨三巫日，成交量與盤中波動可能高於基本面訊號本身。",
+            "基準路徑：Brent維持100至105美元、10年期低於5%，美國產出溫和成長；科技與大型股延續修復，但市場寬度有限。向上路徑：油價跌破100美元、殖利率回落且工業數據沒有衰退訊號；小型股、住房與週期股加入漲勢。向下路徑：Waller或數據推高利率預期，同時荷莫茲消息使Brent重返105至107美元；美元、長債殖利率與波動率同步上升，科技領漲反轉。",
+            "晨間判讀的最小驗證集合：Brent不反彈、10年期守在5%下方、日圓波動有序、Nasdaq與Russell 2000不出現明顯背離。若油價與殖利率同步上行，且信用利差開始擴大，才把『估值修復』升級為『金融條件再收緊』。"
+          ],
+          "links": [
+            {
+              "label": "Fed 9月官方日程",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "Fed工業生產發布頁",
+              "url": "https://www.federalreserve.gov/releases/g17/"
+            },
+            {
+              "label": "Conference Board領先指數",
+              "url": "https://www.conference-board.org/topics/us-leading-indicators/"
+            },
+            {
+              "label": "市場共識與資料週曆",
+              "url": "https://www.marketscreener.com/news/industrial-production-on-tap-data-week-ahead-ce785bd3dc80f024"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "日本銀行9月政策決議",
+          "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf"
+        },
+        {
+          "label": "日本銀行經濟與物價評估",
+          "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918b.pdf"
+        },
+        {
+          "label": "Reuters植田記者會重點",
+          "url": "https://live.euronext.com/en/financial-news/boj-lifts-rates-31-year-high-pivots-towards-preemptive-inflation-fight"
+        },
+        {
+          "label": "AP日本升息與市場反應",
+          "url": "https://apnews.com/article/japan-economy-interest-rates-inflation-67e71246d3af41bcfc61aa788f9959c7"
+        },
+        {
+          "label": "Reuters全球市場與央行反應",
+          "url": "https://www.lse.co.uk/news/global-markets-stocks-and-bonds-dip-as-central-banks-jack-up-rates-to-tame-inflation-ohnn2rfstwp2yar.html"
+        },
+        {
+          "label": "Reuters美股盤前",
+          "url": "https://www.investing.com/news/economy-news/nasdaq-futures-lead-wall-st-gains-as-oil-retreat-eases-inflation-worries-4906888"
+        },
+        {
+          "label": "AP亞洲市場與美股期貨",
+          "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+        },
+        {
+          "label": "Reuters原油與供應路線",
+          "url": "https://www.lse.co.uk/news/oil-prices-fall-2-on-easing-fears-over-saudi-supply-disruption-itgz65un01eyvfh.html"
+        },
+        {
+          "label": "AP荷莫茲海峽與區域安全",
+          "url": "https://apnews.com/article/mideast-roundup-news-september-18-2026-024350a0820dfc5dd433b4e13445fab5"
+        },
+        {
+          "label": "Reuters黃金市場",
+          "url": "https://es.marketscreener.com/noticias/el-oro-alcanza-m-ximo-de-una-semana-mientras-los-precios-del-crudo-caen-ce785adadb81ff2d"
+        },
+        {
+          "label": "Anthropic AI研發速度量測",
+          "url": "https://www.anthropic.com/institute/measuring-pace-of-ai-development"
+        },
+        {
+          "label": "AP Anthropic披露背景",
+          "url": "https://apnews.com/article/4d3a7430f57cbc7c39e1c5f2b7d7e132"
+        },
+        {
+          "label": "Berkshire Hathaway官方公告",
+          "url": "https://www.berkshirehathaway.com/news/sep1826.pdf"
+        },
+        {
+          "label": "Fed 9月官方日程",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Fed工業生產發布頁",
+          "url": "https://www.federalreserve.gov/releases/g17/"
+        },
+        {
+          "label": "Conference Board領先指數",
+          "url": "https://www.conference-board.org/topics/us-leading-indicators/"
+        },
+        {
+          "label": "市場共識與資料週曆",
+          "url": "https://www.marketscreener.com/news/industrial-production-on-tap-data-week-ahead-ce785bd3dc80f024"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-17-close",
       "cadence": "daily",
