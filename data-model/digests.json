@@ -1,7 +1,298 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-18T12:50:05.060Z",
+  "generatedAt": "2026-09-18T18:50:05.952Z",
   "records": [
+    {
+      "id": "daily-2026-09-18-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-18",
+      "publishedAt": "2026-09-18T11:34:00-07:00",
+      "updatedAt": "2026-09-18T11:34:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-18T11:33:30-07:00",
+      "retrievedAt": "2026-09-18T11:34:00-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "午間訊號｜2026-09-18",
+      "summary": "晨間主線只確認了一半：Brent仍低於昨日，但10年期美債殖利率回到約5%，已推翻『油價與殖利率同步降溫』這個乾淨的估值修復條件。美東11:29左右，S&P 500約跌0.1%、Dow跌0.36%、Nasdaq接近平盤；九個S&P產業下跌，NYSE下跌家數約為上漲家數2.4倍，顯示表面跌幅小、內部更弱。新增資料並不強：8月工業生產零成長，低於市場原先約0.3%的預期；製造業產出下降0.3%，LEI也下降0.1%。市場卻沒有用弱資料交易降息，而是繼續要求更高期限與通膨溢價。半導體指數仍漲約1.3%，但California發布行政命令，加速第三方AI安全審查並研議frontier model『kill switch』，監管敘事已由倡議進入執行設計。午間基準情境改為：大盤震盪偏弱、半導體相對抗跌、長債是主要壓力；若10年期守不住5%下方或Brent再度升破105美元，收盤前下行風險高於晨間。",
+      "sections": [
+        {
+          "heading": "1. 最大變化：殖利率回到5%，晨間的雙重支撐只剩油價",
+          "paragraphs": [
+            "晨間基準：Brent維持100至105美元、10年期殖利率低於5%，科技股延續估值修復。",
+            "午間事實：Brent仍較昨日低，但10年期美債殖利率由昨日收盤約4.94%升至約5%。美東11:29，S&P 500約跌0.10%、Dow跌0.36%、Nasdaq約跌0.02%；稍後AP快照顯示S&P約跌0.2%、Dow跌0.4%、Nasdaq跌0.1%。",
+            "判斷：晨間劇本不是完全失效，而是從『油價與殖利率共同降溫』降級成『油價單獨提供緩衝』。當10年期重新測試5%，長久期資產的折現率壓力回來，即使指數跌幅仍小，也不能把盤面視為昨日反彈的自然延續。信心：高。",
+            "反證：10年期快速回落到4.95%以下，且S&P與Nasdaq轉正、上漲家數重新超過下跌家數。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美股午間盤面",
+              "url": "https://www.marketscreener.com/news/wall-st-slips-as-higher-treasury-yields-weigh-on-sentiment-ce785adadd8cf023"
+            },
+            {
+              "label": "AP美股、殖利率與油價更新",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            }
+          ]
+        },
+        {
+          "heading": "2. 新資料：產出與領先指標都低於預期，卻沒有換來債券反彈",
+          "paragraphs": [
+            "事實：8月工業生產月比零成長，低於市場原先約0.3%的預期；製造業產出下降0.3%，耐久財製造廣泛下滑0.5%。公用事業產出增加1.8%，才抵銷部分製造弱勢。產能利用率維持76.3%，低於約76.4%的共識，也比長期平均低3.1個百分點。",
+            "事實：Conference Board的8月LEI下降0.1%，低於約增加0.1%的市場預期；消費者預期與住宅建照是主要拖累。六個月變動回到負0.1%，但同步指標仍增加0.1%。",
+            "判斷：資料組合是『當期仍擴張、前景轉弱』，不是衰退確認。更重要的是，弱於預期的產出沒有壓低長債殖利率，說明市場今日優先交易全球央行緊縮、能源通膨與期限溢價，而非成長降溫。這對股票是較差的組合：景氣動能變弱，折現率卻沒有下降。信心：高。",
+            "反證：下午長債買盤出現、10年期跌回4.95%以下，且週期股與小型股不再落後；若沒有，弱資料不足以成為估值利多。"
+          ],
+          "links": [
+            {
+              "label": "Fed 8月工業生產官方發布",
+              "url": "https://www.federalreserve.gov/releases/g17/current/default.htm"
+            },
+            {
+              "label": "Conference Board 8月LEI發布",
+              "url": "https://www.prnewswire.com/news-releases/the-conference-board-leading-economic-index-lei-for-the-us-edged-down-in-august-302883352.html"
+            }
+          ]
+        },
+        {
+          "heading": "3. 指數跌幅很小，但內部廣度比晨間明顯惡化",
+          "paragraphs": [
+            "事實：九個S&P 500主要產業下跌，材料股約跌1.3%領跌；NYSE下跌家數約為上漲家數2.44倍，Nasdaq約為1.84倍。S&P只有5檔創52週新高、27檔創新低；Nasdaq則有30檔新高、104檔新低。",
+            "事實：費城半導體指數逆勢上漲約1.3%，Nvidia與Intel提供支撐。這保留了Nasdaq相對韌性，但沒有帶動廣泛風險偏好。",
+            "判斷：晨間『科技領漲』得到局部確認，『大盤延續修復』沒有。今日更像高品質與AI集中度交易，而非全面風險偏好；材料、公用事業與房地產受殖利率與成本壓力拖累。信心：高。",
+            "反證：半導體漲勢擴散至軟體、小型股與週期股，而且市場廣度在收盤前轉正；若只剩少數晶片股上漲，指數韌性仍不健康。"
+          ],
+          "links": [
+            {
+              "label": "Reuters產業領先與市場廣度",
+              "url": "https://www.marketscreener.com/news/wall-st-slips-as-higher-treasury-yields-weigh-on-sentiment-ce785adadd8cf023"
+            }
+          ]
+        },
+        {
+          "heading": "4. 原油只提供部分緩衝：低點反彈，供應與攻擊消息互相拉扯",
+          "paragraphs": [
+            "事實：Brent隔夜一度跌破102美元，但之後收復大部分跌幅；AP午間快照約為103.68美元，仍比昨日低1.2%。市場一面交易中國據報要求伊朗約束胡塞武裝、波斯灣出口商尋找替代路線，另一面消化沙烏地阿拉伯與胡塞武裝的新一輪攻擊。",
+            "判斷：油價沒有重新突破105美元，因此仍比晨間最壞情境好；但從低點反彈顯示供應風險溢價不能線性外推。現在油價只能抵銷部分殖利率壓力，無法像昨日一樣同時拉低通膨與期限溢價。信心：中高。",
+            "反證：Brent跌破100美元並維持，或反向突破105至107美元；前者恢復估值支撐，後者會把能源通膨重新放回市場中心。"
+          ],
+          "links": [
+            {
+              "label": "AP原油與區域攻擊更新",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            },
+            {
+              "label": "Reuters全球市場與原油傳導",
+              "url": "https://www.lse.co.uk/news/global-markets-global-shares-fall-treasury-yields-rise-as-central-banks-double-down-on-inflation-fight-dmzhtv3g4tckpar.html"
+            }
+          ]
+        },
+        {
+          "heading": "5. 新增第一手監管催化劑：California把AI安全從討論推向執行設計",
+          "paragraphs": [
+            "事實：California州長Newsom發布行政命令，加速SB 813與AB 1405的第三方AI審查與稽核制度，要求專家在兩個月內提出強化方案。研議項目包括在frontier AI實驗室配置獨立驗證組織、驗證安全框架與風險報告，以及建立並持續驗證frontier model的緊急『kill switch』。",
+            "判斷：晨間Anthropic披露強化『AI加速AI研發』敘事；午間California的回應則顯示監管成本與部署限制正同步制度化。這尚不是立即禁止模型開發的規則，但會增加稽核、事件通報、模型存取控制與營運治理成本。半導體指數仍漲約1.3%，說明盤面目前交易算力需求多於監管折價。信心：政策方向高、盈餘影響中低。",
+            "反證：兩個月後的建議缺乏強制力或適用範圍很窄；相反地，若California把框架變成全國標準或聯邦政府跟進，AI平台與frontier lab的合規成本將需要重新估計。"
+          ],
+          "links": [
+            {
+              "label": "California州長辦公室AI安全行政命令",
+              "url": "https://www.gov.ca.gov/2026/09/18/governor-newsom-issues-executive-order-to-accelerate-independent-oversight-and-advance-the-creation-of-an-ai-kill-switch/"
+            },
+            {
+              "label": "Reuters半導體與大盤反應",
+              "url": "https://www.marketscreener.com/news/wall-st-slips-as-higher-treasury-yields-weigh-on-sentiment-ce785adadd8cf023"
+            }
+          ]
+        },
+        {
+          "heading": "6. 銀行監管：壓力測試更透明、資本波動更低，但不是放鬆總資本",
+          "paragraphs": [
+            "事實：Fed監管副主席Bowman表示，Fed將在未來數週考慮壓力測試最終修訂，年底前也預計完成風險資本要求與G-SIB附加費改革。新方法擬公開模型、變數與假設，並以最近兩年測試結果平均計算壓力資本緩衝；她稱這可把年度資本要求波動減半，但不會實質改變總體資本水準。",
+            "判斷：這對大型銀行的資本規劃與可預測性偏正面，也降低單一年份情境造成的資本跳升風險；但它不是全面放寬資本，因此不足以抵銷長債殖利率、信用風險或景氣降溫。今日尚無足夠產業價格訊號證明銀行股已重新定價。信心：政策高、價格傳導低。",
+            "反證：最終規則顯著改變總資本或G-SIB負擔，或銀行股與信用利差出現一致而持續的反應。"
+          ],
+          "links": [
+            {
+              "label": "Fed Bowman壓力測試演講",
+              "url": "https://www.federalreserve.gov/newsevents/speech/bowman20260918a.htm"
+            }
+          ]
+        },
+        {
+          "heading": "7. 加密資產脫離大盤：Bitcoin突破8萬美元，但更像擠空與集中風險偏好",
+          "paragraphs": [
+            "事實：Bitcoin升破8萬美元；Coinbase約漲10%、Strategy約漲12%、Robinhood約漲8%。這與S&P、Dow與市場廣度偏弱形成鮮明背離。",
+            "判斷：加密資產正在交易自己的技術突破與空頭回補，不代表全球金融條件全面放鬆。當10年期殖利率接近5%、大盤廣度惡化時，這種集中上漲更像高波動風險偏好的局部回歸。信心：價格高、驅動中。",
+            "反證：Bitcoin守穩8萬美元以上且漲勢擴散到更廣泛風險資產；若快速跌回突破前區間，則主要是擠空而非新的跨資產流動性週期。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美股與加密相關股票反應",
+              "url": "https://www.marketscreener.com/news/wall-st-slips-as-higher-treasury-yields-weigh-on-sentiment-ce785adadd8cf023"
+            },
+            {
+              "label": "Bitcoin與加密股票盤中更新",
+              "url": "https://finance.yahoo.com/markets/crypto/articles/strategy-climbs-12-coinbase-jumps-155737829.html"
+            }
+          ]
+        },
+        {
+          "heading": "8. 資料修正：撤回晨間列示的Waller今日訪談",
+          "paragraphs": [
+            "事實：晨間版把05:30 PT的Waller Reuters經濟展望訪談列為今日催化劑。重新核對Fed官方9月日程後，Waller的Reuters NEXT訪談日期是9月3日；9月18日可確認的Fed演講是Bowman於06:30 PT的壓力測試演講。今日也沒有找到新的Waller官方逐字稿或可靠當日Reuters報導。",
+            "判斷：這項催化劑屬日期誤配，午間正式撤回；不以9月3日言論解釋今日殖利率走勢。今日的可驗證驅動是全球央行緊縮、油價波動與美國資料，而不是新的Waller發言。信心：高。",
+            "反證：Fed或Reuters之後發布可核實的9月18日Waller內容；屆時應以新原始來源補正，而不是沿用舊報導。"
+          ],
+          "links": [
+            {
+              "label": "Fed 2026年9月官方日程",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "Fed 9月3日Waller官方逐字稿",
+              "url": "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "相較晨間",
+              "午間判讀"
+            ],
+            "rows": [
+              [
+                "S&P 500",
+                "轉弱",
+                "約跌0.1%至0.2%，晨間期貨漲幅消失"
+              ],
+              [
+                "Dow",
+                "更弱",
+                "約跌0.4%，對利率與週期壓力較敏感"
+              ],
+              [
+                "Nasdaq",
+                "由強轉平",
+                "接近平盤至小跌，半導體仍提供支撐"
+              ],
+              [
+                "半導體",
+                "相對更強",
+                "費城半導體指數約漲1.3%，但未擴散至大盤"
+              ],
+              [
+                "市場廣度",
+                "惡化",
+                "NYSE下跌家數約為上漲家數2.4倍"
+              ],
+              [
+                "10年期美債",
+                "明顯轉弱",
+                "殖利率回到約5%，推翻晨間乾淨估值修復條件"
+              ],
+              [
+                "原油",
+                "仍偏低但反彈",
+                "Brent約103.7美元，較低點回升"
+              ],
+              [
+                "美元／日圓",
+                "日圓仍弱",
+                "BOJ兩張反對票繼續壓低近端緊縮預期"
+              ],
+              [
+                "黃金",
+                "偏強",
+                "地緣與通膨尾端需求仍在"
+              ],
+              [
+                "Bitcoin",
+                "顯著轉強",
+                "升破8萬美元，與大盤形成局部背離"
+              ],
+              [
+                "信用",
+                "無足夠新訊號",
+                "未取得可靠即時資料確認壓力跨入信用市場"
+              ]
+            ]
+          },
+          "links": [
+            {
+              "label": "Reuters全球跨資產更新",
+              "url": "https://www.lse.co.uk/news/global-markets-global-shares-fall-treasury-yields-rise-as-central-banks-double-down-on-inflation-fight-dmzhtv3g4tckpar.html"
+            },
+            {
+              "label": "AP美國市場快照",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            }
+          ]
+        },
+        {
+          "heading": "收盤前看什麼",
+          "paragraphs": [
+            "第一，10年期殖利率能否重新跌破5%並守在4.95%附近。這是今日最直接的估值閘門。",
+            "第二，半導體約1.3%的相對強勢能否擴散至軟體、小型股與非科技產業；若市場廣度仍接近2比1負面，Nasdaq平盤不等於風險偏好改善。",
+            "第三，Brent能否守在105美元以下。若供應或攻擊消息使其重新升破105至107美元，油價與殖利率將再次形成雙重壓力。",
+            "第四，三巫日的成交量與尾盤部位調整。今天的指數小幅波動可能掩蓋更大的成分股與選擇權再平衡，收盤價比午間瞬時價格更有訊號。",
+            "更新後基準：大盤震盪偏弱、半導體相對抗跌、長債是主要壓力。偏強路徑：殖利率跌回4.95%下方、油價續降、市場廣度改善。偏弱路徑：10年期明確站上5%、Brent升破105美元，材料、房地產與高估值科技同步擴大跌幅。"
+          ],
+          "links": [
+            {
+              "label": "Reuters午間市場與三巫日",
+              "url": "https://www.marketscreener.com/news/wall-st-slips-as-higher-treasury-yields-weigh-on-sentiment-ce785adadd8cf023"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Reuters美股午間盤面",
+          "url": "https://www.marketscreener.com/news/wall-st-slips-as-higher-treasury-yields-weigh-on-sentiment-ce785adadd8cf023"
+        },
+        {
+          "label": "AP美股、殖利率與油價更新",
+          "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+        },
+        {
+          "label": "Fed 8月工業生產官方發布",
+          "url": "https://www.federalreserve.gov/releases/g17/current/default.htm"
+        },
+        {
+          "label": "Conference Board 8月LEI發布",
+          "url": "https://www.prnewswire.com/news-releases/the-conference-board-leading-economic-index-lei-for-the-us-edged-down-in-august-302883352.html"
+        },
+        {
+          "label": "California州長辦公室AI安全行政命令",
+          "url": "https://www.gov.ca.gov/2026/09/18/governor-newsom-issues-executive-order-to-accelerate-independent-oversight-and-advance-the-creation-of-an-ai-kill-switch/"
+        },
+        {
+          "label": "Fed Bowman壓力測試演講",
+          "url": "https://www.federalreserve.gov/newsevents/speech/bowman20260918a.htm"
+        },
+        {
+          "label": "Reuters全球跨資產更新",
+          "url": "https://www.lse.co.uk/news/global-markets-global-shares-fall-treasury-yields-rise-as-central-banks-double-down-on-inflation-fight-dmzhtv3g4tckpar.html"
+        },
+        {
+          "label": "Bitcoin與加密股票盤中更新",
+          "url": "https://finance.yahoo.com/markets/crypto/articles/strategy-climbs-12-coinbase-jumps-155737829.html"
+        },
+        {
+          "label": "Fed 2026年9月官方日程",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "Fed 9月3日Waller官方逐字稿",
+          "url": "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-18-morning",
       "cadence": "daily",
