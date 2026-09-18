@@ -1,7 +1,372 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-18T18:50:05.952Z",
+  "generatedAt": "2026-09-18T23:20:05.150Z",
   "records": [
+    {
+      "id": "daily-2026-09-18-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-18",
+      "publishedAt": "2026-09-18T16:05:00-07:00",
+      "updatedAt": "2026-09-18T16:05:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-18T16:04:00-07:00",
+      "retrievedAt": "2026-09-18T16:04:40-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-18",
+      "summary": "今天市場真正學到的是：經濟資料可以轉弱，但只要成長尚未進入衰退、油價仍在三位數，長債就不會自動提供估值救援。S&P 500靠半導體尾盤翻正0.2%，Nasdaq漲0.4%；但Dow跌0.2%、Russell 2000跌0.5%，多數股票收低，顯示這是窄幅科技韌性，不是全面風險偏好。10年期美債殖利率由4.94%回到約5%，Brent雖跌0.9%至103.87美元，仍高到足以維持能源通膨與央行緊縮壓力。8月工業生產零成長、製造業下降0.3%、LEI下降0.1%；午後紐約Fed Q3 GDP nowcast仍為2.3%，所以市場交易的是『成長放緩但不衰退、通膨與資金成本仍高』。AI內部也分裂：半導體上漲托住指數，California則加速第三方安全審查並研議frontier model kill switch。下週一前的核心風險不是資料，而是週末荷莫茲海峽與Saudi／Houthi衝突是否再度推高油價；若Brent突破105至107美元且10年期站穩5%，今天的科技韌性很容易失守。",
+      "sections": [
+        {
+          "heading": "1. 全日結論：指數被半導體救回，市場內部沒有一起轉強",
+          "paragraphs": [
+            "事實：S&P 500上漲12.74點或0.2%至7,650.50，Nasdaq上漲0.4%至26,522.55；Dow下跌0.2%至51,682.64，Russell 2000下跌0.5%至2,860.40。單週S&P跌0.1%、Dow跌1.7%、Russell跌1.5%，Nasdaq則漲0.7%。",
+            "事實：多數股票仍下跌；材料、公用事業與房地產領跌，科技與工業較強。半導體反彈讓S&P與Nasdaq由午間小跌翻正，但小型股與利率敏感產業沒有確認。",
+            "判斷：收盤結果不是全面risk-on，而是大型科技權重足以掩蓋廣度疲弱。市場願意保留AI資本支出與盈餘韌性，但沒有願意忽略5%的長債殖利率。信心：高。",
+            "反證：下週S&P等權重、小型股與週期股同步跑贏，且10年期殖利率回落；若半導體單獨領漲，今日的指數韌性仍屬集中交易。"
+          ],
+          "links": [
+            {
+              "label": "AP美股正式收盤",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-da0dbe004b6f83c36e7d1626a9741a92"
+            },
+            {
+              "label": "Reuters全日市場與產業反應",
+              "url": "https://uk.marketscreener.com/news/wall-st-ends-mixed-as-oil-takes-a-pause-ce785adadc80f123"
+            }
+          ]
+        },
+        {
+          "heading": "2. 長債而非Fed口號主導收盤：10年期回到5%，十月再升息機率升破五成",
+          "paragraphs": [
+            "事實：10年期美債殖利率由週四約4.94%升至約5%。利率期貨顯示，市場對Fed十月再升息的機率定價超過50%，高於一週前約42.5%與一個月前約7.2%。",
+            "事實：全球央行方向也更一致。Fed本週升息一碼；BOJ今天以7比2把政策利率升至1.25%，是31年高點，並表示若展望實現仍會升息；ECB與BoE也維持更鷹的通膨訊號。日圓因兩張BOJ反對票而走弱，沒有觸發無序套息平倉。",
+            "判斷：市場今天沒有因弱資料降低利率，而是把能源通膨、央行可信度與債券供給風險放在更高位置。5%不是技術數字而已，它直接抬高房貸、企業融資與AI資料中心的資本成本。信心：高。",
+            "反證：Fed官員明確否定十月升息、油價持續下跌，且10年期殖利率重新站回4.90%至4.95%；若未發生，高估值資產仍需靠盈餘消化折現率。"
+          ],
+          "links": [
+            {
+              "label": "Reuters收盤、殖利率與Fed定價",
+              "url": "https://uk.marketscreener.com/news/wall-st-ends-mixed-as-oil-takes-a-pause-ce785adadc80f123"
+            },
+            {
+              "label": "日本銀行9月政策決議",
+              "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf"
+            },
+            {
+              "label": "AP BOJ與全球市場反應",
+              "url": "https://apnews.com/article/japan-economy-interest-rates-inflation-67e71246d3af41bcfc61aa788f9959c7"
+            }
+          ]
+        },
+        {
+          "heading": "3. 成長訊號變弱但未斷：工業與LEI低於預期，Q3 nowcast仍是2.3%",
+          "paragraphs": [
+            "事實：8月工業生產月比零成長，低於市場原先約0.3%的預期；製造業產出下降0.3%，耐久財製造廣泛下降0.5%。公用事業增加1.8%，才讓總產出避免下跌。產能利用率維持76.3%，低於長期平均3.1個百分點。",
+            "事實：Conference Board的8月LEI下降0.1%，是3月以來首次月減，消費者預期與住宅建照形成拖累；但同步指標仍增加0.1%。午後紐約Fed Staff Nowcast把2026年第三季實質GDP成長維持在年化2.3%，第四季為2.5%。",
+            "判斷：這不是衰退確認，而是『製造與前瞻指標轉弱，總體成長仍有韌性』。因此弱資料無法自動換來降息或債券上漲；對股票而言，最不舒服的組合是成長邊際放緩、實質與名目殖利率仍高。信心：高。",
+            "反證：就業、消費與服務活動同步下滑，nowcast快速下修；反之，若後續資料回升而油價下降，市場可重新交易軟著陸。"
+          ],
+          "links": [
+            {
+              "label": "Fed 8月工業生產官方發布",
+              "url": "https://www.federalreserve.gov/releases/g17/current/default.htm"
+            },
+            {
+              "label": "Conference Board 8月LEI發布",
+              "url": "https://www.prnewswire.com/news-releases/the-conference-board-leading-economic-index-lei-for-the-us-edged-down-in-august-302883352.html"
+            },
+            {
+              "label": "紐約Fed Staff Nowcast官方頁",
+              "url": "https://www.newyorkfed.org/research/AMEC"
+            }
+          ]
+        },
+        {
+          "heading": "4. 油價緩和但沒有解除：Brent跌至103.87美元，燃料成本仍在侵蝕需求",
+          "paragraphs": [
+            "事實：Brent盤中一度跌破102美元，最終結算103.87美元，跌0.9%。中國據報應Saudi要求向伊朗施壓、希望約束Houthi攻擊，加上Gulf出口商尋找替代路線，降低最壞供應情境。",
+            "事實：戰事與航運風險仍在。Iran宣稱擊中通過荷莫茲海峽的Trend油輪，AP尚無法獨立證實；Saudi與Houthi也有新一輪跨境攻擊。美國平均汽油價格約每加侖4.47美元，柴油達6.45美元紀錄高點，會直接傳到運輸、農業、零售與消費預算。",
+            "判斷：油價今天足以防止大盤大跌，卻不足以讓長債殖利率下降。只要Brent維持三位數，市場仍會對通膨、央行緊縮與企業成本收取風險溢價。信心：高。",
+            "反證：週末沒有新增攻擊且Brent跌破100美元；反向若突破105至107美元、保險與運費再升，能源通膨將重新主導週一開盤。"
+          ],
+          "links": [
+            {
+              "label": "AP油價結算與燃料成本",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            },
+            {
+              "label": "AP荷莫茲海峽與中東事件",
+              "url": "https://apnews.com/article/iran-tanker-hormuz-mideast-roundup-024350a0820dfc5dd433b4e13445fab5"
+            },
+            {
+              "label": "Reuters全球市場與Brent結算",
+              "url": "https://live.euronext.com/en/financial-news/global-shares-edge-higher-central-banks-double-down-inflation-fight"
+            }
+          ]
+        },
+        {
+          "heading": "5. AI的兩條線同時成立：晶片設備反彈，安全監管開始制度化",
+          "paragraphs": [
+            "事實：半導體反彈是今日S&P與Nasdaq翻正的主要支撐，買盤集中在晶片設備與部分記憶體／AI供應鏈；但自午間截稿後沒有找到足以單獨解釋整個族群上漲的新重大公司原始公告，三巫日與前期跌深回補也可能放大漲幅。",
+            "事實：California州長Newsom今天發布行政命令，加速第三方AI安全審查與稽核，並要求專家在兩個月內提出frontier model『kill switch』、實驗室獨立驗證與風險報告驗證方案。Anthropic昨晚則披露Claude已主導約26%的內部模型研發任務，參與逾90%，但尚未達完全自主。",
+            "判斷：市場仍優先交易算力需求與AI生產力，監管尚未造成大盤級折價；但California已把安全討論推進到營運控制、稽核與事故定義，未來會影響frontier lab的部署速度與合規成本。信心：政策方向高、短期盈餘影響中低。",
+            "反證：兩個月後規則缺乏強制力或適用極窄；反之，若California框架成為聯邦或其他州的底線，AI平台與供應商估值將需要加入更明確的監管成本。"
+          ],
+          "links": [
+            {
+              "label": "California AI安全行政命令",
+              "url": "https://www.gov.ca.gov/2026/09/18/governor-newsom-issues-executive-order-to-accelerate-independent-oversight-and-advance-the-creation-of-an-ai-kill-switch/"
+            },
+            {
+              "label": "Anthropic AI研發速度量測",
+              "url": "https://www.anthropic.com/institute/measuring-pace-of-ai-development"
+            },
+            {
+              "label": "Reuters半導體與指數收盤反應",
+              "url": "https://uk.marketscreener.com/news/wall-st-ends-mixed-as-oil-takes-a-pause-ce785adadc80f123"
+            }
+          ]
+        },
+        {
+          "heading": "6. 公司層級訊號：定價權不等於估值安全，安全事件仍能瞬間改寫機率",
+          "paragraphs": [
+            "事實：Nucor預估第三季每股盈餘5.55至5.65美元，高於第二季5.04美元；鋼鐵廠與鋼製品部門受更高售價與穩定量支撐，但成本也上升，整體指引低於分析師預期，股價下跌6.3%。",
+            "事實：Xenon Pharmaceuticals因精神科試驗出現神經精神不良事件，暫停新患者入組；既有患者繼續試驗，癲癇適應症NDA仍已提交。股價下跌逾29%。Berkshire完成主席交棒，Warren Buffett轉任榮譽主席、Howard Buffett接任主席，股價反應溫和，顯示接班已充分預期。",
+            "判斷：Nucor說明企業可以漲價並提高名目獲利，但在高成本與高利率環境下，只要低於市場已抬高的門檻，股價仍會下跌；Xenon則提醒生技安全訊號會直接重算整個研發資產價值。這些是公司層級差異，不是系統性信用事件。信心：高。",
+            "反證：Nucor後續成本下降、訂單改善使市場上修全年獲利；Xenon安全檢查快速解除且不影響主要適應症。"
+          ],
+          "links": [
+            {
+              "label": "Nucor第三季官方指引",
+              "url": "https://www.prnewswire.com/news-releases/nucor-announces-guidance-for-the-third-quarter-of-2026-earnings-302882443.html"
+            },
+            {
+              "label": "AP Nucor價格反應",
+              "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+            },
+            {
+              "label": "Xenon官方臨床更新",
+              "url": "https://investor.xenon-pharma.com/news-releases/news-release-details/xenon-announces-azetukalner-nda-submission-fda-focal-seizures"
+            },
+            {
+              "label": "Berkshire Hathaway官方接班公告",
+              "url": "https://www.berkshirehathaway.com/news/sep1826.pdf"
+            }
+          ]
+        },
+        {
+          "heading": "7. 加密資產與黃金同漲：避險與高波動風險偏好並存",
+          "paragraphs": [
+            "事實：Bitcoin升破8萬美元，Coinbase、Strategy與Robinhood大幅上漲；現貨黃金上漲約1%至4,383美元附近。美元指數變化不大，日圓則因BOJ反對票而偏弱。",
+            "判斷：黃金交易地緣政治與通膨尾端，Bitcoin更像技術突破、空頭回補與局部風險偏好；兩者同漲不代表單一『流動性寬鬆』敘事。尤其10年期仍在5%、小型股下跌，不能把加密上漲外推成整體金融條件放鬆。信心：價格高、共同驅動低。",
+            "反證：Bitcoin守穩8萬美元並帶動更廣泛風險資產，同時實質殖利率下降；若快速跌回突破前區間，今日更接近擠空與三巫日部位調整。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球市場、黃金與匯率",
+              "url": "https://live.euronext.com/en/financial-news/global-shares-edge-higher-central-banks-double-down-inflation-fight"
+            },
+            {
+              "label": "Reuters美股與加密相關股票",
+              "url": "https://uk.marketscreener.com/news/wall-st-ends-mixed-as-oil-takes-a-pause-ce785adadc80f123"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "收盤狀態",
+              "判讀"
+            ],
+            "rows": [
+              [
+                "S&P 500",
+                "小幅上漲",
+                "+0.2%，但週線連二跌、廣度偏弱"
+              ],
+              [
+                "Nasdaq",
+                "相對強",
+                "+0.4%，半導體托住指數；單週+0.7%"
+              ],
+              [
+                "Dow",
+                "偏弱",
+                "-0.2%，單週-1.7%"
+              ],
+              [
+                "Russell 2000",
+                "弱",
+                "-0.5%，未確認大型科技韌性"
+              ],
+              [
+                "美國長債",
+                "弱",
+                "10年期殖利率約5%，估值與融資壓力仍在"
+              ],
+              [
+                "原油",
+                "降溫但高",
+                "Brent結算103.87美元，地緣風險未解除"
+              ],
+              [
+                "黃金",
+                "強",
+                "約漲1%，地緣與通膨尾端避險"
+              ],
+              [
+                "美元／日圓",
+                "美元相對強",
+                "BOJ兩張反對票使日圓升息後仍走弱"
+              ],
+              [
+                "Bitcoin",
+                "強",
+                "突破8萬美元，但未擴散成全面risk-on"
+              ],
+              [
+                "信用",
+                "無足夠新訊號",
+                "未取得可靠收盤資料確認壓力擴散"
+              ],
+              [
+                "波動率",
+                "表面降溫",
+                "VIX回落，但三巫日與窄幅領漲降低可比性"
+              ]
+            ]
+          },
+          "links": [
+            {
+              "label": "AP正式收盤與週線",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-da0dbe004b6f83c36e7d1626a9741a92"
+            },
+            {
+              "label": "Reuters全球跨資產收盤",
+              "url": "https://live.euronext.com/en/financial-news/global-shares-edge-higher-central-banks-double-down-inflation-fight"
+            }
+          ]
+        },
+        {
+          "heading": "明日展望｜週末市場休市，真正的下一個價格發現從週日晚間開始",
+          "paragraphs": [
+            "週六與週日美國現貨市場休市，不把週末新聞描述成即時價格反應。第一風險是荷莫茲海峽、Saudi基礎設施與Houthi攻擊；任何油輪、管線、港口、保險或替代航線變化，都會先反映在週日晚間原油、股指期貨與日圓。",
+            "週一03:30 PT：Chicago Fed主席Austan Goolsbee在倫敦談『不確定世界中的貨幣政策』。市場會檢查他是否接受Fed本週升息後的後續緊縮路徑，以及如何處理油價衝擊與成長放緩的權衡。",
+            "週一05:30 PT：Chicago Fed公布8月National Activity Index。今日工業生產與LEI偏弱後，若CFNAI也惡化，成長放緩訊號會更一致；若回升，則支持紐約Fed Q3 nowcast仍為2.3%的韌性讀法。",
+            "週一08:00 PT：紐約Fed更新SCE Household Spending Survey，重點是名目支出與未來一年支出預期是否被汽油、柴油與高利率擠壓。截至截稿，週一沒有辨識到足以主導大盤的mega-cap財報，宏觀、能源與央行言論將優先。",
+            "基準路徑：週末沒有重大供應中斷，Brent維持100至105美元，10年期約5%，半導體相對強但大盤廣度有限。偏強路徑：外交與替代出貨使Brent跌破100美元、10年期回落到4.95%以下，小型股、住房與週期股加入反彈。偏弱路徑：攻擊或航運事故使Brent升破105至107美元，殖利率站穩5%以上，科技估值、運輸、零售與房地產同步承壓。",
+            "確認今日結論的指標：S&P等權重與Russell 2000是否繼續落後、10年期是否守在5%附近、半導體是否仍是唯一明確領先、Brent是否維持三位數。推翻今日結論的指標：油價與殖利率同步下跌，且市場廣度與信用同時改善。"
+          ],
+          "links": [
+            {
+              "label": "Chicago Fed Goolsbee週一活動",
+              "url": "https://www.chicagofed.org/publications/speeches/2026/sept-21-omfif"
+            },
+            {
+              "label": "Chicago Fed資料發布日程",
+              "url": "https://www.chicagofed.org/research/data/data-release-calendar"
+            },
+            {
+              "label": "紐約Fed 9月經濟日程",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            },
+            {
+              "label": "紐約Fed SCE Household Spending Survey",
+              "url": "https://www.newyorkfed.org/microeconomics/sce/household-spending"
+            },
+            {
+              "label": "Reuters下週市場焦點",
+              "url": "https://www.investing.com/news/economy-news/investors-focus-on-rate-path-ai-slowdown-after-fed-hike-4906951"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP美股正式收盤",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-da0dbe004b6f83c36e7d1626a9741a92"
+        },
+        {
+          "label": "AP全日市場、油價與燃料成本",
+          "url": "https://apnews.com/article/stock-markets-oil-war-inflation-rates-1ff3311788bcc4555d00e283a57289fe"
+        },
+        {
+          "label": "Reuters全日市場與產業反應",
+          "url": "https://uk.marketscreener.com/news/wall-st-ends-mixed-as-oil-takes-a-pause-ce785adadc80f123"
+        },
+        {
+          "label": "Reuters全球跨資產收盤",
+          "url": "https://live.euronext.com/en/financial-news/global-shares-edge-higher-central-banks-double-down-inflation-fight"
+        },
+        {
+          "label": "日本銀行9月政策決議",
+          "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf"
+        },
+        {
+          "label": "AP BOJ與全球市場反應",
+          "url": "https://apnews.com/article/japan-economy-interest-rates-inflation-67e71246d3af41bcfc61aa788f9959c7"
+        },
+        {
+          "label": "Fed 8月工業生產官方發布",
+          "url": "https://www.federalreserve.gov/releases/g17/current/default.htm"
+        },
+        {
+          "label": "Conference Board 8月LEI發布",
+          "url": "https://www.prnewswire.com/news-releases/the-conference-board-leading-economic-index-lei-for-the-us-edged-down-in-august-302883352.html"
+        },
+        {
+          "label": "紐約Fed Staff Nowcast官方頁",
+          "url": "https://www.newyorkfed.org/research/AMEC"
+        },
+        {
+          "label": "AP荷莫茲海峽與中東事件",
+          "url": "https://apnews.com/article/iran-tanker-hormuz-mideast-roundup-024350a0820dfc5dd433b4e13445fab5"
+        },
+        {
+          "label": "California AI安全行政命令",
+          "url": "https://www.gov.ca.gov/2026/09/18/governor-newsom-issues-executive-order-to-accelerate-independent-oversight-and-advance-the-creation-of-an-ai-kill-switch/"
+        },
+        {
+          "label": "Anthropic AI研發速度量測",
+          "url": "https://www.anthropic.com/institute/measuring-pace-of-ai-development"
+        },
+        {
+          "label": "Nucor第三季官方指引",
+          "url": "https://www.prnewswire.com/news-releases/nucor-announces-guidance-for-the-third-quarter-of-2026-earnings-302882443.html"
+        },
+        {
+          "label": "Xenon官方臨床更新",
+          "url": "https://investor.xenon-pharma.com/news-releases/news-release-details/xenon-announces-azetukalner-nda-submission-fda-focal-seizures"
+        },
+        {
+          "label": "Berkshire Hathaway官方接班公告",
+          "url": "https://www.berkshirehathaway.com/news/sep1826.pdf"
+        },
+        {
+          "label": "Chicago Fed Goolsbee週一活動",
+          "url": "https://www.chicagofed.org/publications/speeches/2026/sept-21-omfif"
+        },
+        {
+          "label": "Chicago Fed資料發布日程",
+          "url": "https://www.chicagofed.org/research/data/data-release-calendar"
+        },
+        {
+          "label": "紐約Fed 9月經濟日程",
+          "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+        },
+        {
+          "label": "紐約Fed SCE Household Spending Survey",
+          "url": "https://www.newyorkfed.org/microeconomics/sce/household-spending"
+        },
+        {
+          "label": "Reuters下週市場焦點",
+          "url": "https://www.investing.com/news/economy-news/investors-focus-on-rate-path-ai-slowdown-after-fed-hike-4906951"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-18-midday",
       "cadence": "daily",
