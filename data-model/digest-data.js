@@ -1,7 +1,346 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-18T23:20:05.150Z",
+  "generatedAt": "2026-09-21T23:20:03.517Z",
   "records": [
+    {
+      "id": "daily-2026-09-21-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-21",
+      "publishedAt": "2026-09-21T16:03:55-07:00",
+      "updatedAt": "2026-09-21T23:03:55Z",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-21T16:03:55-07:00",
+      "retrievedAt": "2026-09-21T16:03:55-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-21",
+      "summary": "市場今天真正學到兩件事。第一，週末最壞的能源劇本沒有得到油流與價格確認：Brent收跌3.4%至100.34美元，10年期美債殖利率由5.01%回落至4.95%，讓S&P 500上漲1.5%、Nasdaq上漲2.3%並創新高。第二，這不是全面景氣交易，而是AI與大型科技主導的估值修復；Dow只漲0.7%，Russell 2000只漲0.5%。Goolsbee對需求過熱與更多升息的警告並未消失，美元走強、黃金下跌也顯示市場沒有轉向政策寬鬆。明日關鍵不是大盤能否再漲，而是Brent能否守在100美元附近、10年期能否留在5%下方，以及小型股與信用能否接棒。",
+      "sections": [
+        {
+          "heading": "1. 油價回落完成今日風險解除，但供應問題沒有結束",
+          "paragraphs": [
+            "事實：Brent 11月期貨收在每桶100.34美元，下跌3.4%；即將到期的WTI 10月合約收在95.78美元，下跌4.51%，11月合約約92.47美元。市場同時評估沙烏地出口回升與本週聯合國大會可能帶來的美伊外交窗口。",
+            "判斷：今天最大的重新定價不是和平已經到來，而是實際油流比最壞假設更有韌性。這先壓低通膨溢價，再透過殖利率支撐股票估值。信心：中高。",
+            "重要背離：美國普通汽油均價仍接近每加侖4.48美元，伊朗革命衛隊仍警告可能擴大戰爭範圍，荷莫茲海峽亦有油輪遭不明飛行物擊中。金融市場先交易外交希望，實體成本與安全風險尚未完全回落。",
+            "反證：Brent重新站上103—104美元、沙烏地出口再度下降，或海峽出現可驗證的重大供應中斷。"
+          ],
+          "links": [
+            {
+              "label": "Reuters原油收盤與沙烏地出口",
+              "url": "https://www.marketscreener.com/news/oil-hits-over-1-week-low-on-hopes-of-boost-to-diplomacy-in-iran-war-ce785adad08df727"
+            },
+            {
+              "label": "AP中東局勢與油輪事件",
+              "url": "https://apnews.com/article/82714681bde58c6525c2d7a1bc587b25"
+            }
+          ]
+        },
+        {
+          "heading": "2. Nasdaq創新高，但市場寬度沒有確認全面風險偏好",
+          "paragraphs": [
+            "事實：S&P 500上漲1.5%至7,764.70，距歷史高點約0.4%；Nasdaq上漲2.3%至27,122.09並創新高。Dow上漲0.7%，Russell 2000只上漲0.5%。",
+            "判斷：收盤確認的是『油價下降＋長端殖利率回落＋AI領先』，而不是週期股、小型股與信用同步轉強。Nasdaq相對Russell的巨大落差，代表資金仍偏好具獲利能見度與AI資本支出曝險的大型公司。信心：高。",
+            "反證：未來一至兩個交易日Russell、等權重指數與信用利差同步改善，而且Nasdaq不需要靠少數半導體股維持高點。"
+          ],
+          "links": [
+            {
+              "label": "AP美股與跨資產收盤",
+              "url": "https://apnews.com/article/stocks-markets-rates-oil-energy-trump-xi-1f1a267bf4556c01513f506914eb6359"
+            },
+            {
+              "label": "AP主要指數收盤數據",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-3cb34d37f609dde5fb94d695e9665869"
+            }
+          ]
+        },
+        {
+          "heading": "3. 10年期跌回4.95%，但Fed的需求過熱問題只是延後定價",
+          "paragraphs": [
+            "事實：10年期美債殖利率由週五的5.01%回落至4.95%。芝加哥Fed總裁Goolsbee則明確表示，若AI投資與服務需求把通膨從供給衝擊擴散為需求過熱，Fed就需要更積極、更前置地反應。",
+            "判斷：債市今天把油價回落的即時影響放在Goolsbee的中期警告之前，但沒有否定他的框架。10年期仍遠高於4.90%的偏強門檻，美元走強、黃金下跌也不是寬鬆交易的典型組合。信心：高。",
+            "反證：能源價格持續下降、服務與消費資料同步降溫，且多位Fed官員否定需要再升息。相反地，10年期重新突破5%會快速壓縮今日科技股的估值修復。"
+          ],
+          "links": [
+            {
+              "label": "芝加哥Fed Goolsbee演講",
+              "url": "https://www.chicagofed.org/publications/speeches/2026/sept-21-omfif"
+            },
+            {
+              "label": "Reuters Goolsbee需求通膨報導",
+              "url": "https://www.marketscreener.com/news/fed-s-goolsbee-strong-demand-may-be-adding-to-us-inflation-no-ambiguity-how-fed-would-react-ce785adbdd88f226"
+            }
+          ]
+        },
+        {
+          "heading": "4. 今日總體資料接近趨勢，沒有支持衰退交易",
+          "paragraphs": [
+            "事實：8月芝加哥Fed全國活動指數為-0.04，7月上修至0.08，零附近代表經濟大致以歷史趨勢速度成長。紐約Fed家庭支出調查顯示，過去一年名目支出增速中位數由4.8%降至4.7%，未來12個月支出增速預期則由3.4%升至3.6%。",
+            "判斷：資料沒有成為今日主角，因為它既不夠弱到壓低Fed路徑，也不夠強到推翻油價帶來的利率緩解。它與Goolsbee的警告相容：需求略放慢，但仍有韌性。",
+            "反證：後續零售、就業與信用資料同步轉弱，且家庭支出預期連續下降。"
+          ],
+          "links": [
+            {
+              "label": "Chicago Fed／FRED CFNAI",
+              "url": "https://fred.stlouisfed.org/series/CFNAI"
+            },
+            {
+              "label": "紐約Fed家庭支出調查",
+              "url": "https://www.newyorkfed.org/microeconomics/sce/household-spending"
+            }
+          ]
+        },
+        {
+          "heading": "5. AI交易得到價格確認，但AMD並沒有同日新增的大型原始催化",
+          "paragraphs": [
+            "事實：AMD收漲9.9%，盤中市值一度突破1兆美元；Intel上漲約12.1%，Nvidia上漲2.3%。Anthropic與Accenture的正式公告顯示，雙方預計未來五年各投入至少10億美元，建立嵌入式、相對獨立的前沿模型評估能力。",
+            "原始來源反查：截至收盤後截稿，AMD官方當日新增內容是ROSCon實體AI與機器人展示預告，未發現新的大型合約、財報或財測修訂足以單獨解釋9.9%的漲幅。因此今日上漲主要是既有AI需求、全端運算敘事與較低折現率的集中重估，而不是新基本面數字。",
+            "判斷：市場暫時把AI安全投資解讀成新增治理與運算需求，而不是前沿模型停止發展。這有利半導體與AI基礎設施，但漲幅越集中，對殖利率反彈越敏感。信心：中高。",
+            "反證：晶片指數迅速回吐、AI資本支出指引下修，或安全投入最終只取代而非增加整體AI預算。"
+          ],
+          "links": [
+            {
+              "label": "Anthropic與Accenture原始公告",
+              "url": "https://www.anthropic.com/news/accenture-embedded-evaluation"
+            },
+            {
+              "label": "Accenture原始公告",
+              "url": "https://newsroom.accenture.com/news/2026/accenture-and-anthropic-partner-to-build-team-of-embedded-evaluators-at-anthropic"
+            },
+            {
+              "label": "Reuters AMD與半導體市場反應",
+              "url": "https://www.marketscreener.com/news/amd-joins-1-trillion-club-as-chipmakers-rally-on-ai-driven-demand-ce785adbdf8bff25"
+            },
+            {
+              "label": "AMD官方新聞室",
+              "url": "https://newsroom.amd.com/"
+            }
+          ]
+        },
+        {
+          "heading": "6. 中美外交預期改善，但市場仍在交易『會談』而非『協議』",
+          "paragraphs": [
+            "事實：中國外交部正式確認習近平將於9月23日至25日訪美。美國財長Bessent把週末會談稱為『非常成功的接觸』，討論範圍包括貿易與AI。這與聯合國大會的外交窗口一起，支撐全球股市與油價風險溢價回落。",
+            "判斷：確認訪問本身降低了尾端風險，但尚未出現關稅、稀土、科技管制或伊朗議題的可執行共同文本。亞洲供應鏈與中國資產可以先交易情緒改善，不能先計入完整政策紅利。信心：中。",
+            "反證：正式共同框架明確降低關稅與出口限制，將使利多由情緒擴散至企業現金流；反之，峰會前的強硬措辭或取消安排會迅速逆轉今日溢價。"
+          ],
+          "links": [
+            {
+              "label": "中國外交部訪美公告",
+              "url": "https://www.mfa.gov.cn/eng/xw/wsrc/202609/t20260921_12027514.html"
+            },
+            {
+              "label": "中國外交部9月21日記者會",
+              "url": "https://us.china-embassy.gov.cn/eng/fyrth/202609/t20260921_12027763.htm"
+            },
+            {
+              "label": "AP中美會談與市場反應",
+              "url": "https://apnews.com/article/stocks-markets-rates-oil-energy-trump-xi-1f1a267bf4556c01513f506914eb6359"
+            }
+          ]
+        },
+        {
+          "heading": "7. 美元、日圓、黃金與加密顯示這不是單一流動性交易",
+          "paragraphs": [
+            "事實：美元延續偏強，日圓即使在日本銀行升息至1.25%後仍貶至約157.48兌一美元；現貨黃金下跌0.6%至約4,349.94美元，美國黃金期貨收跌0.9%。Bitcoin重返86,000美元上方，Coinbase與Robinhood分別上漲3.5%與2.9%。",
+            "判斷：黃金與日圓反映主要央行的鷹派可信度差，而加密與科技反映風險偏好回升。兩者同時成立，說明今天不是全面美元流動性寬鬆，而是油價下降後的選擇性高貝塔反彈。",
+            "反證：美元轉弱、黃金與風險資產同步走高，而且信用利差明顯收窄，才會更接近廣泛流動性改善。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美元與日圓收盤",
+              "url": "https://live.euronext.com/en/financial-news/yen-eases-potential-intervention-increases"
+            },
+            {
+              "label": "Reuters黃金收盤",
+              "url": "https://www.marketscreener.com/news/gold-falls-on-rising-odds-of-fed-rate-hike-stronger-dollar-ce785adbdc80f227"
+            },
+            {
+              "label": "AP Bitcoin與相關股票",
+              "url": "https://apnews.com/article/stocks-markets-rates-oil-energy-trump-xi-1f1a267bf4556c01513f506914eb6359"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "收盤狀態",
+              "全天判讀"
+            ],
+            "rows": [
+              [
+                "S&P 500",
+                "+1.5%",
+                "油價與殖利率下降推動估值修復，距高點約0.4%"
+              ],
+              [
+                "Nasdaq／AI",
+                "+2.3%，創新高",
+                "全天最強主線，半導體高度集中"
+              ],
+              [
+                "Russell 2000",
+                "+0.5%",
+                "未確認全面景氣與融資條件改善"
+              ],
+              [
+                "10年期美債",
+                "4.95%",
+                "跌回5%下方，但未突破4.90%偏強門檻"
+              ],
+              [
+                "Brent／WTI",
+                "100.34／95.78美元",
+                "外交希望與油流恢復降低風險溢價"
+              ],
+              [
+                "信用",
+                "無足夠訊號",
+                "不能由大型科技上漲推定信用條件已全面改善"
+              ],
+              [
+                "美元／日圓",
+                "美元偏強／157.48",
+                "Fed與日本銀行鷹派可信度落差仍在"
+              ],
+              [
+                "黃金",
+                "約-0.6%",
+                "美元與升息預期壓過地緣避險"
+              ],
+              [
+                "Bitcoin",
+                ">86,000美元",
+                "高貝塔風險偏好獲得確認，但非全面流動性寬鬆"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "收盤後發展與未解問題",
+          "paragraphs": [
+            "截至16:03 PT，未發現足以改變今日主線的已驗證收盤後公司公告或政策文件。今日仍未解的核心問題有三個：荷莫茲油流能否持續改善；Fed官員是否同意Goolsbee的需求過熱框架；AI領漲能否擴散至小型股與信用。",
+            "Warner Bros. Discovery因Paramount併購訴訟和解上漲10.8%，Paramount則下跌2.9%；這是重要公司事件，但沒有改變全天跨市場主線。"
+          ],
+          "links": [
+            {
+              "label": "AP公司與市場收盤",
+              "url": "https://apnews.com/article/stocks-markets-rates-oil-energy-trump-xi-1f1a267bf4556c01513f506914eb6359"
+            }
+          ]
+        },
+        {
+          "heading": "明日展望｜9月22日（週二）",
+          "paragraphs": [
+            "事件時間：08:30 ET公布Philadelphia Fed非製造業調查，10:00 ET公布Richmond Fed製造業調查。10:05 ET紐約Fed總裁Williams、10:20 ET Fed副主席Jefferson預定在美國公債市場年會發言；會議主題包括電子交易、中央清算、數位創新與TGA現金在repo市場的運用。AutoZone將於盤前公布財報，10:00 ET舉行電話會議。",
+            "隔夜風險：聯合國大會一般性辯論開始，美伊接觸、荷莫茲海峽安全與任何新增油輪事件都可能先反映在原油。習近平9月23日訪美前的關稅、稀土、科技管制與AI安全訊息，也會直接影響半導體、中國資產與工業供應鏈。",
+            "最直接受影響資產：美債與金融股看Fed及公債市場訊息；小型股、工業與區域銀行看Philadelphia／Richmond調查；零售、汽車零件與低收入消費看AutoZone；能源、航空與運輸看原油。",
+            "基準路徑：Brent維持99—102美元、10年期維持4.90%—5.00%，AI與大型科技續強，但Russell與信用只有限跟進。",
+            "偏強路徑：Brent有效跌破100美元、10年期跌破4.90%，區域調查沒有明顯惡化，Russell、等權重與信用同步改善；這才把今日反彈擴大成較全面的風險偏好。",
+            "偏弱路徑：Brent重返103美元以上，或油價不漲但10年期重新突破5%；若Nasdaq高點回落且Russell仍落後，代表市場重新交易Fed需求風險與估值壓力。",
+            "確認與推翻指標：先看Brent結算價與10年期5%關卡，再看Nasdaq相對Russell、信用利差與美元／日圓是否突破158。今日結論只有在油價續降、長端殖利率續降且市場寬度改善時，才會升級為全面風險偏好修復。"
+          ],
+          "links": [
+            {
+              "label": "紐約Fed九月經濟行事曆",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            },
+            {
+              "label": "紐約Fed美國公債市場年會公告",
+              "url": "https://www.newyorkfed.org/newsevents/mediaadvisory/2026/0908-2026"
+            },
+            {
+              "label": "AutoZone官方財報時程",
+              "url": "https://investors.autozone.com/news-releases/news-release-details/autozone-release-fourth-quarter-fiscal-2026-earnings-september"
+            },
+            {
+              "label": "中國外交部訪美公告",
+              "url": "https://www.mfa.gov.cn/eng/xw/wsrc/202609/t20260921_12027514.html"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP美股與跨資產收盤",
+          "url": "https://apnews.com/article/stocks-markets-rates-oil-energy-trump-xi-1f1a267bf4556c01513f506914eb6359"
+        },
+        {
+          "label": "AP主要指數收盤數據",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-3cb34d37f609dde5fb94d695e9665869"
+        },
+        {
+          "label": "Reuters原油收盤與沙烏地出口",
+          "url": "https://www.marketscreener.com/news/oil-hits-over-1-week-low-on-hopes-of-boost-to-diplomacy-in-iran-war-ce785adad08df727"
+        },
+        {
+          "label": "AP中東局勢與油輪事件",
+          "url": "https://apnews.com/article/82714681bde58c6525c2d7a1bc587b25"
+        },
+        {
+          "label": "芝加哥Fed Goolsbee演講",
+          "url": "https://www.chicagofed.org/publications/speeches/2026/sept-21-omfif"
+        },
+        {
+          "label": "Reuters Goolsbee需求通膨報導",
+          "url": "https://www.marketscreener.com/news/fed-s-goolsbee-strong-demand-may-be-adding-to-us-inflation-no-ambiguity-how-fed-would-react-ce785adbdd88f226"
+        },
+        {
+          "label": "Chicago Fed／FRED CFNAI",
+          "url": "https://fred.stlouisfed.org/series/CFNAI"
+        },
+        {
+          "label": "紐約Fed家庭支出調查",
+          "url": "https://www.newyorkfed.org/microeconomics/sce/household-spending"
+        },
+        {
+          "label": "Anthropic與Accenture原始公告",
+          "url": "https://www.anthropic.com/news/accenture-embedded-evaluation"
+        },
+        {
+          "label": "Accenture原始公告",
+          "url": "https://newsroom.accenture.com/news/2026/accenture-and-anthropic-partner-to-build-team-of-embedded-evaluators-at-anthropic"
+        },
+        {
+          "label": "Reuters AMD與半導體市場反應",
+          "url": "https://www.marketscreener.com/news/amd-joins-1-trillion-club-as-chipmakers-rally-on-ai-driven-demand-ce785adbdf8bff25"
+        },
+        {
+          "label": "AMD官方新聞室",
+          "url": "https://newsroom.amd.com/"
+        },
+        {
+          "label": "中國外交部訪美公告",
+          "url": "https://www.mfa.gov.cn/eng/xw/wsrc/202609/t20260921_12027514.html"
+        },
+        {
+          "label": "中國外交部9月21日記者會",
+          "url": "https://us.china-embassy.gov.cn/eng/fyrth/202609/t20260921_12027763.htm"
+        },
+        {
+          "label": "Reuters美元與日圓收盤",
+          "url": "https://live.euronext.com/en/financial-news/yen-eases-potential-intervention-increases"
+        },
+        {
+          "label": "Reuters黃金收盤",
+          "url": "https://www.marketscreener.com/news/gold-falls-on-rising-odds-of-fed-rate-hike-stronger-dollar-ce785adbdc80f227"
+        },
+        {
+          "label": "紐約Fed九月經濟行事曆",
+          "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+        },
+        {
+          "label": "紐約Fed美國公債市場年會公告",
+          "url": "https://www.newyorkfed.org/newsevents/mediaadvisory/2026/0908-2026"
+        },
+        {
+          "label": "AutoZone官方財報時程",
+          "url": "https://investors.autozone.com/news-releases/news-release-details/autozone-release-fourth-quarter-fiscal-2026-earnings-september"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-18-close",
       "cadence": "daily",
