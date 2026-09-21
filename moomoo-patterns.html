@@ -1042,6 +1042,22 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;section class=&quot;analysis-group&quot; data-scope=&quot;List 1&quot;&gt;
     &lt;h3&gt;List 1&lt;/h3&gt;
     &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：股票代號（升冪）&lt;/p&gt;
+    &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;List 1 排序控制&quot;&gt;
+      &lt;label class=&quot;form-label&quot;&gt;排序欄位
+        &lt;select class=&quot;form-select mobile-sort-key&quot;&gt;
+          &lt;option value=&quot;ticker&quot;&gt;股票代號&lt;/option&gt;
+          &lt;option value=&quot;close&quot;&gt;收盤價&lt;/option&gt;
+          &lt;option value=&quot;pattern&quot;&gt;候選型態&lt;/option&gt;
+          &lt;option value=&quot;target&quot;&gt;推估價格&lt;/option&gt;
+          &lt;option value=&quot;date&quot;&gt;推估日期&lt;/option&gt;
+          &lt;option value=&quot;upside&quot;&gt;推估幅度&lt;/option&gt;
+          &lt;option value=&quot;confidence&quot;&gt;信心&lt;/option&gt;
+          &lt;option value=&quot;condition&quot;&gt;確認條件&lt;/option&gt;
+          &lt;option value=&quot;analysis&quot;&gt;技術分析摘要&lt;/option&gt;
+        &lt;/select&gt;
+      &lt;/label&gt;
+      &lt;button type=&quot;button&quot; class=&quot;btn mobile-sort-direction&quot; aria-label=&quot;List 1 排序方向：升冪&quot;&gt;升冪 ↑&lt;/button&gt;
+    &lt;/div&gt;
     &lt;div class=&quot;table-responsive&quot;&gt;
       &lt;table class=&quot;table table-sm&quot;&gt;
         &lt;thead&gt;
@@ -1065,6 +1081,22 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;section class=&quot;analysis-group&quot; data-scope=&quot;Candidate&quot;&gt;
     &lt;h3&gt;Candidate&lt;/h3&gt;
     &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：股票代號（升冪）&lt;/p&gt;
+    &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;Candidate 排序控制&quot;&gt;
+      &lt;label class=&quot;form-label&quot;&gt;排序欄位
+        &lt;select class=&quot;form-select mobile-sort-key&quot;&gt;
+          &lt;option value=&quot;ticker&quot;&gt;股票代號&lt;/option&gt;
+          &lt;option value=&quot;close&quot;&gt;收盤價&lt;/option&gt;
+          &lt;option value=&quot;pattern&quot;&gt;候選型態&lt;/option&gt;
+          &lt;option value=&quot;target&quot;&gt;推估價格&lt;/option&gt;
+          &lt;option value=&quot;date&quot;&gt;推估日期&lt;/option&gt;
+          &lt;option value=&quot;upside&quot;&gt;推估幅度&lt;/option&gt;
+          &lt;option value=&quot;confidence&quot;&gt;信心&lt;/option&gt;
+          &lt;option value=&quot;condition&quot;&gt;確認條件&lt;/option&gt;
+          &lt;option value=&quot;analysis&quot;&gt;技術分析摘要&lt;/option&gt;
+        &lt;/select&gt;
+      &lt;/label&gt;
+      &lt;button type=&quot;button&quot; class=&quot;btn mobile-sort-direction&quot; aria-label=&quot;Candidate 排序方向：升冪&quot;&gt;升冪 ↑&lt;/button&gt;
+    &lt;/div&gt;
     &lt;div class=&quot;table-responsive&quot;&gt;
       &lt;table class=&quot;table table-sm&quot;&gt;
       &lt;thead&gt;
@@ -1096,8 +1128,49 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .ticker-main { font-weight: 500; }
   #moomoo-sortable-analysis .analysis-list { margin: 0; padding-left: 1.1rem; min-width: 300px; }
   #moomoo-sortable-analysis .analysis-list li + li { margin-top: 0.2rem; }
+  #moomoo-sortable-analysis .mobile-sort-controls { display: none; }
   #moomoo-sortable-analysis th[aria-sort=&quot;ascending&quot;] button,
   #moomoo-sortable-analysis th[aria-sort=&quot;descending&quot;] button { font-weight: 500; }
+
+  @media (max-width: 1024px) {
+    #moomoo-sortable-analysis .mobile-sort-controls { display: flex; margin-top: 0.75rem; }
+    #moomoo-sortable-analysis .table-responsive { overflow: visible; }
+    #moomoo-sortable-analysis table { display: block; min-width: 0; width: 100%; }
+    #moomoo-sortable-analysis thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    #moomoo-sortable-analysis tbody,
+    #moomoo-sortable-analysis tr,
+    #moomoo-sortable-analysis td { display: block; width: 100%; }
+    #moomoo-sortable-analysis tbody tr {
+      margin: 0 0 1rem;
+      padding: 0.5rem 0;
+      border-top: 1px solid var(--border);
+    }
+    #moomoo-sortable-analysis td {
+      display: grid;
+      grid-template-columns: minmax(5.75rem, 32%) minmax(0, 1fr);
+      gap: 0.5rem;
+      align-items: start;
+      text-align: left;
+      white-space: normal;
+    }
+    #moomoo-sortable-analysis td::before {
+      content: attr(data-label);
+      color: var(--muted-foreground);
+      font-weight: 500;
+    }
+    #moomoo-sortable-analysis td.numeric { text-align: left; white-space: normal; }
+    #moomoo-sortable-analysis .analysis-list { min-width: 0; }
+  }
 &lt;/style&gt;
 
 &lt;script&gt;
@@ -1149,21 +1222,23 @@ html&gt;body{padding:0}&lt;/style&gt;
     const scope = group.dataset.scope;
     const body = group.querySelector(&#x27;tbody&#x27;);
     const status = group.querySelector(&#x27;.sort-status&#x27;);
+    const mobileKey = group.querySelector(&#x27;.mobile-sort-key&#x27;);
+    const mobileDirection = group.querySelector(&#x27;.mobile-sort-direction&#x27;);
     let sortKey = &#x27;ticker&#x27;;
     let direction = 1;
 
     function render() {
       body.innerHTML = rows.filter(row =&gt; row.scope === scope).sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
       &lt;tr&gt;
-        &lt;td&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
-        &lt;td class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
-        &lt;td&gt;${row.pattern}&lt;/td&gt;
-        &lt;td class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td class=&quot;text-nowrap&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%`}&lt;/td&gt;
-        &lt;td class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
-        &lt;td&gt;${row.condition}&lt;/td&gt;
-        &lt;td&gt;${analysisHtml(row.analysis)}&lt;/td&gt;
+        &lt;td data-label=&quot;股票代號&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-label=&quot;收盤價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
+        &lt;td data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;/td&gt;
+        &lt;td data-label=&quot;推估價格&quot; class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
+        &lt;td data-label=&quot;推估日期&quot; class=&quot;text-nowrap&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
+        &lt;td data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%`}&lt;/td&gt;
+        &lt;td data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
+        &lt;td data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;/td&gt;
+        &lt;td data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row.analysis)}&lt;/td&gt;
       &lt;/tr&gt;`).join(&#x27;&#x27;);
 
       group.querySelectorAll(&#x27;th[data-key]&#x27;).forEach(th =&gt; {
@@ -1171,7 +1246,10 @@ html&gt;body{padding:0}&lt;/style&gt;
       th.setAttribute(&#x27;aria-sort&#x27;, active ? (direction === 1 ? &#x27;ascending&#x27; : &#x27;descending&#x27;) : &#x27;none&#x27;);
       const button = th.querySelector(&#x27;button&#x27;);
       button.textContent = `${labels[th.dataset.key]} ${active ? (direction === 1 ? &#x27;↑&#x27; : &#x27;↓&#x27;) : &#x27;↕&#x27;}`;
-    });
+      });
+      mobileKey.value = sortKey;
+      mobileDirection.textContent = direction === 1 ? &#x27;升冪 ↑&#x27; : &#x27;降冪 ↓&#x27;;
+      mobileDirection.setAttribute(&#x27;aria-label&#x27;, `${scope} 排序方向：${direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}`);
       status.textContent = `${scope} 目前排序：${labels[sortKey]}（${direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}）`;
     }
 
@@ -1182,6 +1260,17 @@ html&gt;body{padding:0}&lt;/style&gt;
         else { sortKey = key; direction = 1; }
         render();
       });
+    });
+
+    mobileKey.addEventListener(&#x27;change&#x27;, () =&gt; {
+      sortKey = mobileKey.value;
+      direction = 1;
+      render();
+    });
+
+    mobileDirection.addEventListener(&#x27;click&#x27;, () =&gt; {
+      direction *= -1;
+      render();
     });
 
     render();
