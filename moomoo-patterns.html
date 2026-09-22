@@ -1300,6 +1300,11 @@ html&gt;body{padding:0}&lt;/style&gt;
     color: var(--muted-foreground);
     white-space: nowrap;
   }
+  #moomoo-sortable-analysis .cell-note {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--muted-foreground);
+  }
   #moomoo-sortable-analysis .empty-state { margin-top: 0.75rem; color: var(--muted-foreground); }
   #moomoo-sortable-analysis td.empty-row { color: var(--muted-foreground); text-align: center; }
   #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; scroll-margin-top: 1rem; }
@@ -1322,7 +1327,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis th[data-key=&quot;ticker&quot;] { z-index: 3; }
   #moomoo-sortable-analysis td.numeric { text-align: right; white-space: nowrap; }
   #moomoo-sortable-analysis .ticker-main { font-weight: 500; }
-  #moomoo-sortable-analysis .analysis-list { margin: 0; padding-left: 1.1rem; min-width: 300px; }
+  #moomoo-sortable-analysis .analysis-list { margin: 0; padding-left: 1.1rem; min-width: 260px; }
   #moomoo-sortable-analysis .analysis-list li + li { margin-top: 0.2rem; }
   #moomoo-sortable-analysis .mobile-sort-controls { display: none; }
   #moomoo-sortable-analysis th[aria-sort=&quot;ascending&quot;] button,
@@ -1545,14 +1550,14 @@ html&gt;body{padding:0}&lt;/style&gt;
         &lt;td data-field=&quot;ticker&quot; data-label=&quot;股票代號&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;scope&quot; data-label=&quot;清單&quot;&gt;${row.scope}&lt;/td&gt;
         &lt;td data-field=&quot;close&quot; data-label=&quot;收盤價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
-        &lt;td data-field=&quot;pattern&quot; data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;/td&gt;
+        &lt;td data-field=&quot;pattern&quot; data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[0]}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;target&quot; data-label=&quot;推估價格&quot; class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
         &lt;td data-field=&quot;date&quot; data-label=&quot;推估日期&quot; class=&quot;text-nowrap&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%`}&lt;/td&gt;
+        &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&lt;span class=&quot;cell-note text-small&quot;&gt;無有效前瞻目標&lt;/span&gt;&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%&lt;span class=&quot;cell-note text-small&quot;&gt;${row.upside &lt; 0 ? `下行目標約 ${money(row.target)}，相對幅度 ${row.upside.toFixed(1)}%` : `量度目標約 ${money(row.target)}，尚餘 ${row.upside.toFixed(1)}%`}&lt;/span&gt;`}&lt;/td&gt;
         &lt;td data-field=&quot;confidence&quot; data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
         &lt;td data-field=&quot;momentum&quot; data-label=&quot;動能狀態&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;span class=&quot;momentum-evidence text-small&quot;&gt;${momentumEvidence(row)}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;condition&quot; data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;/td&gt;
+        &lt;td data-field=&quot;condition&quot; data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;wyckoff&quot; data-label=&quot;Wyckoff 階段／預期行為&quot;&gt;${row.wyckoff}&lt;/td&gt;
         &lt;td data-field=&quot;analysis&quot; data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row)}&lt;/td&gt;
       &lt;/tr&gt;`).join(&#x27;&#x27;) : &#x27;&lt;tr&gt;&lt;td colspan=&quot;13&quot; class=&quot;empty-row&quot;&gt;沒有符合目前組合的股票。&lt;/td&gt;&lt;/tr&gt;&#x27;;
