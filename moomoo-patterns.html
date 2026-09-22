@@ -1035,29 +1035,46 @@ svg.lucide {
 html&gt;body{padding:0}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;div id=&quot;moomoo-sortable-analysis&quot;&gt;
-  &lt;h2&gt;moomoo 型態分析表&lt;/h2&gt;
-  &lt;p class=&quot;text-small text-muted&quot;&gt;資料截止：2026-09-21 正式收盤。List 1 與 Candidate 已合併為單一清單；「清單」欄標示來源，缺少推估值的股票固定排在最後。&lt;/p&gt;
+&lt;div id=&quot;moomoo-sortable-analysis&quot; class=&quot;view-decision&quot;&gt;
+  &lt;header class=&quot;dashboard-header&quot;&gt;
+    &lt;div&gt;
+      &lt;h2&gt;每日型態決策儀表板&lt;/h2&gt;
+      &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍；需要時才展開完整分析。&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;p class=&quot;freshness&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 資料截止：2026-09-21 正式收盤&lt;/p&gt;
+  &lt;/header&gt;
 
   &lt;section class=&quot;analysis-group&quot; data-scope=&quot;全部清單&quot;&gt;
-    &lt;h3&gt;List 1 ＋ Candidate&lt;/h3&gt;
-    &lt;div class=&quot;decision-filters&quot; aria-label=&quot;決策篩選&quot;&gt;
-      &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;scope&quot;&gt;
-        &lt;legend&gt;清單&lt;/legend&gt;
-        &lt;div class=&quot;filter-options&quot;&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;List 1&quot; aria-pressed=&quot;false&quot;&gt;List 1&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;Candidate&quot; aria-pressed=&quot;false&quot;&gt;Candidate&lt;/button&gt;
+    &lt;div class=&quot;decision-overview&quot; aria-label=&quot;今日技術處置摘要&quot;&gt;
+      &lt;span&gt;&lt;strong class=&quot;overview-confirm&quot;&gt;4&lt;/strong&gt; 確認&lt;/span&gt;
+      &lt;span&gt;&lt;strong class=&quot;overview-watch&quot;&gt;11&lt;/strong&gt; 觀望&lt;/span&gt;
+      &lt;span&gt;&lt;strong class=&quot;overview-avoid&quot;&gt;1&lt;/strong&gt; 規避&lt;/span&gt;
+      &lt;span&gt;&lt;strong class=&quot;overview-unsuitable&quot;&gt;2&lt;/strong&gt; 不宜&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;dashboard-toolbar&quot;&gt;
+      &lt;label class=&quot;form-label search-label&quot;&gt;搜尋股票
+        &lt;input class=&quot;form-control ticker-search&quot; type=&quot;search&quot; inputmode=&quot;search&quot; autocomplete=&quot;off&quot; placeholder=&quot;例如 NBIS&quot; aria-describedby=&quot;search-help&quot;&gt;
+      &lt;/label&gt;
+      &lt;span id=&quot;search-help&quot; class=&quot;sr-only&quot;&gt;輸入完整或部分股票代號&lt;/span&gt;
+      &lt;fieldset class=&quot;view-mode&quot; aria-label=&quot;表格檢視模式&quot;&gt;
+        &lt;legend&gt;檢視&lt;/legend&gt;
+        &lt;div class=&quot;view-options&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;btn view-button active&quot; data-view=&quot;decision&quot; aria-pressed=&quot;true&quot;&gt;決策檢視&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost view-button&quot; data-view=&quot;full&quot; aria-pressed=&quot;false&quot;&gt;完整分析&lt;/button&gt;
         &lt;/div&gt;
       &lt;/fieldset&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;decision-filters&quot; aria-label=&quot;決策篩選&quot;&gt;
       &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;action&quot;&gt;
         &lt;legend&gt;技術處置&lt;/legend&gt;
         &lt;div class=&quot;filter-options&quot;&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-confirm&quot; data-value=&quot;確認&quot; aria-pressed=&quot;false&quot;&gt;確認&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-watch&quot; data-value=&quot;觀望&quot; aria-pressed=&quot;false&quot;&gt;觀望&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-avoid&quot; data-value=&quot;規避&quot; aria-pressed=&quot;false&quot;&gt;規避&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-unsuitable&quot; data-value=&quot;不宜&quot; aria-pressed=&quot;false&quot;&gt;不宜&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-confirm&quot; data-value=&quot;確認&quot; aria-pressed=&quot;false&quot;&gt;確認 &lt;span class=&quot;filter-count&quot;&gt;4&lt;/span&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-watch&quot; data-value=&quot;觀望&quot; aria-pressed=&quot;false&quot;&gt;觀望 &lt;span class=&quot;filter-count&quot;&gt;11&lt;/span&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-avoid&quot; data-value=&quot;規避&quot; aria-pressed=&quot;false&quot;&gt;規避 &lt;span class=&quot;filter-count&quot;&gt;1&lt;/span&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-unsuitable&quot; data-value=&quot;不宜&quot; aria-pressed=&quot;false&quot;&gt;不宜 &lt;span class=&quot;filter-count&quot;&gt;2&lt;/span&gt;&lt;/button&gt;
         &lt;/div&gt;
       &lt;/fieldset&gt;
       &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;momentum&quot;&gt;
@@ -1071,17 +1088,25 @@ html&gt;body{padding:0}&lt;/style&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip momentum-oversold&quot; data-value=&quot;超賣&quot; aria-pressed=&quot;false&quot;&gt;超賣&lt;/button&gt;
         &lt;/div&gt;
       &lt;/fieldset&gt;
+      &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;scope&quot;&gt;
+        &lt;legend&gt;清單&lt;/legend&gt;
+        &lt;div class=&quot;filter-options&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;List 1&quot; aria-pressed=&quot;false&quot;&gt;List 1&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;Candidate&quot; aria-pressed=&quot;false&quot;&gt;Candidate&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/fieldset&gt;
       &lt;div class=&quot;filter-summary&quot;&gt;
-        &lt;span class=&quot;filter-status text-small&quot; aria-live=&quot;polite&quot;&gt;顯示 18／18 檔&lt;/span&gt;
-        &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost reset-filters&quot;&gt;清除篩選&lt;/button&gt;
+        &lt;span class=&quot;filter-status&quot; aria-live=&quot;polite&quot;&gt;顯示 18／18 檔&lt;/span&gt;
+        &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost reset-filters&quot; disabled&gt;清除篩選&lt;/button&gt;
       &lt;/div&gt;
     &lt;/div&gt;
     &lt;details class=&quot;logic-note text-small&quot;&gt;
-      &lt;summary&gt;判定規則&lt;/summary&gt;
-      &lt;p&gt;&lt;strong&gt;動能：&lt;/strong&gt;RSI ≥ 70 為超買／過熱；55–69.9 偏強；45–54.9 中性；30–44.9 偏弱；低於 30 超賣。&lt;/p&gt;
-      &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，且 RSI &amp;lt; 70；下行目標列為「規避」；無新前瞻型態且 RSI &amp;lt; 50 列為「不宜」；其餘列為「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
+      &lt;summary&gt;欄位說明與判定規則&lt;/summary&gt;
+      &lt;p&gt;&lt;strong&gt;動能：&lt;/strong&gt;採日線 RSI(14)、Stochastic(14,3) 與 MACD(12,26,9)。RSI ≥ 70，或 %K ≥ 80 且 RSI ≥ 60，列「超買／過熱」；RSI ≤ 30，或 %K ≤ 20 且 RSI ≤ 40，列「超賣」；RSI ≥ 55、%K ≥ %D、MACD 線 ≥ 訊號線，列「偏強」；RSI &amp;lt; 45 且 MACD 線 &amp;lt; 訊號線，列「偏弱」；其餘列「中性」。&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，且非過熱／偏弱／超賣，同時 %K ≥ %D、MACD 線 ≥ 訊號線、柱狀圖 ≥ 0；下行目標列「規避」；無新前瞻型態、RSI &amp;lt; 50、MACD 線低於零軸且柱狀圖 &amp;lt; 0 列「不宜」；其餘列「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
     &lt;/details&gt;
-    &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：股票代號（升冪）&lt;/p&gt;
+    &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：技術處置（優先順序）&lt;/p&gt;
     &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;全部清單排序控制&quot;&gt;
       &lt;label class=&quot;form-label&quot;&gt;排序欄位
         &lt;select class=&quot;form-select mobile-sort-key&quot;&gt;
@@ -1129,12 +1154,62 @@ html&gt;body{padding:0}&lt;/style&gt;
 
 &lt;style&gt;
   #moomoo-sortable-analysis {
-    --status-green: #16835b;
-    --status-blue: #2563a9;
-    --status-orange: #b85c16;
-    --status-red: #b93838;
-    --status-cyan: #177c89;
-    --status-gray: #667085;
+    --status-green: var(--green);
+    --status-blue: var(--blue);
+    --status-orange: var(--orange);
+    --status-red: var(--red);
+    --status-cyan: var(--purple);
+    --status-gray: var(--muted-foreground);
+  }
+  #moomoo-sortable-analysis .dashboard-header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  #moomoo-sortable-analysis .dashboard-header h2 { margin-bottom: 0.25rem; }
+  #moomoo-sortable-analysis .dashboard-purpose { margin: 0; color: var(--muted-foreground); }
+  #moomoo-sortable-analysis .freshness {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0.2rem 0 0;
+    white-space: nowrap;
+    color: var(--muted-foreground);
+  }
+  #moomoo-sortable-analysis .freshness span { color: var(--status-green); }
+  #moomoo-sortable-analysis .decision-overview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.15rem;
+    margin-top: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  #moomoo-sortable-analysis .decision-overview span { white-space: nowrap; }
+  #moomoo-sortable-analysis .decision-overview strong { margin-right: 0.2rem; }
+  #moomoo-sortable-analysis .overview-confirm { color: var(--status-green); }
+  #moomoo-sortable-analysis .overview-watch { color: var(--status-blue); }
+  #moomoo-sortable-analysis .overview-avoid { color: var(--status-orange); }
+  #moomoo-sortable-analysis .overview-unsuitable { color: var(--status-red); }
+  #moomoo-sortable-analysis .dashboard-toolbar {
+    display: grid;
+    grid-template-columns: minmax(14rem, 22rem) auto;
+    gap: 0.8rem 1.25rem;
+    align-items: end;
+    margin-top: 0.9rem;
+  }
+  #moomoo-sortable-analysis .search-label { margin: 0; }
+  #moomoo-sortable-analysis .view-mode { margin: 0; padding: 0; border: 0; }
+  #moomoo-sortable-analysis .view-mode legend { margin-bottom: 0.3rem; }
+  #moomoo-sortable-analysis .view-options { display: flex; gap: 0.4rem; }
+  #moomoo-sortable-analysis .view-button.active { font-weight: 500; }
+  #moomoo-sortable-analysis .view-button[aria-pressed=&quot;true&quot;] { background: var(--primary); color: var(--primary-foreground); }
+  #moomoo-sortable-analysis .ticker-search { width: 100%; }
+  #moomoo-sortable-analysis .filter-count {
+    margin-left: 0.25rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
   }
   #moomoo-sortable-analysis .decision-filters {
     display: grid;
@@ -1161,7 +1236,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   }
   #moomoo-sortable-analysis .filter-options { display: flex; flex-wrap: wrap; gap: 0.45rem; }
   #moomoo-sortable-analysis .filter-chip {
-    min-height: 2.2rem;
+    min-height: 2.35rem;
     padding: 0.35rem 0.75rem;
     border: 1px solid color-mix(in srgb, var(--muted-foreground) 28%, transparent);
     border-radius: 0.55rem;
@@ -1175,6 +1250,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     box-shadow: inset 0 0 0 1px var(--foreground);
     font-weight: 600;
   }
+  #moomoo-sortable-analysis .filter-chip.active .filter-count { color: inherit; }
   #moomoo-sortable-analysis .filter-chip.action-confirm,
   #moomoo-sortable-analysis .status-badge.action-confirm { color: var(--status-green); }
   #moomoo-sortable-analysis .filter-chip.action-watch,
@@ -1203,6 +1279,8 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .filter-chip.active.momentum-neutral { border-color: var(--status-gray); box-shadow: inset 0 0 0 1px var(--status-gray); }
   #moomoo-sortable-analysis .filter-chip.active.momentum-oversold { border-color: var(--status-cyan); box-shadow: inset 0 0 0 1px var(--status-cyan); }
   #moomoo-sortable-analysis .filter-summary { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; }
+  #moomoo-sortable-analysis .filter-status { font-weight: 500; }
+  #moomoo-sortable-analysis .reset-filters:disabled { opacity: 0.45; cursor: default; }
   #moomoo-sortable-analysis .logic-note { margin-top: 0.65rem; color: var(--muted-foreground); }
   #moomoo-sortable-analysis .logic-note summary { cursor: pointer; font-weight: 500; }
   #moomoo-sortable-analysis .logic-note p { margin: 0.4rem 0 0; }
@@ -1216,12 +1294,32 @@ html&gt;body{padding:0}&lt;/style&gt;
     font-weight: 600;
     white-space: nowrap;
   }
+  #moomoo-sortable-analysis .momentum-evidence {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+  }
   #moomoo-sortable-analysis .empty-state { margin-top: 0.75rem; color: var(--muted-foreground); }
   #moomoo-sortable-analysis td.empty-row { color: var(--muted-foreground); text-align: center; }
-  #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; }
-  #moomoo-sortable-analysis table { min-width: 1760px; }
+  #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; scroll-margin-top: 1rem; }
+  #moomoo-sortable-analysis table { min-width: 1140px; }
+  #moomoo-sortable-analysis.view-full table { min-width: 1760px; }
+  #moomoo-sortable-analysis.view-decision th[data-key=&quot;close&quot;],
+  #moomoo-sortable-analysis.view-decision th[data-key=&quot;target&quot;],
+  #moomoo-sortable-analysis.view-decision th[data-key=&quot;wyckoff&quot;],
+  #moomoo-sortable-analysis.view-decision th[data-key=&quot;analysis&quot;],
+  #moomoo-sortable-analysis.view-decision td[data-field=&quot;close&quot;],
+  #moomoo-sortable-analysis.view-decision td[data-field=&quot;target&quot;],
+  #moomoo-sortable-analysis.view-decision td[data-field=&quot;wyckoff&quot;],
+  #moomoo-sortable-analysis.view-decision td[data-field=&quot;analysis&quot;] { display: none; }
   #moomoo-sortable-analysis th { vertical-align: bottom; }
   #moomoo-sortable-analysis td { vertical-align: top; }
+  #moomoo-sortable-analysis thead th { position: sticky; top: 0; z-index: 2; background: var(--background); }
+  #moomoo-sortable-analysis tbody tr:hover { background: color-mix(in srgb, var(--muted-foreground) 6%, transparent); }
+  #moomoo-sortable-analysis th[data-key=&quot;ticker&quot;],
+  #moomoo-sortable-analysis td[data-field=&quot;ticker&quot;] { position: sticky; left: 0; z-index: 1; background: var(--background); }
+  #moomoo-sortable-analysis th[data-key=&quot;ticker&quot;] { z-index: 3; }
   #moomoo-sortable-analysis td.numeric { text-align: right; white-space: nowrap; }
   #moomoo-sortable-analysis .ticker-main { font-weight: 500; }
   #moomoo-sortable-analysis .analysis-list { margin: 0; padding-left: 1.1rem; min-width: 300px; }
@@ -1231,12 +1329,21 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis th[aria-sort=&quot;descending&quot;] button { font-weight: 500; }
 
   @media (max-width: 1024px) {
+    #moomoo-sortable-analysis .dashboard-header { display: block; }
+    #moomoo-sortable-analysis .freshness { margin-top: 0.5rem; }
+    #moomoo-sortable-analysis .dashboard-toolbar { grid-template-columns: 1fr; align-items: stretch; }
+    #moomoo-sortable-analysis .view-options &gt; * { flex: 1 1 0; }
     #moomoo-sortable-analysis .filter-group { grid-template-columns: 1fr; gap: 0.35rem; }
     #moomoo-sortable-analysis .filter-group legend { float: none; }
-    #moomoo-sortable-analysis .filter-chip { flex: 1 1 auto; }
+    #moomoo-sortable-analysis .filter-chip { flex: 1 1 auto; min-height: 44px; }
+    #moomoo-sortable-analysis .ticker-search { min-height: 44px; font-size: 16px; }
+    #moomoo-sortable-analysis .view-button,
+    #moomoo-sortable-analysis .reset-filters,
+    #moomoo-sortable-analysis .mobile-sort-direction { min-height: 44px; }
     #moomoo-sortable-analysis .mobile-sort-controls { display: flex; margin-top: 0.75rem; }
     #moomoo-sortable-analysis .table-responsive { overflow: visible; }
     #moomoo-sortable-analysis table { display: block; min-width: 0; width: 100%; }
+    #moomoo-sortable-analysis.view-full table { min-width: 0; }
     #moomoo-sortable-analysis thead {
       position: absolute;
       width: 1px;
@@ -1273,10 +1380,9 @@ html&gt;body{padding:0}&lt;/style&gt;
     #moomoo-sortable-analysis td.empty-row::before { content: none; }
     #moomoo-sortable-analysis td.numeric { text-align: left; white-space: normal; }
     #moomoo-sortable-analysis .analysis-list { min-width: 0; }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #moomoo-sortable-analysis { --status-gray: #a7b0bf; --status-green: #4dd5a0; --status-blue: #78b7ff; --status-orange: #ffad66; --status-red: #ff8585; --status-cyan: #6fd9e5; }
+    #moomoo-sortable-analysis th[data-key=&quot;ticker&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;ticker&quot;] { position: static; }
+    #moomoo-sortable-analysis .momentum-evidence { white-space: normal; }
   }
 &lt;/style&gt;
 
@@ -1307,23 +1413,41 @@ html&gt;body{padding:0}&lt;/style&gt;
   const labels = {ticker:&#x27;股票代號&#x27;,scope:&#x27;清單&#x27;,close:&#x27;收盤價&#x27;,pattern:&#x27;候選型態&#x27;,target:&#x27;推估價格&#x27;,date:&#x27;推估日期&#x27;,upside:&#x27;推估幅度&#x27;,confidence:&#x27;信心&#x27;,momentum:&#x27;動能狀態&#x27;,action:&#x27;技術處置&#x27;,condition:&#x27;確認條件&#x27;,wyckoff:&#x27;Wyckoff 階段／預期行為&#x27;,analysis:&#x27;技術分析摘要&#x27;};
   const money = value =&gt; value == null ? &#x27;—&#x27; : &#x27;$&#x27; + value.toLocaleString(&#x27;en-US&#x27;, {maximumFractionDigits: 2});
   const numericKeys = new Set([&#x27;close&#x27;,&#x27;target&#x27;,&#x27;upside&#x27;,&#x27;confidence&#x27;]);
-  const rsiFromRow = row =&gt; {
-    const match = row.analysis.join(&#x27; &#x27;).match(/RSI 約 (\d+(?:\.\d+)?)/);
-    return match ? Number(match[1]) : null;
+  const indicatorData = {
+    MU:{rsi:61.2,k:87.3,d:74.0,macd:16.64,signal:12.10,hist:4.54,histPrev:0.37},
+    MRVL:{rsi:62.4,k:93.7,d:90.3,macd:5.64,signal:2.76,hist:2.87,histPrev:1.69},
+    FTNT:{rsi:62.3,k:96.4,d:85.4,macd:3.68,signal:2.21,hist:1.47,histPrev:1.32},
+    NOK:{rsi:56.8,k:85.9,d:73.6,macd:0.08,signal:0.00,hist:0.07,histPrev:0.04},
+    IREN:{rsi:60.1,k:85.4,d:75.6,macd:1.15,signal:0.67,hist:0.48,histPrev:0.35},
+    NBIS:{rsi:55.4,k:63.4,d:50.0,macd:1.29,signal:0.90,hist:0.39,histPrev:-0.61},
+    CSCO:{rsi:50.9,k:84.4,d:61.5,macd:-0.96,signal:-1.29,hist:0.33,histPrev:0.20},
+    LITE:{rsi:55.9,k:65.2,d:51.7,macd:17.34,signal:17.64,hist:-0.30,histPrev:-3.51},
+    COHR:{rsi:57.1,k:85.4,d:83.7,macd:0.29,signal:-4.51,hist:4.79,histPrev:3.49},
+    ACHR:{rsi:46.1,k:36.9,d:29.0,macd:-0.10,signal:-0.05,hist:-0.05,histPrev:-0.07},
+    INTC:{rsi:70.9,k:92.4,d:90.5,macd:3.69,signal:1.13,hist:2.56,histPrev:1.70},
+    AVGO:{rsi:48.6,k:72.8,d:53.3,macd:-8.21,signal:-8.96,hist:0.76,histPrev:-0.37},
+    SNDK:{rsi:59.8,k:79.5,d:74.4,macd:46.38,signal:35.57,hist:10.81,histPrev:4.96},
+    ONDS:{rsi:42.8,k:41.2,d:35.7,macd:-0.2794,signal:-0.2794,hist:0.00003,histPrev:-0.0160},
+    RIVN:{rsi:44.6,k:26.8,d:21.2,macd:-0.22,signal:-0.14,hist:-0.08,histPrev:-0.09},
+    PLTR:{rsi:61.1,k:84.3,d:63.1,macd:3.84,signal:4.42,hist:-0.58,histPrev:-1.20},
+    NOW:{rsi:55.0,k:42.4,d:37.0,macd:3.83,signal:4.81,hist:-0.98,histPrev:-0.97},
+    TEAM:{rsi:67.7,k:88.0,d:78.7,macd:11.96,signal:13.62,hist:-1.67,histPrev:-1.92}
   };
-  const momentumFor = rsi =&gt; {
-    if (rsi == null) return {label:&#x27;未判定&#x27;, key:&#x27;neutral&#x27;};
-    if (rsi &gt;= 70) return {label:&#x27;超買／過熱&#x27;, key:&#x27;hot&#x27;};
-    if (rsi &gt;= 55) return {label:&#x27;偏強&#x27;, key:&#x27;strong&#x27;};
-    if (rsi &gt;= 45) return {label:&#x27;中性&#x27;, key:&#x27;neutral&#x27;};
-    if (rsi &gt;= 30) return {label:&#x27;偏弱&#x27;, key:&#x27;weak&#x27;};
-    return {label:&#x27;超賣&#x27;, key:&#x27;oversold&#x27;};
+  const momentumFor = indicator =&gt; {
+    if (!indicator) return {label:&#x27;未判定&#x27;, key:&#x27;neutral&#x27;};
+    const {rsi,k,d,macd,signal} = indicator;
+    if (rsi &gt;= 70 || (k &gt;= 80 &amp;&amp; rsi &gt;= 60)) return {label:&#x27;超買／過熱&#x27;, key:&#x27;hot&#x27;};
+    if (rsi &lt;= 30 || (k &lt;= 20 &amp;&amp; rsi &lt;= 40)) return {label:&#x27;超賣&#x27;, key:&#x27;oversold&#x27;};
+    if (rsi &gt;= 55 &amp;&amp; k &gt;= d &amp;&amp; macd &gt;= signal) return {label:&#x27;偏強&#x27;, key:&#x27;strong&#x27;};
+    if (rsi &lt; 45 &amp;&amp; macd &lt; signal) return {label:&#x27;偏弱&#x27;, key:&#x27;weak&#x27;};
+    return {label:&#x27;中性&#x27;, key:&#x27;neutral&#x27;};
   };
   const actionFor = row =&gt; {
     if (row.upside != null &amp;&amp; row.upside &lt; 0) return {label:&#x27;規避&#x27;, key:&#x27;avoid&#x27;};
     const noForwardPattern = row.pattern === &#x27;無&#x27; || row.pattern.includes(&#x27;歷史已完成&#x27;);
-    if (noForwardPattern &amp;&amp; row.rsi != null &amp;&amp; row.rsi &lt; 50) return {label:&#x27;不宜&#x27;, key:&#x27;unsuitable&#x27;};
-    if (row.condition === &#x27;已確認&#x27; &amp;&amp; row.confidence &gt;= 75 &amp;&amp; row.upside &gt; 5 &amp;&amp; row.rsi &lt; 70) return {label:&#x27;確認&#x27;, key:&#x27;confirm&#x27;};
+    if (noForwardPattern &amp;&amp; row.rsi &lt; 50 &amp;&amp; row.macd &lt; 0 &amp;&amp; row.hist &lt; 0) return {label:&#x27;不宜&#x27;, key:&#x27;unsuitable&#x27;};
+    const momentumSupports = row.momentum !== &#x27;超買／過熱&#x27; &amp;&amp; row.momentum !== &#x27;偏弱&#x27; &amp;&amp; row.momentum !== &#x27;超賣&#x27; &amp;&amp; row.k &gt;= row.d &amp;&amp; row.macd &gt;= row.signal &amp;&amp; row.hist &gt;= 0;
+    if (row.condition === &#x27;已確認&#x27; &amp;&amp; row.confidence &gt;= 75 &amp;&amp; row.upside &gt; 5 &amp;&amp; momentumSupports) return {label:&#x27;確認&#x27;, key:&#x27;confirm&#x27;};
     return {label:&#x27;觀望&#x27;, key:&#x27;watch&#x27;};
   };
   const mergedRows = (() =&gt; {
@@ -1334,12 +1458,16 @@ html&gt;body{padding:0}&lt;/style&gt;
       else if (!existing.lists.includes(row.scope)) existing.lists.push(row.scope);
     });
     return Array.from(byTicker.values(), row =&gt; {
-      const enriched = {...row, scope:row.lists.join(&#x27;／&#x27;), rsi:rsiFromRow(row)};
-      const momentum = momentumFor(enriched.rsi);
-      const action = actionFor(enriched);
-      return {...enriched, momentum:momentum.label, momentumKey:momentum.key, action:action.label, actionKey:action.key};
+      const enriched = {...row, scope:row.lists.join(&#x27;／&#x27;), ...indicatorData[row.ticker]};
+      const momentum = momentumFor(enriched);
+      const withMomentum = {...enriched, momentum:momentum.label, momentumKey:momentum.key};
+      const action = actionFor(withMomentum);
+      return {...withMomentum, action:action.label, actionKey:action.key};
     });
   })();
+
+  const actionRank = {確認:0,觀望:1,規避:2,不宜:3};
+  const momentumRank = {&#x27;超買／過熱&#x27;:0,偏強:1,中性:2,偏弱:3,超賣:4,未判定:5};
 
   function compare(a, b, sortKey, direction) {
     const av = sortKey === &#x27;analysis&#x27; ? a.analysis.join(&#x27; &#x27;) : a[sortKey];
@@ -1348,13 +1476,33 @@ html&gt;body{padding:0}&lt;/style&gt;
     if (av == null) return 1;
     if (bv == null) return -1;
     let result;
-    if (numericKeys.has(sortKey)) result = av - bv;
+    if (sortKey === &#x27;action&#x27;) result = actionRank[av] - actionRank[bv];
+    else if (sortKey === &#x27;momentum&#x27;) result = momentumRank[av] - momentumRank[bv];
+    else if (numericKeys.has(sortKey)) result = av - bv;
     else if (sortKey === &#x27;date&#x27;) result = av.localeCompare(bv);
     else result = String(av).localeCompare(String(bv), &#x27;zh-Hant&#x27;);
+    if (result === 0 &amp;&amp; (sortKey === &#x27;action&#x27; || sortKey === &#x27;momentum&#x27;)) result = b.confidence - a.confidence;
     return result === 0 ? a.ticker.localeCompare(b.ticker) : result * direction;
   }
 
-  function analysisHtml(items) {
+  function stochasticLabel(row) {
+    if (row.k &gt;= 80) return &#x27;高檔&#x27;;
+    if (row.k &lt;= 20) return &#x27;低檔&#x27;;
+    return row.k &gt;= row.d ? &#x27;向上&#x27; : &#x27;向下&#x27;;
+  }
+
+  function macdLabel(row) {
+    if (row.hist &gt;= 0) return row.hist &gt; row.histPrev ? &#x27;多方擴張&#x27; : &#x27;多方收斂&#x27;;
+    return row.hist &lt; row.histPrev ? &#x27;空方擴張&#x27; : &#x27;空方收斂&#x27;;
+  }
+
+  function momentumEvidence(row) {
+    return `RSI ${row.rsi.toFixed(1)} · Stoch ${row.k.toFixed(1)}/${row.d.toFixed(1)} ${stochasticLabel(row)} · MACD ${macdLabel(row)}`;
+  }
+
+  function analysisHtml(row) {
+    const items = row.analysis.slice();
+    items[3] = `RSI(14) ${row.rsi.toFixed(1)}；Stochastic(14,3) %K ${row.k.toFixed(1)}／%D ${row.d.toFixed(1)}（${stochasticLabel(row)}）；MACD(12,26,9) ${macdLabel(row)}`;
     return `&lt;ul class=&quot;analysis-list&quot;&gt;${items.map(item =&gt; `&lt;li&gt;${item}&lt;/li&gt;`).join(&#x27;&#x27;)}&lt;/ul&gt;`;
   }
 
@@ -1366,31 +1514,47 @@ html&gt;body{padding:0}&lt;/style&gt;
     const mobileDirection = group.querySelector(&#x27;.mobile-sort-direction&#x27;);
     const filterStatus = group.querySelector(&#x27;.filter-status&#x27;);
     const resetFilters = group.querySelector(&#x27;.reset-filters&#x27;);
-    const filters = {scope:&#x27;all&#x27;, action:&#x27;all&#x27;, momentum:&#x27;all&#x27;};
-    let sortKey = &#x27;ticker&#x27;;
+    const searchInput = group.querySelector(&#x27;.ticker-search&#x27;);
+    const viewButtons = group.querySelectorAll(&#x27;.view-button&#x27;);
+    const filters = {scope:&#x27;all&#x27;, action:&#x27;all&#x27;, momentum:&#x27;all&#x27;, query:&#x27;&#x27;};
+    let sortKey = &#x27;action&#x27;;
     let direction = 1;
+
+    const actionTotals = mergedRows.reduce((totals, row) =&gt; {
+      totals[row.action] = (totals[row.action] || 0) + 1;
+      return totals;
+    }, {});
+    root.querySelector(&#x27;.overview-confirm&#x27;).textContent = actionTotals[&#x27;確認&#x27;] || 0;
+    root.querySelector(&#x27;.overview-watch&#x27;).textContent = actionTotals[&#x27;觀望&#x27;] || 0;
+    root.querySelector(&#x27;.overview-avoid&#x27;).textContent = actionTotals[&#x27;規避&#x27;] || 0;
+    root.querySelector(&#x27;.overview-unsuitable&#x27;).textContent = actionTotals[&#x27;不宜&#x27;] || 0;
+    group.querySelectorAll(&#x27;[data-filter=&quot;action&quot;] .filter-chip[data-value]&#x27;).forEach(button =&gt; {
+      const count = button.querySelector(&#x27;.filter-count&#x27;);
+      if (count) count.textContent = actionTotals[button.dataset.value] || 0;
+    });
 
     function render() {
       const visibleRows = mergedRows.filter(row =&gt;
         (filters.scope === &#x27;all&#x27; || row.lists.includes(filters.scope)) &amp;&amp;
         (filters.action === &#x27;all&#x27; || row.action === filters.action) &amp;&amp;
-        (filters.momentum === &#x27;all&#x27; || row.momentum === filters.momentum)
+        (filters.momentum === &#x27;all&#x27; || row.momentum === filters.momentum) &amp;&amp;
+        (!filters.query || row.ticker.includes(filters.query))
       );
       body.innerHTML = visibleRows.length ? visibleRows.slice().sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
-      &lt;tr&gt;
-        &lt;td data-label=&quot;股票代號&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-label=&quot;清單&quot;&gt;${row.scope}&lt;/td&gt;
-        &lt;td data-label=&quot;收盤價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
-        &lt;td data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;/td&gt;
-        &lt;td data-label=&quot;推估價格&quot; class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td data-label=&quot;推估日期&quot; class=&quot;text-nowrap&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%`}&lt;/td&gt;
-        &lt;td data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
-        &lt;td data-label=&quot;動能狀態&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;/td&gt;
-        &lt;td data-label=&quot;Wyckoff 階段／預期行為&quot;&gt;${row.wyckoff}&lt;/td&gt;
-        &lt;td data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row.analysis)}&lt;/td&gt;
+      &lt;tr data-ticker=&quot;${row.ticker}&quot;&gt;
+        &lt;td data-field=&quot;ticker&quot; data-label=&quot;股票代號&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;scope&quot; data-label=&quot;清單&quot;&gt;${row.scope}&lt;/td&gt;
+        &lt;td data-field=&quot;close&quot; data-label=&quot;收盤價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
+        &lt;td data-field=&quot;pattern&quot; data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;/td&gt;
+        &lt;td data-field=&quot;target&quot; data-label=&quot;推估價格&quot; class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
+        &lt;td data-field=&quot;date&quot; data-label=&quot;推估日期&quot; class=&quot;text-nowrap&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
+        &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%`}&lt;/td&gt;
+        &lt;td data-field=&quot;confidence&quot; data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
+        &lt;td data-field=&quot;momentum&quot; data-label=&quot;動能狀態&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;span class=&quot;momentum-evidence text-small&quot;&gt;${momentumEvidence(row)}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;condition&quot; data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;/td&gt;
+        &lt;td data-field=&quot;wyckoff&quot; data-label=&quot;Wyckoff 階段／預期行為&quot;&gt;${row.wyckoff}&lt;/td&gt;
+        &lt;td data-field=&quot;analysis&quot; data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row)}&lt;/td&gt;
       &lt;/tr&gt;`).join(&#x27;&#x27;) : &#x27;&lt;tr&gt;&lt;td colspan=&quot;13&quot; class=&quot;empty-row&quot;&gt;沒有符合目前組合的股票。&lt;/td&gt;&lt;/tr&gt;&#x27;;
 
       group.querySelectorAll(&#x27;th[data-key]&#x27;).forEach(th =&gt; {
@@ -1402,8 +1566,9 @@ html&gt;body{padding:0}&lt;/style&gt;
       mobileKey.value = sortKey;
       mobileDirection.textContent = direction === 1 ? &#x27;升冪 ↑&#x27; : &#x27;降冪 ↓&#x27;;
       mobileDirection.setAttribute(&#x27;aria-label&#x27;, `${scope} 排序方向：${direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}`);
-      status.textContent = `${scope} 目前排序：${labels[sortKey]}（${direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}）`;
-      filterStatus.textContent = `顯示 ${visibleRows.length}／${mergedRows.length} 檔`;
+      status.textContent = `${scope} 目前排序：${labels[sortKey]}（${sortKey === &#x27;action&#x27; &amp;&amp; direction === 1 ? &#x27;決策優先&#x27; : direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}）`;
+      filterStatus.textContent = `顯示 ${visibleRows.length}／${mergedRows.length} 檔${filters.query ? `，搜尋「${filters.query}」` : &#x27;&#x27;}`;
+      resetFilters.disabled = filters.scope === &#x27;all&#x27; &amp;&amp; filters.action === &#x27;all&#x27; &amp;&amp; filters.momentum === &#x27;all&#x27; &amp;&amp; !filters.query;
     }
 
     group.querySelectorAll(&#x27;.filter-group&#x27;).forEach(filterGroup =&gt; {
@@ -1422,7 +1587,11 @@ html&gt;body{padding:0}&lt;/style&gt;
     });
 
     resetFilters.addEventListener(&#x27;click&#x27;, () =&gt; {
-      Object.keys(filters).forEach(key =&gt; { filters[key] = &#x27;all&#x27;; });
+      filters.scope = &#x27;all&#x27;;
+      filters.action = &#x27;all&#x27;;
+      filters.momentum = &#x27;all&#x27;;
+      filters.query = &#x27;&#x27;;
+      searchInput.value = &#x27;&#x27;;
       group.querySelectorAll(&#x27;.filter-group&#x27;).forEach(filterGroup =&gt; {
         filterGroup.querySelectorAll(&#x27;.filter-chip&#x27;).forEach(button =&gt; {
           const active = button.dataset.value === &#x27;all&#x27;;
@@ -1431,6 +1600,30 @@ html&gt;body{padding:0}&lt;/style&gt;
         });
       });
       render();
+    });
+
+    searchInput.addEventListener(&#x27;input&#x27;, () =&gt; {
+      filters.query = searchInput.value.trim().toUpperCase();
+      render();
+    });
+
+    viewButtons.forEach(button =&gt; {
+      button.addEventListener(&#x27;click&#x27;, () =&gt; {
+        const view = button.dataset.view;
+        root.classList.toggle(&#x27;view-decision&#x27;, view === &#x27;decision&#x27;);
+        root.classList.toggle(&#x27;view-full&#x27;, view === &#x27;full&#x27;);
+        viewButtons.forEach(option =&gt; {
+          const active = option === button;
+          option.classList.toggle(&#x27;active&#x27;, active);
+          option.classList.toggle(&#x27;btn-ghost&#x27;, !active);
+          option.setAttribute(&#x27;aria-pressed&#x27;, active ? &#x27;true&#x27; : &#x27;false&#x27;);
+        });
+        if (view === &#x27;decision&#x27; &amp;&amp; [&#x27;close&#x27;,&#x27;target&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;].includes(sortKey)) {
+          sortKey = &#x27;action&#x27;;
+          direction = 1;
+        }
+        render();
+      });
     });
 
     group.querySelectorAll(&#x27;th[data-key] button&#x27;).forEach(button =&gt; {
