@@ -1107,7 +1107,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;summary&gt;欄位說明與判定規則&lt;/summary&gt;
       &lt;p&gt;&lt;strong&gt;動能：&lt;/strong&gt;採日線 RSI(14)、Stochastic(14,3) 與 MACD(12,26,9)。RSI ≥ 70，或 %K ≥ 80 且 RSI ≥ 60，列「超買／過熱」；RSI ≤ 30，或 %K ≤ 20 且 RSI ≤ 40，列「超賣」；RSI ≥ 55、%K ≥ %D、MACD 線 ≥ 訊號線，列「偏強」；RSI &amp;lt; 45 且 MACD 線 &amp;lt; 訊號線，列「偏弱」；其餘列「中性」。&lt;/p&gt;
       &lt;p&gt;&lt;strong&gt;Wyckoff：&lt;/strong&gt;累積／再累積 Phase D–E、SOS、LPS 或 Markup 視為結構支持；Phase B、待判定或未定向視為中性；已確認的派發／再派發 Phase D–E、SOW、LPSY 或 Mark-down 視為結構風險。古典型態與 Wyckoff 結構衝突時降為「觀望」。&lt;/p&gt;
-      &lt;p&gt;&lt;strong&gt;期權定位：&lt;/strong&gt;使用同一交易日核對的到期週 IV／EM、履約價 OI、Put Wall、Gamma Flip、Call Wall 與兩個到期系列合併 GEX。EM 只表示市場定價幅度，不表示方向；目標明顯超出下週 EM，且同時越過合併 Call Wall，視為期權定位衝突。期權資料可以把「確認」降為「觀望」，不可單獨把「觀望」升為「確認」。缺少資料不作負面判定。&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;期權定位：&lt;/strong&gt;每日對所有股票嘗試核對 GEX、履約價 OI 與 IV／EM，分別建立本週及下週價格窗口，並辨識 Put Wall、Gamma Flip、Call Wall 與 Gamma 遷移。至少兩項期權證據互相支持才形成定位結論；OI 是存量、IV／EM 只表示市場定價幅度，兩者都不單獨代表方向。期權資料可以把「確認」降為「觀望」，不可單獨把「觀望」升為「確認」；不可用或過期時標示原因，不以舊值或推測補齊。&lt;/p&gt;
       &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，Wyckoff 結構支持，且非過熱／偏弱／超賣，同時 %K ≥ %D、MACD 線 ≥ 訊號線、柱狀圖 ≥ 0，並且同日已核對的期權定位沒有衝突；下行目標或已確認的 Wyckoff 派發風險列「規避」；無新前瞻型態、RSI &amp;lt; 50、MACD 線低於零軸且柱狀圖 &amp;lt; 0，且 Wyckoff 未提供正面支持時列「不宜」；其餘列「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
     &lt;/details&gt;
     &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：技術處置（優先順序）&lt;/p&gt;
@@ -1312,6 +1312,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     margin-top: 0.3rem;
     color: var(--muted-foreground);
   }
+  #moomoo-sortable-analysis .confirmation-confirmed-up { color: var(--status-green); }
+  #moomoo-sortable-analysis .confirmation-confirmed-down { color: var(--status-red); }
   #moomoo-sortable-analysis .empty-state { margin-top: 0.75rem; color: var(--muted-foreground); }
   #moomoo-sortable-analysis td.empty-row { color: var(--muted-foreground); text-align: center; }
   #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; scroll-margin-top: 1rem; }
@@ -1584,6 +1586,12 @@ html&gt;body{padding:0}&lt;/style&gt;
     return `&lt;ul class=&quot;analysis-list&quot;&gt;${items.map(item =&gt; `&lt;li&gt;${item}&lt;/li&gt;`).join(&#x27;&#x27;)}&lt;/ul&gt;`;
   }
 
+  function confirmationHtml(row) {
+    if (!row.condition.startsWith(&#x27;已確認&#x27;)) return `&lt;strong&gt;${row.condition}&lt;/strong&gt;`;
+    const direction = row.upside != null &amp;&amp; row.upside &lt; 0 ? &#x27;down&#x27; : &#x27;up&#x27;;
+    return `&lt;strong class=&quot;confirmation-confirmed-${direction}&quot;&gt;已確認&lt;/strong&gt;${row.condition.slice(3)}`;
+  }
+
   function setupGroup(group) {
     const scope = &#x27;全部清單&#x27;;
     const body = group.querySelector(&#x27;tbody&#x27;);
@@ -1594,7 +1602,12 @@ html&gt;body{padding:0}&lt;/style&gt;
     const resetFilters = group.querySelector(&#x27;.reset-filters&#x27;);
     const searchInput = group.querySelector(&#x27;.ticker-search&#x27;);
     const viewButtons = group.querySelectorAll(&#x27;.view-button&#x27;);
-    const filters = {scope:&#x27;all&#x27;, action:&#x27;all&#x27;, momentum:&#x27;all&#x27;, query:&#x27;&#x27;};
+    const filters = {
+      scope: new Set(),
+      action: new Set(),
+      momentum: new Set(),
+      query: &#x27;&#x27;
+    };
     let sortKey = &#x27;action&#x27;;
     let direction = 1;
 
@@ -1613,16 +1626,16 @@ html&gt;body{padding:0}&lt;/style&gt;
 
     function render() {
       const visibleRows = mergedRows.filter(row =&gt;
-        (filters.scope === &#x27;all&#x27; || row.lists.includes(filters.scope)) &amp;&amp;
-        (filters.action === &#x27;all&#x27; || row.action === filters.action) &amp;&amp;
-        (filters.momentum === &#x27;all&#x27; || row.momentum === filters.momentum) &amp;&amp;
+        (!filters.scope.size || [...filters.scope].some(value =&gt; row.lists.includes(value))) &amp;&amp;
+        (!filters.action.size || filters.action.has(row.action)) &amp;&amp;
+        (!filters.momentum.size || filters.momentum.has(row.momentum)) &amp;&amp;
         (!filters.query || row.ticker.includes(filters.query))
       );
       body.innerHTML = visibleRows.length ? visibleRows.slice().sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
       &lt;tr data-ticker=&quot;${row.ticker}&quot;&gt;
         &lt;td data-field=&quot;ticker&quot; data-label=&quot;股票代號&quot; class=&quot;${changedClass(row,&#x27;ticker&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;close&quot; data-label=&quot;收市價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
-        &lt;td data-field=&quot;pattern&quot; data-label=&quot;型態／確認&quot; class=&quot;${changedClass(row,&#x27;pattern&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.pattern}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[0]}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;&lt;strong&gt;${row.condition}&lt;/strong&gt;&lt;br&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;pattern&quot; data-label=&quot;型態／確認&quot; class=&quot;${changedClass(row,&#x27;pattern&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.pattern}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[0]}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;${confirmationHtml(row)}&lt;br&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;target&quot; data-label=&quot;推估價格&quot; class=&quot;numeric ${changedClass(row,&#x27;target&#x27;)}&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
         &lt;td data-field=&quot;date&quot; data-label=&quot;推估日期&quot; class=&quot;text-nowrap ${changedClass(row,&#x27;date&#x27;)}&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
         &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric ${changedClass(row,&#x27;upside&#x27;)}&quot;&gt;${row.upside == null ? &#x27;—&lt;span class=&quot;cell-note text-small&quot;&gt;無有效前瞻目標&lt;/span&gt;&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%&lt;span class=&quot;cell-note text-small&quot;&gt;${row.upside &lt; 0 ? `下行目標約 ${money(row.target)}，相對幅度 ${row.upside.toFixed(1)}%` : `量度目標約 ${money(row.target)}，尚餘 ${row.upside.toFixed(1)}%`}&lt;/span&gt;`}&lt;/td&gt;
@@ -1644,16 +1657,24 @@ html&gt;body{padding:0}&lt;/style&gt;
       mobileDirection.setAttribute(&#x27;aria-label&#x27;, `${scope} 排序方向：${direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}`);
       status.textContent = `${scope} 目前排序：${labels[sortKey]}（${sortKey === &#x27;action&#x27; &amp;&amp; direction === 1 ? &#x27;決策優先&#x27; : direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}）`;
       filterStatus.textContent = `顯示 ${visibleRows.length}／${mergedRows.length} 檔${filters.query ? `，搜尋「${filters.query}」` : &#x27;&#x27;}`;
-      resetFilters.disabled = filters.scope === &#x27;all&#x27; &amp;&amp; filters.action === &#x27;all&#x27; &amp;&amp; filters.momentum === &#x27;all&#x27; &amp;&amp; !filters.query;
+      resetFilters.disabled = !filters.scope.size &amp;&amp; !filters.action.size &amp;&amp; !filters.momentum.size &amp;&amp; !filters.query;
     }
 
     group.querySelectorAll(&#x27;.filter-group&#x27;).forEach(filterGroup =&gt; {
       const key = filterGroup.dataset.filter;
       filterGroup.querySelectorAll(&#x27;.filter-chip&#x27;).forEach(button =&gt; {
         button.addEventListener(&#x27;click&#x27;, () =&gt; {
-          filters[key] = button.dataset.value;
+          const value = button.dataset.value;
+          if (value === &#x27;all&#x27;) {
+            filters[key].clear();
+          } else if (filters[key].has(value)) {
+            filters[key].delete(value);
+          } else {
+            filters[key].add(value);
+          }
           filterGroup.querySelectorAll(&#x27;.filter-chip&#x27;).forEach(option =&gt; {
-            const active = option === button;
+            const optionValue = option.dataset.value;
+            const active = optionValue === &#x27;all&#x27; ? filters[key].size === 0 : filters[key].has(optionValue);
             option.classList.toggle(&#x27;active&#x27;, active);
             option.setAttribute(&#x27;aria-pressed&#x27;, active ? &#x27;true&#x27; : &#x27;false&#x27;);
           });
@@ -1663,9 +1684,9 @@ html&gt;body{padding:0}&lt;/style&gt;
     });
 
     resetFilters.addEventListener(&#x27;click&#x27;, () =&gt; {
-      filters.scope = &#x27;all&#x27;;
-      filters.action = &#x27;all&#x27;;
-      filters.momentum = &#x27;all&#x27;;
+      filters.scope.clear();
+      filters.action.clear();
+      filters.momentum.clear();
       filters.query = &#x27;&#x27;;
       searchInput.value = &#x27;&#x27;;
       group.querySelectorAll(&#x27;.filter-group&#x27;).forEach(filterGroup =&gt; {
