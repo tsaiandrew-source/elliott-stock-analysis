@@ -1037,15 +1037,16 @@ html&gt;body{padding:0}&lt;/style&gt;
 &lt;body&gt;
 &lt;div id=&quot;moomoo-sortable-analysis&quot;&gt;
   &lt;h2&gt;moomoo 型態分析表&lt;/h2&gt;
-  &lt;p class=&quot;text-small text-muted&quot;&gt;資料截止：2026-09-21 正式收盤。List 1 與 Candidate 分開顯示及排序；缺少推估值的股票固定排在最後。&lt;/p&gt;
+  &lt;p class=&quot;text-small text-muted&quot;&gt;資料截止：2026-09-21 正式收盤。List 1 與 Candidate 已合併為單一清單；「清單」欄標示來源，缺少推估值的股票固定排在最後。&lt;/p&gt;
 
-  &lt;section class=&quot;analysis-group&quot; data-scope=&quot;List 1&quot;&gt;
-    &lt;h3&gt;List 1&lt;/h3&gt;
+  &lt;section class=&quot;analysis-group&quot; data-scope=&quot;全部清單&quot;&gt;
+    &lt;h3&gt;List 1 ＋ Candidate&lt;/h3&gt;
     &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：股票代號（升冪）&lt;/p&gt;
-    &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;List 1 排序控制&quot;&gt;
+    &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;全部清單排序控制&quot;&gt;
       &lt;label class=&quot;form-label&quot;&gt;排序欄位
         &lt;select class=&quot;form-select mobile-sort-key&quot;&gt;
           &lt;option value=&quot;ticker&quot;&gt;股票代號&lt;/option&gt;
+          &lt;option value=&quot;scope&quot;&gt;清單&lt;/option&gt;
           &lt;option value=&quot;close&quot;&gt;收盤價&lt;/option&gt;
           &lt;option value=&quot;pattern&quot;&gt;候選型態&lt;/option&gt;
           &lt;option value=&quot;target&quot;&gt;推估價格&lt;/option&gt;
@@ -1057,66 +1058,26 @@ html&gt;body{padding:0}&lt;/style&gt;
           &lt;option value=&quot;analysis&quot;&gt;技術分析摘要&lt;/option&gt;
         &lt;/select&gt;
       &lt;/label&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn mobile-sort-direction&quot; aria-label=&quot;List 1 排序方向：升冪&quot;&gt;升冪 ↑&lt;/button&gt;
+      &lt;button type=&quot;button&quot; class=&quot;btn mobile-sort-direction&quot; aria-label=&quot;全部清單排序方向：升冪&quot;&gt;升冪 ↑&lt;/button&gt;
     &lt;/div&gt;
     &lt;div class=&quot;table-responsive&quot;&gt;
       &lt;table class=&quot;table table-sm&quot;&gt;
         &lt;thead&gt;
           &lt;tr&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;ticker&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依股票代號排序&quot;&gt;股票代號 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;close&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依收盤價排序&quot;&gt;收盤價 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;pattern&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依候選型態排序&quot;&gt;候選型態 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;target&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依推估價格排序&quot;&gt;推估價格 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;date&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依推估日期排序&quot;&gt;推估日期 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;upside&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依推估幅度排序&quot;&gt;推估幅度 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;confidence&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依信心排序&quot;&gt;信心 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;condition&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依確認條件排序&quot;&gt;確認條件 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;wyckoff&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依 Wyckoff 階段排序&quot;&gt;Wyckoff 階段／預期行為 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;analysis&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;List 1：依技術分析摘要排序&quot;&gt;技術分析摘要 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;ticker&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依股票代號排序&quot;&gt;股票代號 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;scope&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依清單來源排序&quot;&gt;清單 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;close&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依收盤價排序&quot;&gt;收盤價 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;pattern&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依候選型態排序&quot;&gt;候選型態 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;target&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依推估價格排序&quot;&gt;推估價格 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;date&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依推估日期排序&quot;&gt;推估日期 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;upside&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依推估幅度排序&quot;&gt;推估幅度 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;confidence&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依信心排序&quot;&gt;信心 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;condition&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依確認條件排序&quot;&gt;確認條件 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;wyckoff&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依 Wyckoff 階段排序&quot;&gt;Wyckoff 階段／預期行為 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;analysis&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依技術分析摘要排序&quot;&gt;技術分析摘要 ↕&lt;/button&gt;&lt;/th&gt;
           &lt;/tr&gt;
         &lt;/thead&gt;
         &lt;tbody&gt;&lt;/tbody&gt;
-      &lt;/table&gt;
-    &lt;/div&gt;
-  &lt;/section&gt;
-
-  &lt;section class=&quot;analysis-group&quot; data-scope=&quot;Candidate&quot;&gt;
-    &lt;h3&gt;Candidate&lt;/h3&gt;
-    &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：股票代號（升冪）&lt;/p&gt;
-    &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;Candidate 排序控制&quot;&gt;
-      &lt;label class=&quot;form-label&quot;&gt;排序欄位
-        &lt;select class=&quot;form-select mobile-sort-key&quot;&gt;
-          &lt;option value=&quot;ticker&quot;&gt;股票代號&lt;/option&gt;
-          &lt;option value=&quot;close&quot;&gt;收盤價&lt;/option&gt;
-          &lt;option value=&quot;pattern&quot;&gt;候選型態&lt;/option&gt;
-          &lt;option value=&quot;target&quot;&gt;推估價格&lt;/option&gt;
-          &lt;option value=&quot;date&quot;&gt;推估日期&lt;/option&gt;
-          &lt;option value=&quot;upside&quot;&gt;推估幅度&lt;/option&gt;
-          &lt;option value=&quot;confidence&quot;&gt;信心&lt;/option&gt;
-          &lt;option value=&quot;condition&quot;&gt;確認條件&lt;/option&gt;
-          &lt;option value=&quot;wyckoff&quot;&gt;Wyckoff 階段／預期行為&lt;/option&gt;
-          &lt;option value=&quot;analysis&quot;&gt;技術分析摘要&lt;/option&gt;
-        &lt;/select&gt;
-      &lt;/label&gt;
-      &lt;button type=&quot;button&quot; class=&quot;btn mobile-sort-direction&quot; aria-label=&quot;Candidate 排序方向：升冪&quot;&gt;升冪 ↑&lt;/button&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;table-responsive&quot;&gt;
-      &lt;table class=&quot;table table-sm&quot;&gt;
-      &lt;thead&gt;
-        &lt;tr&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;ticker&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依股票代號排序&quot;&gt;股票代號 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;close&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依收盤價排序&quot;&gt;收盤價 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;pattern&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依候選型態排序&quot;&gt;候選型態 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;target&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依推估價格排序&quot;&gt;推估價格 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;date&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依推估日期排序&quot;&gt;推估日期 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;upside&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依推估幅度排序&quot;&gt;推估幅度 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;confidence&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依信心排序&quot;&gt;信心 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;condition&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依確認條件排序&quot;&gt;確認條件 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;wyckoff&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依 Wyckoff 階段排序&quot;&gt;Wyckoff 階段／預期行為 ↕&lt;/button&gt;&lt;/th&gt;
-          &lt;th scope=&quot;col&quot; data-key=&quot;analysis&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;Candidate：依技術分析摘要排序&quot;&gt;技術分析摘要 ↕&lt;/button&gt;&lt;/th&gt;
-        &lt;/tr&gt;
-      &lt;/thead&gt;
-      &lt;tbody&gt;&lt;/tbody&gt;
       &lt;/table&gt;
     &lt;/div&gt;
   &lt;/section&gt;
@@ -1124,8 +1085,7 @@ html&gt;body{padding:0}&lt;/style&gt;
 
 &lt;style&gt;
   #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; }
-  #moomoo-sortable-analysis .analysis-group + .analysis-group { margin-top: 2rem; }
-  #moomoo-sortable-analysis table { min-width: 1460px; }
+  #moomoo-sortable-analysis table { min-width: 1540px; }
   #moomoo-sortable-analysis th { vertical-align: bottom; }
   #moomoo-sortable-analysis td { vertical-align: top; }
   #moomoo-sortable-analysis td.numeric { text-align: right; white-space: nowrap; }
@@ -1201,9 +1161,18 @@ html&gt;body{padding:0}&lt;/style&gt;
     {ticker:&#x27;TEAM&#x27;,scope:&#x27;Candidate&#x27;,close:195.67,pattern:&#x27;上升三角形&#x27;,target:217,targetConditional:true,date:&#x27;2026-10-19&#x27;,dateLabel:&#x27;Oct-19&#x27;,upside:10.9,confidence:84,condition:&#x27;日線收於 $196.60–$199 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $199 預期進入 Markup；跌破 $185 會削弱結構。&#x27;,analysis:[&#x27;高點集中在 $196.60–$199，低點逐步墊高&#x27;,&#x27;最高約 $198.47，但收盤仍在壓力下方&#x27;,&#x27;突破後條件式目標約 $217&#x27;,&#x27;RSI 約 70，突破前已接近過熱&#x27;,&#x27;跌破 $185 會削弱；$176 以下失效&#x27;]}
   ];
 
-  const labels = {ticker:&#x27;股票代號&#x27;,close:&#x27;收盤價&#x27;,pattern:&#x27;候選型態&#x27;,target:&#x27;推估價格&#x27;,date:&#x27;推估日期&#x27;,upside:&#x27;推估幅度&#x27;,confidence:&#x27;信心&#x27;,condition:&#x27;確認條件&#x27;,wyckoff:&#x27;Wyckoff 階段／預期行為&#x27;,analysis:&#x27;技術分析摘要&#x27;};
+  const labels = {ticker:&#x27;股票代號&#x27;,scope:&#x27;清單&#x27;,close:&#x27;收盤價&#x27;,pattern:&#x27;候選型態&#x27;,target:&#x27;推估價格&#x27;,date:&#x27;推估日期&#x27;,upside:&#x27;推估幅度&#x27;,confidence:&#x27;信心&#x27;,condition:&#x27;確認條件&#x27;,wyckoff:&#x27;Wyckoff 階段／預期行為&#x27;,analysis:&#x27;技術分析摘要&#x27;};
   const money = value =&gt; value == null ? &#x27;—&#x27; : &#x27;$&#x27; + value.toLocaleString(&#x27;en-US&#x27;, {maximumFractionDigits: 2});
   const numericKeys = new Set([&#x27;close&#x27;,&#x27;target&#x27;,&#x27;upside&#x27;,&#x27;confidence&#x27;]);
+  const mergedRows = (() =&gt; {
+    const byTicker = new Map();
+    rows.forEach(row =&gt; {
+      const existing = byTicker.get(row.ticker);
+      if (!existing) byTicker.set(row.ticker, {...row, lists:[row.scope]});
+      else if (!existing.lists.includes(row.scope)) existing.lists.push(row.scope);
+    });
+    return Array.from(byTicker.values(), row =&gt; ({...row, scope:row.lists.join(&#x27;／&#x27;)}));
+  })();
 
   function compare(a, b, sortKey, direction) {
     const av = sortKey === &#x27;analysis&#x27; ? a.analysis.join(&#x27; &#x27;) : a[sortKey];
@@ -1223,7 +1192,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   }
 
   function setupGroup(group) {
-    const scope = group.dataset.scope;
+    const scope = &#x27;全部清單&#x27;;
     const body = group.querySelector(&#x27;tbody&#x27;);
     const status = group.querySelector(&#x27;.sort-status&#x27;);
     const mobileKey = group.querySelector(&#x27;.mobile-sort-key&#x27;);
@@ -1232,9 +1201,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     let direction = 1;
 
     function render() {
-      body.innerHTML = rows.filter(row =&gt; row.scope === scope).sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
+      body.innerHTML = mergedRows.slice().sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
       &lt;tr&gt;
         &lt;td data-label=&quot;股票代號&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-label=&quot;清單&quot;&gt;${row.scope}&lt;/td&gt;
         &lt;td data-label=&quot;收盤價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
         &lt;td data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;/td&gt;
         &lt;td data-label=&quot;推估價格&quot; class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
