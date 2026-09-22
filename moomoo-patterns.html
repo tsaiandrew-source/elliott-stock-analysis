@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>moomoo 每日型態分析</title>
+<title>Moomoo Pattern Table</title>
 <style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
 </head>
 <body>
-<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="moomoo 每日型態分析" srcdoc="&lt;!doctype html&gt;
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Moomoo Pattern Table" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
 &lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
-&lt;title&gt;moomoo 每日型態分析&lt;/title&gt;
+&lt;title&gt;Moomoo Pattern Table&lt;/title&gt;
 &lt;style&gt;:root {
   color-scheme: light dark;
   background-color: var(
@@ -1041,44 +1041,45 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;h2&gt;每日型態決策儀表板&lt;/h2&gt;
       &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍；需要時才展開完整分析。&lt;/p&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 技術資料：2026-09-21 正式收盤&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權資料：2026-09-22 盤中（已核對 NBIS、SNDK；跨日資料只作參考）&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 技術資料：2026-09-22 正式收盤&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;moomoo 圖註：2026-09-22 已核對（BE 新增頸線及目標標籤）&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權資料：2026-09-22 盤中（已核對 NBIS、SNDK；只作定位佐證）&lt;/span&gt;&lt;/div&gt;
   &lt;/header&gt;
 
   &lt;section class=&quot;analysis-group&quot; data-scope=&quot;全部清單&quot;&gt;
     &lt;div class=&quot;decision-overview&quot; aria-label=&quot;今日技術處置摘要&quot;&gt;
-      &lt;span&gt;&lt;strong class=&quot;overview-confirm&quot;&gt;4&lt;/strong&gt; 確認&lt;/span&gt;
-      &lt;span&gt;&lt;strong class=&quot;overview-watch&quot;&gt;11&lt;/strong&gt; 觀望&lt;/span&gt;
+      &lt;span&gt;&lt;strong class=&quot;overview-confirm&quot;&gt;1&lt;/strong&gt; 確認&lt;/span&gt;
+      &lt;span&gt;&lt;strong class=&quot;overview-watch&quot;&gt;19&lt;/strong&gt; 觀望&lt;/span&gt;
       &lt;span&gt;&lt;strong class=&quot;overview-avoid&quot;&gt;1&lt;/strong&gt; 規避&lt;/span&gt;
       &lt;span&gt;&lt;strong class=&quot;overview-unsuitable&quot;&gt;2&lt;/strong&gt; 不宜&lt;/span&gt;
     &lt;/div&gt;
 
+    &lt;div class=&quot;control-panel&quot; aria-label=&quot;搜尋、檢視與篩選&quot;&gt;
     &lt;div class=&quot;dashboard-toolbar&quot;&gt;
       &lt;label class=&quot;form-label search-label&quot;&gt;搜尋股票
         &lt;input class=&quot;form-control ticker-search&quot; type=&quot;search&quot; inputmode=&quot;search&quot; autocomplete=&quot;off&quot; placeholder=&quot;例如 NBIS&quot; aria-describedby=&quot;search-help&quot;&gt;
       &lt;/label&gt;
       &lt;span id=&quot;search-help&quot; class=&quot;sr-only&quot;&gt;輸入完整或部分股票代號&lt;/span&gt;
-      &lt;fieldset class=&quot;view-mode&quot; aria-label=&quot;表格檢視模式&quot;&gt;
-        &lt;legend&gt;檢視&lt;/legend&gt;
+      &lt;div class=&quot;view-mode&quot; role=&quot;group&quot; aria-labelledby=&quot;view-mode-label&quot;&gt;
+        &lt;span class=&quot;group-label&quot; id=&quot;view-mode-label&quot;&gt;檢視&lt;/span&gt;
         &lt;div class=&quot;view-options&quot;&gt;
           &lt;button type=&quot;button&quot; class=&quot;btn view-button active&quot; data-view=&quot;decision&quot; aria-pressed=&quot;true&quot;&gt;決策檢視&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost view-button&quot; data-view=&quot;full&quot; aria-pressed=&quot;false&quot;&gt;完整分析&lt;/button&gt;
         &lt;/div&gt;
-      &lt;/fieldset&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;decision-filters&quot; aria-label=&quot;決策篩選&quot;&gt;
-      &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;action&quot;&gt;
-        &lt;legend&gt;技術處置&lt;/legend&gt;
+      &lt;div class=&quot;filter-group&quot; data-filter=&quot;action&quot; role=&quot;group&quot; aria-labelledby=&quot;action-filter-label&quot;&gt;
+        &lt;span class=&quot;group-label&quot; id=&quot;action-filter-label&quot;&gt;技術處置&lt;/span&gt;
         &lt;div class=&quot;filter-options&quot;&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-confirm&quot; data-value=&quot;確認&quot; aria-pressed=&quot;false&quot;&gt;確認 &lt;span class=&quot;filter-count&quot;&gt;4&lt;/span&gt;&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-watch&quot; data-value=&quot;觀望&quot; aria-pressed=&quot;false&quot;&gt;觀望 &lt;span class=&quot;filter-count&quot;&gt;11&lt;/span&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-confirm&quot; data-value=&quot;確認&quot; aria-pressed=&quot;false&quot;&gt;確認 &lt;span class=&quot;filter-count&quot;&gt;1&lt;/span&gt;&lt;/button&gt;
+          &lt;button type=&quot;button&quot; class=&quot;filter-chip action-watch&quot; data-value=&quot;觀望&quot; aria-pressed=&quot;false&quot;&gt;觀望 &lt;span class=&quot;filter-count&quot;&gt;19&lt;/span&gt;&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip action-avoid&quot; data-value=&quot;規避&quot; aria-pressed=&quot;false&quot;&gt;規避 &lt;span class=&quot;filter-count&quot;&gt;1&lt;/span&gt;&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip action-unsuitable&quot; data-value=&quot;不宜&quot; aria-pressed=&quot;false&quot;&gt;不宜 &lt;span class=&quot;filter-count&quot;&gt;2&lt;/span&gt;&lt;/button&gt;
         &lt;/div&gt;
-      &lt;/fieldset&gt;
-      &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;momentum&quot;&gt;
-        &lt;legend&gt;動能狀態&lt;/legend&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;filter-group&quot; data-filter=&quot;momentum&quot; role=&quot;group&quot; aria-labelledby=&quot;momentum-filter-label&quot;&gt;
+        &lt;span class=&quot;group-label&quot; id=&quot;momentum-filter-label&quot;&gt;動能狀態&lt;/span&gt;
         &lt;div class=&quot;filter-options&quot;&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip momentum-hot&quot; data-value=&quot;超買／過熱&quot; aria-pressed=&quot;false&quot;&gt;過熱&lt;/button&gt;
@@ -1087,19 +1088,20 @@ html&gt;body{padding:0}&lt;/style&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip momentum-weak&quot; data-value=&quot;偏弱&quot; aria-pressed=&quot;false&quot;&gt;偏弱&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip momentum-oversold&quot; data-value=&quot;超賣&quot; aria-pressed=&quot;false&quot;&gt;超賣&lt;/button&gt;
         &lt;/div&gt;
-      &lt;/fieldset&gt;
-      &lt;fieldset class=&quot;filter-group&quot; data-filter=&quot;scope&quot;&gt;
-        &lt;legend&gt;清單&lt;/legend&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;filter-group&quot; data-filter=&quot;scope&quot; role=&quot;group&quot; aria-labelledby=&quot;scope-filter-label&quot;&gt;
+        &lt;span class=&quot;group-label&quot; id=&quot;scope-filter-label&quot;&gt;清單&lt;/span&gt;
         &lt;div class=&quot;filter-options&quot;&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;List 1&quot; aria-pressed=&quot;false&quot;&gt;List 1&lt;/button&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;Candidate&quot; aria-pressed=&quot;false&quot;&gt;Candidate&lt;/button&gt;
         &lt;/div&gt;
-      &lt;/fieldset&gt;
+      &lt;/div&gt;
       &lt;div class=&quot;filter-summary&quot;&gt;
-        &lt;span class=&quot;filter-status&quot; aria-live=&quot;polite&quot;&gt;顯示 18／18 檔&lt;/span&gt;
+        &lt;span class=&quot;filter-status&quot; aria-live=&quot;polite&quot;&gt;顯示 23／23 檔&lt;/span&gt;
         &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost reset-filters&quot; disabled&gt;清除篩選&lt;/button&gt;
       &lt;/div&gt;
+    &lt;/div&gt;
     &lt;/div&gt;
     &lt;details class=&quot;logic-note text-small&quot;&gt;
       &lt;summary&gt;欄位說明與判定規則&lt;/summary&gt;
@@ -1113,16 +1115,14 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;label class=&quot;form-label&quot;&gt;排序欄位
         &lt;select class=&quot;form-select mobile-sort-key&quot;&gt;
           &lt;option value=&quot;ticker&quot;&gt;股票代號&lt;/option&gt;
-          &lt;option value=&quot;scope&quot;&gt;清單&lt;/option&gt;
-          &lt;option value=&quot;close&quot;&gt;收盤價&lt;/option&gt;
-          &lt;option value=&quot;pattern&quot;&gt;候選型態&lt;/option&gt;
+          &lt;option value=&quot;close&quot;&gt;收市價&lt;/option&gt;
+          &lt;option value=&quot;pattern&quot;&gt;型態／確認&lt;/option&gt;
           &lt;option value=&quot;target&quot;&gt;推估價格&lt;/option&gt;
           &lt;option value=&quot;date&quot;&gt;推估日期&lt;/option&gt;
           &lt;option value=&quot;upside&quot;&gt;推估幅度&lt;/option&gt;
           &lt;option value=&quot;confidence&quot;&gt;信心&lt;/option&gt;
           &lt;option value=&quot;momentum&quot;&gt;動能狀態&lt;/option&gt;
           &lt;option value=&quot;action&quot;&gt;技術處置&lt;/option&gt;
-          &lt;option value=&quot;condition&quot;&gt;確認條件&lt;/option&gt;
           &lt;option value=&quot;wyckoff&quot;&gt;Wyckoff 階段／預期行為&lt;/option&gt;
           &lt;option value=&quot;analysis&quot;&gt;技術分析摘要&lt;/option&gt;
         &lt;/select&gt;
@@ -1134,16 +1134,14 @@ html&gt;body{padding:0}&lt;/style&gt;
         &lt;thead&gt;
           &lt;tr&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;ticker&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依股票代號排序&quot;&gt;股票代號 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;scope&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依清單來源排序&quot;&gt;清單 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;close&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依收盤價排序&quot;&gt;收盤價 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;pattern&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依候選型態排序&quot;&gt;候選型態 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;close&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依收市價排序&quot;&gt;收市價 ↕&lt;/button&gt;&lt;/th&gt;
+            &lt;th scope=&quot;col&quot; data-key=&quot;pattern&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依型態排序&quot;&gt;型態／確認 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;target&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依推估價格排序&quot;&gt;推估價格 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;date&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依推估日期排序&quot;&gt;推估日期 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;upside&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依推估幅度排序&quot;&gt;推估幅度 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;confidence&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依信心排序&quot;&gt;信心 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;momentum&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依動能狀態排序&quot;&gt;動能狀態 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;action&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依技術處置排序&quot;&gt;技術處置 ↕&lt;/button&gt;&lt;/th&gt;
-            &lt;th scope=&quot;col&quot; data-key=&quot;condition&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依確認條件排序&quot;&gt;確認條件 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;wyckoff&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依 Wyckoff 階段排序&quot;&gt;Wyckoff 階段／預期行為 ↕&lt;/button&gt;&lt;/th&gt;
             &lt;th scope=&quot;col&quot; data-key=&quot;analysis&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; aria-label=&quot;全部清單：依技術分析摘要排序&quot;&gt;技術分析摘要 ↕&lt;/button&gt;&lt;/th&gt;
           &lt;/tr&gt;
@@ -1193,17 +1191,31 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .overview-watch { color: var(--status-blue); }
   #moomoo-sortable-analysis .overview-avoid { color: var(--status-orange); }
   #moomoo-sortable-analysis .overview-unsuitable { color: var(--status-red); }
-  #moomoo-sortable-analysis .dashboard-toolbar {
-    display: grid;
-    grid-template-columns: minmax(14rem, 22rem) auto;
-    gap: 0.8rem 1.25rem;
-    align-items: end;
-    margin-top: 0.9rem;
+  #moomoo-sortable-analysis td.changed-cell {
+    background: color-mix(in srgb, var(--status-blue) 10%, var(--background)) !important;
   }
-  #moomoo-sortable-analysis .search-label { margin: 0; }
-  #moomoo-sortable-analysis .view-mode { margin: 0; padding: 0; border: 0; }
-  #moomoo-sortable-analysis .view-mode legend { margin-bottom: 0.3rem; }
-  #moomoo-sortable-analysis .view-options { display: flex; gap: 0.4rem; }
+  #moomoo-sortable-analysis .control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.75rem;
+    align-items: end;
+    margin-top: 0.65rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--muted-foreground) 7%, transparent);
+  }
+  #moomoo-sortable-analysis .dashboard-toolbar,
+  #moomoo-sortable-analysis .decision-filters { display: contents; }
+  #moomoo-sortable-analysis .search-label {
+    display: grid;
+    grid-template-columns: auto minmax(8.5rem, 12rem);
+    gap: 0.35rem;
+    align-items: center;
+    margin: 0;
+  }
+  #moomoo-sortable-analysis .view-mode { display: grid; grid-template-columns: auto auto; gap: 0.35rem; align-items: center; margin: 0; padding: 0; border: 0; }
+  #moomoo-sortable-analysis .group-label { width: auto; margin: 0; padding: 0; font-weight: 500; white-space: nowrap; }
+  #moomoo-sortable-analysis .view-options { display: flex; gap: 0.25rem; }
   #moomoo-sortable-analysis .view-button.active { font-weight: 500; }
   #moomoo-sortable-analysis .view-button[aria-pressed=&quot;true&quot;] { background: var(--primary); color: var(--primary-foreground); }
   #moomoo-sortable-analysis .ticker-search { width: 100%; }
@@ -1212,33 +1224,19 @@ html&gt;body{padding:0}&lt;/style&gt;
     color: var(--muted-foreground);
     font-variant-numeric: tabular-nums;
   }
-  #moomoo-sortable-analysis .decision-filters {
-    display: grid;
-    gap: 0.65rem;
-    margin-top: 0.8rem;
-    padding: 0.85rem;
-    border-radius: 0.75rem;
-    background: color-mix(in srgb, var(--muted-foreground) 7%, transparent);
-  }
   #moomoo-sortable-analysis .filter-group {
     display: grid;
-    grid-template-columns: 5.5rem minmax(0, 1fr);
-    gap: 0.65rem;
+    grid-template-columns: auto auto;
+    gap: 0.35rem;
     align-items: center;
     margin: 0;
     padding: 0;
     border: 0;
   }
-  #moomoo-sortable-analysis .filter-group legend {
-    float: left;
-    width: 100%;
-    padding: 0;
-    font-weight: 500;
-  }
-  #moomoo-sortable-analysis .filter-options { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  #moomoo-sortable-analysis .filter-options { display: flex; flex-wrap: wrap; gap: 0.25rem; }
   #moomoo-sortable-analysis .filter-chip {
-    min-height: 2.35rem;
-    padding: 0.35rem 0.75rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.55rem;
     border: 1px solid color-mix(in srgb, var(--muted-foreground) 28%, transparent);
     border-radius: 0.55rem;
     color: var(--foreground);
@@ -1287,8 +1285,8 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .options-support { color: var(--status-green); }
   #moomoo-sortable-analysis .options-neutral { color: var(--muted-foreground); }
   #moomoo-sortable-analysis .options-conflict { color: var(--status-red); }
-  #moomoo-sortable-analysis .filter-summary { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; }
-  #moomoo-sortable-analysis .filter-status { font-weight: 500; }
+  #moomoo-sortable-analysis .filter-summary { display: flex; gap: 0.35rem; align-items: center; margin-left: auto; }
+  #moomoo-sortable-analysis .filter-status { font-weight: 500; white-space: nowrap; }
   #moomoo-sortable-analysis .reset-filters:disabled { opacity: 0.45; cursor: default; }
   #moomoo-sortable-analysis .logic-note { margin-top: 0.65rem; color: var(--muted-foreground); }
   #moomoo-sortable-analysis .logic-note summary { cursor: pointer; font-weight: 500; }
@@ -1317,13 +1315,11 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .empty-state { margin-top: 0.75rem; color: var(--muted-foreground); }
   #moomoo-sortable-analysis td.empty-row { color: var(--muted-foreground); text-align: center; }
   #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; scroll-margin-top: 1rem; }
-  #moomoo-sortable-analysis table { min-width: 1140px; }
-  #moomoo-sortable-analysis.view-full table { min-width: 1760px; }
-  #moomoo-sortable-analysis.view-decision th[data-key=&quot;close&quot;],
+  #moomoo-sortable-analysis table { min-width: 1000px; }
+  #moomoo-sortable-analysis.view-full table { min-width: 1500px; }
   #moomoo-sortable-analysis.view-decision th[data-key=&quot;target&quot;],
   #moomoo-sortable-analysis.view-decision th[data-key=&quot;wyckoff&quot;],
   #moomoo-sortable-analysis.view-decision th[data-key=&quot;analysis&quot;],
-  #moomoo-sortable-analysis.view-decision td[data-field=&quot;close&quot;],
   #moomoo-sortable-analysis.view-decision td[data-field=&quot;target&quot;],
   #moomoo-sortable-analysis.view-decision td[data-field=&quot;wyckoff&quot;],
   #moomoo-sortable-analysis.view-decision td[data-field=&quot;analysis&quot;] { display: none; }
@@ -1345,11 +1341,15 @@ html&gt;body{padding:0}&lt;/style&gt;
   @media (max-width: 1024px) {
     #moomoo-sortable-analysis .dashboard-header { display: block; }
     #moomoo-sortable-analysis .freshness { margin-top: 0.5rem; }
-    #moomoo-sortable-analysis .dashboard-toolbar { grid-template-columns: 1fr; align-items: stretch; }
+    #moomoo-sortable-analysis .control-panel { display: grid; grid-template-columns: 1fr; gap: 0.45rem; align-items: stretch; }
+    #moomoo-sortable-analysis .dashboard-toolbar,
+    #moomoo-sortable-analysis .decision-filters { display: contents; }
+    #moomoo-sortable-analysis .search-label,
+    #moomoo-sortable-analysis .view-mode,
+    #moomoo-sortable-analysis .filter-group { grid-template-columns: 4.8rem minmax(0, 1fr); gap: 0.35rem; }
     #moomoo-sortable-analysis .view-options &gt; * { flex: 1 1 0; }
-    #moomoo-sortable-analysis .filter-group { grid-template-columns: 1fr; gap: 0.35rem; }
-    #moomoo-sortable-analysis .filter-group legend { float: none; }
-    #moomoo-sortable-analysis .filter-chip { flex: 1 1 auto; min-height: 44px; }
+    #moomoo-sortable-analysis .filter-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #moomoo-sortable-analysis .filter-chip { min-height: 44px; }
     #moomoo-sortable-analysis .ticker-search { min-height: 44px; font-size: 16px; }
     #moomoo-sortable-analysis .view-button,
     #moomoo-sortable-analysis .reset-filters,
@@ -1405,52 +1405,77 @@ html&gt;body{padding:0}&lt;/style&gt;
 (() =&gt; {
   const root = document.getElementById(&#x27;moomoo-sortable-analysis&#x27;);
   const rows = [
-    {ticker:&#x27;MU&#x27;,scope:&#x27;List 1&#x27;,close:1043.96,pattern:&#x27;杯柄&#x27;,target:1340,date:&#x27;2026-12-10&#x27;,dateLabel:&#x27;Dec-10&#x27;,upside:28.4,confidence:70,condition:&#x27;已確認&#x27;,wyckoff:&#x27;再累積 Phase E／Markup：預期趨勢延續；先留意回測 $1,025–$1,040 後能否再上行。&#x27;,analysis:[&#x27;杯底約 $737.88，右側已回到約 $1,040&#x27;,&#x27;已突破約 $1,025–$1,040 柄部壓力&#x27;,&#x27;量度目標約 $1,340，尚餘 28.4%&#x27;,&#x27;RSI 約 73，短線偏熱&#x27;,&#x27;跌回 $920 以下會破壞柄部結構&#x27;]},
-    {ticker:&#x27;MRVL&#x27;,scope:&#x27;List 1&#x27;,close:257.38,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-11-20&#x27;,dateLabel:&#x27;Nov-20&#x27;,upside:32.1,confidence:72,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：SOS 後預期續升；短線過熱，可能先 Back-up 測試 $245–$250。&#x27;,analysis:[&#x27;左肩約 $185、頭部約 $164、右肩約 $205&#x27;,&#x27;已突破約 $245–$250 的斜向頸線區&#x27;,&#x27;量度目標約 $340，尚餘 32.1%&#x27;,&#x27;RSI 約 75，明顯過熱&#x27;,&#x27;跌回 $230 以下會削弱；$205 以下失效&#x27;]},
-    {ticker:&#x27;FTNT&#x27;,scope:&#x27;List 1&#x27;,close:175.23,pattern:&#x27;雙底&#x27;,target:196,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:11.7,confidence:84,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase D／SOS：預期突破後回測 LPS，再進入 Markup；$172.67 應轉為支撐。&#x27;,analysis:[&#x27;兩個底部均約 $149.67，對稱性清楚&#x27;,&#x27;頸線約 $172.67，Sep-14 確認突破&#x27;,&#x27;量度目標約 $195.67，尚餘 11.7%&#x27;,&#x27;RSI 約 71，短線稍為過熱&#x27;,&#x27;跌回 $172.67 以下會削弱突破可信度&#x27;]},
-    {ticker:&#x27;NOK&#x27;,scope:&#x27;List 1&#x27;,close:10.94,pattern:&#x27;上升三角形&#x27;,target:12.8,targetConditional:true,date:&#x27;2026-11-13&#x27;,dateLabel:&#x27;Nov-13&#x27;,upside:17.0,confidence:82,condition:&#x27;日線收於 $11.05–$11.10 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $11.10 才可望進入 Phase E；跌破 $9.60 則回到弱勢區間。&#x27;,analysis:[&#x27;高點受制於約 $11.05，低點逐步墊高&#x27;,&#x27;最高 $11.05，但收盤 $10.94，尚未確認&#x27;,&#x27;突破後條件式目標約 $12.80&#x27;,&#x27;RSI 約 64，動能偏強&#x27;,&#x27;跌破約 $9.60 的上升支撐會令型態失效&#x27;]},
-    {ticker:&#x27;IREN&#x27;,scope:&#x27;List 1&#x27;,close:47.23,pattern:&#x27;頭肩底&#x27;,target:55,date:&#x27;2026-11-22&#x27;,dateLabel:&#x27;Nov-22&#x27;,upside:16.5,confidence:88,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期高點與低點續墊高；$42–$43 為關鍵 Back-up 支撐。&#x27;,analysis:[&#x27;左肩約 $34、頭部約 $28.93、右肩約 $36&#x27;,&#x27;已站上約 $42–$43 的斜向頸線&#x27;,&#x27;量度目標約 $55，尚餘 16.5%&#x27;,&#x27;RSI 約 72，短線過熱&#x27;,&#x27;跌回 $42 以下會削弱；$36 以下失效&#x27;]},
-    {ticker:&#x27;NBIS&#x27;,scope:&#x27;List 1&#x27;,close:232.8,pattern:&#x27;頭肩底&#x27;,target:247,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:6.1,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：仍偏多，但接近量度目標，預期供給與震盪增加。&#x27;,analysis:[&#x27;頭部約 $194，兩側肩部約 $205–$210&#x27;,&#x27;已突破約 $222–$225 的頸線區&#x27;,&#x27;量度目標約 $247，只餘約 6.1%&#x27;,&#x27;RSI 約 65，動能正向但空間已收窄&#x27;,&#x27;跌回 $220 以下會削弱；$205 以下失效&#x27;]},
-    {ticker:&#x27;CSCO&#x27;,scope:&#x27;List 1&#x27;,close:111.46,pattern:&#x27;下降楔形&#x27;,target:127,date:&#x27;2026-11-15&#x27;,dateLabel:&#x27;Nov-15&#x27;,upside:13.9,confidence:76,condition:&#x27;已確認&#x27;,wyckoff:&#x27;再累積 Phase D／SOS：預期先確認 $110.50 上方承接，再向 Phase E 推進。&#x27;,analysis:[&#x27;高低點同步下降並逐漸收斂&#x27;,&#x27;收盤已越過約 $110.50 的上方邊界&#x27;,&#x27;量度目標約 $127，尚餘 13.9%&#x27;,&#x27;RSI 約 59，未進入過熱區&#x27;,&#x27;跌回 $108.50 以下會削弱；$106.80 以下失效&#x27;]},
-    {ticker:&#x27;LITE&#x27;,scope:&#x27;List 1&#x27;,close:954.49,pattern:&#x27;頭肩底&#x27;,target:1090,date:&#x27;2026-09-29&#x27;,dateLabel:&#x27;Sep-29&#x27;,upside:14.2,confidence:90,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期趨勢延續；若回調，$840 頸線應維持為主要支撐。&#x27;,analysis:[&#x27;頭部約 $605，肩部約 $680–$720&#x27;,&#x27;已突破約 $840 的頸線&#x27;,&#x27;目標約 $1,090，尚餘 14.2%&#x27;,&#x27;RSI 約 61，回調後動能改善&#x27;,&#x27;跌回 $840 以下會破壞突破結構&#x27;]},
-    {ticker:&#x27;COHR&#x27;,scope:&#x27;List 1&#x27;,close:321.52,pattern:&#x27;頭肩底&#x27;,target:420,date:&#x27;2026-11-29&#x27;,dateLabel:&#x27;Nov-29&#x27;,upside:30.6,confidence:80,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期突破後續升；$300–$310 為 Back-up／LPS 驗證區。&#x27;,analysis:[&#x27;頭部約 $220.68，右肩約 $267&#x27;,&#x27;已突破約 $310 的頸線區&#x27;,&#x27;量度目標約 $420，尚餘 30.6%&#x27;,&#x27;RSI 約 69，接近過熱&#x27;,&#x27;跌回 $300 以下會削弱；$267 以下失效&#x27;]},
-    {ticker:&#x27;ACHR&#x27;,scope:&#x27;Candidate&#x27;,close:5.43,pattern:&#x27;雙底（歷史已完成）&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:80,condition:&#x27;目前無新前瞻型態&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：預期橫向測試供需；守住 $5.20 並出現 SOS 才轉強。&#x27;,analysis:[&#x27;歷史底部約 $4.35、$4.48，原頸線約 $5.45&#x27;,&#x27;Aug-06 突破後最高升至約 $7.29&#x27;,&#x27;歷史 $6.56／Aug-27 目標已完成，不能順延&#x27;,&#x27;RSI 約 47，動能中性偏弱&#x27;,&#x27;失守 $5.20 會進一步轉弱&#x27;]},
-    {ticker:&#x27;INTC&#x27;,scope:&#x27;Candidate&#x27;,close:121.78,pattern:&#x27;雙底&#x27;,target:127,date:&#x27;2026-11-04&#x27;,dateLabel:&#x27;Nov-04&#x27;,upside:4.3,confidence:74,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：趨勢仍偏多，但接近目標，預期上行速度放慢。&#x27;,analysis:[&#x27;第一底約 $81.79，第二底約 $87.74&#x27;,&#x27;已突破約 $104.16 的頸線&#x27;,&#x27;量度目標約 $127，只餘約 4.3%&#x27;,&#x27;RSI 約 64，動能偏強&#x27;,&#x27;跌回 $104 以下會削弱；$87.74 以下失效&#x27;]},
-    {ticker:&#x27;AVGO&#x27;,scope:&#x27;Candidate&#x27;,close:362.66,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $378–$390 後重新評估&#x27;,wyckoff:&#x27;可能再累積 Phase B：預期維持區間建構；收復 $378–$390 才形成 SOS，跌破 $335.82 轉弱。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $335.82 反彈，但仍在前段跌勢內&#x27;,&#x27;尚未形成可量度的頸線或突破點&#x27;,&#x27;RSI 約 61，短線改善&#x27;,&#x27;跌破 $335.82 會否定目前反彈&#x27;]},
-    {ticker:&#x27;SNDK&#x27;,scope:&#x27;Candidate&#x27;,close:1766.64,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收於 $1,835–$1,900 以上後重新評估&#x27;,wyckoff:&#x27;可能再累積 Phase B：預期高波動整理；突破 $1,835–$1,900 才確認 SOS，$1,500 為支撐。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;YTD 高低幅度過大，近期復甦仍呈 V 形&#x27;,&#x27;最高約 $1,834，但收盤未確認突破&#x27;,&#x27;RSI 約 68，接近短線壓力&#x27;,&#x27;$1,500 為主要支撐&#x27;]},
-    {ticker:&#x27;ONDS&#x27;,scope:&#x27;Candidate&#x27;,close:7.38,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $7.80–$8.00 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（中性偏弱）：預期 $7.00–$7.60 震盪；跌破 $6.80 為 SOW。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $9.99 回落後只形成狹窄整理&#x27;,&#x27;$7.00–$7.60 區間缺少足夠型態觸點&#x27;,&#x27;RSI 約 46，動能中性偏弱&#x27;,&#x27;跌破 $6.80 會重新啟動下行風險&#x27;]},
-    {ticker:&#x27;RIVN&#x27;,scope:&#x27;Candidate&#x27;,close:15.36,pattern:&#x27;下降三角形&#x27;,target:11.6,targetConditional:true,date:&#x27;2026-11-30&#x27;,dateLabel:&#x27;Nov-30&#x27;,upside:-24.5,confidence:66,condition:&#x27;日線跌破 $14.80 才確認&#x27;,wyckoff:&#x27;可能派發 Phase D／待 SOW：跌破 $14.80 預期進入下跌趨勢（Mark-down）；收復 $16.80–$17.00 則否定。&#x27;,analysis:[&#x27;高點持續下降，底部約 $14.80 水平&#x27;,&#x27;現價仍未正式跌破支撐&#x27;,&#x27;跌破後條件式目標約 $11.60&#x27;,&#x27;RSI 約 43，偏弱但未超賣&#x27;,&#x27;收復 $16.80–$17.00 會否定型態&#x27;]},
-    {ticker:&#x27;PLTR&#x27;,scope:&#x27;Candidate&#x27;,close:183.09,pattern:&#x27;上升三角形&#x27;,target:212,targetConditional:true,date:&#x27;2026-11-09&#x27;,dateLabel:&#x27;Nov-09&#x27;,upside:15.8,confidence:70,condition:&#x27;日線收於約 $189 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $189 預期進入 Phase E；跌破 $176 則退回區間。&#x27;,analysis:[&#x27;高點受制於約 $189，低點沿上升支撐墊高&#x27;,&#x27;目前仍低於水平壓力&#x27;,&#x27;突破後條件式目標約 $212&#x27;,&#x27;RSI 約 72，壓力前已偏熱&#x27;,&#x27;跌破 $176 會削弱；$165 以下失效&#x27;]},
-    {ticker:&#x27;NOW&#x27;,scope:&#x27;Candidate&#x27;,close:137.68,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;突破 $149.60 或跌破 $132 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（未定向）：預期 $132–$149.60 震盪；向上為 SOS、向下為 SOW。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期只是 $132–$149.60 整理&#x27;,&#x27;沒有可靠量度邊界&#x27;,&#x27;RSI 約 51，動能中性&#x27;,&#x27;$132 是近期重要支撐&#x27;]},
-    {ticker:&#x27;TEAM&#x27;,scope:&#x27;Candidate&#x27;,close:195.67,pattern:&#x27;上升三角形&#x27;,target:217,targetConditional:true,date:&#x27;2026-10-19&#x27;,dateLabel:&#x27;Oct-19&#x27;,upside:10.9,confidence:84,condition:&#x27;日線收於 $196.60–$199 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $199 預期進入 Markup；跌破 $185 會削弱結構。&#x27;,analysis:[&#x27;高點集中在 $196.60–$199，低點逐步墊高&#x27;,&#x27;最高約 $198.47，但收盤仍在壓力下方&#x27;,&#x27;突破後條件式目標約 $217&#x27;,&#x27;RSI 約 70，突破前已接近過熱&#x27;,&#x27;跌破 $185 會削弱；$176 以下失效&#x27;]}
+    {ticker:&#x27;AMKR&#x27;,scope:&#x27;List 1&#x27;,close:54.59,pattern:&#x27;雙底&#x27;,target:71.5,targetConditional:true,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:31.0,confidence:72,condition:&#x27;日線收於 $58.50 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $58.50 才進入 Phase E；$46 為主要防守。&#x27;,analysis:[&#x27;兩個低點約 $45.50 與 $46.50，形成抬高第二底&#x27;,&#x27;頸線約 $58.50，現價仍未確認突破&#x27;,&#x27;突破後量度目標約 $71.50，尚餘 31.0%&#x27;,&#x27;動能改善但仍在頸線下方&#x27;,&#x27;跌破 $46 會令型態失效&#x27;]},
+    {ticker:&#x27;MU&#x27;,scope:&#x27;List 1&#x27;,close:1096.16,pattern:&#x27;杯柄&#x27;,target:1340,date:&#x27;2026-12-10&#x27;,dateLabel:&#x27;Dec-10&#x27;,upside:22.2,confidence:70,condition:&#x27;已確認&#x27;,wyckoff:&#x27;再累積 Phase E／Markup：預期趨勢延續；先留意 $1,025–$1,040 回測。&#x27;,analysis:[&#x27;杯底約 $737.88，右側已回到前高區&#x27;,&#x27;已突破約 $1,025–$1,040 柄部壓力&#x27;,&#x27;量度目標約 $1,340，尚餘 22.2%&#x27;,&#x27;動能強但進入短線高檔&#x27;,&#x27;跌回 $920 以下會破壞柄部結構&#x27;]},
+    {ticker:&#x27;MRVL&#x27;,scope:&#x27;List 1&#x27;,close:262.36,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-11-20&#x27;,dateLabel:&#x27;Nov-20&#x27;,upside:29.6,confidence:72,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：SOS 後預期續升；可能先 Back-up 測試 $245–$250。&#x27;,analysis:[&#x27;左肩約 $185、頭部約 $164、右肩約 $205&#x27;,&#x27;已突破約 $245–$250 的斜向頸線區&#x27;,&#x27;量度目標約 $340，尚餘 29.6%&#x27;,&#x27;短線已進入高檔&#x27;,&#x27;跌回 $230 以下會削弱；$205 以下失效&#x27;]},
+    {ticker:&#x27;COHR&#x27;,scope:&#x27;List 1&#x27;,close:310.39,pattern:&#x27;頭肩底&#x27;,target:420,date:&#x27;2026-11-29&#x27;,dateLabel:&#x27;Nov-29&#x27;,upside:35.3,confidence:80,condition:&#x27;已確認（邊際）&#x27;,wyckoff:&#x27;累積 Phase D／SOS：$300–$310 為 Back-up／LPS 驗證區，守穩才進入 Phase E。&#x27;,analysis:[&#x27;頭部約 $220.68，右肩約 $267&#x27;,&#x27;收市僅略高於約 $310 頸線，屬邊際確認&#x27;,&#x27;量度目標約 $420，尚餘 35.3%&#x27;,&#x27;動能高檔，突破後追價風險較高&#x27;,&#x27;跌回 $300 以下會削弱；$267 以下失效&#x27;]},
+    {ticker:&#x27;FTNT&#x27;,scope:&#x27;List 1&#x27;,close:174.26,pattern:&#x27;雙底&#x27;,target:196,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:12.5,confidence:84,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase D／SOS：預期回測 LPS 後再進入 Markup；$172.67 應轉為支撐。&#x27;,analysis:[&#x27;兩個底部均約 $149.67，對稱性清楚&#x27;,&#x27;頸線約 $172.67，Sep-14 確認突破&#x27;,&#x27;量度目標約 $195.67，尚餘 12.5%&#x27;,&#x27;短線動能高檔&#x27;,&#x27;跌回 $172.67 以下會削弱突破可信度&#x27;]},
+    {ticker:&#x27;NOK&#x27;,scope:&#x27;List 1&#x27;,close:10.82,pattern:&#x27;上升三角形&#x27;,target:12.8,targetConditional:true,date:&#x27;2026-11-13&#x27;,dateLabel:&#x27;Nov-13&#x27;,upside:18.3,confidence:82,condition:&#x27;日線收於 $11.05–$11.10 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $11.10 才可望進入 Phase E；跌破 $9.60 轉弱。&#x27;,analysis:[&#x27;高點受制於約 $11.05，低點逐步墊高&#x27;,&#x27;收市 $10.82，尚未確認突破&#x27;,&#x27;突破後條件式目標約 $12.80，尚餘 18.3%&#x27;,&#x27;動能偏強但仍受水平壓力限制&#x27;,&#x27;跌破約 $9.60 的上升支撐會令型態失效&#x27;]},
+    {ticker:&#x27;IREN&#x27;,scope:&#x27;List 1&#x27;,close:48.55,pattern:&#x27;頭肩底&#x27;,target:55,date:&#x27;2026-11-22&#x27;,dateLabel:&#x27;Nov-22&#x27;,upside:13.3,confidence:88,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期高低點續墊高；$42–$43 為關鍵 Back-up 支撐。&#x27;,analysis:[&#x27;左肩約 $34、頭部約 $28.93、右肩約 $36&#x27;,&#x27;已站上約 $42–$43 的斜向頸線&#x27;,&#x27;量度目標約 $55，尚餘 13.3%&#x27;,&#x27;動能高檔，短線回吐風險增加&#x27;,&#x27;跌回 $42 以下會削弱；$36 以下失效&#x27;]},
+    {ticker:&#x27;NBIS&#x27;,scope:&#x27;List 1&#x27;,close:236.12,pattern:&#x27;頭肩底&#x27;,target:247,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:4.6,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：接近量度目標，預期供給與震盪增加。&#x27;,analysis:[&#x27;頭部約 $194，兩側肩部約 $205–$210&#x27;,&#x27;已突破約 $222–$225 的頸線區&#x27;,&#x27;量度目標約 $247，只餘 4.6%&#x27;,&#x27;動能正向但上行空間已收窄&#x27;,&#x27;跌回 $220 以下會削弱；$205 以下失效&#x27;]},
+    {ticker:&#x27;CSCO&#x27;,scope:&#x27;List 1&#x27;,close:106.44,pattern:&#x27;下降楔形&#x27;,target:127,targetConditional:true,date:&#x27;2026-11-15&#x27;,dateLabel:&#x27;Nov-15&#x27;,upside:19.3,confidence:76,condition:&#x27;日線收復 $111.50–$112&#x27;,wyckoff:&#x27;再累積 Phase C／待 Spring：預期先測試 $105–$107 支撐；收復 $112 才形成 SOS。&#x27;,analysis:[&#x27;高低點同步下降並逐漸收斂&#x27;,&#x27;目前仍在楔形內，尚未向上確認&#x27;,&#x27;突破後量度目標約 $127，尚餘 19.3%&#x27;,&#x27;RSI 偏弱，MACD 尚未重返零軸&#x27;,&#x27;跌破 $104 會增加下行風險&#x27;]},
+    {ticker:&#x27;LITE&#x27;,scope:&#x27;List 1&#x27;,close:945.67,pattern:&#x27;頭肩底&#x27;,target:1090,date:&#x27;2026-09-29&#x27;,dateLabel:&#x27;Sep-29&#x27;,upside:15.3,confidence:90,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期趨勢延續；$840 頸線維持為主要支撐。&#x27;,analysis:[&#x27;頭部約 $605，肩部約 $680–$720&#x27;,&#x27;已突破約 $840 的頸線&#x27;,&#x27;目標約 $1,090，尚餘 15.3%&#x27;,&#x27;動能重新轉強，尚未過熱&#x27;,&#x27;跌回 $840 以下會破壞突破結構&#x27;]},
+    {ticker:&#x27;BE&#x27;,scope:&#x27;Candidate&#x27;,close:276.53,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:23.0,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：已越過 $243–$250 SOS 區，預期回測後續升。&#x27;,analysis:[&#x27;夏季低位形成大型底部，頭部約 $160&#x27;,&#x27;已突破約 $243–$250 頸線並出現放量&#x27;,&#x27;量度目標約 $340，尚餘 23.0%&#x27;,&#x27;動能高檔，短線可能先回測頸線&#x27;,&#x27;跌回 $220 以下會明顯削弱結構&#x27;]},
+    {ticker:&#x27;GAP&#x27;,scope:&#x27;Candidate&#x27;,close:21.46,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $22.80 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：預期 $20.50–$22.80 測試供需。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期反彈仍在 $22.80 壓力下&#x27;,&#x27;沒有足夠觸點形成可靠頸線&#x27;,&#x27;動能中性，MACD 柱狀圖仍負值&#x27;,&#x27;$20.50 為近期主要支撐&#x27;]},
+    {ticker:&#x27;NKE&#x27;,scope:&#x27;Candidate&#x27;,close:36.10,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $40 後重新評估&#x27;,wyckoff:&#x27;Mark-down／待止跌：預期弱勢延續；需先出現 Spring 或 SOS 才轉中性。&#x27;,analysis:[&#x27;無可信反轉型態&#x27;,&#x27;價格仍沿下降趨勢運行，近期低位約 $35.35&#x27;,&#x27;尚未形成可量度頸線或突破點&#x27;,&#x27;RSI 與 Stochastic 均在低檔&#x27;,&#x27;跌破 $35.35 會延續下行趨勢&#x27;]},
+    {ticker:&#x27;FIG&#x27;,scope:&#x27;Candidate&#x27;,close:21.80,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $25 後重新評估&#x27;,wyckoff:&#x27;Mark-down／待止跌：供給仍主導，預期先尋找需求區。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;YTD 維持高低點下移&#x27;,&#x27;沒有可靠量度邊界&#x27;,&#x27;RSI 偏弱且 Stochastic 超賣&#x27;,&#x27;跌破近期低位會延續下行風險&#x27;]},
+    {ticker:&#x27;ACHR&#x27;,scope:&#x27;Candidate&#x27;,close:5.69,pattern:&#x27;雙底（歷史已完成）&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:80,condition:&#x27;目前無新前瞻型態&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：守住 $5.20 並出現 SOS 才轉強。&#x27;,analysis:[&#x27;歷史底部約 $4.35、$4.48，原頸線約 $5.45&#x27;,&#x27;Aug-06 突破後最高升至約 $7.29&#x27;,&#x27;歷史 $6.56／Aug-27 目標已完成，不能順延&#x27;,&#x27;目前動能中性，MACD 仍在零軸下&#x27;,&#x27;失守 $5.20 會進一步轉弱&#x27;]},
+    {ticker:&#x27;INTC&#x27;,scope:&#x27;Candidate&#x27;,close:123.86,pattern:&#x27;雙底&#x27;,target:127,date:&#x27;2026-11-04&#x27;,dateLabel:&#x27;Nov-04&#x27;,upside:2.5,confidence:74,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：接近目標，預期上行速度放慢。&#x27;,analysis:[&#x27;第一底約 $81.79，第二底約 $87.74&#x27;,&#x27;已突破約 $104.16 的頸線&#x27;,&#x27;量度目標約 $127，只餘 2.5%&#x27;,&#x27;RSI 與 Stochastic 均過熱&#x27;,&#x27;跌回 $104 以下會削弱；$87.74 以下失效&#x27;]},
+    {ticker:&#x27;AVGO&#x27;,scope:&#x27;Candidate&#x27;,close:364.54,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $378–$390 後重新評估&#x27;,wyckoff:&#x27;可能再累積 Phase B：收復 $378–$390 才形成 SOS，跌破 $335.82 轉弱。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $335.82 反彈，但仍未收復主要壓力&#x27;,&#x27;尚未形成可量度頸線或突破點&#x27;,&#x27;動能中性，MACD 負值但柱狀圖改善&#x27;,&#x27;跌破 $335.82 會否定目前反彈&#x27;]},
+    {ticker:&#x27;SNDK&#x27;,scope:&#x27;Candidate&#x27;,close:1887.04,pattern:&#x27;上升三角形&#x27;,target:2500,targetConditional:true,date:&#x27;2026-11-06&#x27;,dateLabel:&#x27;Nov-06&#x27;,upside:32.5,confidence:72,condition:&#x27;日線收於 $1,900 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $1,900 才確認 Phase E；$1,500 為主要支撐。&#x27;,analysis:[&#x27;低點由約 $1,200、$1,450 逐步墊高&#x27;,&#x27;上方壓力集中在 $1,835–$1,900，尚未有效站穩&#x27;,&#x27;突破後條件式目標約 $2,500，尚餘 32.5%&#x27;,&#x27;動能已進入高檔，突破前不宜追價&#x27;,&#x27;$1,500 為主要失效支撐&#x27;]},
+    {ticker:&#x27;ONDS&#x27;,scope:&#x27;Candidate&#x27;,close:7.72,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $8.00 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（中性）：預期 $7.00–$8.00 震盪；跌破 $6.80 為 SOW。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $9.99 回落後維持寬幅整理&#x27;,&#x27;$7.00–$8.00 區間缺少足夠型態觸點&#x27;,&#x27;動能中性，MACD 柱狀圖微幅轉正&#x27;,&#x27;跌破 $6.80 會重新啟動下行風險&#x27;]},
+    {ticker:&#x27;RIVN&#x27;,scope:&#x27;Candidate&#x27;,close:15.14,pattern:&#x27;下降三角形&#x27;,target:11.6,targetConditional:true,date:&#x27;2026-11-30&#x27;,dateLabel:&#x27;Nov-30&#x27;,upside:-23.4,confidence:66,condition:&#x27;日線跌破 $14.80 才確認&#x27;,wyckoff:&#x27;可能派發 Phase D／待 SOW：跌破 $14.80 預期進入 Mark-down；收復 $17 否定。&#x27;,analysis:[&#x27;高點持續下降，底部約 $14.80 水平&#x27;,&#x27;現價仍未正式跌破支撐&#x27;,&#x27;跌破後條件式目標約 $11.60&#x27;,&#x27;RSI 偏弱且 Stochastic 低檔&#x27;,&#x27;收復 $16.80–$17.00 會否定型態&#x27;]},
+    {ticker:&#x27;PLTR&#x27;,scope:&#x27;Candidate&#x27;,close:184.99,pattern:&#x27;上升三角形&#x27;,target:212,targetConditional:true,date:&#x27;2026-11-09&#x27;,dateLabel:&#x27;Nov-09&#x27;,upside:14.6,confidence:70,condition:&#x27;日線收於約 $189 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $189 才進入 Phase E；跌破 $176 退回區間。&#x27;,analysis:[&#x27;高點受制於約 $189，低點沿上升支撐墊高&#x27;,&#x27;目前仍低於水平壓力&#x27;,&#x27;突破後條件式目標約 $212，尚餘 14.6%&#x27;,&#x27;動能中性，MACD 尚未重新金叉&#x27;,&#x27;跌破 $176 會削弱；$165 以下失效&#x27;]},
+    {ticker:&#x27;NOW&#x27;,scope:&#x27;Candidate&#x27;,close:137.00,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;突破 $149.60 或跌破 $132 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（未定向）：預期 $132–$149.60 震盪。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期仍在 $132–$149.60 整理&#x27;,&#x27;杯柄假設深度過大，暫不採用量度目標&#x27;,&#x27;動能中性，MACD 柱狀圖仍偏弱&#x27;,&#x27;$132 是近期重要支撐&#x27;]},
+    {ticker:&#x27;TEAM&#x27;,scope:&#x27;Candidate&#x27;,close:188.65,pattern:&#x27;上升三角形&#x27;,target:217,targetConditional:true,date:&#x27;2026-10-19&#x27;,dateLabel:&#x27;Oct-19&#x27;,upside:15.0,confidence:84,condition:&#x27;日線收於 $196.60–$199 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $199 才進入 Markup；跌破 $185 削弱。&#x27;,analysis:[&#x27;高點集中在 $196.60–$199，低點逐步墊高&#x27;,&#x27;盤中觸及壓力後收回其下，尚未確認&#x27;,&#x27;突破後條件式目標約 $217，尚餘 15.0%&#x27;,&#x27;動能中性，MACD 仍低於訊號線&#x27;,&#x27;跌破 $185 會削弱；$176 以下失效&#x27;]}
   ];
 
-  const labels = {ticker:&#x27;股票代號&#x27;,scope:&#x27;清單&#x27;,close:&#x27;收盤價&#x27;,pattern:&#x27;候選型態&#x27;,target:&#x27;推估價格&#x27;,date:&#x27;推估日期&#x27;,upside:&#x27;推估幅度&#x27;,confidence:&#x27;信心&#x27;,momentum:&#x27;動能狀態&#x27;,action:&#x27;技術處置&#x27;,condition:&#x27;確認條件&#x27;,wyckoff:&#x27;Wyckoff 階段／預期行為&#x27;,analysis:&#x27;技術分析摘要&#x27;};
+  const changedFields = {
+    AMKR:[&#x27;ticker&#x27;],
+    BE:[&#x27;ticker&#x27;],
+    GAP:[&#x27;ticker&#x27;],
+    NKE:[&#x27;ticker&#x27;],
+    FIG:[&#x27;ticker&#x27;],
+    LITE:[&#x27;momentum&#x27;,&#x27;action&#x27;],
+    COHR:[&#x27;pattern&#x27;,&#x27;momentum&#x27;,&#x27;action&#x27;,&#x27;wyckoff&#x27;],
+    CSCO:[&#x27;pattern&#x27;,&#x27;action&#x27;,&#x27;wyckoff&#x27;],
+    SNDK:[&#x27;pattern&#x27;,&#x27;target&#x27;,&#x27;date&#x27;,&#x27;upside&#x27;,&#x27;confidence&#x27;,&#x27;momentum&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;],
+    PLTR:[&#x27;momentum&#x27;],
+    TEAM:[&#x27;momentum&#x27;]
+  };
+  const changedClass = (row, field) =&gt; (changedFields[row.ticker] || []).includes(field) ? &#x27;changed-cell&#x27; : &#x27;&#x27;;
+
+  const labels = {ticker:&#x27;股票代號&#x27;,close:&#x27;收市價&#x27;,pattern:&#x27;型態／確認&#x27;,target:&#x27;推估價格&#x27;,date:&#x27;推估日期&#x27;,upside:&#x27;推估幅度&#x27;,confidence:&#x27;信心&#x27;,momentum:&#x27;動能狀態&#x27;,action:&#x27;技術處置&#x27;,wyckoff:&#x27;Wyckoff 階段／預期行為&#x27;,analysis:&#x27;技術分析摘要&#x27;};
   const money = value =&gt; value == null ? &#x27;—&#x27; : &#x27;$&#x27; + value.toLocaleString(&#x27;en-US&#x27;, {maximumFractionDigits: 2});
   const numericKeys = new Set([&#x27;close&#x27;,&#x27;target&#x27;,&#x27;upside&#x27;,&#x27;confidence&#x27;]);
   const indicatorData = {
-    MU:{rsi:61.2,k:87.3,d:74.0,macd:16.64,signal:12.10,hist:4.54,histPrev:0.37},
-    MRVL:{rsi:62.4,k:93.7,d:90.3,macd:5.64,signal:2.76,hist:2.87,histPrev:1.69},
-    FTNT:{rsi:62.3,k:96.4,d:85.4,macd:3.68,signal:2.21,hist:1.47,histPrev:1.32},
-    NOK:{rsi:56.8,k:85.9,d:73.6,macd:0.08,signal:0.00,hist:0.07,histPrev:0.04},
-    IREN:{rsi:60.1,k:85.4,d:75.6,macd:1.15,signal:0.67,hist:0.48,histPrev:0.35},
-    NBIS:{rsi:55.4,k:63.4,d:50.0,macd:1.29,signal:0.90,hist:0.39,histPrev:-0.61},
-    CSCO:{rsi:50.9,k:84.4,d:61.5,macd:-0.96,signal:-1.29,hist:0.33,histPrev:0.20},
-    LITE:{rsi:55.9,k:65.2,d:51.7,macd:17.34,signal:17.64,hist:-0.30,histPrev:-3.51},
-    COHR:{rsi:57.1,k:85.4,d:83.7,macd:0.29,signal:-4.51,hist:4.79,histPrev:3.49},
-    ACHR:{rsi:46.1,k:36.9,d:29.0,macd:-0.10,signal:-0.05,hist:-0.05,histPrev:-0.07},
-    INTC:{rsi:70.9,k:92.4,d:90.5,macd:3.69,signal:1.13,hist:2.56,histPrev:1.70},
-    AVGO:{rsi:48.6,k:72.8,d:53.3,macd:-8.21,signal:-8.96,hist:0.76,histPrev:-0.37},
-    SNDK:{rsi:59.8,k:79.5,d:74.4,macd:46.38,signal:35.57,hist:10.81,histPrev:4.96},
-    ONDS:{rsi:42.8,k:41.2,d:35.7,macd:-0.2794,signal:-0.2794,hist:0.00003,histPrev:-0.0160},
-    RIVN:{rsi:44.6,k:26.8,d:21.2,macd:-0.22,signal:-0.14,hist:-0.08,histPrev:-0.09},
-    PLTR:{rsi:61.1,k:84.3,d:63.1,macd:3.84,signal:4.42,hist:-0.58,histPrev:-1.20},
-    NOW:{rsi:55.0,k:42.4,d:37.0,macd:3.83,signal:4.81,hist:-0.98,histPrev:-0.97},
-    TEAM:{rsi:67.7,k:88.0,d:78.7,macd:11.96,signal:13.62,hist:-1.67,histPrev:-1.92}
+    AMKR:{rsi:57.0,k:89.8,d:67.2,macd:-0.819,signal:-1.812,hist:0.993,histPrev:0.717},
+    MU:{rsi:66.1,k:89.2,d:71.3,macd:24.774,signal:14.639,hist:10.135,histPrev:4.537},
+    MRVL:{rsi:64.0,k:93.5,d:86.9,macd:7.462,signal:3.705,hist:3.757,histPrev:2.873},
+    COHR:{rsi:53.7,k:84.9,d:81.0,macd:1.353,signal:-3.334,hist:4.688,histPrev:4.793},
+    FTNT:{rsi:61.1,k:87.7,d:85.2,macd:3.976,signal:2.561,hist:1.415,histPrev:1.475},
+    NOK:{rsi:55.2,k:78.1,d:69.7,macd:0.100,signal:0.021,hist:0.079,histPrev:0.074},
+    IREN:{rsi:62.3,k:87.0,d:75.9,macd:1.433,signal:0.820,hist:0.613,histPrev:0.479},
+    NBIS:{rsi:56.6,k:60.0,d:49.0,macd:2.393,signal:1.199,hist:1.193,histPrev:0.387},
+    CSCO:{rsi:40.8,k:51.2,d:49.5,macd:-1.174,signal:-1.263,hist:0.090,histPrev:0.330},
+    LITE:{rsi:55.0,k:60.0,d:52.6,macd:18.897,signal:17.901,hist:0.996,histPrev:-0.306},
+    BE:{rsi:60.6,k:81.6,d:83.0,macd:13.934,signal:11.390,hist:2.544,histPrev:2.908},
+    GAP:{rsi:53.3,k:41.2,d:28.0,macd:0.055,signal:0.141,hist:-0.087,histPrev:-0.140},
+    NKE:{rsi:37.5,k:14.0,d:10.5,macd:-1.152,signal:-1.104,hist:-0.048,histPrev:-0.091},
+    FIG:{rsi:38.7,k:12.7,d:14.6,macd:-0.802,signal:-0.466,hist:-0.337,histPrev:-0.332},
+    ACHR:{rsi:51.8,k:40.5,d:29.9,macd:-0.082,signal:-0.057,hist:-0.025,histPrev:-0.055},
+    INTC:{rsi:72.1,k:93.1,d:89.2,macd:4.981,signal:1.900,hist:3.082,histPrev:2.557},
+    AVGO:{rsi:50.1,k:69.3,d:50.7,macd:-6.826,signal:-8.510,hist:1.684,histPrev:0.795},
+    SNDK:{rsi:64.7,k:89.9,d:73.2,macd:62.164,signal:40.895,hist:21.269,histPrev:10.810},
+    ONDS:{rsi:49.7,k:53.3,d:38.3,macd:-0.236,signal:-0.271,hist:0.034,histPrev:0.000},
+    RIVN:{rsi:42.4,k:16.8,d:18.9,macd:-0.237,signal:-0.161,hist:-0.076,histPrev:-0.075},
+    PLTR:{rsi:62.5,k:78.8,d:63.5,macd:4.315,signal:4.402,hist:-0.086,histPrev:-0.582},
+    NOW:{rsi:54.2,k:35.8,d:37.4,macd:3.532,signal:4.558,hist:-1.026,histPrev:-0.982},
+    TEAM:{rsi:60.5,k:72.3,d:74.8,macd:11.133,signal:13.123,hist:-1.990,histPrev:-1.665}
   };
   const optionsData = {
-    NBIS:{asOf:&#x27;Sep-22 10:56 PT 盤中&#x27;,sameSession:false,spot:234.67,weekExpiry:&#x27;Sep-25&#x27;,weekIv:90.04,weekLow:221.04,weekHigh:248.30,nextExpiry:&#x27;Oct-02&#x27;,nextIv:83.42,nextLow:210.64,nextHigh:258.70,putWall:220,gammaFlip:218.12,callWall:240,twoSeriesCallWall:250,regime:&#x27;現價高於 Gamma Flip，正 Gamma／牆位磁吸&#x27;},
-    SNDK:{asOf:&#x27;Sep-22 10:55 PT 盤中&#x27;,sameSession:false,spot:1895.70,weekExpiry:&#x27;Sep-25&#x27;,weekIv:87.83,weekLow:1782.41,weekHigh:2008.99,nextExpiry:&#x27;Oct-02&#x27;,nextIv:84.93,nextLow:1691.64,nextHigh:2099.77,callWall:2000,regime:&#x27;現價低於本週 Call Wall；Flip／Put Wall 未核對&#x27;}
+    NBIS:{asOf:&#x27;Sep-22 10:56 PT 盤中&#x27;,sameSession:true,spot:234.67,weekExpiry:&#x27;Sep-25&#x27;,weekIv:90.04,weekLow:221.04,weekHigh:248.30,nextExpiry:&#x27;Oct-02&#x27;,nextIv:83.42,nextLow:210.64,nextHigh:258.70,putWall:220,gammaFlip:218.12,callWall:240,twoSeriesCallWall:250,regime:&#x27;現價高於 Gamma Flip，正 Gamma／牆位磁吸&#x27;},
+    SNDK:{asOf:&#x27;Sep-22 10:55 PT 盤中&#x27;,sameSession:true,spot:1895.70,weekExpiry:&#x27;Sep-25&#x27;,weekIv:87.83,weekLow:1782.41,weekHigh:2008.99,nextExpiry:&#x27;Oct-02&#x27;,nextIv:84.93,nextLow:1691.64,nextHigh:2099.77,callWall:2000,regime:&#x27;現價低於本週 Call Wall；Flip／Put Wall 未核對&#x27;}
   };
   const momentumFor = indicator =&gt; {
     if (!indicator) return {label:&#x27;未判定&#x27;, key:&#x27;neutral&#x27;};
@@ -1595,20 +1620,18 @@ html&gt;body{padding:0}&lt;/style&gt;
       );
       body.innerHTML = visibleRows.length ? visibleRows.slice().sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
       &lt;tr data-ticker=&quot;${row.ticker}&quot;&gt;
-        &lt;td data-field=&quot;ticker&quot; data-label=&quot;股票代號&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;scope&quot; data-label=&quot;清單&quot;&gt;${row.scope}&lt;/td&gt;
-        &lt;td data-field=&quot;close&quot; data-label=&quot;收盤價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
-        &lt;td data-field=&quot;pattern&quot; data-label=&quot;候選型態&quot;&gt;${row.pattern}&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[0]}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;target&quot; data-label=&quot;推估價格&quot; class=&quot;numeric&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td data-field=&quot;date&quot; data-label=&quot;推估日期&quot; class=&quot;text-nowrap&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
-        &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&lt;span class=&quot;cell-note text-small&quot;&gt;無有效前瞻目標&lt;/span&gt;&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%&lt;span class=&quot;cell-note text-small&quot;&gt;${row.upside &lt; 0 ? `下行目標約 ${money(row.target)}，相對幅度 ${row.upside.toFixed(1)}%` : `量度目標約 ${money(row.target)}，尚餘 ${row.upside.toFixed(1)}%`}&lt;/span&gt;`}&lt;/td&gt;
-        &lt;td data-field=&quot;confidence&quot; data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
-        &lt;td data-field=&quot;momentum&quot; data-label=&quot;動能狀態&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;span class=&quot;momentum-evidence text-small&quot;&gt;${momentumEvidence(row)}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;span class=&quot;cell-note text-small wyckoff-${row.wyckoffKey}&quot;&gt;Wyckoff ${row.wyckoffLabel}：${row.wyckoffStage}&lt;/span&gt;${optionsEvidence(row)}&lt;/td&gt;
-        &lt;td data-field=&quot;condition&quot; data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;wyckoff&quot; data-label=&quot;Wyckoff 階段／預期行為&quot;&gt;${row.wyckoff}&lt;/td&gt;
-        &lt;td data-field=&quot;analysis&quot; data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row)}&lt;/td&gt;
-      &lt;/tr&gt;`).join(&#x27;&#x27;) : &#x27;&lt;tr&gt;&lt;td colspan=&quot;13&quot; class=&quot;empty-row&quot;&gt;沒有符合目前組合的股票。&lt;/td&gt;&lt;/tr&gt;&#x27;;
+        &lt;td data-field=&quot;ticker&quot; data-label=&quot;股票代號&quot; class=&quot;${changedClass(row,&#x27;ticker&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;close&quot; data-label=&quot;收市價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
+        &lt;td data-field=&quot;pattern&quot; data-label=&quot;型態／確認&quot; class=&quot;${changedClass(row,&#x27;pattern&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.pattern}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[0]}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;&lt;strong&gt;${row.condition}&lt;/strong&gt;&lt;br&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;target&quot; data-label=&quot;推估價格&quot; class=&quot;numeric ${changedClass(row,&#x27;target&#x27;)}&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
+        &lt;td data-field=&quot;date&quot; data-label=&quot;推估日期&quot; class=&quot;text-nowrap ${changedClass(row,&#x27;date&#x27;)}&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
+        &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric ${changedClass(row,&#x27;upside&#x27;)}&quot;&gt;${row.upside == null ? &#x27;—&lt;span class=&quot;cell-note text-small&quot;&gt;無有效前瞻目標&lt;/span&gt;&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%&lt;span class=&quot;cell-note text-small&quot;&gt;${row.upside &lt; 0 ? `下行目標約 ${money(row.target)}，相對幅度 ${row.upside.toFixed(1)}%` : `量度目標約 ${money(row.target)}，尚餘 ${row.upside.toFixed(1)}%`}&lt;/span&gt;`}&lt;/td&gt;
+        &lt;td data-field=&quot;confidence&quot; data-label=&quot;信心&quot; class=&quot;numeric ${changedClass(row,&#x27;confidence&#x27;)}&quot;&gt;${row.confidence}%&lt;/td&gt;
+        &lt;td data-field=&quot;momentum&quot; data-label=&quot;動能狀態&quot; class=&quot;${changedClass(row,&#x27;momentum&#x27;)}&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;span class=&quot;momentum-evidence text-small&quot;&gt;${momentumEvidence(row)}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot; class=&quot;${changedClass(row,&#x27;action&#x27;)}&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;span class=&quot;cell-note text-small wyckoff-${row.wyckoffKey}&quot;&gt;Wyckoff ${row.wyckoffLabel}：${row.wyckoffStage}&lt;/span&gt;${optionsEvidence(row)}&lt;/td&gt;
+        &lt;td data-field=&quot;wyckoff&quot; data-label=&quot;Wyckoff 階段／預期行為&quot; class=&quot;${changedClass(row,&#x27;wyckoff&#x27;)}&quot;&gt;${row.wyckoff}&lt;/td&gt;
+        &lt;td data-field=&quot;analysis&quot; data-label=&quot;技術分析摘要&quot; class=&quot;${changedClass(row,&#x27;analysis&#x27;)}&quot;&gt;${analysisHtml(row)}&lt;/td&gt;
+      &lt;/tr&gt;`).join(&#x27;&#x27;) : &#x27;&lt;tr&gt;&lt;td colspan=&quot;11&quot; class=&quot;empty-row&quot;&gt;沒有符合目前組合的股票。&lt;/td&gt;&lt;/tr&gt;&#x27;;
 
       group.querySelectorAll(&#x27;th[data-key]&#x27;).forEach(th =&gt; {
       const active = th.dataset.key === sortKey;
@@ -1671,7 +1694,7 @@ html&gt;body{padding:0}&lt;/style&gt;
           option.classList.toggle(&#x27;btn-ghost&#x27;, !active);
           option.setAttribute(&#x27;aria-pressed&#x27;, active ? &#x27;true&#x27; : &#x27;false&#x27;);
         });
-        if (view === &#x27;decision&#x27; &amp;&amp; [&#x27;close&#x27;,&#x27;target&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;].includes(sortKey)) {
+        if (view === &#x27;decision&#x27; &amp;&amp; [&#x27;target&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;].includes(sortKey)) {
           sortKey = &#x27;action&#x27;;
           direction = 1;
         }
