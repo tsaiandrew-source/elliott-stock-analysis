@@ -1104,7 +1104,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     &lt;details class=&quot;logic-note text-small&quot;&gt;
       &lt;summary&gt;欄位說明與判定規則&lt;/summary&gt;
       &lt;p&gt;&lt;strong&gt;動能：&lt;/strong&gt;採日線 RSI(14)、Stochastic(14,3) 與 MACD(12,26,9)。RSI ≥ 70，或 %K ≥ 80 且 RSI ≥ 60，列「超買／過熱」；RSI ≤ 30，或 %K ≤ 20 且 RSI ≤ 40，列「超賣」；RSI ≥ 55、%K ≥ %D、MACD 線 ≥ 訊號線，列「偏強」；RSI &amp;lt; 45 且 MACD 線 &amp;lt; 訊號線，列「偏弱」；其餘列「中性」。&lt;/p&gt;
-      &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，且非過熱／偏弱／超賣，同時 %K ≥ %D、MACD 線 ≥ 訊號線、柱狀圖 ≥ 0；下行目標列「規避」；無新前瞻型態、RSI &amp;lt; 50、MACD 線低於零軸且柱狀圖 &amp;lt; 0 列「不宜」；其餘列「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;Wyckoff：&lt;/strong&gt;累積／再累積 Phase D–E、SOS、LPS 或 Markup 視為結構支持；Phase B、待判定或未定向視為中性；已確認的派發／再派發 Phase D–E、SOW、LPSY 或 Mark-down 視為結構風險。古典型態與 Wyckoff 結構衝突時降為「觀望」。&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，Wyckoff 結構支持，且非過熱／偏弱／超賣，同時 %K ≥ %D、MACD 線 ≥ 訊號線、柱狀圖 ≥ 0；下行目標或已確認的 Wyckoff 派發風險列「規避」；無新前瞻型態、RSI &amp;lt; 50、MACD 線低於零軸且柱狀圖 &amp;lt; 0，且 Wyckoff 未提供正面支持時列「不宜」；其餘列「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
     &lt;/details&gt;
     &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：技術處置（優先順序）&lt;/p&gt;
     &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;全部清單排序控制&quot;&gt;
@@ -1278,6 +1279,9 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .filter-chip.active.action-unsuitable { border-color: var(--status-red); box-shadow: inset 0 0 0 1px var(--status-red); }
   #moomoo-sortable-analysis .filter-chip.active.momentum-neutral { border-color: var(--status-gray); box-shadow: inset 0 0 0 1px var(--status-gray); }
   #moomoo-sortable-analysis .filter-chip.active.momentum-oversold { border-color: var(--status-cyan); box-shadow: inset 0 0 0 1px var(--status-cyan); }
+  #moomoo-sortable-analysis .wyckoff-support { color: var(--status-green); }
+  #moomoo-sortable-analysis .wyckoff-neutral { color: var(--muted-foreground); }
+  #moomoo-sortable-analysis .wyckoff-risk { color: var(--status-red); }
   #moomoo-sortable-analysis .filter-summary { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; }
   #moomoo-sortable-analysis .filter-status { font-weight: 500; }
   #moomoo-sortable-analysis .reset-filters:disabled { opacity: 0.45; cursor: default; }
@@ -1345,6 +1349,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     #moomoo-sortable-analysis .view-button,
     #moomoo-sortable-analysis .reset-filters,
     #moomoo-sortable-analysis .mobile-sort-direction { min-height: 44px; }
+    #moomoo-sortable-analysis .mobile-sort-key { min-height: 44px; font-size: 16px; }
     #moomoo-sortable-analysis .mobile-sort-controls { display: flex; margin-top: 0.75rem; }
     #moomoo-sortable-analysis .table-responsive { overflow: visible; }
     #moomoo-sortable-analysis table { display: block; min-width: 0; width: 100%; }
@@ -1447,12 +1452,21 @@ html&gt;body{padding:0}&lt;/style&gt;
     if (rsi &lt; 45 &amp;&amp; macd &lt; signal) return {label:&#x27;偏弱&#x27;, key:&#x27;weak&#x27;};
     return {label:&#x27;中性&#x27;, key:&#x27;neutral&#x27;};
   };
+  const wyckoffFor = row =&gt; {
+    const stage = row.wyckoff.split(&#x27;：&#x27;)[0].trim();
+    if (/Phase B|待判定|未定向/.test(stage)) return {bias:&#x27;neutral&#x27;, key:&#x27;neutral&#x27;, label:&#x27;中性&#x27;, stage, confirmedBearish:false};
+    const confirmedBearish = /(派發|再派發)/.test(stage) &amp;&amp; /(Phase D|Phase E|SOW|LPSY|Mark-down)/.test(stage) &amp;&amp; !/待 SOW|待 LPSY/.test(stage);
+    if (confirmedBearish) return {bias:&#x27;bearish&#x27;, key:&#x27;risk&#x27;, label:&#x27;負面&#x27;, stage, confirmedBearish:true};
+    if (/(派發|再派發|SOW|LPSY|Mark-down)/.test(stage)) return {bias:&#x27;bearish&#x27;, key:&#x27;risk&#x27;, label:&#x27;風險&#x27;, stage, confirmedBearish:false};
+    if (/(累積|再累積)/.test(stage) &amp;&amp; /(Phase D|Phase E|SOS|LPS|Back-up|Markup)/.test(stage)) return {bias:&#x27;bullish&#x27;, key:&#x27;support&#x27;, label:&#x27;支持&#x27;, stage, confirmedBearish:false};
+    return {bias:&#x27;neutral&#x27;, key:&#x27;neutral&#x27;, label:&#x27;中性&#x27;, stage, confirmedBearish:false};
+  };
   const actionFor = row =&gt; {
-    if (row.upside != null &amp;&amp; row.upside &lt; 0) return {label:&#x27;規避&#x27;, key:&#x27;avoid&#x27;};
+    if ((row.upside != null &amp;&amp; row.upside &lt; 0) || row.wyckoffConfirmedBearish) return {label:&#x27;規避&#x27;, key:&#x27;avoid&#x27;};
     const noForwardPattern = row.pattern === &#x27;無&#x27; || row.pattern.includes(&#x27;歷史已完成&#x27;);
-    if (noForwardPattern &amp;&amp; row.rsi &lt; 50 &amp;&amp; row.macd &lt; 0 &amp;&amp; row.hist &lt; 0) return {label:&#x27;不宜&#x27;, key:&#x27;unsuitable&#x27;};
+    if (noForwardPattern &amp;&amp; row.rsi &lt; 50 &amp;&amp; row.macd &lt; 0 &amp;&amp; row.hist &lt; 0 &amp;&amp; row.wyckoffBias !== &#x27;bullish&#x27;) return {label:&#x27;不宜&#x27;, key:&#x27;unsuitable&#x27;};
     const momentumSupports = row.momentum !== &#x27;超買／過熱&#x27; &amp;&amp; row.momentum !== &#x27;偏弱&#x27; &amp;&amp; row.momentum !== &#x27;超賣&#x27; &amp;&amp; row.k &gt;= row.d &amp;&amp; row.macd &gt;= row.signal &amp;&amp; row.hist &gt;= 0;
-    if (row.condition === &#x27;已確認&#x27; &amp;&amp; row.confidence &gt;= 75 &amp;&amp; row.upside &gt; 5 &amp;&amp; momentumSupports) return {label:&#x27;確認&#x27;, key:&#x27;confirm&#x27;};
+    if (row.condition === &#x27;已確認&#x27; &amp;&amp; row.confidence &gt;= 75 &amp;&amp; row.upside &gt; 5 &amp;&amp; row.wyckoffBias === &#x27;bullish&#x27; &amp;&amp; momentumSupports) return {label:&#x27;確認&#x27;, key:&#x27;confirm&#x27;};
     return {label:&#x27;觀望&#x27;, key:&#x27;watch&#x27;};
   };
   const mergedRows = (() =&gt; {
@@ -1465,7 +1479,8 @@ html&gt;body{padding:0}&lt;/style&gt;
     return Array.from(byTicker.values(), row =&gt; {
       const enriched = {...row, scope:row.lists.join(&#x27;／&#x27;), ...indicatorData[row.ticker]};
       const momentum = momentumFor(enriched);
-      const withMomentum = {...enriched, momentum:momentum.label, momentumKey:momentum.key};
+      const wyckoff = wyckoffFor(enriched);
+      const withMomentum = {...enriched, momentum:momentum.label, momentumKey:momentum.key, wyckoffBias:wyckoff.bias, wyckoffKey:wyckoff.key, wyckoffLabel:wyckoff.label, wyckoffStage:wyckoff.stage, wyckoffConfirmedBearish:wyckoff.confirmedBearish};
       const action = actionFor(withMomentum);
       return {...withMomentum, action:action.label, actionKey:action.key};
     });
@@ -1556,7 +1571,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&lt;span class=&quot;cell-note text-small&quot;&gt;無有效前瞻目標&lt;/span&gt;&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%&lt;span class=&quot;cell-note text-small&quot;&gt;${row.upside &lt; 0 ? `下行目標約 ${money(row.target)}，相對幅度 ${row.upside.toFixed(1)}%` : `量度目標約 ${money(row.target)}，尚餘 ${row.upside.toFixed(1)}%`}&lt;/span&gt;`}&lt;/td&gt;
         &lt;td data-field=&quot;confidence&quot; data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
         &lt;td data-field=&quot;momentum&quot; data-label=&quot;動能狀態&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;span class=&quot;momentum-evidence text-small&quot;&gt;${momentumEvidence(row)}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;span class=&quot;cell-note text-small wyckoff-${row.wyckoffKey}&quot;&gt;Wyckoff ${row.wyckoffLabel}：${row.wyckoffStage}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;condition&quot; data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;wyckoff&quot; data-label=&quot;Wyckoff 階段／預期行為&quot;&gt;${row.wyckoff}&lt;/td&gt;
         &lt;td data-field=&quot;analysis&quot; data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row)}&lt;/td&gt;
