@@ -1,7 +1,291 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-22T12:50:03.221Z",
+  "generatedAt": "2026-09-22T18:50:02.504Z",
   "records": [
+    {
+      "id": "daily-2026-09-22-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-22",
+      "timezone": "America/Los_Angeles",
+      "status": "complete",
+      "revision": 1,
+      "publishedAt": "2026-09-22T11:34:50-07:00",
+      "sourceCutoffAt": "2026-09-22T11:34:50-07:00",
+      "retrievedAt": "2026-09-22T11:34:50-07:00",
+      "updatedAt": "2026-09-22T18:34:50Z",
+      "title": "午間訊號｜2026-09-22",
+      "summary": "晨間主線只得到一半確認：油價仍低於100美元、Nasdaq續創盤中新高，但Brent自98美元下方反彈至約99.66美元，S&P 500僅漲約0.1%、道瓊跌約0.3%，銀行與能源股拖累，市場寬度沒有接棒。10年期美債殖利率約4.96%，也高於晨間約4.93%；Williams與Jefferson的正式講稿聚焦市場結構、discount window與流動性韌性，沒有強化10月升息路徑，卻也沒有提供利率下行催化。新增的公司訊號是AutoZone獲利優於預期、營收不及預期但股價漲約6.1%，以及Alibaba公布新AI晶片與更大模型路線圖。午間判斷：AI仍能支撐指數，但油價反彈、銀行下跌與長債殖利率黏著，否定了全面風險偏好修復。",
+      "sections": [
+        {
+          "heading": "1. 新變化：原油跌破98美元後反彈，能源降溫沒有晨間看來那麼乾淨",
+          "paragraphs": [
+            "事實：Brent早盤一度跌破98美元，午後前回到約99.66美元。相較晨間約98.23美元，風險溢價先降後收回一部分；能源股因油價仍低於昨日收盤而落後，ConocoPhillips盤中跌約1.7%。",
+            "判斷：市場仍願意交易荷莫茲海峽可能重開與Yanbu替代出口，但尚未把供應正常化當成既定事實。晨間『低於100美元即可擴散風險偏好』的條件只勉強成立，因為油價反彈時，大盤同步失去早盤動能。信心：高。",
+            "資料界線：截至截稿，伊朗重開海峽條件與沙烏地East-West Pipeline恢復仍未見可公開核對的第一手政府或公司文件，維持『僅有二手報導』。",
+            "反證：Brent收盤重新跌回98美元下方，且航空、運輸與小型股同步走強；相反地，若重返100—101美元，晨間的通膨緩和交易會再被削弱。"
+          ],
+          "links": [
+            {
+              "label": "AP午間市場與原油",
+              "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+            },
+            {
+              "label": "Reuters晨間海灣供應與油價",
+              "url": "https://www.marketscreener.com/news/oil-rises-slightly-ahead-of-potential-us-iran-talks-ce785adbd08dff21"
+            }
+          ]
+        },
+        {
+          "heading": "2. 確認：科技續強，但市場寬度沒有改善",
+          "paragraphs": [
+            "事實：截至美東時間13:55附近，Nasdaq約漲0.4%並續創盤中新高，S&P 500約漲0.1%，道瓊約跌0.3%。JPMorgan盤中跌約3.4%，成為S&P 500主要拖累之一；能源股也隨原油回落而偏弱。",
+            "相較晨間：大型科技維持相對強勢的基準情境得到確認，但『油價低於100美元帶動小型股、銀行與週期股接棒』沒有發生。這仍是高權重成長股撐住指數，不是全面風險偏好。",
+            "判斷：Nasdaq創高本身不能證明金融條件改善。銀行在殖利率曲線缺乏明顯變陡時持續下跌，顯示短端高利率與資金成本仍在侵蝕傳導。信心：高。",
+            "反證：收盤前銀行、等權重與小型股翻正，且Nasdaq不靠少數AI權重股維持漲幅。"
+          ],
+          "links": [
+            {
+              "label": "AP午間美股",
+              "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+            },
+            {
+              "label": "AP週一收盤基準",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-3cb34d37f609dde5fb94d695e9665869"
+            }
+          ]
+        },
+        {
+          "heading": "3. 撤回一個晨間風險：Fed講稿沒有強化升息，但長債也沒有得到寬鬆確認",
+          "paragraphs": [
+            "事實：Williams的正式講稿談中央清算、repo與政策工具如何隨市場結構演化；Jefferson聚焦discount window現代化、FHLB協調與以美債作抵押取得即日流動性。兩人都沒有在講稿中提供新的通膨、成長或10月利率路徑指引。",
+            "事實：10年期美債殖利率約4.96%，與週一收盤相近，並高於晨間約4.93%。因此晨間擔心的『官員主動強化升息』沒有實現，但殖利率也沒有因油價回落而持續下降。",
+            "判斷：市場目前把兩場演說讀成金融基礎設施訊號，不是貨幣政策轉向。Jefferson強調discount window可減少壓力時被迫賣債，屬於尾部流動性緩衝，不能等同降息或殖利率上限。信心：高。",
+            "反證：2年期標售需求強、長端跌破4.90%，或官員在問答明確淡化進一步升息；反向則是10年期重新站上5%。"
+          ],
+          "links": [
+            {
+              "label": "Williams正式講稿",
+              "url": "https://www.newyorkfed.org/newsevents/speeches/2026/wil260922"
+            },
+            {
+              "label": "Jefferson正式講稿",
+              "url": "https://www.federalreserve.gov/newsevents/speech/jefferson20260922a.htm"
+            },
+            {
+              "label": "美國公債市場年會官方頁",
+              "url": "https://www.newyorkfed.org/newsevents/events/markets/2026/0922-2026"
+            }
+          ]
+        },
+        {
+          "heading": "4. 新公司訊號：AutoZone獲利勝出靠執行與毛利，不是需求全面加速",
+          "paragraphs": [
+            "事實：AutoZone第四季營收66億美元、年增5.6%；國內同店銷售僅增1.6%，常匯率全公司同店銷售增1.5%。稀釋EPS為56.05美元，高於去年48.71美元。毛利率提高182個基點，其中關稅退款貢獻145個基點、LIFO非現金效果貢獻105個基點，部分被商用客戶占比上升抵銷。",
+            "市場反應：AP報導獲利優於預期、營收不及預期，股價仍漲約6.1%。公司稱季度前八週銷售環境困難、後八週改善，預期新年度三個國家的銷售都加速。",
+            "判斷：這證明高油價與高車齡仍支撐維修需求，但股價反應更偏向毛利與執行勝出，而非消費全面轉強。關稅退款與LIFO效益不可直接外推為永久性需求改善。信心：高。",
+            "反證：後續季度國內同店銷售重新加速且毛利改善不依賴退款／會計效果；若營收持續低於預期，今天漲幅較像短線獲利品質重估。"
+          ],
+          "links": [
+            {
+              "label": "AutoZone官方第四季結果",
+              "url": "https://investors.autozone.com/node/29341/pdf"
+            },
+            {
+              "label": "AP AutoZone價格反應",
+              "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+            }
+          ]
+        },
+        {
+          "heading": "5. 新敘事催化：Alibaba把中國AI競賽從模型推到晶片與資料中心",
+          "paragraphs": [
+            "事實：Alibaba在Apsara Conference公布Zhenwu V900 AI訓練／推論晶片、agentic cloud與手機AI agent平台，並表示下一代Qwen 4正在訓練，目標規模為5兆至10兆參數。這是晨間截稿後可核對的公司原始發布。",
+            "市場反應：香港股市約漲0.2%、上海約漲0.1%；科技題材得到支持，但大盤反應克制。這顯示投資人接受中國本土AI供應鏈加速，卻仍等待中美元首會晤對先進晶片限制與關稅的可執行文本。",
+            "判斷：對全球AI資本支出，這是需求與競爭同時上升：更多資料中心與模型訓練支撐電力、記憶體與網路需求；自研晶片則增加國際GPU供應商在中國的替代風險。信心：中高。",
+            "反證：產品缺乏可驗證出貨、雲端客戶採用或資料中心資本支出；或峰會後科技限制收緊，使路線圖無法轉為產能。"
+          ],
+          "links": [
+            {
+              "label": "Alibaba公司發布（新聞稿）",
+              "url": "https://www.aseangazette.com/newswires/media-outreach/2026/09/22/alibaba-unveils-roadmap-on-full-stack-ai-strategy-from-chips-cloud-infrastructure-models-to-agents/124888/"
+            },
+            {
+              "label": "Reuters Alibaba路線圖與模型規模",
+              "url": "https://www.investing.com/news/stock-market-news/alibaba-plans-ai-model-with-5-trillion-to-10-trillion-parameters-unveils-new-chip-4909839"
+            },
+            {
+              "label": "AP Alibaba與亞洲市場反應",
+              "url": "https://apnews.com/article/b29908e516faff9f5a82b201ba954aab"
+            }
+          ]
+        },
+        {
+          "heading": "相較晨間的新變化",
+          "table": {
+            "columns": [
+              "晨間比較項目",
+              "午間結果",
+              "判讀"
+            ],
+            "rows": [
+              [
+                "Brent能否穩在100美元下",
+                "仍低於100，但自98下方反彈至約99.66",
+                "部分確認；供應風險溢價未完全消失"
+              ],
+              [
+                "Williams／Jefferson是否強化升息",
+                "正式講稿沒有新的利率路徑訊號",
+                "撤回一項下行風險，但不等於轉鴿"
+              ],
+              [
+                "10年期能否續降",
+                "約4.96%，高於晨間約4.93%",
+                "否定利率持續寬鬆"
+              ],
+              [
+                "市場寬度是否接棒",
+                "Nasdaq領先；Dow、銀行與能源偏弱",
+                "未確認全面風險偏好"
+              ],
+              [
+                "企業需求",
+                "AutoZone獲利勝預期、營收低於預期",
+                "執行改善強於需求廣泛加速"
+              ],
+              [
+                "AI敘事",
+                "Alibaba新增晶片、模型與agentic cloud路線圖",
+                "需求與中國替代競爭同步提高"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "午間狀態",
+              "相較晨間"
+            ],
+            "rows": [
+              [
+                "S&P 500",
+                "約+0.1%",
+                "由盤前小漲轉為近乎持平"
+              ],
+              [
+                "Nasdaq",
+                "約+0.4%、盤中新高",
+                "AI主線確認，但仍集中"
+              ],
+              [
+                "Dow／銀行",
+                "Dow約-0.3%；JPM約-3.4%",
+                "市場寬度惡化"
+              ],
+              [
+                "Brent",
+                "約99.66美元",
+                "仍低於100，但自低點明顯反彈"
+              ],
+              [
+                "能源股",
+                "偏弱",
+                "油價較昨收下跌，COP約-1.7%"
+              ],
+              [
+                "10年期美債",
+                "約4.96%",
+                "高於晨間；未確認利率舒緩"
+              ],
+              [
+                "信用",
+                "無足夠新訊號",
+                "不能由Nasdaq創高推定改善"
+              ],
+              [
+                "美元／黃金／加密",
+                "無足夠新訊號",
+                "午間無可靠新變化，不硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "收盤前催化劑與更新後失效條件",
+          "paragraphs": [
+            "第一，Brent收盤能否守在100美元下方；若回到101美元上方，上午的通膨緩和交易失效。第二，10年期能否回到4.93%以下；若重返5%，科技股將重新面對折現率壓力。",
+            "第三，銀行、等權重與小型股是否在最後兩小時改善。若只有Nasdaq創高，全天結論仍是集中型AI交易。第四，財政部2年期標售的官方結果若在截稿後可讀，需用需求與尾差判斷短端升息定價是否獲得確認；截至截稿，未取得足夠可核對的官方結果，不先猜答案。",
+            "第五，美東15:20的CFTC主席Selig與15:35開始的stablecoin／短期融資市場討論，可能影響數位資產與短端市場結構；它們更可能改變金融管道，而非今天的Fed政策路徑。",
+            "更新後基準：Brent維持98.5—100.5美元、10年期維持4.93%—4.99%，Nasdaq小幅領先、S&P近乎持平、銀行落後。偏強路徑需要油價再破98、殖利率低於4.90%，並由銀行與小型股接棒。偏弱路徑是油價重返101以上或10年期突破5%，同時AI權重股回吐。",
+            "原始來源掃描：自晨間05:33 PT後，具市場傳導且可核對的新增原始來源包括Williams、Jefferson與Treasury官員正式講稿、AutoZone財報、Alibaba晶片／模型／雲端路線圖。未發現其他足以改變大盤定價的重大公司申報或監管文件。Philadelphia Fed非製造業與Richmond Fed九月調查的官方可讀結果在截稿時仍未穩定取得，因此不引用二手數字補空白。"
+          ],
+          "links": [
+            {
+              "label": "Treasury官員正式講稿",
+              "url": "https://home.treasury.gov/news/press-releases/sb0633/"
+            },
+            {
+              "label": "美國公債市場年會完整議程",
+              "url": "https://www.newyorkfed.org/newsevents/events/markets/2026/0922-2026"
+            },
+            {
+              "label": "TreasuryDirect標售結果入口",
+              "url": "https://www.treasurydirect.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "AP午間市場與原油",
+          "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+        },
+        {
+          "label": "Reuters晨間海灣供應與油價",
+          "url": "https://www.marketscreener.com/news/oil-rises-slightly-ahead-of-potential-us-iran-talks-ce785adbd08dff21"
+        },
+        {
+          "label": "Williams正式講稿",
+          "url": "https://www.newyorkfed.org/newsevents/speeches/2026/wil260922"
+        },
+        {
+          "label": "Jefferson正式講稿",
+          "url": "https://www.federalreserve.gov/newsevents/speech/jefferson20260922a.htm"
+        },
+        {
+          "label": "Treasury官員正式講稿",
+          "url": "https://home.treasury.gov/news/press-releases/sb0633/"
+        },
+        {
+          "label": "美國公債市場年會官方頁",
+          "url": "https://www.newyorkfed.org/newsevents/events/markets/2026/0922-2026"
+        },
+        {
+          "label": "AutoZone官方第四季結果",
+          "url": "https://investors.autozone.com/node/29341/pdf"
+        },
+        {
+          "label": "Alibaba公司發布（新聞稿）",
+          "url": "https://www.aseangazette.com/newswires/media-outreach/2026/09/22/alibaba-unveils-roadmap-on-full-stack-ai-strategy-from-chips-cloud-infrastructure-models-to-agents/124888/"
+        },
+        {
+          "label": "Reuters Alibaba路線圖",
+          "url": "https://www.investing.com/news/stock-market-news/alibaba-plans-ai-model-with-5-trillion-to-10-trillion-parameters-unveils-new-chip-4909839"
+        },
+        {
+          "label": "AP Alibaba與亞洲市場反應",
+          "url": "https://apnews.com/article/b29908e516faff9f5a82b201ba954aab"
+        },
+        {
+          "label": "TreasuryDirect標售結果入口",
+          "url": "https://www.treasurydirect.gov/auctions/announcements-data-results/announcement-results-press-releases/auction-results/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-22-morning",
       "cadence": "daily",
