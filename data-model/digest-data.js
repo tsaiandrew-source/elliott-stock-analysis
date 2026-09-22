@@ -1,7 +1,303 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-21T23:20:03.517Z",
+  "generatedAt": "2026-09-22T12:50:03.221Z",
   "records": [
+    {
+      "id": "daily-2026-09-22-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-22",
+      "publishedAt": "2026-09-22T05:33:41-07:00",
+      "updatedAt": "2026-09-22T12:33:41Z",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-22T05:33:41-07:00",
+      "retrievedAt": "2026-09-22T05:33:41-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "晨間設定｜2026-09-22",
+      "summary": "隔夜市場把昨日的能源緩和主線再推進一步：Brent跌至約98美元、WTI 11月合約靠近90美元，10年期美債殖利率回到約4.93%。觸發點是兩項尚未有公開原始文件、目前僅有可靠二手報導的進展：伊朗官員稱在美方降低軍事壓力並解除港口封鎖後，可於七日內重開荷莫茲海峽；沙烏地East-West Pipeline據報已重啟，Yanbu出口可能恢復。亞洲與歐洲科技股延續漲勢，但美股期貨僅小幅偏強，顯示昨日Nasdaq創高後，市場需要小型股與信用接棒。Meta Muse的下載與使用熱度提供AI需求的實際驗證，Amazon封鎖其購物存取則提醒：agentic AI的下一個風險不是算力不足，而是平台控制權。今日基準是油價低於100美元、10年期低於5%繼續支撐科技；失效條件是油價重返101—102美元、Williams或Jefferson強化升息路徑，或AI領漲再度縮窄。",
+      "sections": [
+        {
+          "heading": "1. 能源風險出現最具體的降溫訊號，但仍只有二手確認",
+          "paragraphs": [
+            "事實：Brent 11月期貨一度跌至約98.23美元，WTI 11月合約約90.01美元，均觸及9月8日以來低點。Reuters引述一名伊朗高級官員稱，若美國降低軍事壓力並解除伊朗港口封鎖，伊朗可在七日內重開荷莫茲海峽；另有三名知情人士稱，沙烏地已重啟East-West Pipeline，Yanbu港可能於今日恢復出口。",
+            "資料界線：截至截稿，未取得伊朗政府、Saudi Aramco或沙烏地主管機關的公開第一手文件。這兩項進展目前僅有可靠二手報導，不能當成已履行的供應承諾。",
+            "判斷：市場第一次同時看到『談判條件』與『替代出口路線』，因此風險溢價下降比昨日更有結構性。直接傳導是長端殖利率下降、航空與運輸成本壓力緩和、能源股相對落後。信心：中。",
+            "反證：Brent重返101—102美元、Yanbu未恢復裝船、伊朗否認談判授權，或海峽再發生可驗證的重大攻擊。"
+          ],
+          "links": [
+            {
+              "label": "Reuters海灣供應與油價",
+              "url": "https://www.marketscreener.com/news/oil-rises-slightly-ahead-of-potential-us-iran-talks-ce785adbd08dff21"
+            },
+            {
+              "label": "AP隔夜市場與原油",
+              "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+            }
+          ]
+        },
+        {
+          "heading": "2. 全球科技延續強勢，美股卻沒有追價確認",
+          "paragraphs": [
+            "事實：MSCI亞太不含日本指數一度升至兩週高點，韓國科技股盤中漲約2%，台灣股市創高；歐洲STOXX 600早盤上漲約0.5%，半導體領先。日本因假期休市。美股盤前則較克制，S&P與Nasdaq期貨大致只漲約0.1%。",
+            "共識落差：昨日Nasdaq上漲2.3%並創新高，Russell 2000只漲0.5%；隔夜亞洲科技跟進，但美股期貨沒有複製急漲。這代表AI需求敘事仍強，短線價格卻已要求新的基本面或市場寬度證據。",
+            "判斷：今日若科技續強而Russell、等權重與信用不跟，應讀成集中型估值交易；若油價低於100美元同時帶動小型股與週期股，才是全面風險偏好改善。信心：高。",
+            "反證：Nasdaq開高走低、半導體回吐昨日大部分漲幅，或10年期重新站上5%。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球市場與AI主線",
+              "url": "https://in.marketscreener.com/news/tech-stocks-rise-on-renewed-ai-fever-higher-oil-bond-yields-temper-rally-ce785ad8db89f025"
+            },
+            {
+              "label": "Reuters亞洲市場",
+              "url": "https://ae.marketscreener.com/news/tech-rally-boosts-asian-stocks-dollar-firms-on-rate-hike-wagers-ce785adbd080f72c"
+            },
+            {
+              "label": "AP週一美股收盤",
+              "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-3cb34d37f609dde5fb94d695e9665869"
+            }
+          ]
+        },
+        {
+          "heading": "3. Meta Muse把AI需求從資本支出故事推向消費採用",
+          "paragraphs": [
+            "事實：Meta官方將Muse定位為可跨應用執行任務的個人AI代理，運行於獨立安全虛擬機。市場報導顯示Muse升至Apple與Google應用商店免費下載第一，Meta週一收漲11.3%，並帶動Arm、Intel與AMD等AI供應鏈。",
+            "判斷：這是比單純模型發布更重要的需求證據。若高頻使用與任務執行持續，推論量、CPU／GPU、網路與雲端需求可獲得新的消費端支撐。昨日晶片股大漲因此不只是油價交易。信心：中高。",
+            "反向訊號：Axios引述Amazon發言人稱，Amazon已封鎖Muse瀏覽與購買商品，理由包括未授權存取帳戶、資料擷取與交易。這項限制目前沒有Amazon公開第一手公告，僅有發言人二手轉述；但它顯示平台可能為保留客戶關係而限制外部代理。",
+            "反證：Muse排名快速回落、活躍使用無法持續，或更多大型平台限制其存取，將使算力需求從廣泛採用重新變回單一產品熱度。"
+          ],
+          "links": [
+            {
+              "label": "Meta Muse原始公告",
+              "url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/"
+            },
+            {
+              "label": "Reuters Muse與AI市場反應",
+              "url": "https://in.marketscreener.com/news/tech-stocks-rise-on-renewed-ai-fever-higher-oil-bond-yields-temper-rally-ce785ad8db89f025"
+            },
+            {
+              "label": "Axios Amazon限制Muse",
+              "url": "https://www.axios.com/2026/09/21/amazon-meta-muse-ai-agentic-shopping"
+            }
+          ]
+        },
+        {
+          "heading": "4. 油價下降壓低殖利率，但全球升息路徑沒有反轉",
+          "paragraphs": [
+            "事實：10年期美債殖利率早盤約4.93%，較昨日收盤再降約3個基點；美元指數約100.4、接近七週高點後略回落，美元兌日圓約157.14。市場對10月Fed再升息的定價約56%，高於一週前約43.5%。現貨黃金下跌約0.6%至4,319美元附近。",
+            "判斷：油價低於100美元正在降低短期通膨溢價，但美元與黃金顯示市場仍相信主要央行偏鷹。今天10:05 ET的Williams與10:20 ET的Jefferson，會決定4.93%是新平台還是短暫喘息。信心：高。",
+            "反證：兩位官員淡化進一步升息、2年期與10年期殖利率同步下降，而且美元轉弱；相反地，任何對10月升息的明確支持都可能使科技股對油價利多失去敏感度。"
+          ],
+          "links": [
+            {
+              "label": "Reuters殖利率與美元",
+              "url": "https://in.marketscreener.com/news/tech-stocks-rise-on-renewed-ai-fever-higher-oil-bond-yields-temper-rally-ce785ad8db89f025"
+            },
+            {
+              "label": "Reuters黃金市場",
+              "url": "https://in.marketscreener.com/news/gold-muted-as-higher-for-longer-rate-outlook-weighs-ce785adbd080f623"
+            },
+            {
+              "label": "紐約Fed美國公債市場年會議程",
+              "url": "https://www.newyorkfed.org/newsevents/events/markets/2026/0922-2026"
+            }
+          ]
+        },
+        {
+          "heading": "5. 中美峰會提供風險下檔，但尚未提供可計價的政策紅利",
+          "paragraphs": [
+            "事實：中國外交部已正式確認習近平將於9月23日至25日訪美；市場期待關稅休戰延長、稀土供應與AI安全對話。中國與香港AI股隔夜上漲，但中國藍籌與香港大盤漲幅僅約0.2%—0.3%。",
+            "判斷：股市已先計入峰會不破局與正面措辭，卻沒有計入全面協議。對半導體、工業與中國資產而言，真正改變現金流的仍是關稅、關鍵礦產與科技管制的可執行文本。信心：中。",
+            "反證：正式共同框架在峰會前明確降低關稅或出口限制，會使利多擴散；反之，若只有象徵性合作，今日情緒溢價可能在峰會後回吐。"
+          ],
+          "links": [
+            {
+              "label": "中國外交部訪美公告",
+              "url": "https://www.mfa.gov.cn/eng/xw/wsrc/202609/t20260921_12027514.html"
+            },
+            {
+              "label": "中國外交部9月21日記者會",
+              "url": "https://us.china-embassy.gov.cn/eng/fyrth/202609/t20260921_12027763.htm"
+            },
+            {
+              "label": "Reuters亞洲市場與峰會預期",
+              "url": "https://ae.marketscreener.com/news/tech-rally-boosts-asian-stocks-dollar-firms-on-rate-hike-wagers-ce785adbd080f72c"
+            }
+          ]
+        },
+        {
+          "heading": "6. 今日資料不重，但公債市場與企業定價訊號很集中",
+          "paragraphs": [
+            "事實：08:30 ET公布Philadelphia Fed非製造業調查，10:00 ET公布Richmond Fed製造業調查。美國公債市場年會於10:05 ET安排紐約Fed總裁Williams發言，10:20 ET由Fed副主席Jefferson發言，11:05 ET由美國財政部副部長Francis Brooke發言；會議稍後討論TGA現金投入repo、中央清算與數位資產對短期融資市場的影響。",
+            "企業面：AutoZone預定盤前公布財報，10:00 ET舉行電話會議。截至05:33 PT，官方財務頁尚未提供可讀的本季結果。市場將用同店銷售、商業客戶成長與毛利率判斷高油價與高利率下，消費者是延後換車並增加維修，還是連維修支出也開始轉弱。",
+            "判斷：今天最重要的不是單一區域指數，而是Williams與Jefferson是否把需求過熱、能源通膨與公債市場功能連成更鷹的政策敘事。若沒有，油價下降可繼續主導；若有，長端殖利率可能重新奪回定價權。",
+            "反證：區域調查明顯轉弱、AutoZone需求降溫且Fed官員不強化升息，會使殖利率更容易下行；若調查與企業需求皆偏強，則4.93%可能守不住。"
+          ],
+          "links": [
+            {
+              "label": "紐約Fed九月經濟行事曆",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            },
+            {
+              "label": "紐約Fed美國公債市場年會議程",
+              "url": "https://www.newyorkfed.org/newsevents/events/markets/2026/0922-2026"
+            },
+            {
+              "label": "AutoZone官方財報時程",
+              "url": "https://investors.autozone.com/news-releases/news-release-details/autozone-release-fourth-quarter-fiscal-2026-earnings-september"
+            },
+            {
+              "label": "美國財政部暫定標售時程",
+              "url": "https://home.treasury.gov/system/files/221/Tentative-Auction-Schedule.pdf"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "晨間狀態",
+              "判讀"
+            ],
+            "rows": [
+              [
+                "Brent／WTI",
+                "98.23／90.01美元附近",
+                "供應與外交希望降低風險溢價，仍待官方確認"
+              ],
+              [
+                "美國大型科技",
+                "偏強但追價有限",
+                "Muse採用率支撐AI需求，等待開盤後擴散"
+              ],
+              [
+                "美國小型股",
+                "待確認",
+                "昨日明顯落後，今日是市場寬度測試"
+              ],
+              [
+                "亞洲／歐洲科技",
+                "偏強",
+                "跟隨美國AI交易，台灣股市創高"
+              ],
+              [
+                "10年期美債",
+                "約4.93%",
+                "油價緩和支撐，Fed發言決定能否續降"
+              ],
+              [
+                "美元／日圓",
+                "美元偏強／約157.14",
+                "全球升息差與日本政策可信度仍壓日圓"
+              ],
+              [
+                "信用",
+                "無足夠訊號",
+                "不能由科技股與原油單獨推定全面改善"
+              ],
+              [
+                "黃金",
+                "偏弱",
+                "高利率預期壓過地緣避險"
+              ],
+              [
+                "Bitcoin",
+                ">87,000美元",
+                "高貝塔風險偏好延續，但非全面寬鬆"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "今日基準、敏感點與失效條件",
+          "paragraphs": [
+            "基準：Brent維持97—100美元、10年期維持4.90%—4.98%；AI與大型科技保持相對強勢，大盤小幅上漲，Russell與信用只有限改善。",
+            "偏強：Brent在官方或可驗證油流支持下穩定低於98美元，10年期跌破4.90%，Russell、等權重與信用同步跟上；這會把昨日的集中型AI反彈擴大成全面風險偏好修復。",
+            "偏弱：Brent重返101—102美元，或油價續跌但Williams／Jefferson強化10月升息、使10年期重新突破5%；若Meta與半導體同時回吐，代表昨日漲幅主要是短線重估。",
+            "午間比較基準：第一，伊朗與Yanbu消息是否出現第一手確認；第二，Brent能否守在100美元下方；第三，Williams與Jefferson是否支持更快升息；第四，AutoZone與區域調查是否顯示需求韌性；第五，Russell與信用能否跟上科技。",
+            "原始來源掃描：自昨日16:03 PT後，未發現其他足以改變大盤定價、且已形成市場傳導的重大公司申報或監管文件。Meta Muse原始發布已反向核對；Amazon限制Muse目前只有發言人經二手媒體轉述，伊朗與沙烏地供應進展亦尚待第一手文件。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球市場",
+              "url": "https://in.marketscreener.com/news/tech-stocks-rise-on-renewed-ai-fever-higher-oil-bond-yields-temper-rally-ce785ad8db89f025"
+            },
+            {
+              "label": "Reuters海灣供應與油價",
+              "url": "https://www.marketscreener.com/news/oil-rises-slightly-ahead-of-potential-us-iran-talks-ce785adbd08dff21"
+            },
+            {
+              "label": "Meta Muse原始公告",
+              "url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Reuters全球市場",
+          "url": "https://in.marketscreener.com/news/tech-stocks-rise-on-renewed-ai-fever-higher-oil-bond-yields-temper-rally-ce785ad8db89f025"
+        },
+        {
+          "label": "Reuters亞洲市場",
+          "url": "https://ae.marketscreener.com/news/tech-rally-boosts-asian-stocks-dollar-firms-on-rate-hike-wagers-ce785adbd080f72c"
+        },
+        {
+          "label": "Reuters海灣供應與油價",
+          "url": "https://www.marketscreener.com/news/oil-rises-slightly-ahead-of-potential-us-iran-talks-ce785adbd08dff21"
+        },
+        {
+          "label": "AP隔夜市場與原油",
+          "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+        },
+        {
+          "label": "AP週一美股收盤",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-3cb34d37f609dde5fb94d695e9665869"
+        },
+        {
+          "label": "Meta Muse原始公告",
+          "url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/"
+        },
+        {
+          "label": "Axios Amazon限制Muse",
+          "url": "https://www.axios.com/2026/09/21/amazon-meta-muse-ai-agentic-shopping"
+        },
+        {
+          "label": "Reuters黃金市場",
+          "url": "https://in.marketscreener.com/news/gold-muted-as-higher-for-longer-rate-outlook-weighs-ce785adbd080f623"
+        },
+        {
+          "label": "Reuters日圓與Bitcoin",
+          "url": "https://ca.investing.com/news/economy-news/yen-squeezed-as-hawkish-turn-grips-central-banks-4847113"
+        },
+        {
+          "label": "中國外交部訪美公告",
+          "url": "https://www.mfa.gov.cn/eng/xw/wsrc/202609/t20260921_12027514.html"
+        },
+        {
+          "label": "中國外交部9月21日記者會",
+          "url": "https://us.china-embassy.gov.cn/eng/fyrth/202609/t20260921_12027763.htm"
+        },
+        {
+          "label": "紐約Fed九月經濟行事曆",
+          "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+        },
+        {
+          "label": "紐約Fed美國公債市場年會議程",
+          "url": "https://www.newyorkfed.org/newsevents/events/markets/2026/0922-2026"
+        },
+        {
+          "label": "AutoZone官方財報時程",
+          "url": "https://investors.autozone.com/news-releases/news-release-details/autozone-release-fourth-quarter-fiscal-2026-earnings-september"
+        },
+        {
+          "label": "美國財政部暫定標售時程",
+          "url": "https://home.treasury.gov/system/files/221/Tentative-Auction-Schedule.pdf"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-21-close",
       "cadence": "daily",
