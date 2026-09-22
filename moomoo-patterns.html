@@ -1041,7 +1041,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;h2&gt;每日型態決策儀表板&lt;/h2&gt;
       &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍；需要時才展開完整分析。&lt;/p&gt;
     &lt;/div&gt;
-    &lt;p class=&quot;freshness&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 資料截止：2026-09-21 正式收盤&lt;/p&gt;
+    &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 技術資料：2026-09-21 正式收盤&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權資料：2026-09-22 盤中（已核對 NBIS、SNDK；跨日資料只作參考）&lt;/span&gt;&lt;/div&gt;
   &lt;/header&gt;
 
   &lt;section class=&quot;analysis-group&quot; data-scope=&quot;全部清單&quot;&gt;
@@ -1105,7 +1105,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;summary&gt;欄位說明與判定規則&lt;/summary&gt;
       &lt;p&gt;&lt;strong&gt;動能：&lt;/strong&gt;採日線 RSI(14)、Stochastic(14,3) 與 MACD(12,26,9)。RSI ≥ 70，或 %K ≥ 80 且 RSI ≥ 60，列「超買／過熱」；RSI ≤ 30，或 %K ≤ 20 且 RSI ≤ 40，列「超賣」；RSI ≥ 55、%K ≥ %D、MACD 線 ≥ 訊號線，列「偏強」；RSI &amp;lt; 45 且 MACD 線 &amp;lt; 訊號線，列「偏弱」；其餘列「中性」。&lt;/p&gt;
       &lt;p&gt;&lt;strong&gt;Wyckoff：&lt;/strong&gt;累積／再累積 Phase D–E、SOS、LPS 或 Markup 視為結構支持；Phase B、待判定或未定向視為中性；已確認的派發／再派發 Phase D–E、SOW、LPSY 或 Mark-down 視為結構風險。古典型態與 Wyckoff 結構衝突時降為「觀望」。&lt;/p&gt;
-      &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，Wyckoff 結構支持，且非過熱／偏弱／超賣，同時 %K ≥ %D、MACD 線 ≥ 訊號線、柱狀圖 ≥ 0；下行目標或已確認的 Wyckoff 派發風險列「規避」；無新前瞻型態、RSI &amp;lt; 50、MACD 線低於零軸且柱狀圖 &amp;lt; 0，且 Wyckoff 未提供正面支持時列「不宜」；其餘列「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;期權定位：&lt;/strong&gt;使用同一交易日核對的到期週 IV／EM、履約價 OI、Put Wall、Gamma Flip、Call Wall 與兩個到期系列合併 GEX。EM 只表示市場定價幅度，不表示方向；目標明顯超出下週 EM，且同時越過合併 Call Wall，視為期權定位衝突。期權資料可以把「確認」降為「觀望」，不可單獨把「觀望」升為「確認」。缺少資料不作負面判定。&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;技術處置：&lt;/strong&gt;「確認」須型態已確認、信心 ≥ 75%、剩餘上行幅度 &amp;gt; 5%，Wyckoff 結構支持，且非過熱／偏弱／超賣，同時 %K ≥ %D、MACD 線 ≥ 訊號線、柱狀圖 ≥ 0，並且同日已核對的期權定位沒有衝突；下行目標或已確認的 Wyckoff 派發風險列「規避」；無新前瞻型態、RSI &amp;lt; 50、MACD 線低於零軸且柱狀圖 &amp;lt; 0，且 Wyckoff 未提供正面支持時列「不宜」；其餘列「觀望」。這是技術篩選狀態，不是交易指令。&lt;/p&gt;
     &lt;/details&gt;
     &lt;p class=&quot;sort-status text-small&quot; aria-live=&quot;polite&quot;&gt;目前排序：技術處置（優先順序）&lt;/p&gt;
     &lt;div class=&quot;viz-controls mobile-sort-controls&quot; aria-label=&quot;全部清單排序控制&quot;&gt;
@@ -1171,14 +1172,13 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .dashboard-header h2 { margin-bottom: 0.25rem; }
   #moomoo-sortable-analysis .dashboard-purpose { margin: 0; color: var(--muted-foreground); }
   #moomoo-sortable-analysis .freshness {
-    display: inline-flex;
-    gap: 0.4rem;
-    align-items: center;
+    display: grid;
+    gap: 0.15rem;
     margin: 0.2rem 0 0;
-    white-space: nowrap;
     color: var(--muted-foreground);
   }
-  #moomoo-sortable-analysis .freshness span { color: var(--status-green); }
+  #moomoo-sortable-analysis .freshness-dot { color: var(--status-green); }
+  #moomoo-sortable-analysis .freshness-meta { color: var(--muted-foreground); }
   #moomoo-sortable-analysis .decision-overview {
     display: flex;
     flex-wrap: wrap;
@@ -1282,6 +1282,11 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis .wyckoff-support { color: var(--status-green); }
   #moomoo-sortable-analysis .wyckoff-neutral { color: var(--muted-foreground); }
   #moomoo-sortable-analysis .wyckoff-risk { color: var(--status-red); }
+  #moomoo-sortable-analysis .options-evidence { display: block; margin-top: 0.35rem; color: var(--muted-foreground); }
+  #moomoo-sortable-analysis .options-evidence &gt; span { display: block; margin-top: 0.15rem; }
+  #moomoo-sortable-analysis .options-support { color: var(--status-green); }
+  #moomoo-sortable-analysis .options-neutral { color: var(--muted-foreground); }
+  #moomoo-sortable-analysis .options-conflict { color: var(--status-red); }
   #moomoo-sortable-analysis .filter-summary { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; }
   #moomoo-sortable-analysis .filter-status { font-weight: 500; }
   #moomoo-sortable-analysis .reset-filters:disabled { opacity: 0.45; cursor: default; }
@@ -1443,6 +1448,10 @@ html&gt;body{padding:0}&lt;/style&gt;
     NOW:{rsi:55.0,k:42.4,d:37.0,macd:3.83,signal:4.81,hist:-0.98,histPrev:-0.97},
     TEAM:{rsi:67.7,k:88.0,d:78.7,macd:11.96,signal:13.62,hist:-1.67,histPrev:-1.92}
   };
+  const optionsData = {
+    NBIS:{asOf:&#x27;Sep-22 10:56 PT 盤中&#x27;,sameSession:false,spot:234.67,weekExpiry:&#x27;Sep-25&#x27;,weekIv:90.04,weekLow:221.04,weekHigh:248.30,nextExpiry:&#x27;Oct-02&#x27;,nextIv:83.42,nextLow:210.64,nextHigh:258.70,putWall:220,gammaFlip:218.12,callWall:240,twoSeriesCallWall:250,regime:&#x27;現價高於 Gamma Flip，正 Gamma／牆位磁吸&#x27;},
+    SNDK:{asOf:&#x27;Sep-22 10:55 PT 盤中&#x27;,sameSession:false,spot:1895.70,weekExpiry:&#x27;Sep-25&#x27;,weekIv:87.83,weekLow:1782.41,weekHigh:2008.99,nextExpiry:&#x27;Oct-02&#x27;,nextIv:84.93,nextLow:1691.64,nextHigh:2099.77,callWall:2000,regime:&#x27;現價低於本週 Call Wall；Flip／Put Wall 未核對&#x27;}
+  };
   const momentumFor = indicator =&gt; {
     if (!indicator) return {label:&#x27;未判定&#x27;, key:&#x27;neutral&#x27;};
     const {rsi,k,d,macd,signal} = indicator;
@@ -1461,12 +1470,35 @@ html&gt;body{padding:0}&lt;/style&gt;
     if (/(累積|再累積)/.test(stage) &amp;&amp; /(Phase D|Phase E|SOS|LPS|Back-up|Markup)/.test(stage)) return {bias:&#x27;bullish&#x27;, key:&#x27;support&#x27;, label:&#x27;支持&#x27;, stage, confirmedBearish:false};
     return {bias:&#x27;neutral&#x27;, key:&#x27;neutral&#x27;, label:&#x27;中性&#x27;, stage, confirmedBearish:false};
   };
+  const optionsFor = row =&gt; {
+    const data = optionsData[row.ticker];
+    if (!data) return {optionsAvailable:false, optionsConflict:false, optionsSameSession:false};
+    if (row.target == null || row.upside == null || row.upside &lt;= 0) {
+      return {...data, optionsAvailable:true, optionsKey:&#x27;neutral&#x27;, optionsLabel:&#x27;中性&#x27;, optionsConflict:false, optionsSameSession:data.sameSession};
+    }
+    const withinNextMove = row.target &gt;= data.nextLow &amp;&amp; row.target &lt;= data.nextHigh;
+    const beyondCombinedWall = data.twoSeriesCallWall != null &amp;&amp; row.target &gt; data.twoSeriesCallWall;
+    const conflict = !withinNextMove &amp;&amp; beyondCombinedWall;
+    const label = conflict ? &#x27;衝突&#x27; : (row.target &gt; data.callWall ? &#x27;條件支持&#x27; : &#x27;支持&#x27;);
+    return {...data, optionsAvailable:true, optionsKey:conflict ? &#x27;conflict&#x27; : &#x27;support&#x27;, optionsLabel:label, optionsConflict:conflict, optionsSameSession:data.sameSession};
+  };
+  const optionsEvidence = row =&gt; {
+    if (!row.optionsAvailable) return &#x27;&#x27;;
+    const walls = [
+      row.putWall != null ? `Put ${money(row.putWall)}` : null,
+      row.gammaFlip != null ? `Flip ${money(row.gammaFlip)}` : null,
+      row.callWall != null ? `Call ${money(row.callWall)}${row.twoSeriesCallWall != null ? `→${money(row.twoSeriesCallWall)}` : &#x27;&#x27;}` : null
+    ].filter(Boolean).join(&#x27; · &#x27;);
+    const crossDay = row.optionsSameSession ? &#x27;&#x27; : &#x27; · 跨日參考&#x27;;
+    return `&lt;span class=&quot;options-evidence text-small&quot;&gt;&lt;span class=&quot;options-${row.optionsKey}&quot;&gt;期權定位：${row.optionsLabel}（${row.asOf}${crossDay}）&lt;/span&gt;&lt;span&gt;本週 ${row.weekExpiry} ${money(row.weekLow)}–${money(row.weekHigh)} · 下週 ${row.nextExpiry} ${money(row.nextLow)}–${money(row.nextHigh)}&lt;/span&gt;${walls ? `&lt;span&gt;${walls}&lt;/span&gt;` : &#x27;&#x27;}&lt;span&gt;${row.regime}&lt;/span&gt;&lt;/span&gt;`;
+  };
   const actionFor = row =&gt; {
     if ((row.upside != null &amp;&amp; row.upside &lt; 0) || row.wyckoffConfirmedBearish) return {label:&#x27;規避&#x27;, key:&#x27;avoid&#x27;};
     const noForwardPattern = row.pattern === &#x27;無&#x27; || row.pattern.includes(&#x27;歷史已完成&#x27;);
     if (noForwardPattern &amp;&amp; row.rsi &lt; 50 &amp;&amp; row.macd &lt; 0 &amp;&amp; row.hist &lt; 0 &amp;&amp; row.wyckoffBias !== &#x27;bullish&#x27;) return {label:&#x27;不宜&#x27;, key:&#x27;unsuitable&#x27;};
     const momentumSupports = row.momentum !== &#x27;超買／過熱&#x27; &amp;&amp; row.momentum !== &#x27;偏弱&#x27; &amp;&amp; row.momentum !== &#x27;超賣&#x27; &amp;&amp; row.k &gt;= row.d &amp;&amp; row.macd &gt;= row.signal &amp;&amp; row.hist &gt;= 0;
-    if (row.condition === &#x27;已確認&#x27; &amp;&amp; row.confidence &gt;= 75 &amp;&amp; row.upside &gt; 5 &amp;&amp; row.wyckoffBias === &#x27;bullish&#x27; &amp;&amp; momentumSupports) return {label:&#x27;確認&#x27;, key:&#x27;confirm&#x27;};
+    const optionsPermit = !row.optionsSameSession || !row.optionsConflict;
+    if (row.condition === &#x27;已確認&#x27; &amp;&amp; row.confidence &gt;= 75 &amp;&amp; row.upside &gt; 5 &amp;&amp; row.wyckoffBias === &#x27;bullish&#x27; &amp;&amp; momentumSupports &amp;&amp; optionsPermit) return {label:&#x27;確認&#x27;, key:&#x27;confirm&#x27;};
     return {label:&#x27;觀望&#x27;, key:&#x27;watch&#x27;};
   };
   const mergedRows = (() =&gt; {
@@ -1480,7 +1512,8 @@ html&gt;body{padding:0}&lt;/style&gt;
       const enriched = {...row, scope:row.lists.join(&#x27;／&#x27;), ...indicatorData[row.ticker]};
       const momentum = momentumFor(enriched);
       const wyckoff = wyckoffFor(enriched);
-      const withMomentum = {...enriched, momentum:momentum.label, momentumKey:momentum.key, wyckoffBias:wyckoff.bias, wyckoffKey:wyckoff.key, wyckoffLabel:wyckoff.label, wyckoffStage:wyckoff.stage, wyckoffConfirmedBearish:wyckoff.confirmedBearish};
+      const options = optionsFor(enriched);
+      const withMomentum = {...enriched, momentum:momentum.label, momentumKey:momentum.key, wyckoffBias:wyckoff.bias, wyckoffKey:wyckoff.key, wyckoffLabel:wyckoff.label, wyckoffStage:wyckoff.stage, wyckoffConfirmedBearish:wyckoff.confirmedBearish, ...options};
       const action = actionFor(withMomentum);
       return {...withMomentum, action:action.label, actionKey:action.key};
     });
@@ -1571,7 +1604,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         &lt;td data-field=&quot;upside&quot; data-label=&quot;推估幅度&quot; class=&quot;numeric&quot;&gt;${row.upside == null ? &#x27;—&lt;span class=&quot;cell-note text-small&quot;&gt;無有效前瞻目標&lt;/span&gt;&#x27; : `${row.upside &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${row.upside.toFixed(1)}%&lt;span class=&quot;cell-note text-small&quot;&gt;${row.upside &lt; 0 ? `下行目標約 ${money(row.target)}，相對幅度 ${row.upside.toFixed(1)}%` : `量度目標約 ${money(row.target)}，尚餘 ${row.upside.toFixed(1)}%`}&lt;/span&gt;`}&lt;/td&gt;
         &lt;td data-field=&quot;confidence&quot; data-label=&quot;信心&quot; class=&quot;numeric&quot;&gt;${row.confidence}%&lt;/td&gt;
         &lt;td data-field=&quot;momentum&quot; data-label=&quot;動能狀態&quot;&gt;&lt;span class=&quot;status-badge momentum-${row.momentumKey}&quot;&gt;${row.momentum}&lt;/span&gt;&lt;span class=&quot;momentum-evidence text-small&quot;&gt;${momentumEvidence(row)}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;span class=&quot;cell-note text-small wyckoff-${row.wyckoffKey}&quot;&gt;Wyckoff ${row.wyckoffLabel}：${row.wyckoffStage}&lt;/span&gt;&lt;/td&gt;
+        &lt;td data-field=&quot;action&quot; data-label=&quot;技術處置&quot;&gt;&lt;span class=&quot;status-badge action-${row.actionKey}&quot;&gt;${row.action}&lt;/span&gt;&lt;span class=&quot;cell-note text-small wyckoff-${row.wyckoffKey}&quot;&gt;Wyckoff ${row.wyckoffLabel}：${row.wyckoffStage}&lt;/span&gt;${optionsEvidence(row)}&lt;/td&gt;
         &lt;td data-field=&quot;condition&quot; data-label=&quot;確認條件&quot;&gt;${row.condition}&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;wyckoff&quot; data-label=&quot;Wyckoff 階段／預期行為&quot;&gt;${row.wyckoff}&lt;/td&gt;
         &lt;td data-field=&quot;analysis&quot; data-label=&quot;技術分析摘要&quot;&gt;${analysisHtml(row)}&lt;/td&gt;
