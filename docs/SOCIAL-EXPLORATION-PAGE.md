@@ -7,7 +7,7 @@ Exploration roster independently from Universal Refresh.
 
 The information architecture now directly follows the existing Moomoo Patterns
 decision reader: compact title and freshness, inline status totals, one control
-panel, decision/full-analysis modes and a sortable analysis table. The prior
+panel and a sortable full-analysis table. The prior
 large hero, navigation dock, status banner and four summary cards are not part
 of this page. The implementation also applies the Nielsen Norman Group UX
 basics used for this page:
@@ -15,7 +15,7 @@ basics used for this page:
 - communication before decoration;
 - clear system status and completed-session cutoff;
 - recognition over recall through persistent labels and visible filter state;
-- progressive disclosure through decision and full-analysis views;
+- complete analysis without a competing abbreviated view;
 - limited choices tied to real tasks: lane, technical state, search and sort;
 - touch targets of at least 44px, safe-area handling and no hover-only control;
 - responsive table-to-card conversion for iPhone and full-width table reading

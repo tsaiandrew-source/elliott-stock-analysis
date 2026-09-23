@@ -2,13 +2,12 @@
   'use strict';
 
   const dataset = window.ELLIOTT_SOCIAL_EXPLORATION || { records:[], profiles:[], status:'BLOCKED' };
-  const dashboard = document.getElementById('social-exploration-dashboard');
   const tableBody = document.getElementById('ticker-table-body');
   const emptyState = document.getElementById('empty-state');
   const resultCount = document.getElementById('result-count');
   const resetButton = document.getElementById('reset-filters');
   const profileMap = new Map((dataset.profiles || []).map((profile) => [profile.id, profile]));
-  const state = { signal:'all', lane:'all', query:'', sort:'rank', direction:'asc', view:'decision' };
+  const state = { signal:'all', lane:'all', query:'', sort:'rank', direction:'asc' };
   const sortLabels = { rank:'探索排名', close:'收市價', move:'今日變動', signal:'結構狀態', rsi:'RSI', volume:'相對量', position:'20日位置' };
   const signalOrder = { positive:0, neutral:1, negative:2 };
   const signalMeta = {
@@ -178,17 +177,6 @@
       render();
     }));
   });
-
-  document.querySelectorAll('.mode-button').forEach((button) => button.addEventListener('click', () => {
-    state.view = button.dataset.view;
-    dashboard.classList.toggle('view-decision', state.view === 'decision');
-    dashboard.classList.toggle('view-full', state.view === 'full');
-    document.querySelectorAll('.mode-button').forEach((peer) => {
-      const active = peer === button;
-      peer.classList.toggle('is-active', active);
-      peer.setAttribute('aria-pressed', String(active));
-    });
-  }));
 
   document.querySelectorAll('[data-sort]').forEach((button) => button.addEventListener('click', () => {
     const next = button.dataset.sort;

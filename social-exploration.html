@@ -12,16 +12,16 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/elliott-asterisk-icon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/elliott-asterisk-apple-touch-icon.png">
-  <link rel="stylesheet" href="./social-exploration.css?v=20260923-v3">
+  <link rel="stylesheet" href="./social-exploration.css?v=20260923-v4">
   <script src="./pwa-register-v27.js" defer></script>
   <title>Social Exploration 決策儀表板</title>
 </head>
 <body>
-  <main class="dashboard view-decision" id="social-exploration-dashboard">
+  <main class="dashboard view-full" id="social-exploration-dashboard">
     <header class="dashboard-header">
       <div class="dashboard-intro">
         <h1>Social Exploration 決策儀表板</h1>
-        <p>先看結構狀態，再用動能與來源縮小範圍；需要時才切換完整分析。</p>
+        <p>先看結構狀態，再用動能與來源縮小範圍；完整分析直接呈現。</p>
       </div>
       <div class="freshness" aria-label="資料狀態">
         <p><span class="status-dot" aria-hidden="true"></span><strong id="data-status">正在載入</strong>：<span id="data-cutoff">讀取完成交易資料</span></p>
@@ -40,12 +40,6 @@
       <div class="search-control">
         <label for="ticker-search">搜尋股票</label>
         <input id="ticker-search" type="search" inputmode="search" autocomplete="off" placeholder="例如 META">
-      </div>
-
-      <div class="view-mode" role="group" aria-label="檢視模式">
-        <span class="group-label">檢視</span>
-        <button class="mode-button is-active" type="button" data-view="decision" aria-pressed="true">決策檢視</button>
-        <button class="mode-button" type="button" data-view="full" aria-pressed="false">完整分析</button>
       </div>
 
       <div class="filter-group" data-filter="signal" role="group" aria-label="結構狀態">
@@ -124,6 +118,6 @@
   </main>
 
   <script src="./data-model/social-exploration-data.js?v=20260923-v1"></script>
-  <script src="./social-exploration.js?v=20260923-v2"></script>
+  <script src="./social-exploration.js?v=20260923-v3"></script>
 </body>
 </html>
