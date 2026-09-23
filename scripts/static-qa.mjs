@@ -42,6 +42,7 @@ const requiredFiles = [
   'shared-menu.js',
   'shared-topbar.css',
   'shared-topbar.js',
+  'moomoo-patterns.html',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
   'assets/elliott-asterisk-icon-512.png',
@@ -297,7 +298,7 @@ if (await exists('data-model/home.html')) {
   for (const forbidden of ['calendar-menu', 'calendarWeeks()', "query.get('date')", 'previous-day', 'next-day', 'today-button']) {
     if (home.includes(forbidden)) failures.push(`data-model/home.html: current-day-only Home still exposes ${forbidden}`);
   }
-  for (const marker of ['day-summary', 'const selectedDate = today;', "weekend ? ['close'] : ['close', 'midday', 'morning']", '16:00 PT']) {
+  for (const marker of ['<title>E+ 市場摘要</title>', 'day-summary', 'const selectedDate = today;', "weekend ? ['close'] : ['close', 'midday', 'morning']", '16:00 PT']) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: current-day digest surface is missing ${marker}`);
   }
   if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
@@ -313,6 +314,16 @@ if (await exists('data-model/home.html')) {
   }
   for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="digest"', 'data-digest-href="home.html"', 'data-moomoo-href="../moomoo-patterns.html"']) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: reusable top bar is missing ${marker}`);
+  }
+}
+
+if (await exists('moomoo-patterns.html')) {
+  const moomoo = await read('moomoo-patterns.html');
+  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="moomoo"', 'data-digest-href="data-model/home.html"', 'data-moomoo-href="moomoo-patterns.html"', '<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
+    if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: reusable top bar is missing ${marker}`);
+  }
+  for (const marker of ["script-src 'self'", "style-src 'self'", "img-src 'self'", '--shared-topbar-height', 'safe-area-inset-top', 'safe-area-inset-bottom', '100dvh']) {
+    if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: responsive top bar shell is missing ${marker}`);
   }
 }
 
