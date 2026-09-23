@@ -45,11 +45,12 @@ assert(files.includes('desktop/tauri-persistence.js'), 'Desktop persistence brid
 assert(files.includes('desktop/tauri-fresh-data.js'), 'Desktop published-data bridge is missing.');
 assert(files.includes('data-model/digests.json'), 'Digest data was not staged.');
 assert(files.includes('chart-surface/index.html'), 'Chart surface was not staged.');
+assert(files.includes('social-exploration.html'), 'Social Exploration page was not staged.');
 assert(files.includes('shared-menu.css') && files.includes('shared-menu.js'), 'Shared navigation assets were not staged.');
 assert(files.includes('shared-topbar.css') && files.includes('shared-topbar.js'), 'Shared top bar assets were not staged.');
 assert(!files.some((file) => file.includes('node_modules') || file.includes('src-tauri') || file.includes('.git')), 'Build output contains development files.');
 
-for (const page of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'offline.html']) {
+for (const page of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'social-exploration.html', 'offline.html']) {
   const html = await text(page, distRoot);
   assert(html.includes('tauri-persistence.js'), `${page} is missing native persistence.`);
   assert(!html.includes('pwa-register-v27.js'), `${page} still registers the PWA service worker in Tauri.`);

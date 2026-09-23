@@ -23,6 +23,8 @@ jobs:
         run: node scripts/static-qa.mjs
       - name: Run PWA QA
         run: node scripts/pwa-qa.mjs
+      - name: Run Social Exploration release QA
+        run: node scripts/social-exploration-qa.mjs
       - name: Run digest automation QA
         run: |
           node scripts/ingest-private-analysis-qa.mjs

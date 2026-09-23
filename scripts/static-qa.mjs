@@ -43,6 +43,15 @@ const requiredFiles = [
   'shared-topbar.css',
   'shared-topbar.js',
   'moomoo-patterns.html',
+  'social-exploration.html',
+  'social-exploration.css',
+  'social-exploration.js',
+  'data-model/social-exploration-roster.json',
+  'data-model/social-exploration.json',
+  'data-model/social-exploration-data.js',
+  'scripts/update-social-exploration.mjs',
+  'scripts/social-exploration-qa.mjs',
+  'scripts/social-exploration-public-smoke.mjs',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
   'assets/elliott-asterisk-icon-512.png',
@@ -163,7 +172,7 @@ if (await exists('manifest.webmanifest')) {
   }
 }
 
-const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html'];
+const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'social-exploration.html'];
 for (const file of htmlFiles) {
   if (!(await exists(file))) continue;
   const html = await read(file);
@@ -312,14 +321,14 @@ if (await exists('data-model/home.html')) {
   for (const forbidden of ['class="masthead"', 'network-state', '<elliott-shared-menu', 'shared-menu.css', 'shared-menu.js', 'pwa-register-v27.js', 'manifest.webmanifest']) {
     if (home.includes(forbidden)) failures.push(`data-model/home.html: discarded app shell is still exposed via ${forbidden}`);
   }
-  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="digest"', 'data-digest-href="home.html"', 'data-moomoo-href="../moomoo-patterns.html"']) {
+  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="digest"', 'data-digest-href="home.html"', 'data-moomoo-href="../moomoo-patterns.html"', 'data-exploration-href="../social-exploration.html"']) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: reusable top bar is missing ${marker}`);
   }
 }
 
 if (await exists('moomoo-patterns.html')) {
   const moomoo = await read('moomoo-patterns.html');
-  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="moomoo"', 'data-digest-href="data-model/home.html"', 'data-moomoo-href="moomoo-patterns.html"', '<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
+  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="moomoo"', 'data-digest-href="data-model/home.html"', 'data-moomoo-href="moomoo-patterns.html"', 'data-exploration-href="social-exploration.html"', '<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
     if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: reusable top bar is missing ${marker}`);
   }
   for (const marker of ["script-src 'self'", "style-src 'self'", "img-src 'self'", '--shared-topbar-height', 'safe-area-inset-top', 'safe-area-inset-bottom', '100dvh']) {
@@ -330,7 +339,7 @@ if (await exists('moomoo-patterns.html')) {
 if (await exists('shared-topbar.js') && await exists('shared-topbar.css')) {
   const topbarScript = await read('shared-topbar.js');
   const topbarStyle = await read('shared-topbar.css');
-  for (const marker of ['class ElliottTopbar', "customElements.define('elliott-topbar'", "label:'市場摘要'", "label:'每日型態'", 'aria-current']) {
+  for (const marker of ['class ElliottTopbar', "customElements.define('elliott-topbar'", "label:'市場摘要'", "label:'每日型態'", "label:'Social Exploration'", 'aria-current']) {
     if (!topbarScript.includes(marker)) failures.push(`shared-topbar.js: missing ${marker}`);
   }
   for (const marker of ['position:fixed', 'top:0', '--shared-topbar-height:36px', '--content-max,900px', 'safe-area-inset-top', '@media (pointer:coarse)', '--shared-topbar-height:44px']) {
@@ -340,13 +349,14 @@ if (await exists('shared-topbar.js') && await exists('shared-topbar.css')) {
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:none']) {
+  for (const marker of ['dock-home', 'dock-coverage', 'dock-exploration', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'exploration', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:none']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
     const html = await read(file);
   if (!html.includes('shared-menu.css') || !html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted with its static stylesheet`);
     if (!html.includes('data-ticker-page-href=')) failures.push(`${file}: shared swipe navigation destinations are incomplete`);
+    if (!html.includes('data-exploration-href=')) failures.push(`${file}: Social Exploration destination is missing from shared navigation`);
   }
 }
 

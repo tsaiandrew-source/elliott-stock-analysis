@@ -40,7 +40,7 @@
 
   const installPageSwipe = (current, destinations) => {
     if (window.__elliottPageSwipeInstalled) return;
-    const order = ['home', 'coverage', 'ticker'];
+    const order = ['home', 'coverage', 'exploration', 'ticker'];
     const currentIndex = order.indexOf(current);
     if (currentIndex < 0) return;
     window.__elliottPageSwipeInstalled = true;
@@ -157,6 +157,7 @@
 
       nav.append(link('dock-home', 'Home', '⌂', this.dataset.homeHref || 'home.html', 'home', current === 'home' ? '目前位於 Digest 首頁' : '開啟 Digest 首頁'));
       nav.append(link('dock-coverage', 'Coverage', '◎', this.dataset.coverageHref || 'coverage.html', 'coverage', current === 'coverage' ? '目前位於 Coverage' : '開啟 Coverage'));
+      if (this.dataset.explorationHref) nav.append(link('dock-exploration', 'Explore', '◇', this.dataset.explorationHref, 'exploration', current === 'exploration' ? '目前位於 Social Exploration' : '開啟 Social Exploration'));
 
       const tickerHref = this.dataset.tickerHref;
       const ticker = document.createElement('button');

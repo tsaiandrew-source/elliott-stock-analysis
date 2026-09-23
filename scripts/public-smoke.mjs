@@ -27,6 +27,8 @@ const routes = [
   ...(expectedDigestId ? [`/data-model/digest-data.js?expected=${encodeURIComponent(expectedDigestId)}&refresh=${Date.now()}`] : []),
   '/data-model/coverage.html',
   '/data-model/app.html',
+  '/social-exploration.html',
+  `/data-model/social-exploration-data.js?refresh=${Date.now()}`,
   '/chart-surface/index.html?ticker=NBIS&view=daily',
   '/chart-surface/index.html?ticker=NBIS&view=weekly',
   '/chart-surface/index.html?ticker=NBIS&view=gex',
@@ -91,6 +93,15 @@ for (const route of routes) {
     if (route === '/data-model/coverage.html' || route.includes('/chart-surface/index.html')) {
       if (!skipProxy && !body.includes('AKfycbyfPXGRSZvSa8NOp6OguWNYgWEB1wHcr42E6e_uvleNb-ckI_Rei23PEWigi2Wx3CzQRg')) failures.push(`read proxy marker missing ${route}`);
       if (body.includes('AKfycbwN2')) failures.push(`write-only ingest URL leaked into frontend ${route}`);
+    }
+    if (route === '/social-exploration.html') {
+      for (const marker of ['<title>E+ Social Exploration</title>', '<h1>E+ Social Exploration</h1>', 'data-current="exploration"']) {
+        if (!body.includes(marker)) failures.push(`Social Exploration marker missing: ${marker}`);
+      }
+    }
+    if (route.startsWith('/data-model/social-exploration-data.js')) {
+      if (!body.includes('window.ELLIOTT_SOCIAL_EXPLORATION')) failures.push('Social Exploration dataset marker missing');
+      if (!body.includes('"status":"PASS"')) failures.push('Social Exploration public dataset is not PASS');
     }
   } catch (error) {
     failures.push(`${route}: ${error.message}`);

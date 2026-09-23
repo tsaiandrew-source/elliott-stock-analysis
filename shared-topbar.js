@@ -7,7 +7,8 @@
       const current = this.dataset.current || '';
       const destinations = [
         { key:'digest', label:'市場摘要', href:this.dataset.digestHref || 'data-model/home.html' },
-        { key:'moomoo', label:'每日型態', href:this.dataset.moomooHref || 'moomoo-patterns.html' }
+        { key:'moomoo', label:'每日型態', href:this.dataset.moomooHref || 'moomoo-patterns.html' },
+        { key:'exploration', label:'Social Exploration', href:this.dataset.explorationHref || 'social-exploration.html' }
       ];
       const inner = document.createElement('div');
       inner.className = 'shared-topbar__inner';

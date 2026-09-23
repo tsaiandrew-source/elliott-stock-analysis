@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "social-exploration-roster-v1",
+  "rosterId": "SOCIAL-EXPLORATION-20260923-V1",
+  "generatedAt": "2026-09-23T10:01:26-07:00",
+  "method": "social_exploration",
+  "targetSize": 20,
+  "observationWindow": {
+    "start": "2026-09-10",
+    "cutoff": "2026-09-23",
+    "timezone": "America/Los_Angeles"
+  },
+  "exclusion": {
+    "dataThrough": "2026-09-21",
+    "sourceUrl": "https://tsaiandrew-source.github.io/elliott-stock-analysis/moomoo-patterns.html",
+    "list1": ["MU", "MRVL", "FTNT", "NOK", "IREN", "NBIS", "CSCO", "LITE", "COHR"],
+    "candidate": ["ACHR", "INTC", "AVGO", "SNDK", "ONDS", "RIVN", "PLTR", "NOW", "TEAM"]
+  },
+  "profiles": [
+    {"id": "unclestocknotes", "label": "Uncle Stock Notes", "platform": "Instagram", "url": "https://www.instagram.com/unclestocknotes/", "accessState": "readable"},
+    {"id": "juiisinvesting", "label": "Juii Investing", "platform": "Threads", "url": "https://www.threads.com/@juiisinvesting", "accessState": "readable"},
+    {"id": "watanabe.wei", "label": "Watanabe", "platform": "Threads", "url": "https://www.threads.com/@watanabe.wei", "accessState": "readable"},
+    {"id": "usstockdream", "label": "美股追夢路", "platform": "Facebook", "url": "https://www.facebook.com/profile.php?id=61573395335523", "accessState": "readable"},
+    {"id": "fomo_soc", "label": "Fomo", "platform": "Threads", "url": "https://www.threads.com/@fomo_soc", "accessState": "readable_partial"},
+    {"id": "iwealthnote", "label": "苹果理财笔记", "platform": "Facebook", "url": "https://www.facebook.com/iwealthnote", "accessState": "readable"},
+    {"id": "whaleagent", "label": "Moby Dick", "platform": "Threads", "url": "https://www.threads.com/@whaleagent", "accessState": "readable"},
+    {"id": "pathfindernote", "label": "Pathfinder Note", "platform": "Threads", "url": "https://www.threads.com/@pathfindernote", "accessState": "readable"}
+  ],
+  "tickers": [
+    {"rank": 1, "ticker": "META", "company": "Meta Platforms", "lane": "common", "profileIds": ["watanabe.wei", "unclestocknotes", "usstockdream", "pathfindernote"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 608 億美元、年增 28%，但營業利益年減 8%，主因成本、法律費用與裁員支出上升。廣告量價齊升仍是核心動能；下一步要驗證 AI 資本支出擴大後，能否恢復利潤與自由現金流。", "businessSourceUrl": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/"},
+    {"rank": 2, "ticker": "MCD", "company": "McDonald's", "lane": "common", "profileIds": ["iwealthnote"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收年增 4%，全球同店銷售增 1.3%，調整後 EPS 增 6%。忠誠會員銷售與活躍用戶續增，但美國同店僅增 0.8%；下一步要驗證價值餐與美國營運改善能否拉高來客。", "businessSourceUrl": "https://corporate.mcdonalds.com/corpmcd/our-stories/article/Q2-2026-results.html"},
+    {"rank": 3, "ticker": "GOOGL", "company": "Alphabet", "lane": "common", "profileIds": ["iwealthnote"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 1,198 億美元、年增 24%，Google Cloud 營收年增 82% 至 248 億美元，營業利益率也擴張。AI 雲端是主引擎；下一步要驗證高額資料中心投資能否持續轉成雲端獲利。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm"},
+    {"rank": 4, "ticker": "AMZN", "company": "Amazon", "lane": "common", "profileIds": ["iwealthnote"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 2,006 億美元、年增 20%，AWS 年增 37% 至 422 億美元，營業利益升至 275 億美元。AI 基建帶動雲端加速，但資本支出使近十二月自由現金流轉負；回報效率是下一個驗證點。", "businessSourceUrl": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx"},
+    {"rank": 5, "ticker": "VICR", "company": "Vicor", "lane": "common", "profileIds": ["unclestocknotes"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 1.433 億美元，季增 26.9%、年增 49.3%，毛利率升至 58%。先進產品與權利金是主要推力；下一步要確認 AI 電源需求與積壓訂單能否支撐新產能，而不是一次性權利金。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/751978/000119312526309538/d115827dex991.htm"},
+    {"rank": 6, "ticker": "BABA", "company": "Alibaba Group", "lane": "common", "profileIds": ["unclestocknotes"], "businessReportPeriod": "2026 年 6 月季", "businessDigest": "2026 年 6 月季總營收逾 396 億美元、年增 9%；AI 雲端與運算服務增 45%，雲端調整後 EBITA 增 133%。雲端已成主引擎，但資本支出年增 75%；下一步看 AI 投資報酬與電商利潤。", "businessSourceUrl": "https://www.alibabagroup.com/en-US/document-2027233133950140416"},
+    {"rank": 7, "ticker": "SHOP", "company": "Shopify", "lane": "common", "profileIds": ["unclestocknotes"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收年增 34%，GMV、毛利與自由現金流均成長逾 30%，自由現金流率達 18%。成長與營運槓桿同步改善；下一步要確認 AI 商務工具與企業客戶能否維持 30% 附近的擴張。", "businessSourceUrl": "https://www.shopify.com/news/shopify-q2-2026-financial-results"},
+    {"rank": 8, "ticker": "PYPL", "company": "PayPal", "lane": "common", "profileIds": ["unclestocknotes"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 淨營收 87 億美元、年增 5%，公司上調全年非 GAAP 指引。品牌結帳趨穩、Venmo 與 Braintree 動能改善；下一步要驗證 15 億美元節流是否帶來可持續獲利，而非只縮減成本。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/1633917/000163391726000080/pypl2q-26earningsrelease.htm"},
+    {"rank": 9, "ticker": "RKLB", "company": "Rocket Lab", "lane": "common", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收創 2.34 億美元新高、年增 62%，積壓訂單達 23.6 億美元、年增 137%。發射與太空系統需求強，但仍在高投資期；下一步看 Neutron 進度、收購整合與毛利能否跟上規模。", "businessSourceUrl": "https://investors.rocketlabcorp.com/node/12996/pdf"},
+    {"rank": 10, "ticker": "AXTI", "company": "AXT", "lane": "common", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 4,760 萬美元，較前季增 77%、較去年同期增 165%；GAAP 毛利率升至 44.9%，並轉為獲利。磷化銦需求創高；下一步要確認擴產能否延續成長而不壓低良率與毛利。", "businessSourceUrl": "https://investors.axt.com/Investors/news/news-details/2026/AXT-Inc--Announces-Second-Quarter-2026-Financial-Results/default.aspx"},
+    {"rank": 11, "ticker": "CRWV", "company": "CoreWeave", "lane": "surprise", "profileIds": ["unclestocknotes"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 25.75 億美元、年增約 112%，積壓收入約 1,040 億美元；但淨損擴至 6.26 億美元，利息支出 6.40 億美元。需求很強，下一步要看新增容量能否改善營運槓桿與負債成本。", "businessSourceUrl": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Second-Quarter-2026-Results/default.aspx"},
+    {"rank": 12, "ticker": "CRDO", "company": "Credo Technology Group", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2027 財年 Q1", "businessDigest": "2027 財年 Q1 營收 4.79 億美元，年增 115%、季增 9.6%，非 GAAP 淨利 2.36 億美元；下季營收指引 5.25–5.35 億美元。AI 高速互連仍強，下一步看客戶集中與高基期風險。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026059795/credoq12027ex-991.htm"},
+    {"rank": 13, "ticker": "MTSI", "company": "MACOM Technology Solutions", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 財年 Q3", "businessDigest": "2026 財年 Q3 營收 3.422 億美元、年增 35.8%，GAAP 毛利率 58.3%，營業利益率升至 22.5%。產品組合與規模改善同步；下一季營收指引 4.15–4.25 億美元，需驗證成長能否續強。", "businessSourceUrl": "https://ir.macom.com/news-releases/news-release-details/macom-reports-fiscal-third-quarter-2026-financial-results"},
+    {"rank": 14, "ticker": "AEHR", "company": "Aehr Test Systems", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 財年 Q4", "businessDigest": "2026 財年 Q4 營收 1,880 萬美元、年增 33%，GAAP 由虧轉盈；季度訂單創 6,070 萬美元新高，有效積壓逾 1 億美元。下一步要驗證 AI 與矽光子訂單能否如期轉成 2027 財年營收。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/1040470/000165495426006655/aehr_ex991.htm"},
+    {"rank": 15, "ticker": "LWLG", "company": "Lightwave Logic", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收僅約 3.3 萬美元，淨損 661 萬美元；季末現金與有價證券合計約 9,591 萬美元。公司仍在商業化前段，下一步只看客戶認證能否轉成 2027 年量產收入。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/1325964/000107997326001097/lwlg_10q-063026.htm"},
+    {"rank": 16, "ticker": "AAOI", "company": "Applied Optoelectronics", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收創 1.919 億美元新高、年增 86%，800G 出貨較前季逾倍增，並重返非 GAAP 獲利；但 GAAP 毛利率降至 27.7%。下一步看擴產能否解除供應限制並拉回毛利。", "businessSourceUrl": "https://investors.ao-inc.com/node/17511/html"},
+    {"rank": 17, "ticker": "GLW", "company": "Corning", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 核心銷售 47.4 億美元、年增 17%，核心 EPS 增 30%；光通訊銷售增 32%，其中企業網路增 65%。AI 資料中心是主力，下一步看高速成長能否轉成更高自由現金流。", "businessSourceUrl": "https://investor.corning.com/financials/quarterly-results/default.aspx"},
+    {"rank": 18, "ticker": "POET", "company": "POET Technologies", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收僅 57 萬美元，雖年增 112%，淨損仍為 1,130 萬美元；融資後現金與短期投資達 7.96 億美元。財務跑道充足，但下一步必須看到 5,000 萬美元訂單與光引擎量產轉成營收。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/1437424/000117184326005485/exh_991.htm"},
+    {"rank": 19, "ticker": "LPTH", "company": "LightPath Technologies", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 財年 Q4", "businessDigest": "2026 財年 Q4 營收 2,120 萬美元、年增 74%，毛利增逾兩倍，調整後 EBITDA 轉正；積壓訂單 1.109 億美元。國防與無鍺紅外產品推動成長，下一步看積壓訂單交付與 GAAP 虧損收斂。", "businessSourceUrl": "https://www.sec.gov/Archives/edgar/data/889971/000143774926030074/ex_922995.htm"},
+    {"rank": 20, "ticker": "GFS", "company": "GlobalFoundries", "lane": "surprise", "profileIds": ["watanabe.wei"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 17.86 億美元、非 IFRS 毛利率 29.9%，雙雙高於指引上緣；非 IFRS 淨利 2.56 億美元。下一步要驗證差異化製程需求與產能利用率能否推升自由現金流。", "businessSourceUrl": "https://investors.gf.com/news-releases/news-release-details/globalfoundries-reports-second-quarter-2026-financial-results"}
+  ]
+}

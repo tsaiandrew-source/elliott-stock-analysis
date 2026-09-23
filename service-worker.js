@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elliott-pwa-v32';
+const CACHE_VERSION = 'elliott-pwa-v42';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_ROOT = new URL('./', self.location);
@@ -9,6 +9,8 @@ const DIGEST_FRESH_PATHS = new Set([
 ]);
 const LIVE_DATA_PATHS = new Set([
   ...DIGEST_FRESH_PATHS,
+  new URL('data-model/social-exploration.json', APP_ROOT).pathname,
+  new URL('data-model/social-exploration-data.js', APP_ROOT).pathname,
   new URL('coverage-order.js', APP_ROOT).pathname,
   new URL('chart-surface/data-contract.js', APP_ROOT).pathname,
   new URL('chart-surface/analysis-packets-v2.js', APP_ROOT).pathname,
@@ -34,8 +36,14 @@ const CORE_ASSETS = [
   './assets/lightweight-charts-5.2.0.min.js',
   './pwa-register-v27.js',
   './coverage-order.js',
+  './shared-topbar.css',
+  './shared-topbar.js',
   './shared-menu.css',
   './shared-menu.js',
+  './social-exploration.html',
+  './social-exploration.css',
+  './social-exploration.js',
+  './data-model/social-exploration-data.js',
   './data-model/home.html',
   './data-model/coverage.html',
   './data-model/digest-model.js',

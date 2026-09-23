@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "exploration:update": "node scripts/update-social-exploration.mjs",
+    "exploration:qa": "node scripts/social-exploration-qa.mjs",
     "coverage:generate": "node scripts/generate-coverage-order.mjs",
     "coverage:check": "node scripts/generate-coverage-order.mjs --check",
     "ticker:lifecycle": "node scripts/ticker-lifecycle.mjs",

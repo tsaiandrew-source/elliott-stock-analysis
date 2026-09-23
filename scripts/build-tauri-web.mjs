@@ -15,7 +15,10 @@ const copiedFiles = [
   'shared-menu.css',
   'shared-menu.js',
   'shared-topbar.css',
-  'shared-topbar.js'
+  'shared-topbar.js',
+  'social-exploration.html',
+  'social-exploration.css',
+  'social-exploration.js'
 ];
 
 const appPages = [
@@ -23,6 +26,7 @@ const appPages = [
   ['data-model/coverage.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
   ['data-model/app.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
   ['chart-surface/index.html', '../desktop/tauri-persistence.js', '../desktop/tauri-fresh-data.js'],
+  ['social-exploration.html', './desktop/tauri-persistence.js', null],
   ['offline.html', './desktop/tauri-persistence.js', null]
 ];
 
