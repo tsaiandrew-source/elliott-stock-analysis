@@ -45,6 +45,7 @@ for (const marker of ['aria-live="polite"', 'aria-pressed="true"', 'data-sort="s
 for (const marker of ['data-filter="momentum"', 'filter-momentum-overbought-count', 'filter-momentum-oversold-count']) if (!html.includes(marker)) failures.push(`momentum filter missing ${marker}`);
 if (html.includes('決策檢視') || html.includes('data-view=')) failures.push('page must expose full analysis only');
 for (const marker of ['營運摘要', '新聞摘要', '<th scope="col">來源</th>']) if (!html.includes(marker)) failures.push(`digest table missing ${marker}`);
+for (const marker of ['<title>E+ Social Exploration</title>', '<h1>E+ Social Exploration</h1>', 'elliott-asterisk-icon-32.png', 'class="page-title"']) if (!html.includes(marker)) failures.push(`page identity missing ${marker}`);
 if (!js.includes('profile-sources') || !js.includes("create('details'")) failures.push('source profile links must remain collapsed');
 if (js.includes("create('summary', '新聞來源')") || js.includes("create('summary', '資料來源')") || js.includes('record.newsHeadline')) failures.push('digest cells must not expose source references or copied headlines');
 if (html.includes('shared-menu.css') || html.includes('<elliott-shared-menu')) failures.push('standalone decision reader must not mount the app navigation dock');
