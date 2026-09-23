@@ -172,7 +172,7 @@ if (await exists('manifest.webmanifest')) {
   }
 }
 
-const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'social-exploration.html'];
+const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'social-exploration.html', 'moomoo-patterns.html'];
 for (const file of htmlFiles) {
   if (!(await exists(file))) continue;
   const html = await read(file);
@@ -230,6 +230,10 @@ for (const file of htmlFiles) {
     if (html.includes('data-view="weekly"') || html.includes("model.groupRecords(dataset.records, 'weekly')")) failures.push(`${file}: separate weekly digest view is still exposed`);
     if (!html.includes('const selectedDate = today;') || !html.includes('hasNonRuntimeQuery') || html.includes("query.get('date')")) failures.push(`${file}: Home is not pinned to one canonical current-day URL`);
     if (!html.includes("const editionOrder = weekend ? ['close'] : ['close', 'midday', 'morning']")) failures.push(`${file}: current-day weekday/weekend cadence is not wired`);
+  }
+  if (file === 'moomoo-patterns.html') {
+    if (/完整分析|data-view=&quot;full&quot;|view-full|view-button|viewButtons/.test(html)) failures.push(`${file}: removed full-analysis view is still exposed or wired`);
+    if (!html.includes('class=&quot;view-decision&quot;')) failures.push(`${file}: canonical decision view is missing`);
   }
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
     failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
