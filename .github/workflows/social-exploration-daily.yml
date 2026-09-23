@@ -66,7 +66,8 @@ jobs:
         if: steps.time_gate.outputs.admitted == 'true'
         id: snapshot
         run: |
-          echo "data_through=$(node -e \"const d=require('./data-model/social-exploration.json'); process.stdout.write(d.dataThrough)\")" >> "$GITHUB_OUTPUT"
+          data_through=$(node -p 'require("./data-model/social-exploration.json").dataThrough')
+          echo "data_through=$data_through" >> "$GITHUB_OUTPUT"
       - name: Commit changed daily data
         if: steps.time_gate.outputs.admitted == 'true'
         run: |
