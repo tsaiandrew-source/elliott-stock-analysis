@@ -1,7 +1,7 @@
 {
   "schemaVersion": "social-exploration-daily-v1",
-  "rosterId": "SOCIAL-EXPLORATION-20260923-V1",
-  "generatedAt": "2026-09-23T19:59:43.606Z",
+  "rosterId": "SOCIAL-EXPLORATION-20260923-V2",
+  "generatedAt": "2026-09-23T20:24:53.687Z",
   "requestedAsOf": "2026-09-22",
   "dataThrough": "2026-09-22",
   "status": "PASS",
@@ -850,6 +850,25 @@
       "label": "Pathfinder Note",
       "platform": "Threads",
       "url": "https://www.threads.com/@pathfindernote",
+      "accessState": "readable"
+    },
+    {
+      "id": "trendspider",
+      "label": "TrendSpider",
+      "platform": "Instagram／Threads",
+      "url": "https://www.instagram.com/trendspider/",
+      "sourceUrls": [
+        "https://www.instagram.com/trendspider/",
+        "https://www.threads.com/@trendspider",
+        "https://www.threads.com/share/BASv21Gqzo/"
+      ],
+      "accessState": "readable"
+    },
+    {
+      "id": "dddave.id",
+      "label": "dddave.id",
+      "platform": "Threads",
+      "url": "https://www.threads.com/@dddave.id",
       "accessState": "readable"
     }
   ],
