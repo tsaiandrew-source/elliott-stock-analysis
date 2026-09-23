@@ -51,7 +51,7 @@ if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-192
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-512.png') && icon.sizes === '512x512' && icon.purpose === 'any')) failures.push('manifest missing official * 512x512 any icon');
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-maskable-512.png') && icon.sizes === '512x512' && icon.purpose === 'maskable')) failures.push('manifest missing official * 512x512 maskable icon');
 
-const htmlFiles = ['index.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html'];
+const htmlFiles = ['index.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'social-exploration.html'];
 for (const file of htmlFiles) {
   const html = await read(file);
   for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register-v27.js']) {
@@ -76,12 +76,13 @@ for (const forbidden of ['apple-mobile-web-app-capable', 'manifest.webmanifest',
   if (standaloneHome.includes(forbidden)) failures.push(`standalone digest Home still includes app shell marker ${forbidden}`);
 }
 
-for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'offline.html']) {
+for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'social-exploration.html', 'offline.html']) {
   const html = await read(file);
+  const responsiveSurface = file === 'social-exploration.html' ? `${html}\n${await read('social-exploration.css')}` : html;
   for (const inset of ['safe-area-inset-top', 'safe-area-inset-right', 'safe-area-inset-left']) {
-    if (!html.includes(inset)) failures.push(`${file}: missing ${inset}`);
+    if (!responsiveSurface.includes(inset)) failures.push(`${file}: missing ${inset}`);
   }
-  if (!html.includes('100dvh')) failures.push(`${file}: missing dynamic viewport height`);
+  if (!responsiveSurface.includes('100dvh')) failures.push(`${file}: missing dynamic viewport height`);
 }
 
 const worker = await read('service-worker.js');

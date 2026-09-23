@@ -1,0 +1,44 @@
+name: Social Exploration daily refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      as_of:
+        description: Optional completed-session cutoff (YYYY-MM-DD)
+        required: false
+        type: string
+  schedule:
+    - cron: '45 23 * * 1-5'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: social-exploration-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Refresh completed-session snapshot
+        env:
+          AS_OF: ${{ inputs.as_of }}
+        run: node scripts/update-social-exploration.mjs ${AS_OF:+--as-of=$AS_OF}
+      - name: Validate reader and roster
+        run: node scripts/social-exploration-qa.mjs
+      - name: Commit changed daily data
+        run: |
+          if git diff --quiet -- data-model/social-exploration.json data-model/social-exploration-data.js data-model/social-exploration-history; then
+            echo "No completed-session change"
+            exit 0
+          fi
+          git config user.name "elliott-data-bot"
+          git config user.email "elliott-data-bot@users.noreply.github.com"
+          git add data-model/social-exploration.json data-model/social-exploration-data.js data-model/social-exploration-history
+          git commit -m "Update Social Exploration daily snapshot"
+          git push

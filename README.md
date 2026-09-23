@@ -15,8 +15,11 @@ availability boundary.
 - Daily/Weekly/GEX charts: `chart-surface/index.html`
 - Cross-market Digest home: `data-model/home.html`
 - Coverage browser: `data-model/coverage.html`
+- Social Exploration daily tracker: `social-exploration.html`
 - Digest source of truth: `data-model/digests.json`
 - Static digest bundle/model: `data-model/digest-data.js` and `data-model/digest-model.js`
+- Social Exploration roster/current/history: `data-model/social-exploration-roster.json`,
+  `data-model/social-exploration.json`, and `data-model/social-exploration-history/`
 - Digest ingestion contract and command: `data-model/DIGEST-INGESTION.md` and `scripts/ingest-digests.mjs`
 - Representative tickers: NBIS and IREN
 - Data: contract based on the Google Sheets / GOOGLEFINANCE model, refreshed

@@ -27,6 +27,8 @@ const routes = [
   ...(expectedDigestId ? [`/data-model/digest-data.js?expected=${encodeURIComponent(expectedDigestId)}&refresh=${Date.now()}`] : []),
   '/data-model/coverage.html',
   '/data-model/app.html',
+  '/social-exploration.html',
+  `/data-model/social-exploration-data.js?refresh=${Date.now()}`,
   '/chart-surface/index.html?ticker=NBIS&view=daily',
   '/chart-surface/index.html?ticker=NBIS&view=weekly',
   '/chart-surface/index.html?ticker=NBIS&view=gex',

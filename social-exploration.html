@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071018">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="E+">
+  <meta name="format-detection" content="telephone=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/elliott-asterisk-icon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/elliott-asterisk-apple-touch-icon.png">
+  <link rel="stylesheet" href="./shared-menu.css?v=20260923-exploration-v1">
+  <link rel="stylesheet" href="./social-exploration.css?v=20260923-v2">
+  <script src="./pwa-register-v27.js" defer></script>
+  <title>Social Exploration｜每日追蹤</title>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">ELLIOTT+ · SOCIAL EXPLORATION</p>
+        <h1>每日探索追蹤</h1>
+        <p class="hero-copy">先看今天改變了什麼，再展開價格、動能與來源。社群訊號只負責發現標的，不取代獨立分析。</p>
+      </div>
+      <a class="reference-link" href="./moomoo-patterns.html">查看 Moomoo 主清單</a>
+    </header>
+
+    <section class="system-status" aria-label="資料狀態">
+      <div><span class="status-dot" aria-hidden="true"></span><strong id="data-status">正在載入</strong></div>
+      <p id="data-cutoff">讀取完成交易時段資料。</p>
+    </section>
+
+    <section class="summary-grid" aria-label="今日總覽">
+      <article class="summary-card"><span>有效資料</span><strong id="available-count">—</strong><small>20 檔候選</small></article>
+      <article class="summary-card"><span>上漲／下跌</span><strong id="breadth-count">—</strong><small>相較上一完成收盤</small></article>
+      <article class="summary-card"><span>結構偏強</span><strong id="positive-count">—</strong><small>EMA 與 RSI 同向</small></article>
+      <article class="summary-card"><span>今日領先</span><strong id="leader-ticker">—</strong><small id="leader-change">等待資料</small></article>
+    </section>
+
+    <section class="controls" aria-label="篩選探索名單">
+      <div class="control-row" role="group" aria-label="候選分組">
+        <button class="filter-chip is-active" type="button" data-filter="lane" data-value="all" aria-pressed="true">全部 <span>20</span></button>
+        <button class="filter-chip" type="button" data-filter="lane" data-value="common" aria-pressed="false">Common <span>10</span></button>
+        <button class="filter-chip" type="button" data-filter="lane" data-value="surprise" aria-pressed="false">Surprise <span>10</span></button>
+      </div>
+      <div class="control-row secondary" role="group" aria-label="技術狀態">
+        <button class="filter-chip is-active" type="button" data-filter="signal" data-value="all" aria-pressed="true">全部狀態</button>
+        <button class="filter-chip signal-positive" type="button" data-filter="signal" data-value="positive" aria-pressed="false">↑ 偏強</button>
+        <button class="filter-chip signal-neutral" type="button" data-filter="signal" data-value="neutral" aria-pressed="false">— 中性</button>
+        <button class="filter-chip signal-negative" type="button" data-filter="signal" data-value="negative" aria-pressed="false">↓ 偏弱</button>
+      </div>
+      <div class="search-row">
+        <label class="search-field"><span class="visually-hidden">搜尋股票代號或公司</span><input id="ticker-search" type="search" inputmode="search" autocomplete="off" placeholder="搜尋代號或公司"></label>
+        <label class="sort-field"><span>排序</span><select id="sort-order"><option value="rank">探索排名</option><option value="move">今日漲跌</option><option value="rsi">RSI</option></select></label>
+      </div>
+    </section>
+
+    <div class="result-heading"><h2>追蹤名單</h2><p id="result-count" role="status" aria-live="polite">—</p></div>
+    <section class="ticker-grid" id="ticker-grid" aria-label="Social Exploration 股票卡片"></section>
+    <section class="empty-state" id="empty-state" hidden><strong>沒有符合的股票</strong><span>清除搜尋或改用「全部狀態」。</span></section>
+
+    <details class="source-panel">
+      <summary>來源帳號與方法</summary>
+      <div class="source-panel-body">
+        <p>所有核准帳號每次都會留存存取狀態。Unavailable 或部分可讀不會被當成零票；任何價格或投資判斷仍須獨立驗證。</p>
+        <div class="profile-grid" id="profile-grid"></div>
+        <p class="method-note">選股：14 日觀察窗，先排除 Moomoo List 1 與 Candidate，再依不同來源帳號數、貼文數、時效與互動量排序。</p>
+      </div>
+    </details>
+
+    <footer>
+      <p id="source-disclosure"></p>
+      <p>本頁是研究追蹤工具，不是投資建議。</p>
+    </footer>
+  </main>
+
+  <script src="./coverage-order.js?v=20260916-registry-v1"></script>
+  <script src="./shared-menu.js?v=20260923-exploration-v1"></script>
+  <elliott-shared-menu data-current="exploration" data-home-href="data-model/home.html" data-coverage-href="data-model/coverage.html" data-exploration-href="social-exploration.html" data-ticker-page-href="chart-surface/index.html"></elliott-shared-menu>
+  <script src="./data-model/social-exploration-data.js?v=20260923-v1"></script>
+  <script src="./social-exploration.js?v=20260923-v1"></script>
+</body>
+</html>

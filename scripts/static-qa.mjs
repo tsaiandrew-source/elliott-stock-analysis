@@ -43,6 +43,14 @@ const requiredFiles = [
   'shared-topbar.css',
   'shared-topbar.js',
   'moomoo-patterns.html',
+  'social-exploration.html',
+  'social-exploration.css',
+  'social-exploration.js',
+  'data-model/social-exploration-roster.json',
+  'data-model/social-exploration.json',
+  'data-model/social-exploration-data.js',
+  'scripts/update-social-exploration.mjs',
+  'scripts/social-exploration-qa.mjs',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
   'assets/elliott-asterisk-icon-512.png',
@@ -163,7 +171,7 @@ if (await exists('manifest.webmanifest')) {
   }
 }
 
-const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html'];
+const htmlFiles = ['index.html', 'chart-surface/index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'social-exploration.html'];
 for (const file of htmlFiles) {
   if (!(await exists(file))) continue;
   const html = await read(file);
@@ -340,13 +348,14 @@ if (await exists('shared-topbar.js') && await exists('shared-topbar.css')) {
 
 if (await exists('shared-menu.js')) {
   const sharedMenu = await read('shared-menu.js');
-  for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:none']) {
+  for (const marker of ['dock-home', 'dock-coverage', 'dock-exploration', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'exploration', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:none']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
   for (const file of ['data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
     const html = await read(file);
   if (!html.includes('shared-menu.css') || !html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted with its static stylesheet`);
     if (!html.includes('data-ticker-page-href=')) failures.push(`${file}: shared swipe navigation destinations are incomplete`);
+    if (!html.includes('data-exploration-href=')) failures.push(`${file}: Social Exploration destination is missing from shared navigation`);
   }
 }
 
