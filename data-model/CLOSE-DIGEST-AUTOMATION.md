@@ -28,6 +28,8 @@ Weekday producer and consumer windows remain separated by 20 minutes. Weekend pa
 
 ## Producer packet
 
+Before research begins, the producer loads the enabled entries in [`news-sources.json`](news-sources.json). Priority 1 sources are required discovery inputs when relevant to the edition; priority 2 and 3 sources broaden coverage and cross-check market reaction. The registry is the maintained source roster, while each packet's `sources` array remains the claim-level citation record. A listed source is not automatically evidence: freshness, relevance, and claim-level verification still apply. The producer also performs the registry's weekend company and executive-primary scan so consequential essays and announcements can enter the next market digest.
+
 The producer writes a temporary file and renames it into the outbox only after every source, timestamp, fact, and editorial gate passes. Each packet contains exactly one record:
 
 - `id: daily-YYYY-MM-DD-<edition>`;

@@ -40,6 +40,8 @@ const requiredFiles = [
   'pwa-register-v27.js',
   'shared-menu.css',
   'shared-menu.js',
+  'shared-topbar.css',
+  'shared-topbar.js',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
   'assets/elliott-asterisk-icon-512.png',
@@ -78,6 +80,8 @@ const requiredFiles = [
   'data-model/home.html',
   'data-model/coverage.html',
   'data-model/digest-model.js',
+  'data-model/news-sources.json',
+  'data-model/NEWS-SOURCES.md',
   'data-model/digests.json',
   'data-model/digest-data.js'
 ];
@@ -89,6 +93,30 @@ const read = (relative) => fs.readFile(path.join(root, relative), 'utf8');
 
 for (const file of requiredFiles) {
   if (!(await exists(file))) failures.push(`missing required file: ${file}`);
+}
+
+if (await exists('data-model/news-sources.json')) {
+  try {
+    const registry = JSON.parse(await read('data-model/news-sources.json'));
+    if (registry.schemaVersion !== 'elliott-news-sources-v1') failures.push('news source registry: invalid schemaVersion');
+    if (!Array.isArray(registry.usageRules) || registry.usageRules.length < 3) failures.push('news source registry: usageRules are incomplete');
+    if (!Array.isArray(registry.sources) || registry.sources.length < 1) failures.push('news source registry: sources are missing');
+    const ids = new Set();
+    for (const source of registry.sources || []) {
+      if (!source.id || ids.has(source.id)) failures.push(`news source registry: missing or duplicate id ${source.id || '<empty>'}`);
+      ids.add(source.id);
+      if (!source.name || !source.kind || ![1, 2, 3].includes(source.priority) || typeof source.enabled !== 'boolean') failures.push(`news source registry: invalid metadata for ${source.id || '<empty>'}`);
+      if (!Array.isArray(source.domains) || !source.domains.length || !Array.isArray(source.topics) || !source.topics.length) failures.push(`news source registry: domains/topics missing for ${source.id || '<empty>'}`);
+      try {
+        const url = new URL(source.homeUrl);
+        if (url.protocol !== 'https:') failures.push(`news source registry: non-HTTPS homeUrl for ${source.id || '<empty>'}`);
+      } catch (_) {
+        failures.push(`news source registry: invalid homeUrl for ${source.id || '<empty>'}`);
+      }
+    }
+  } catch (error) {
+    failures.push(`news source registry: invalid JSON: ${error.message}`);
+  }
 }
 
 if (await exists('scripts/run-autonomous-cross-market-digest.mjs')) {
@@ -265,9 +293,6 @@ if (/ghp_|github_pat_/i.test(personalCredentialWrapper)) failures.push('scripts/
 
 if (await exists('data-model/home.html')) {
   const home = await read('data-model/home.html');
-  const sharedMenu = await read('shared-menu.js');
-  const homeIndex = sharedMenu.indexOf("link('dock-home'");
-  const coverageIndex = sharedMenu.indexOf("link('dock-coverage'");
   if (!home.includes('window.ELLIOTT_CROSS_MARKET_DIGESTS') && !home.includes('digest-data.js')) failures.push('data-model/home.html: digest dataset is not wired');
   for (const forbidden of ['calendar-menu', 'calendarWeeks()', "query.get('date')", 'previous-day', 'next-day', 'today-button']) {
     if (home.includes(forbidden)) failures.push(`data-model/home.html: current-day-only Home still exposes ${forbidden}`);
@@ -276,10 +301,30 @@ if (await exists('data-model/home.html')) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: current-day digest surface is missing ${marker}`);
   }
   if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
-  if (!home.includes('.edition-card[aria-expanded="true"] .edition-copy span')) failures.push('data-model/home.html: expanded digest summary is still truncated');
+  if (!home.includes('.edition-card[aria-expanded="true"] .edition-copy span { display:none; }')) failures.push('data-model/home.html: expanded digest still repeats the list summary');
+  if (!home.includes('reader-close') || !home.includes('scrollIntoView')) failures.push('data-model/home.html: inline reader does not provide a touch-friendly close-and-return action');
+  if (!home.includes('aria-controls') || !home.includes('disclosure')) failures.push('data-model/home.html: digest expansion state is not discoverable or programmatically associated');
   if (home.includes('id="reader"') || home.includes('reader-toolbar')) failures.push('data-model/home.html: obsolete standalone digest reader remains');
-  if (homeIndex < 0 || coverageIndex < 0 || homeIndex > coverageIndex) failures.push('data-model/home.html: Home must precede Coverage in primary navigation');
-  if (!home.includes('<elliott-shared-menu') || !home.includes('data-current="home"')) failures.push('data-model/home.html: active shared Home navigation is missing');
+  for (const marker of ['color-scheme:light dark', '--background:light-dark', '--foreground:light-dark', '--primary:light-dark', '--content-max:900px', '.shell { width:min(var(--content-max),100%); margin:0 auto;', '@media (max-width:1024px)', '@media (pointer:coarse)', 'safe-area-inset-top', 'safe-area-inset-bottom']) {
+    if (!home.includes(marker)) failures.push(`data-model/home.html: standalone moomoo-style surface is missing ${marker}`);
+  }
+  for (const forbidden of ['class="masthead"', 'network-state', '<elliott-shared-menu', 'shared-menu.css', 'shared-menu.js', 'pwa-register-v27.js', 'manifest.webmanifest']) {
+    if (home.includes(forbidden)) failures.push(`data-model/home.html: discarded app shell is still exposed via ${forbidden}`);
+  }
+  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="digest"', 'data-digest-href="home.html"', 'data-moomoo-href="../moomoo-patterns.html"']) {
+    if (!home.includes(marker)) failures.push(`data-model/home.html: reusable top bar is missing ${marker}`);
+  }
+}
+
+if (await exists('shared-topbar.js') && await exists('shared-topbar.css')) {
+  const topbarScript = await read('shared-topbar.js');
+  const topbarStyle = await read('shared-topbar.css');
+  for (const marker of ['class ElliottTopbar', "customElements.define('elliott-topbar'", "label:'市場摘要'", "label:'每日型態'", 'aria-current']) {
+    if (!topbarScript.includes(marker)) failures.push(`shared-topbar.js: missing ${marker}`);
+  }
+  for (const marker of ['position:fixed', 'top:0', '--shared-topbar-height:36px', '--content-max,900px', 'safe-area-inset-top', '@media (pointer:coarse)', '--shared-topbar-height:44px']) {
+    if (!topbarStyle.includes(marker)) failures.push(`shared-topbar.css: missing ${marker}`);
+  }
 }
 
 if (await exists('shared-menu.js')) {
@@ -287,7 +332,7 @@ if (await exists('shared-menu.js')) {
   for (const marker of ['dock-home', 'dock-coverage', 'ticker-menu-toggle', 'ticker-menu-trigger', 'PROTOTYPE_COVERAGE_COMPANIES', 'item.append(ticker, company)', 'shared-ticker-sheet,.ticker-sheet', 'aria-current', 'safe-area-inset-bottom', "['home', 'coverage', 'ticker']", "addEventListener('touchstart'", "addEventListener('touchend'", 'grid-template-rows:auto minmax(0,1fr)', 'overscroll-behavior:contain', 'touch-action:pan-y', 'scroll-snap-type:none']) {
     if (!sharedMenu.includes(marker)) failures.push(`shared-menu.js: missing ${marker}`);
   }
-  for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
+  for (const file of ['data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
     const html = await read(file);
   if (!html.includes('shared-menu.css') || !html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu component is not mounted with its static stylesheet`);
     if (!html.includes('data-ticker-page-href=')) failures.push(`${file}: shared swipe navigation destinations are incomplete`);

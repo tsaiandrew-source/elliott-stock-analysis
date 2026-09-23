@@ -51,7 +51,7 @@ if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-192
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-icon-512.png') && icon.sizes === '512x512' && icon.purpose === 'any')) failures.push('manifest missing official * 512x512 any icon');
 if (!manifest.icons?.some((icon) => icon.src.includes('elliott-asterisk-maskable-512.png') && icon.sizes === '512x512' && icon.purpose === 'maskable')) failures.push('manifest missing official * 512x512 maskable icon');
 
-const htmlFiles = ['index.html', 'data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html'];
+const htmlFiles = ['index.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html'];
 for (const file of htmlFiles) {
   const html = await read(file);
   for (const marker of ['viewport-fit=cover', 'apple-mobile-web-app-capable', 'apple-mobile-web-app-status-bar-style', 'apple-touch-icon', 'manifest.webmanifest', 'pwa-register-v27.js']) {
@@ -63,12 +63,18 @@ for (const file of htmlFiles) {
   if (html.includes('elliott-plus-icon.svg')) failures.push(`${file}: legacy E-shaped icon is still referenced`);
 }
 
-for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
+for (const file of ['data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html']) {
   const html = await read(file);
   if (!html.includes('shared-menu.css') || !html.includes('shared-menu.js') || !html.includes('<elliott-shared-menu')) failures.push(`${file}: shared menu assets are missing`);
 }
 
-if (!(await read('data-model/home.html')).includes('<title>股市分析</title>')) failures.push('home document title must be 股市分析');
+const standaloneHome = await read('data-model/home.html');
+for (const marker of ['<title>跨市場摘要</title>', 'color-scheme:light dark', '--background:light-dark', '--primary:light-dark', '@media (max-width:1024px)', '@media (pointer:coarse)']) {
+  if (!standaloneHome.includes(marker)) failures.push(`standalone digest Home is missing ${marker}`);
+}
+for (const forbidden of ['apple-mobile-web-app-capable', 'manifest.webmanifest', 'pwa-register-v27.js', 'shared-menu.css', 'shared-menu.js', '<elliott-shared-menu', 'network-state', 'class="masthead"']) {
+  if (standaloneHome.includes(forbidden)) failures.push(`standalone digest Home still includes app shell marker ${forbidden}`);
+}
 
 for (const file of ['data-model/home.html', 'data-model/coverage.html', 'data-model/app.html', 'chart-surface/index.html', 'offline.html']) {
   const html = await read(file);

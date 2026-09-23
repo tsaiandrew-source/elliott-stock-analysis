@@ -1,0 +1,189 @@
+{
+  "schemaVersion": "elliott-news-sources-v1",
+  "lastReviewed": "2026-09-23",
+  "purpose": "Canonical discovery list for the cross-market digest. Add or disable sources here; individual digest citations remain in digests.json.",
+  "usageRules": [
+    "Use primary sources for claims whenever an official release, filing, speech, essay, or company announcement exists.",
+    "Use independent reporting to establish market reaction, context, and competing interpretations.",
+    "Do not use social posts, forums, or unattributed aggregators as sole evidence for a material claim.",
+    "A source in this registry is eligible for discovery, not automatic proof; every cited page must still pass freshness and claim-level verification.",
+    "Scan enabled executive and company primary sources over weekends so essays or announcements that may move Monday markets are not missed."
+  ],
+  "sources": [
+    {
+      "id": "ap",
+      "name": "Associated Press",
+      "kind": "wire",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://apnews.com/hub/business",
+      "domains": ["apnews.com"],
+      "topics": ["global markets", "energy", "geopolitics", "market reaction"],
+      "notes": "Broad market and event context; pair with the relevant primary source when available."
+    },
+    {
+      "id": "reuters",
+      "name": "Reuters",
+      "kind": "wire",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.reuters.com/markets/",
+      "domains": ["reuters.com", "marketscreener.com", "investing.com", "lse.co.uk", "boursorama.com"],
+      "topics": ["cross-asset markets", "central banks", "commodities", "companies", "market reaction"],
+      "notes": "Prefer the direct Reuters URL; syndicated copies are fallback access paths."
+    },
+    {
+      "id": "axios",
+      "name": "Axios",
+      "kind": "news",
+      "priority": 2,
+      "enabled": true,
+      "homeUrl": "https://www.axios.com/economy-business",
+      "domains": ["axios.com"],
+      "topics": ["policy", "technology", "markets"]
+    },
+    {
+      "id": "bloomberg",
+      "name": "Bloomberg",
+      "kind": "news",
+      "priority": 2,
+      "enabled": true,
+      "homeUrl": "https://www.bloomberg.com/markets",
+      "domains": ["bloomberg.com"],
+      "topics": ["markets", "economics", "companies", "commodities"]
+    },
+    {
+      "id": "financial-times",
+      "name": "Financial Times",
+      "kind": "news",
+      "priority": 2,
+      "enabled": true,
+      "homeUrl": "https://www.ft.com/markets",
+      "domains": ["ft.com"],
+      "topics": ["global markets", "economics", "companies"]
+    },
+    {
+      "id": "wall-street-journal",
+      "name": "The Wall Street Journal",
+      "kind": "news",
+      "priority": 2,
+      "enabled": true,
+      "homeUrl": "https://www.wsj.com/news/markets",
+      "domains": ["wsj.com"],
+      "topics": ["markets", "economics", "companies"]
+    },
+    {
+      "id": "fortune",
+      "name": "Fortune",
+      "kind": "news",
+      "priority": 3,
+      "enabled": true,
+      "homeUrl": "https://fortune.com/section/finance/",
+      "domains": ["fortune.com"],
+      "topics": ["companies", "technology", "market context"]
+    },
+    {
+      "id": "yahoo-finance",
+      "name": "Yahoo Finance",
+      "kind": "market-context",
+      "priority": 3,
+      "enabled": true,
+      "homeUrl": "https://finance.yahoo.com/",
+      "domains": ["finance.yahoo.com"],
+      "topics": ["price action", "market reaction", "crypto"],
+      "notes": "Context and price discovery only; verify material claims with a primary source or first-tier reporting."
+    },
+    {
+      "id": "federal-reserve",
+      "name": "Federal Reserve",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.federalreserve.gov/newsevents.htm",
+      "domains": ["federalreserve.gov", "newyorkfed.org", "chicagofed.org", "philadelphiafed.org", "fred.stlouisfed.org"],
+      "topics": ["monetary policy", "speeches", "economic data", "financial conditions"]
+    },
+    {
+      "id": "us-economic-data",
+      "name": "United States official economic releases",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.bls.gov/bls/newsrels.htm",
+      "domains": ["bls.gov", "census.gov", "dol.gov", "eia.gov", "ir.eia.gov", "home.treasury.gov", "treasuryauctions.gov", "treasurydirect.gov"],
+      "topics": ["inflation", "labor", "retail sales", "housing", "energy", "Treasury auctions"]
+    },
+    {
+      "id": "global-central-banks",
+      "name": "Global central banks",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.ecb.europa.eu/press/html/index.en.html",
+      "domains": ["ecb.europa.eu", "boj.or.jp", "bankofengland.co.uk"],
+      "topics": ["monetary policy", "minutes", "speeches", "market operations"]
+    },
+    {
+      "id": "government-and-regulators",
+      "name": "Government and regulator releases",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.sec.gov/newsroom",
+      "domains": ["sec.gov", "senate.gov", "gov.ca.gov", "mfa.gov.cn", "us.china-embassy.gov.cn", "spa.gov.sa"],
+      "topics": ["regulation", "legislation", "geopolitics", "official statements"]
+    },
+    {
+      "id": "market-infrastructure",
+      "name": "Market infrastructure and calendars",
+      "kind": "primary-data",
+      "priority": 2,
+      "enabled": true,
+      "homeUrl": "https://www.cmegroup.com/markets.html",
+      "domains": ["cmegroup.com", "nasdaq.com"],
+      "topics": ["economic calendar", "futures", "market data"]
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.anthropic.com/news",
+      "domains": ["anthropic.com"],
+      "topics": ["AI", "company announcements", "research", "policy"]
+    },
+    {
+      "id": "dario-amodei",
+      "name": "Dario Amodei essays",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.darioamodei.com/",
+      "domains": ["darioamodei.com"],
+      "topics": ["AI", "executive essays", "industry outlook"],
+      "notes": "Weekend scan required because long-form executive essays can affect the next trading session."
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "kind": "primary",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://openai.com/news/",
+      "domains": ["openai.com"],
+      "topics": ["AI", "company announcements", "research", "policy"]
+    },
+    {
+      "id": "company-primary-sources",
+      "name": "Company newsrooms and investor relations",
+      "kind": "primary-pattern",
+      "priority": 1,
+      "enabled": true,
+      "homeUrl": "https://www.sec.gov/edgar/search/",
+      "domains": ["about.fb.com", "newsroom.accenture.com", "newsroom.amd.com", "nebius.com", "docs.nebius.com", "berkshirehathaway.com"],
+      "topics": ["earnings", "guidance", "pricing", "products", "partnerships", "executive commentary"],
+      "notes": "Extend domains when a newly material company or executive source is cited. Prefer its official newsroom, IR site, filing, or authored essay."
+    }
+  ]
+}

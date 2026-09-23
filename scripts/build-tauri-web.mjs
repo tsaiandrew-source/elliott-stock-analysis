@@ -13,7 +13,9 @@ const copiedFiles = [
   'manifest.webmanifest',
   'offline.html',
   'shared-menu.css',
-  'shared-menu.js'
+  'shared-menu.js',
+  'shared-topbar.css',
+  'shared-topbar.js'
 ];
 
 const appPages = [
