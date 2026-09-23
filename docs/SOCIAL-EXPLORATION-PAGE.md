@@ -60,8 +60,11 @@ three times inside that window, publishes only a full `PASS`, commits
 only the current snapshot and append-only history, and then verifies the public
 page, the third navigation destination, and the exact published data-through
 date. If a gate remains incomplete, the workflow stops and the last verified
-public version stays in place. The workflow is not live until this branch is
-reviewed and merged.
+public version stays in place. The unchanged 17:30 PT route is authorized to
+refresh and publish autonomously without per-run review or approval. A change
+to the tracked profile roster, ticker selection rule, publication destination,
+schedule, schema, or visible product scope remains a contract change and must
+be reviewed separately before it is released.
 
 News digests prefer the locked human-edited Traditional Chinese summary when its
 source headline still matches. If a new headline becomes the highest-attention

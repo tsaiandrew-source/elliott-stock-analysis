@@ -27,7 +27,10 @@ const exclusions = new Set([...(roster.exclusion?.list1 || []), ...(roster.exclu
 if (roster.schemaVersion !== 'social-exploration-roster-v1') failures.push('roster schema mismatch');
 if (tickers.length !== 20 || new Set(tickers).size !== 20) failures.push('roster must contain 20 unique tickers');
 if (tickers.some((ticker) => exclusions.has(ticker))) failures.push('roster overlaps Moomoo List 1 or Candidate');
-if ((roster.profiles || []).length !== 8) failures.push('all eight approved profiles must remain tracked');
+if ((roster.profiles || []).length !== 10) failures.push('all ten approved profiles must remain tracked');
+const profileMap = new Map((roster.profiles || []).map((profile) => [profile.id, profile]));
+if (!profileMap.has('trendspider') || !profileMap.get('trendspider')?.sourceUrls?.includes('https://www.threads.com/share/BASv21Gqzo/')) failures.push('TrendSpider Instagram and Threads sources must remain linked to one profile');
+if (profileMap.get('dddave.id')?.url !== 'https://www.threads.com/@dddave.id') failures.push('dddave.id canonical Threads profile must remain tracked');
 if (roster.tickers.filter((entry) => entry.lane === 'common').length !== 10) failures.push('Common lane must contain 10 names');
 if (roster.tickers.filter((entry) => entry.lane === 'surprise').length !== 10) failures.push('Surprise lane must contain 10 names');
 if (dataset.schemaVersion !== 'social-exploration-daily-v1') failures.push('daily schema mismatch');

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "social-exploration-roster-v1",
-  "rosterId": "SOCIAL-EXPLORATION-20260923-V1",
-  "generatedAt": "2026-09-23T10:01:26-07:00",
+  "rosterId": "SOCIAL-EXPLORATION-20260923-V2",
+  "generatedAt": "2026-09-23T13:25:35-07:00",
   "method": "social_exploration",
   "targetSize": 20,
   "observationWindow": {
@@ -23,7 +23,9 @@
     {"id": "fomo_soc", "label": "Fomo", "platform": "Threads", "url": "https://www.threads.com/@fomo_soc", "accessState": "readable_partial"},
     {"id": "iwealthnote", "label": "苹果理财笔记", "platform": "Facebook", "url": "https://www.facebook.com/iwealthnote", "accessState": "readable"},
     {"id": "whaleagent", "label": "Moby Dick", "platform": "Threads", "url": "https://www.threads.com/@whaleagent", "accessState": "readable"},
-    {"id": "pathfindernote", "label": "Pathfinder Note", "platform": "Threads", "url": "https://www.threads.com/@pathfindernote", "accessState": "readable"}
+    {"id": "pathfindernote", "label": "Pathfinder Note", "platform": "Threads", "url": "https://www.threads.com/@pathfindernote", "accessState": "readable"},
+    {"id": "trendspider", "label": "TrendSpider", "platform": "Instagram／Threads", "url": "https://www.instagram.com/trendspider/", "sourceUrls": ["https://www.instagram.com/trendspider/", "https://www.threads.com/@trendspider", "https://www.threads.com/share/BASv21Gqzo/"], "accessState": "readable"},
+    {"id": "dddave.id", "label": "dddave.id", "platform": "Threads", "url": "https://www.threads.com/@dddave.id", "accessState": "readable"}
   ],
   "tickers": [
     {"rank": 1, "ticker": "META", "company": "Meta Platforms", "lane": "common", "profileIds": ["watanabe.wei", "unclestocknotes", "usstockdream", "pathfindernote"], "businessReportPeriod": "2026 Q2", "businessDigest": "2026 Q2 營收 608 億美元、年增 28%，但營業利益年減 8%，主因成本、法律費用與裁員支出上升。廣告量價齊升仍是核心動能；下一步要驗證 AI 資本支出擴大後，能否恢復利潤與自由現金流。", "businessSourceUrl": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/"},
