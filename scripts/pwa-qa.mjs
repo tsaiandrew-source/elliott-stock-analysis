@@ -69,7 +69,7 @@ for (const file of ['data-model/coverage.html', 'data-model/app.html', 'chart-su
 }
 
 const standaloneHome = await read('data-model/home.html');
-for (const marker of ['<title>跨市場摘要</title>', 'color-scheme:light dark', '--background:light-dark', '--primary:light-dark', '@media (max-width:1024px)', '@media (pointer:coarse)']) {
+for (const marker of ['<title>E+ 市場摘要</title>', 'color-scheme:light dark', '--background:light-dark', '--primary:light-dark', '@media (max-width:1024px)', '@media (pointer:coarse)']) {
   if (!standaloneHome.includes(marker)) failures.push(`standalone digest Home is missing ${marker}`);
 }
 for (const forbidden of ['apple-mobile-web-app-capable', 'manifest.webmanifest', 'pwa-register-v27.js', 'shared-menu.css', 'shared-menu.js', '<elliott-shared-menu', 'network-state', 'class="masthead"']) {
