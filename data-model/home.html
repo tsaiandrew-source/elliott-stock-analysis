@@ -7,7 +7,7 @@
   <meta name="format-detection" content="telephone=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>跨市場摘要</title>
+  <title>E+ 市場摘要</title>
   <link rel="stylesheet" href="../shared-topbar.css?v=20260923-1">
   <script src="../shared-topbar.js?v=20260923-2" defer></script>
   <style>
@@ -345,11 +345,11 @@
         });
         article.append(closeButton);
         button.after(article);
-        document.title = `${record.title} · 跨市場摘要`;
+        document.title = `${record.title} · E+ 市場摘要`;
       }
 
       function closeReader() {
-        document.title = '跨市場摘要';
+        document.title = 'E+ 市場摘要';
         list.querySelectorAll('.edition-details').forEach((node) => node.remove());
         list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => {
           node.setAttribute('aria-expanded', 'false');
