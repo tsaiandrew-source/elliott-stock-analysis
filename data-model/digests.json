@@ -1,7 +1,204 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-23T16:46:54.000Z",
+  "generatedAt": "2026-09-23T18:56:36.196Z",
   "records": [
+    {
+      "id": "daily-2026-09-23-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "marketDate": "2026-09-23",
+      "publishedAt": "2026-09-23T11:32:30-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-23T11:31:00-07:00",
+      "retrievedAt": "2026-09-23T11:32:00-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "午間訊號｜2026-09-23",
+      "summary": "晨間基準已被兩個關鍵價格訊號推翻：10年期美債殖利率不但突破5%，盤中約升至5.08%，原油也重新走高；美元同步升至近兩個月高點。美股因此由晨間的窄幅震盪轉為較廣泛下跌，Nasdaq跌幅大於S&P 500，能源成為少數相對強勢族群。Barr的住房演講確認供給短缺與高利率對負擔能力的長期壓力，但沒有提供足以抵銷今日升息與期限溢價重定價的政策訊號。午間主線已從「油價與5%關卡能否受控」升級為「能源、成長與利率同時施壓估值」；若10年期不能跌回5%下方、油價也不回吐，下午反彈仍較像部位調整，而不是晨間劇本恢復。",
+      "sections": [
+        {
+          "heading": "1. 最大變化：10年期突破5%，晨間估值支撐失效",
+          "paragraphs": [
+            "事實：午間市場報導顯示，10年期美債殖利率盤中約升11個基點至5.08%，突破晨間設定的5%失效條件；美元升至近兩個月高點。",
+            "判斷：市場不再只擔心單一油價衝擊，而是在重新提高Fed路徑、期限溢價與名目成長的組合定價。這會直接壓縮長久期科技估值，也使住房、公用事業、小型股等利率敏感資產更難改善。信心：高。",
+            "反證：10年期在收盤前明確跌回5%下方、美元回吐漲幅，而且科技與等權重同步修復。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美股開盤",
+              "url": "https://finance.yahoo.com/markets/articles/wall-st-opens-lower-oil-133426733.html"
+            },
+            {
+              "label": "Reuters美元與油價",
+              "url": "https://www.marketscreener.com/news/dollar-jumps-to-near-two-month-high-on-fed-outlook-oil-climb-ce785ad9d188f026"
+            }
+          ]
+        },
+        {
+          "heading": "2. 股市確認壓力：Nasdaq領跌，能源成為少數相對強勢",
+          "paragraphs": [
+            "事實：截至美東時間約11:45，S&P 500約跌0.55%、Nasdaq約跌0.91%、Dow約跌0.54%；除了能源外，多數產業走弱。這與晨間期貨接近平盤、科技相對強的基準不同。",
+            "判斷：這仍較像折現率與產業再分配，而不是流動性恐慌；但跌勢已比晨間預期更廣，且科技不再提供足夠的指數緩衝。若信用與波動率下午同步惡化，才會升級成金融條件衝擊。信心：中高。",
+            "反證：Nasdaq收復大部分跌幅，市場寬度改善，而且能源以外的週期股與小型股轉強。"
+          ],
+          "links": [
+            {
+              "label": "午間指數與殖利率",
+              "url": "https://www.fool.com/coverage/stock-market-today/2026/09/23/stock-market-midday-sept-23-stocks-slip-as-treasury-yields-hit-19-year-high/"
+            },
+            {
+              "label": "Reuters盤中市場",
+              "url": "https://sa.marketscreener.com/news/wall-st-falls-as-oil-ticks-up-yields-rise-ahead-of-us-china-summit-ce785ad9de8df72c"
+            }
+          ]
+        },
+        {
+          "heading": "3. 原油反彈：外交希望尚未轉成可執行的供應改善",
+          "paragraphs": [
+            "事實：原油在晨間後重新上漲；Reuters報導指出，伊朗相關言論讓市場重新質疑和平談判的進度。EIA資料同時顯示最近一週美國原油與石油產品總庫存增加，但沒有消除地緣供應溢價。",
+            "判斷：晨間把Brent維持約99至101美元視為基準，但午間油價與殖利率同向上升，使『能源通膨延長、利率更高更久』重新成為主導組合。庫存增加可以緩和實體短缺，卻無法單獨抵銷海峽、外交與運輸風險。信心：中高。",
+            "反證：出現可驗證的停火或油流恢復安排，且Brent回吐今日漲幅；單靠談判語氣改善仍不足。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美元與油價",
+              "url": "https://www.marketscreener.com/news/dollar-jumps-to-near-two-month-high-on-fed-outlook-oil-climb-ce785ad9d188f026"
+            },
+            {
+              "label": "EIA每週原油庫存",
+              "url": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?f=W&n=PET&s=WCRSTUS1"
+            }
+          ]
+        },
+        {
+          "heading": "4. Barr住房演講確認結構壓力，沒有扭轉今日利率交易",
+          "paragraphs": [
+            "事實：Fed Governor Michael Barr表示，住房供給缺口估計約200萬至550萬戶；Atlanta Fed住房負擔能力指數在2026年7月降至68，為21年低點。約一半房貸利率仍在4%或以下、近八成低於6%，高利率造成的鎖定效應同時限制供給與流動。",
+            "判斷：演講強化的是住房供給、保險、稅負與融資成本的長期約束，而不是今日可立即轉鴿的政策承諾。因此房地產與購屋相關消費仍同時面對高價格與高折現率。信心：高。",
+            "反證：長債殖利率持續回落並帶動房貸利率下降，且成屋供給與成交連續改善。"
+          ],
+          "links": [
+            {
+              "label": "Fed Barr住房演講",
+              "url": "https://www.federalreserve.gov/newsevents/speech/barr20260923a.htm"
+            }
+          ]
+        },
+        {
+          "heading": "5. 下一個重新定價點：Trump—Xi與中東談判，而不是更多晨間重述",
+          "paragraphs": [
+            "事實：Xi Jinping本週訪美，AI、貿易、關稅與伊朗議題都是可能影響市場的談判軸線；市場同時等待中東停火與運輸安全是否出現可執行細節。",
+            "判斷：下午風險不是單一標題，而是任何談判訊號能否同時降低油價與長債殖利率。若只改善中美語氣、卻沒有能源供應進展，估值壓力可能繼續；若油價回落但殖利率仍在5%以上，科技反彈也可能受限。信心：中。",
+            "收盤前觀察：10年期能否回到5%下方、油價是否回吐、Nasdaq相對S&P 500是否止穩、信用與VIX是否加入避險，以及能源以外市場寬度是否改善。"
+          ],
+          "links": [
+            {
+              "label": "AP Trump—Xi背景",
+              "url": "https://apnews.com/article/e560910c897fedb0448eda4cdbfdbaea"
+            },
+            {
+              "label": "Reuters全球市場與外交",
+              "url": "https://www.marketscreener.com/news/asia-stocks-ride-tech-wave-higher-oil-slips-again-ce785ad9db8df226"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產變化表",
+          "table": {
+            "columns": [
+              "資產",
+              "相較晨間",
+              "午間判讀"
+            ],
+            "rows": [
+              [
+                "10年期美債",
+                "明顯更弱",
+                "殖利率約5.08%，突破晨間失效條件"
+              ],
+              [
+                "美元",
+                "更強",
+                "接近兩個月高點，確認相對利率優勢"
+              ],
+              [
+                "原油",
+                "更強",
+                "外交不確定性重新加入供應溢價"
+              ],
+              [
+                "S&P 500",
+                "轉弱",
+                "約跌0.55%，高利率壓縮估值"
+              ],
+              [
+                "Nasdaq",
+                "更弱",
+                "約跌0.91%，不再提供晨間預期的支撐"
+              ],
+              [
+                "能源股",
+                "相對更強",
+                "油價回升下的少數領先族群"
+              ],
+              [
+                "黃金",
+                "更弱",
+                "高實質與名目殖利率壓過避險需求"
+              ],
+              [
+                "信用／流動性",
+                "尚待確認",
+                "目前證據不足以定義為失序"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "更新後的基準與失效條件",
+          "paragraphs": [
+            "更新後基準：10年期維持5%左右、原油偏強、美元強勢；大型科技與大盤承壓，能源相對領先，但尚未升級為信用或流動性事件。",
+            "偏強路徑：外交出現可執行進展，油價回吐，10年期跌回5%下方，Nasdaq與市場寬度同步修復。",
+            "偏弱路徑：10年期守在5.05%以上、油價延續漲勢，而且信用利差與波動率開始同步惡化；屆時壓力會由估值調整擴散為金融條件收緊。",
+            "資料界線：即時指數與殖利率取自可靠市場報導，可能在截稿後變動；Barr內容使用Fed正式講稿；庫存使用EIA官方序列。沒有把尚未簽署的外交安排當成既成事實。"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Reuters美股開盤",
+          "url": "https://finance.yahoo.com/markets/articles/wall-st-opens-lower-oil-133426733.html"
+        },
+        {
+          "label": "Reuters美元與油價",
+          "url": "https://www.marketscreener.com/news/dollar-jumps-to-near-two-month-high-on-fed-outlook-oil-climb-ce785ad9d188f026"
+        },
+        {
+          "label": "Reuters盤中市場",
+          "url": "https://sa.marketscreener.com/news/wall-st-falls-as-oil-ticks-up-yields-rise-ahead-of-us-china-summit-ce785ad9de8df72c"
+        },
+        {
+          "label": "午間指數與殖利率",
+          "url": "https://www.fool.com/coverage/stock-market-today/2026/09/23/stock-market-midday-sept-23-stocks-slip-as-treasury-yields-hit-19-year-high/"
+        },
+        {
+          "label": "Fed Barr住房演講",
+          "url": "https://www.federalreserve.gov/newsevents/speech/barr20260923a.htm"
+        },
+        {
+          "label": "EIA每週原油庫存",
+          "url": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?f=W&n=PET&s=WCRSTUS1"
+        },
+        {
+          "label": "AP Trump—Xi背景",
+          "url": "https://apnews.com/article/e560910c897fedb0448eda4cdbfdbaea"
+        },
+        {
+          "label": "Reuters全球市場與外交",
+          "url": "https://www.marketscreener.com/news/asia-stocks-ride-tech-wave-higher-oil-slips-again-ce785ad9db8df226"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-23-morning",
       "cadence": "daily",
