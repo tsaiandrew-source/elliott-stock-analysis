@@ -1,22 +1,27 @@
 <!doctype html>
-<html lang="en" data-visualize-standalone>
+<html lang="zh-Hant" data-visualize-standalone>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Moomoo 型態分析儀表板</title>
-<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/elliott-plus-icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/elliott-plus-apple-touch-icon.png">
+<title>E+ 每日型態</title>
+<link rel="stylesheet" href="shared-topbar.css?v=20260923-1">
+<script src="shared-topbar.js?v=20260923-2" defer></script>
+<style>:root{color-scheme:light dark;--background:light-dark(rgb(255 255 255),rgb(24 24 24));--foreground:light-dark(rgb(26 28 31),rgb(255 255 255));--card:color-mix(in oklab,var(--foreground) 5%,var(--background));--muted-foreground:light-dark(rgb(26 28 31 / 49.4%),rgb(255 255 255 / 49.8%));--primary:light-dark(rgb(51 156 255),rgb(131 195 255));--accent:light-dark(rgb(229 242 255),rgb(13 39 63));--border:light-dark(rgb(26 28 31 / 8%),rgb(255 255 255 / 8.2%));--ring:light-dark(rgb(51 156 255),rgb(131 195 255 / 76%));--radius-md:8px;--font-weight-medium:500;--content-max:900px;background:var(--background)}html,body{margin:0}body{box-sizing:border-box;padding:calc(var(--shared-topbar-height) + env(safe-area-inset-top) + 1rem) max(1rem,env(safe-area-inset-right)) max(1rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left));background:inherit}iframe{display:block;width:100%;height:calc(100vh - var(--shared-topbar-height) - env(safe-area-inset-top) - 2rem);height:calc(100dvh - var(--shared-topbar-height) - env(safe-area-inset-top) - 2rem);margin:0 auto;border:0}</style>
 </head>
 <body>
-<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Moomoo 型態分析儀表板" srcdoc="&lt;!doctype html&gt;
+<elliott-topbar data-current="moomoo" data-digest-href="data-model/home.html" data-moomoo-href="moomoo-patterns.html"></elliott-topbar>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="E+ 每日型態" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
 &lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
-&lt;title&gt;Moomoo 型態分析儀表板&lt;/title&gt;
+&lt;title&gt;E+ 每日型態&lt;/title&gt;
 &lt;style&gt;:root {
   color-scheme: light dark;
   background-color: var(
@@ -1038,7 +1043,7 @@ html&gt;body{padding:0}&lt;/style&gt;
 &lt;div id=&quot;moomoo-sortable-analysis&quot; class=&quot;view-decision&quot;&gt;
   &lt;header class=&quot;dashboard-header&quot;&gt;
     &lt;div&gt;
-      &lt;h2&gt;每日型態決策儀表板&lt;/h2&gt;
+      &lt;h2&gt;E+ 每日型態&lt;/h2&gt;
       &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍；需要時才展開完整分析。&lt;/p&gt;
     &lt;/div&gt;
     &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 技術資料：2026-09-22 正式收盤&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;moomoo 圖註：2026-09-22 23／23 已核對（AMKR／BE／SNDK／RIVN 補齊；MRVL 文字已移近今日 K 線）&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權資料：2026-09-22 收盤後（23／23 已嘗試；22 檔完成時段鏈；FTNT 來源早於收盤，僅供參考）&lt;/span&gt;&lt;/div&gt;
