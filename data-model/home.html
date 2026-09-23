@@ -3,119 +3,132 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#181818">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="E+">
+  <meta name="referrer" content="no-referrer">
   <meta name="format-detection" content="telephone=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <link rel="manifest" href="../manifest.webmanifest">
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/elliott-asterisk-icon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="../assets/elliott-asterisk-apple-touch-icon.png">
-  <link rel="stylesheet" href="../shared-menu.css?v=20260915-native-v1">
-  <script src="../pwa-register-v27.js" defer></script>
-  <title>股市分析</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>跨市場摘要</title>
+  <link rel="stylesheet" href="../shared-topbar.css?v=20260923-1">
+  <script src="../shared-topbar.js?v=20260923-2" defer></script>
   <style>
-    :root { color-scheme:dark; --bg:#181818; --surface:#202020; --surface2:#2d2d2d; --line:rgba(255,255,255,.082); --text:#fff; --muted:rgba(255,255,255,.5); --aqua:#83c3ff; --lime:#40c977; --amber:#ff8549; --rose:#ff6764; --radius:10px; }
+    :root {
+      color-scheme:light dark;
+      --background:light-dark(rgb(255 255 255),rgb(24 24 24));
+      --foreground:light-dark(rgb(26 28 31),rgb(255 255 255));
+      --card:color-mix(in oklab,var(--foreground) 5%,var(--background));
+      --card-foreground:var(--foreground);
+      --popover:light-dark(rgb(255 255 255),rgb(45 45 45));
+      --primary:light-dark(rgb(51 156 255),rgb(131 195 255));
+      --primary-foreground:light-dark(rgb(255 255 255),rgb(13 13 13));
+      --secondary:light-dark(rgb(255 255 255 / 96%),rgb(54 54 54 / 96%));
+      --muted:color-mix(in srgb,var(--foreground) 10%,transparent);
+      --muted-foreground:light-dark(rgb(26 28 31 / 49.4%),rgb(255 255 255 / 49.8%));
+      --accent:light-dark(rgb(229 242 255),rgb(13 39 63));
+      --accent-foreground:var(--primary);
+      --destructive:light-dark(rgb(226 85 7),rgb(255 133 73));
+      --border:light-dark(rgb(26 28 31 / 8%),rgb(255 255 255 / 8.2%));
+      --ring:light-dark(rgb(51 156 255),rgb(131 195 255 / 76%));
+      --green:light-dark(rgb(0 162 64),rgb(64 201 119));
+      --orange:light-dark(rgb(226 85 7),rgb(251 106 34));
+      --red:light-dark(rgb(224 46 42),rgb(255 103 100));
+      --purple:light-dark(rgb(146 79 247),rgb(173 123 249));
+      --font-sans:-apple-system,system-ui,"Segoe UI",sans-serif;
+      --font-size-base:14px;
+      --font-weight-normal:430;
+      --font-weight-medium:500;
+      --content-max:900px;
+      --radius:10px;
+      --radius-sm:6px;
+      --radius-md:8px;
+      --radius-2xl:16px;
+    }
     * { box-sizing:border-box; }
-    html { min-height:100%; background:var(--bg); }
-    body { min-height:100vh; min-height:100dvh; margin:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(82px + env(safe-area-inset-bottom)) env(safe-area-inset-left); overflow-x:hidden; background:var(--bg); color:var(--text); font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-text-size-adjust:100%; }
+    html { min-height:100%; background:var(--background); }
+    body { min-height:100vh; min-height:100dvh; margin:0; padding:calc(var(--shared-topbar-height) + env(safe-area-inset-top) + 16px) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); overflow-x:hidden; background:var(--background); color:var(--foreground); font-family:var(--font-sans); font-size:var(--font-size-base); font-weight:var(--font-weight-normal); line-height:1.5; -webkit-text-size-adjust:100%; }
     button, a { font:inherit; }
     button { -webkit-tap-highlight-color:transparent; }
-    a { color:var(--aqua); }
-    .shell { width:min(1040px,100%); margin:0 auto; padding:22px 18px 44px; }
-    .masthead { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--line); }
-    .eyebrow { color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.11em; }
-    h1 { margin:3px 0 2px; font-size:clamp(24px,3.2vw,34px); line-height:1.18; letter-spacing:-.02em; }
-    .dek { margin:0; color:var(--muted); font-size:13px; }
-    .network { display:inline-flex; min-height:38px; align-items:center; gap:7px; flex:0 0 auto; padding:8px 11px; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:var(--surface); font-size:11px; }
-    .network::before { width:7px; height:7px; border-radius:50%; background:var(--lime); content:""; }
-    .network.is-offline::before { background:var(--amber); }
-    .day-summary { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin:0 0 14px; padding:11px 13px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
-    .day-summary strong { font-size:15px; }
-    .day-summary span { color:var(--muted); font-size:11px; text-align:right; }
-    .status-card, .group { border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
-    .status-card { padding:18px; color:var(--muted); }
-    .status-card strong { display:block; margin-bottom:4px; color:var(--text); font-size:17px; }
+    a { color:color-mix(in srgb,var(--primary) 80%,var(--foreground) 20%); font-weight:var(--font-weight-medium); text-decoration:none; text-underline-offset:2px; }
+    a:is(:hover,:focus-visible) { text-decoration:underline dashed .5px; }
+    strong, th { font-weight:var(--font-weight-medium); }
+    .shell { width:min(var(--content-max),100%); margin:0 auto; padding:0; }
+    .day-summary { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.4rem 1rem; margin:0; padding:0 0 .8rem; border-bottom:1px solid var(--border); }
+    .day-summary strong { font-size:1.08rem; }
+    .day-summary span { color:var(--muted-foreground); font-size:.86rem; text-align:right; }
+    .status-card { padding:12px; border-radius:var(--radius-2xl); color:var(--muted-foreground); background:var(--card); }
+    .status-card strong { display:block; margin-bottom:4px; color:var(--foreground); font-size:1.08rem; }
     .digest-list { display:grid; gap:14px; min-width:0; }
     .group { min-width:0; overflow:hidden; }
-    .group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:11px 13px; border-bottom:1px solid var(--line); }
-    .group-head time { color:var(--text); font-weight:850; }
-    .group-head span { color:var(--muted); font-size:11px; }
+    .group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:.8rem 0; border-bottom:1px solid var(--border); }
+    .group-head strong { color:var(--foreground); font-weight:var(--font-weight-medium); }
+    .group-head span { color:var(--muted-foreground); font-size:.82rem; }
     .edition-list { display:grid; }
-    .edition-card { display:grid; grid-template-columns:auto 1fr auto; align-items:start; gap:12px; width:100%; min-height:64px; padding:13px; border:0; border-bottom:1px solid var(--line); color:var(--text); background:transparent; text-align:left; cursor:pointer; }
+    .edition-card { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:start; gap:12px; width:100%; min-height:64px; padding:12px 0; border:0; border-bottom:1px solid var(--border); color:var(--foreground); background:transparent; text-align:left; cursor:pointer; }
     .edition-card:last-child { border-bottom:0; }
-    .edition-card:hover, .edition-card:focus-visible { background:rgba(131,195,255,.07); outline:0; }
+    .edition-card:hover { background:color-mix(in srgb,var(--muted-foreground) 6%,transparent); }
+    .edition-card:focus-visible, .source-list a:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }
     .edition-card.is-missing { cursor:default; opacity:.42; }
     .edition-card.is-missing:hover { background:transparent; }
-    .edition-card[aria-expanded="true"] { background:rgba(131,195,255,.09); box-shadow:inset 3px 0 var(--aqua); }
-    .edition-details { border-bottom:1px solid var(--line); background:rgba(0,0,0,.12); }
+    .edition-card[aria-expanded="true"] { background:color-mix(in srgb,var(--primary) 10%,var(--background)); box-shadow:inset 3px 0 var(--primary); }
+    .edition-details { margin:10px 0; border-radius:var(--radius-2xl); background:var(--card); }
     .article.edition-details { padding-top:16px; }
     .edition-details > section:first-child { margin-top:0; }
-    .edition-badge { min-width:76px; padding:4px 7px; border:1px solid rgba(131,195,255,.36); border-radius:999px; color:var(--aqua); font-size:11px; font-weight:800; text-align:center; }
-    .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { border-color:rgba(64,201,119,.4); color:var(--lime); }
+    .edition-badge { display:inline-flex; min-height:1.65rem; align-items:center; justify-content:center; padding:.1rem .5rem; border-radius:999px; color:var(--primary); background:color-mix(in srgb,currentColor 11%,transparent); font-size:.78rem; font-weight:600; white-space:nowrap; }
+    .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { color:var(--green); }
     .edition-copy { min-width:0; }
-    .edition-copy strong { display:block; font-size:14px; }
-    .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted); font-size:15px; line-height:1.6; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
-    .edition-card[aria-expanded="true"] .edition-copy span { display:block; overflow:visible; -webkit-line-clamp:unset; }
-    .edition-time { color:var(--muted); font-size:11px; white-space:nowrap; }
+    .edition-copy strong { display:block; font-size:1rem; }
+    .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted-foreground); line-height:1.5; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .edition-card[aria-expanded="true"] .edition-copy span { display:none; }
+    .edition-meta { display:inline-flex; align-items:center; gap:10px; }
+    .edition-time { color:var(--muted-foreground); font-size:.78rem; white-space:nowrap; }
+    .disclosure { width:8px; height:8px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; color:var(--muted-foreground); transform:rotate(45deg) translateY(-2px); transition:transform 160ms ease; }
+    .edition-card[aria-expanded="true"] .disclosure { transform:rotate(225deg) translate(-1px,-1px); }
     .list-view[hidden] { display:none; }
-    .article { width:min(820px,100%); min-width:0; margin:0 auto; padding:24px 22px 38px; overflow-wrap:anywhere; }
+    .article { width:100%; min-width:0; margin:10px 0; padding:16px; overflow-wrap:anywhere; }
     .article section { margin-top:24px; }
-    .article h3 { margin:0 0 10px; color:var(--aqua); font-size:17px; }
+    .article h3 { margin:0 0 10px; color:var(--foreground); font-size:1.14rem; font-weight:var(--font-weight-medium); }
     .article p { margin:0 0 12px; }
     .article ul { margin:0; padding-left:1.3em; }
     .article li + li { margin-top:8px; }
-    .table-wrap { width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+    .table-wrap { width:100%; overflow-x:auto; scrollbar-width:thin; }
     table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; font-size:13px; }
-    th, td { padding:10px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; overflow-wrap:anywhere; }
-    th { color:var(--aqua); background:var(--surface2); }
+    th, td { padding:10px 24px 10px 0; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+    th:last-child, td:last-child { padding-right:0; }
+    th { color:var(--foreground); background:transparent; }
     tr:last-child td { border-bottom:0; }
     .article .source-list { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:8px 0 0; padding:0; list-style:none; }
     .article .source-list li, .article .source-list li + li { display:flex; align-items:center; margin:0; }
-    .source-list a { display:inline-flex; min-height:32px; align-items:center; padding:5px 9px; border:1px solid var(--line); border-radius:7px; font-size:12px; line-height:1.2; text-decoration:none; }
-    .source-list a:hover, .source-list a:focus-visible { border-color:var(--aqua); }
-    @media (min-width:760px) {
-      body { padding-bottom:24px; }
-      .shell { padding:28px 28px 54px; }
-      .article { padding:32px 36px 48px; }
-    }
+    .source-list a { display:inline-flex; min-height:32px; align-items:center; padding:5px 9px; border:1px solid var(--border); border-radius:var(--radius-md); color:var(--foreground); background:var(--background); font-size:.86rem; line-height:1.2; }
+    .source-list a:hover { background:color-mix(in srgb,var(--muted-foreground) 10%,var(--background)); text-decoration:none; }
+    .reader-close { display:inline-flex; min-width:44px; min-height:44px; align-items:center; justify-content:center; margin-top:24px; padding:8px 14px; border:1px solid var(--border); border-radius:var(--radius-md); color:var(--foreground); background:var(--background); cursor:pointer; }
+    .reader-close:hover { background:var(--accent); }
+    .reader-close:focus-visible { outline:2px solid var(--ring); outline-offset:2px; }
     @media (max-width:1024px) {
       .table-wrap { overflow:visible; border:0; }
       .article table, .article tbody { display:block; width:100%; }
       .article thead { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
       .article tbody { display:grid; gap:10px; }
-      .article tbody tr { display:block; border:1px solid var(--line); border-radius:8px; background:var(--surface2); overflow:hidden; }
-      .article tbody td { display:grid; grid-template-columns:minmax(120px,34%) 1fr; gap:12px; min-height:44px; padding:10px 12px; border-bottom:1px solid var(--line); white-space:normal; }
-      .article tbody td::before { content:attr(data-label); color:var(--muted); font-size:11px; font-weight:750; letter-spacing:.03em; }
-      .article tbody tr:last-child td:not(:last-child) { border-bottom:1px solid var(--line); }
+      .article tbody tr { display:block; margin:0 0 1rem; padding:.5rem 0; border-top:1px solid var(--border); }
+      .article tbody td { display:grid; grid-template-columns:minmax(5.75rem,32%) minmax(0,1fr); gap:.5rem; min-height:44px; padding:10px 0; border-bottom:1px solid var(--border); white-space:normal; }
+      .article tbody td::before { content:attr(data-label); color:var(--muted-foreground); font-weight:var(--font-weight-medium); }
       .article tbody td:last-child { border-bottom:0; }
     }
     @media (max-width:620px) {
-      .shell { padding:18px 12px 36px; }
-      .masthead { display:grid; gap:12px; }
-      .network { width:100%; }
       .day-summary { display:grid; gap:3px; }
       .day-summary span { text-align:left; }
       .edition-card { grid-template-columns:1fr auto; gap:7px 10px; }
       .edition-badge { grid-column:1; justify-self:start; min-width:0; }
       .edition-copy { grid-column:1 / -1; grid-row:2; }
       .edition-time { grid-column:2; grid-row:1; }
-      .article { padding:20px 14px 34px; }
-      .article tbody td { grid-template-columns:1fr; gap:2px; }
+      .article { padding:14px 12px 24px; }
     }
     @media (pointer:coarse) {
-      .edition-card, .source-list a { min-height:44px; }
+      .edition-card, .source-list a, .reader-close { min-width:44px; min-height:44px; }
     }
   </style>
 </head>
 <body>
+  <elliott-topbar data-current="digest" data-digest-href="home.html" data-moomoo-href="../moomoo-patterns.html"></elliott-topbar>
   <main class="shell">
-    <header class="masthead">
-      <div><div class="eyebrow">ELLIOTT+ · MARKET BRIEF</div><h1>跨市場摘要</h1><p class="dek">每日摘要整合週線判讀，集中閱讀。</p></div>
-      <span class="network" id="network-state" role="status">已連線</span>
-    </header>
-
     <div class="list-view" id="list-view">
       <section class="day-summary" aria-label="今日摘要排程"><strong id="selected-date"></strong><span id="day-cadence"></span></section>
       <div class="digest-list" id="digest-list" aria-live="polite">
@@ -124,10 +137,6 @@
     </div>
 
   </main>
-
-  <script src="../coverage-order.js?v=20260916-registry-v1"></script>
-  <script src="../shared-menu.js?v=20260912-menu-stability-v1"></script>
-  <elliott-shared-menu data-current="home" data-home-href="home.html" data-coverage-href="coverage.html" data-ticker-href="../chart-surface/index.html" data-ticker-page-href="../chart-surface/index.html"></elliott-shared-menu>
 
   <script src="digest-model.js?v=20260910-2"></script>
   <script src="digest-data.js?v=20260910-2"></script>
@@ -183,12 +192,15 @@
       const restoreScroll = () => requestAnimationFrame(() => window.scrollTo({ top:Number(sessionStorage.getItem(scrollKey()) || 0), behavior:'auto' }));
 
       const isWeekend = (value) => [0, 6].includes(fromDateKey(value).getDay());
+      const displayEditionLabel = (edition) => isWeekend(selectedDate) && ['close', 'weekly'].includes(edition)
+        ? 'End of day · 週末收盤'
+        : editionLabel(edition);
 
       function emptyState() {
         list.replaceChildren();
         const card = text('div', '', 'status-card');
         card.append(text('strong', dataset.error ? '摘要資料暫時無法讀取' : '尚未有摘要'));
-        card.append(document.createTextNode(dataset.error ? '請稍後重新整理；Coverage 與既有分析仍可使用。' : '這一天尚未發布摘要。上方亮點標記代表已有內容的日期。'));
+        card.append(document.createTextNode(dataset.error ? '請稍後重新整理。' : '今日摘要尚未發布。'));
         list.append(card);
       }
 
@@ -197,9 +209,6 @@
         selectedDateLabel.textContent = formatDate(selectedDate, { weekday:'long' });
         const weekend = isWeekend(selectedDate);
         dayCadenceLabel.textContent = weekend ? '週末 · 收盤後一篇 · 16:00 PT' : '平日 · 盤前／盤中／收盤';
-        const displayEditionLabel = (edition) => weekend && ['close', 'weekly'].includes(edition)
-          ? 'End of day · 週末收盤'
-          : editionLabel(edition);
         const records = dataset.records.filter((record) => record.cadence === 'daily' && record.marketDate === selectedDate);
         const weeklyRecords = dataset.records.filter((record) => record.cadence === 'weekly' && displayDateFor(record) === selectedDate);
         list.replaceChildren();
@@ -213,8 +222,8 @@
         [{ key:selectedDate, items:[...available, ...missing] }].forEach((group) => {
           const section = text('section', '', 'group');
           const head = text('div', '', 'group-head');
-          head.append(text('time', weekend ? 'Weekend · 週末收盤摘要' : 'Daily · 每日市場摘要'));
-          head.append(text('span', `${available.length} / ${editionOrder.length} 篇`));
+          head.append(text('strong', '今日摘要'));
+          head.append(text('span', `已發布 ${available.length} / ${editionOrder.length} 篇`));
           section.append(head);
           const editions = text('div', '', 'edition-list');
           group.items.forEach((record) => {
@@ -227,15 +236,20 @@
               button.setAttribute('aria-label', `${displayEditionLabel(record.edition)}尚未發布`);
             } else {
             button.dataset.recordId = record.id;
+            button.dataset.closedLabel = `展開 ${displayEditionLabel(record.edition)}：${record.title}`;
             button.setAttribute('aria-expanded', 'false');
-            button.setAttribute('aria-label', `開啟 ${displayEditionLabel(record.edition)}：${record.title}`);
+            button.setAttribute('aria-controls', `digest-panel-${record.id}`);
+            button.setAttribute('aria-label', button.dataset.closedLabel);
             }
             button.append(text('span', displayEditionLabel(record.edition), 'edition-badge'));
             const copy = text('span', '', 'edition-copy');
             copy.append(text('strong', record.title || '尚未發布'));
             copy.append(text('span', record.id ? (record.summary || '開啟閱讀完整摘要') : '這個時段目前沒有摘要'));
             button.append(copy);
-            button.append(text('time', record.id ? formatTime(record.publishedAt) : '—', 'edition-time'));
+            const meta = text('span', '', 'edition-meta');
+            meta.append(text('time', record.id ? formatTime(record.publishedAt) : '—', 'edition-time'));
+            if (record.id) meta.append(text('span', '', 'disclosure'));
+            button.append(meta);
             if (record.id) button.addEventListener('click', () => {
               if (button.getAttribute('aria-expanded') === 'true') closeReader();
               else openReader(record);
@@ -296,7 +310,9 @@
         const button = list.querySelector(`[data-record-id="${CSS.escape(record.id)}"]`);
         if (!button) return;
         button.setAttribute('aria-expanded', 'true');
+        button.setAttribute('aria-label', `收合 ${displayEditionLabel(record.edition)}：${record.title}`);
         const article = text('div', '', 'article edition-details');
+        article.id = `digest-panel-${record.id}`;
         article.setAttribute('aria-label', record.title);
         record.sections.forEach((data) => {
           const section = document.createElement('section');
@@ -320,25 +336,26 @@
           section.append(sources);
           article.append(section);
         }
+        const closeButton = text('button', '收合摘要', 'reader-close');
+        closeButton.type = 'button';
+        closeButton.addEventListener('click', () => {
+          closeReader();
+          button.focus({ preventScroll:true });
+          button.scrollIntoView({ block:'center', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        });
+        article.append(closeButton);
         button.after(article);
-        document.title = `${record.title} · 股市分析`;
+        document.title = `${record.title} · 跨市場摘要`;
       }
 
       function closeReader() {
-        document.title = '股市分析';
+        document.title = '跨市場摘要';
         list.querySelectorAll('.edition-details').forEach((node) => node.remove());
-        list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
+        list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => {
+          node.setAttribute('aria-expanded', 'false');
+          if (node.dataset.closedLabel) node.setAttribute('aria-label', node.dataset.closedLabel);
+        });
       }
-      const updateNetwork = () => {
-        const node = document.getElementById('network-state');
-        const online = navigator.onLine;
-        node.textContent = online ? '已連線' : '離線閱讀';
-        node.classList.toggle('is-offline', !online);
-      };
-      window.addEventListener('online', updateNetwork);
-      window.addEventListener('offline', updateNetwork);
-      updateNetwork();
-
       renderList();
       restoreScroll();
     })();

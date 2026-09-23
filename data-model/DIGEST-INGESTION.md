@@ -2,6 +2,8 @@
 
 The app is the only writer to `data-model/digests.json`. Universe Refresh produces packets; it does not edit app files or run a competing ingestion job.
 
+The maintained discovery roster is [`news-sources.json`](news-sources.json); editing instructions are in [`NEWS-SOURCES.md`](NEWS-SOURCES.md). This roster guides future research. Each published digest continues to carry the exact pages it cited in its own `sources` array.
+
 ## Producer handoff
 
 Universe Refresh emits one JSON object using `elliott-cross-market-digest-v1`. The object may be a single record or a dataset with `records[]`.

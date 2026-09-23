@@ -1,7 +1,198 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-22T18:50:02.504Z",
+  "generatedAt": "2026-09-23T16:46:54.000Z",
   "records": [
+    {
+      "id": "daily-2026-09-23-morning",
+      "cadence": "daily",
+      "edition": "morning",
+      "marketDate": "2026-09-23",
+      "publishedAt": "2026-09-23T05:35:00-07:00",
+      "updatedAt": "2026-09-23T12:35:00Z",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-23T05:30:00-07:00",
+      "retrievedAt": "2026-09-23T05:34:00-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "晨間設定｜2026-09-23",
+      "summary": "隔夜市場沒有延續前兩日的單向風險修復，而是進入兩股力量拉鋸：中東外交讓Brent仍留在100美元附近，但油價今晨小幅反彈；同時10年期美債殖利率約4.96%、30年期約5.30%，美元接近八週高點，顯示市場仍在為後續升息保留風險溢價。美股期貨僅小漲約0.1%，Nasdaq期貨約漲0.05%；亞洲分化、歐洲偏強，沒有形成全面追價。AI仍是指數支撐，但昨日「消費者慣性」類股因代理式AI可能降低轉換成本而下跌，說明AI正在同時創造需求與重新分配既有商業護城河。今日基準是Brent維持100美元附近、10年期守在5%下方，科技相對強但大盤震盪；失效條件是油價重返101—102美元、PMI明顯過熱，或Fed官員強化連續升息路徑。",
+      "sections": [
+        {
+          "heading": "1. 能源降溫暫停，但外交仍把Brent壓在100美元附近",
+          "paragraphs": [
+            "事實：今晨Brent約上漲0.5%、仍略低於100美元；WTI重新站上90美元。美伊代表在聯合國大會場邊接觸，美方稱會談進展良好，但政治訊息仍保留強硬選項。",
+            "判斷：市場目前定價的是供應恢復機率提高，而不是已完成停火或油流正常化。油價沒有繼續下跌，代表能源帶來的估值支撐不再擴大；但只要Brent未重新站上101—102美元，通膨風險仍低於上週。信心：中高。",
+            "資料界線：外交進展仍主要來自公開發言與可靠二手報導，尚未看到可執行的停火文本或完整油流恢復資料。",
+            "反證：Brent重新跌破98美元並由可驗證的出口流量確認，會恢復債券與成長股的雙重支撐；若海峽事件或談判破局使Brent突破102美元，晨間基準失效。"
+          ],
+          "links": [
+            {
+              "label": "Dow Jones盤前市場",
+              "url": "https://www.marketscreener.com/news/stock-futures-nudge-higher-as-markets-weigh-middle-east-diplomacy-ce785ad9dd89f327"
+            },
+            {
+              "label": "AP前一日油價與市場",
+              "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+            }
+          ]
+        },
+        {
+          "heading": "2. 長債仍是主要約束：10年期逼近5%，美元接近八週高點",
+          "paragraphs": [
+            "事實：10年期美債殖利率約4.961%，30年期約5.300%；長端沒有跟隨油價此前的跌勢進一步下降。美元接近八週高點，黃金回落但仍在每盎司4,300美元上方。",
+            "判斷：市場沒有把能源降溫等同政策轉鬆。高成長、AI資本支出與通膨黏性仍讓投資人要求較高期限溢價。只要10年期貼近5%，高估值科技可以相對強，卻很難自然擴散成全面估值上修。信心：高。",
+            "反證：PMI低於預期、Barr不強化升息，而且10年期跌破4.90%；相反地，若殖利率突破5%，房地產、公用事業、小型股與長久期科技會率先承壓。"
+          ],
+          "links": [
+            {
+              "label": "Dow Jones利率與美元",
+              "url": "https://www.marketscreener.com/news/stock-futures-nudge-higher-as-markets-weigh-middle-east-diplomacy-ce785ad9dd89f327"
+            },
+            {
+              "label": "Fed九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            }
+          ]
+        },
+        {
+          "heading": "3. 股市仍由AI支撐，但隔夜廣度沒有確認全面風險偏好",
+          "paragraphs": [
+            "事實：S&P 500與Dow期貨約漲0.1%，Nasdaq期貨約漲0.05%。中國與香港股市下跌，韓國KOSPI約漲0.4%；歐洲STOXX 600約漲0.3%，銀行與科技領先。Bitcoin回落但仍在86,000美元上方。",
+            "判斷：Nasdaq昨日再創收盤新高後，今晨期貨沒有明顯追價，亞洲也沒有同步上漲。這仍是AI與大型科技提供指數支撐、其他資產等待利率與油價確認的結構，不是流動性全面擴張。信心：高。",
+            "反證：等權重、小型股、銀行與信用在開盤後一起改善，才代表領漲正在擴散；若半導體回吐且10年期升破5%，則窄幅領漲本身會轉成脆弱點。"
+          ],
+          "links": [
+            {
+              "label": "Dow Jones全球股市",
+              "url": "https://www.marketscreener.com/news/stock-futures-nudge-higher-as-markets-weigh-middle-east-diplomacy-ce785ad9dd89f327"
+            },
+            {
+              "label": "AP前一日市場寬度",
+              "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+            }
+          ]
+        },
+        {
+          "heading": "4. AI的新市場影響：不只增加算力需求，也開始壓縮既有護城河",
+          "paragraphs": [
+            "事實：昨日市場把代理式AI可能降低消費者轉換成本的風險，反映在依賴訂閱、續約或慣性行為的公司；相關類股下跌，但今晨盤前大致穩定。Meta的Muse則持續提供消費端代理採用的正向證據。",
+            "判斷：AI交易已從晶片與雲端資本支出，進一步延伸到誰能保留客戶入口與定價權。這是跨產業的估值重分配，不應只讀成單一科技產品新聞。受益者仍是算力、網路與能控制代理入口的平台；風險較高的是護城河主要建立在摩擦與惰性的商業模式。信心：中。",
+            "反證：代理使用率快速下降、平台限制使跨服務任務無法執行，或受影響產業證明留存率與定價權沒有改變。"
+          ],
+          "links": [
+            {
+              "label": "Meta Muse原始公告",
+              "url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/"
+            },
+            {
+              "label": "Dow Jones盤前AI市場反應",
+              "url": "https://www.marketscreener.com/news/stock-futures-nudge-higher-as-markets-weigh-middle-east-diplomacy-ce785ad9dd89f327"
+            }
+          ]
+        },
+        {
+          "heading": "5. 今日驗證點：全球PMI與Barr發言決定5%關卡能否守住",
+          "paragraphs": [
+            "事實：今日將公布全球9月flash PMI。Fed Governor Michael Barr預定10:05 ET就經濟展望與住房發言；紐約Fed官方經濟行事曆未列出同等級的美國政府總體數據。",
+            "判斷：今日市場的主要驗證不是企業財報，而是成長韌性會不會再把升息機率與長債殖利率推高。若PMI強而價格分項升，油價低於100美元也未必能支撐估值；若PMI降溫且Barr沒有加碼鷹派訊號，長債才可能重新提供支撐。信心：高。",
+            "午間比較基準：第一，Brent是否突破100美元；第二，10年期是否站上5%；第三，PMI的新訂單與價格訊號；第四，Barr是否明確支持更多升息；第五，科技領漲是否擴散至等權重與小型股。"
+          ],
+          "links": [
+            {
+              "label": "Fed官方九月行事曆",
+              "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+            },
+            {
+              "label": "紐約Fed九月經濟行事曆",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "晨間狀態",
+              "判讀"
+            ],
+            "rows": [
+              [
+                "Brent／WTI",
+                "略低於100／重返90美元上方",
+                "外交希望仍在，但連續降溫暫停"
+              ],
+              [
+                "美股期貨",
+                "約+0.05%至+0.1%",
+                "昨日Nasdaq創高後沒有明顯追價"
+              ],
+              [
+                "亞洲／歐洲",
+                "分化／偏強",
+                "AI與銀行支撐歐洲，中港未跟進"
+              ],
+              [
+                "10年期美債",
+                "約4.96%",
+                "5%仍是估值與風險偏好的關鍵門檻"
+              ],
+              [
+                "30年期美債",
+                "約5.30%",
+                "期限溢價與財政供給壓力仍高"
+              ],
+              [
+                "美元",
+                "接近八週高點",
+                "反映相對利率與升息預期"
+              ],
+              [
+                "黃金",
+                "回落但高於4,300美元",
+                "高殖利率與地緣避險互相抵銷"
+              ],
+              [
+                "Bitcoin",
+                "高於86,000美元",
+                "高貝塔需求仍在，但今晨沒有加速"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "今日基準、敏感點與失效條件",
+          "paragraphs": [
+            "基準：Brent在99—101美元、10年期在4.93%—5.00%；大型科技相對強，大盤震盪，小型股與信用等待利率確認。",
+            "偏強：PMI價格壓力降溫、Barr不強化升息，10年期跌破4.90%，同時Brent回到99美元下方；這會讓領漲由AI擴散至等權重與週期股。",
+            "偏弱：PMI與新訂單明顯過熱，10年期突破5%，或外交反覆使Brent升破102美元；若兩者同時發生，估值壓力會從長久期科技擴散至住房、消費與小型股。",
+            "原始來源掃描：今晨可驗證的一級政策來源主要是Fed與紐約Fed行事曆；能源與即時跨資產價格仍依賴Dow Jones及AP等可靠市場報導。沒有把尚未發布的Fed講稿或未簽署的外交框架當成既成事實。"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Dow Jones盤前市場",
+          "url": "https://www.marketscreener.com/news/stock-futures-nudge-higher-as-markets-weigh-middle-east-diplomacy-ce785ad9dd89f327"
+        },
+        {
+          "label": "AP前一日油價與市場",
+          "url": "https://apnews.com/article/markets-ai-oil-wall-street-de8c5f9659e44556e40e661f794b48ad"
+        },
+        {
+          "label": "Fed官方九月行事曆",
+          "url": "https://www.federalreserve.gov/newsevents/2026-september.htm"
+        },
+        {
+          "label": "紐約Fed九月經濟行事曆",
+          "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+        },
+        {
+          "label": "Meta Muse原始公告",
+          "url": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-22-midday",
       "cadence": "daily",
