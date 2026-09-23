@@ -42,12 +42,14 @@ for (const marker of ['viewport-fit=cover', 'safe-area-inset-top', 'safe-area-in
 }
 for (const marker of ['min-height:44px', '@media (max-width:680px)', 'td::before', 'prefers-reduced-motion']) if (!css.includes(marker)) failures.push(`responsive/accessibility CSS missing ${marker}`);
 for (const marker of ['aria-live="polite"', 'aria-pressed="true"', 'data-sort="signal"', 'class="full-only"']) if (!html.includes(marker)) failures.push(`accessible interaction missing ${marker}`);
+for (const marker of ['data-filter="momentum"', 'filter-momentum-overbought-count', 'filter-momentum-oversold-count']) if (!html.includes(marker)) failures.push(`momentum filter missing ${marker}`);
 if (html.includes('決策檢視') || html.includes('data-view=')) failures.push('page must expose full analysis only');
 for (const marker of ['營運摘要', '新聞摘要', '<th scope="col">來源</th>']) if (!html.includes(marker)) failures.push(`digest table missing ${marker}`);
 if (!js.includes('profile-sources') || !js.includes("create('details'")) failures.push('source profile links must remain collapsed');
 if (js.includes("create('summary', '新聞來源')") || js.includes("create('summary', '資料來源')") || js.includes('record.newsHeadline')) failures.push('digest cells must not expose source references or copied headlines');
 if (html.includes('shared-menu.css') || html.includes('<elliott-shared-menu')) failures.push('standalone decision reader must not mount the app navigation dock');
 for (const marker of ['textContent', 'safeUrl', 'freshness', 'interpretation']) if (!js.includes(marker)) failures.push(`safe reader behavior missing ${marker}`);
+for (const marker of ["momentum:'all'", 'momentum-badge', 'state.momentum']) if (!js.includes(marker)) failures.push(`momentum filtering/color behavior missing ${marker}`);
 if (/innerHTML|document\.write/.test(js)) failures.push('page renderer must not inject dataset HTML');
 if (!dataset.dataThrough || !/^\d{4}-\d{2}-\d{2}$/.test(dataset.dataThrough)) failures.push('daily dataset dataThrough is invalid');
 if (failures.length) {

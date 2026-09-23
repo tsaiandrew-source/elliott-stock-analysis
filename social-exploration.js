@@ -7,7 +7,7 @@
   const resultCount = document.getElementById('result-count');
   const resetButton = document.getElementById('reset-filters');
   const profileMap = new Map((dataset.profiles || []).map((profile) => [profile.id, profile]));
-  const state = { signal:'all', lane:'all', query:'', sort:'rank', direction:'asc' };
+  const state = { signal:'all', momentum:'all', lane:'all', query:'', sort:'rank', direction:'asc' };
   const sortLabels = { rank:'探索排名', close:'收市價', move:'今日變動', signal:'結構狀態', rsi:'RSI', volume:'相對量', position:'20日位置' };
   const signalOrder = { positive:0, neutral:1, negative:2 };
   const signalMeta = {
@@ -49,7 +49,8 @@
     const labels = { overbought:'超買／過熱', strong:'偏強', neutral:'中性', weak:'偏弱', oversold:'超賣' };
     const condition = record.rsi14 == null ? 'RSI 待補' : `RSI ${number(record.rsi14, 1)}`;
     const ema = record.ema20 == null || record.ema50 == null ? 'EMA 待補' : `EMA20 ${number(record.ema20)} · EMA50 ${number(record.ema50)}`;
-    return { label:labels[record.momentum] || '中性', note:`${condition} · ${ema}` };
+    const className = ['overbought','strong','neutral','weak','oversold'].includes(record.momentum) ? record.momentum : 'neutral';
+    return { label:labels[className], className, note:`${condition} · ${ema}` };
   }
 
   function appendCell(row, label, children, className = '') {
@@ -74,7 +75,7 @@
     appendCell(row, '收市價', [create('span', record.close == null ? '—' : `$${number(record.close)}`, 'ticker-main'), create('span', record.dataThrough || '—', 'cell-note')], 'numeric');
     appendCell(row, '今日變動', [create('span', percent(record.dayChangePct), `ticker-main ${moveClass}`), create('span', `前收 $${number(record.previousClose)}`, 'cell-note')], 'numeric');
     appendCell(row, '結構判讀', [create('span', meta.label, `state-badge ${meta.className}`), create('span', interpretation(record), 'cell-note')]);
-    appendCell(row, 'RSI／動能', [create('span', momentum.label, 'ticker-main'), create('span', momentum.note, 'cell-note')]);
+    appendCell(row, 'RSI／動能', [create('span', momentum.label, `momentum-badge momentum-${momentum.className}`), create('span', momentum.note, 'cell-note')]);
     appendCell(row, '相對量', [create('span', record.relativeVolume20 == null ? '—' : `${number(record.relativeVolume20)}×`, 'ticker-main'), create('span', `20日均量 ${compact(record.averageVolume20)}`, 'cell-note')], 'full-only');
     appendCell(row, '20日位置', [create('span', record.rangePosition20 == null ? '—' : `${number(record.rangePosition20, 0)}%`, 'ticker-main'), create('span', `$${number(record.low20)}–$${number(record.high20)}`, 'cell-note')], 'full-only');
 
@@ -133,13 +134,14 @@
     const query = state.query.trim().toUpperCase();
     return [...(dataset.records || [])].filter((record) => {
       if (state.signal !== 'all' && record.signal !== state.signal) return false;
+      if (state.momentum !== 'all' && record.momentum !== state.momentum) return false;
       if (state.lane !== 'all' && record.lane !== state.lane) return false;
       return !query || `${record.ticker} ${record.company}`.toUpperCase().includes(query);
     }).sort(compare);
   }
 
   function updateResetState() {
-    resetButton.disabled = state.signal === 'all' && state.lane === 'all' && !state.query;
+    resetButton.disabled = state.signal === 'all' && state.momentum === 'all' && state.lane === 'all' && !state.query;
   }
 
   function render() {
@@ -158,10 +160,17 @@
       positive:records.filter((record) => record.freshness !== 'unavailable' && record.signal === 'positive').length,
       neutral:records.filter((record) => record.freshness !== 'unavailable' && record.signal === 'neutral').length,
       negative:records.filter((record) => record.freshness !== 'unavailable' && record.signal === 'negative').length,
-      unavailable:records.filter((record) => record.freshness === 'unavailable').length
+      unavailable:records.filter((record) => record.freshness === 'unavailable').length,
+      overbought:records.filter((record) => record.freshness !== 'unavailable' && record.momentum === 'overbought').length,
+      strong:records.filter((record) => record.freshness !== 'unavailable' && record.momentum === 'strong').length,
+      momentumNeutral:records.filter((record) => record.freshness !== 'unavailable' && record.momentum === 'neutral').length,
+      weak:records.filter((record) => record.freshness !== 'unavailable' && record.momentum === 'weak').length,
+      oversold:records.filter((record) => record.freshness !== 'unavailable' && record.momentum === 'oversold').length
     };
     for (const key of ['positive','neutral','negative','unavailable']) document.getElementById(`${key}-count`).textContent = counts[key];
     for (const key of ['positive','neutral','negative']) document.getElementById(`filter-${key}-count`).textContent = counts[key];
+    for (const key of ['overbought','strong','weak','oversold']) document.getElementById(`filter-momentum-${key}-count`).textContent = counts[key];
+    document.getElementById('filter-momentum-neutral-count').textContent = counts.momentumNeutral;
     const freshness = document.querySelector('.freshness');
     freshness.classList.add(dataset.status === 'PASS' ? 'is-pass' : dataset.status === 'BLOCKED' ? 'is-blocked' : 'is-partial');
     document.getElementById('data-status').textContent = dataset.status === 'PASS' ? '技術資料完整' : dataset.status === 'PARTIAL_PASS' ? '部分資料可用' : '資料尚未完成';
@@ -205,7 +214,7 @@
 
   document.getElementById('ticker-search').addEventListener('input', (event) => { state.query = event.target.value; render(); });
   resetButton.addEventListener('click', () => {
-    state.signal = 'all'; state.lane = 'all'; state.query = '';
+    state.signal = 'all'; state.momentum = 'all'; state.lane = 'all'; state.query = '';
     document.getElementById('ticker-search').value = '';
     document.querySelectorAll('.filter-group').forEach((group) => group.querySelectorAll('.filter-chip').forEach((button) => {
       const active = button.dataset.value === 'all';

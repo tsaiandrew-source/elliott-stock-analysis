@@ -12,7 +12,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/elliott-asterisk-icon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/elliott-asterisk-apple-touch-icon.png">
-  <link rel="stylesheet" href="./social-exploration.css?v=20260923-v6">
+  <link rel="stylesheet" href="./social-exploration.css?v=20260923-v7">
   <script src="./pwa-register-v27.js" defer></script>
   <title>Social Exploration 決策儀表板</title>
 </head>
@@ -49,6 +49,18 @@
           <button class="filter-chip positive" type="button" data-value="positive" aria-pressed="false">偏強 <span id="filter-positive-count">—</span></button>
           <button class="filter-chip neutral" type="button" data-value="neutral" aria-pressed="false">觀望 <span id="filter-neutral-count">—</span></button>
           <button class="filter-chip negative" type="button" data-value="negative" aria-pressed="false">偏弱 <span id="filter-negative-count">—</span></button>
+        </div>
+      </div>
+
+      <div class="filter-group momentum-filter" data-filter="momentum" role="group" aria-label="動能">
+        <span class="group-label">動能</span>
+        <div class="filter-options">
+          <button class="filter-chip is-active" type="button" data-value="all" aria-pressed="true">全部</button>
+          <button class="filter-chip momentum-overbought" type="button" data-value="overbought" aria-pressed="false">超買 <span id="filter-momentum-overbought-count">—</span></button>
+          <button class="filter-chip momentum-strong" type="button" data-value="strong" aria-pressed="false">偏強 <span id="filter-momentum-strong-count">—</span></button>
+          <button class="filter-chip momentum-neutral" type="button" data-value="neutral" aria-pressed="false">中性 <span id="filter-momentum-neutral-count">—</span></button>
+          <button class="filter-chip momentum-weak" type="button" data-value="weak" aria-pressed="false">偏弱 <span id="filter-momentum-weak-count">—</span></button>
+          <button class="filter-chip momentum-oversold" type="button" data-value="oversold" aria-pressed="false">超賣 <span id="filter-momentum-oversold-count">—</span></button>
         </div>
       </div>
 
@@ -120,6 +132,6 @@
   </main>
 
   <script src="./data-model/social-exploration-data.js?v=20260923-v2"></script>
-  <script src="./social-exploration.js?v=20260923-v6"></script>
+  <script src="./social-exploration.js?v=20260923-v7"></script>
 </body>
 </html>

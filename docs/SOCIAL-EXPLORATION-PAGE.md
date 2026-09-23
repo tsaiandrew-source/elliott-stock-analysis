@@ -15,6 +15,7 @@ basics used for this page:
 - communication before decoration;
 - clear system status and completed-session cutoff;
 - recognition over recall through persistent labels and visible filter state;
+- independent color-coded filters for structural status and RSI momentum, with matching badges in the analysis table;
 - complete analysis without a competing abbreviated view;
 - limited choices tied to real tasks: lane, technical state, search and sort;
 - touch targets of at least 44px, safe-area handling and no hover-only control;
