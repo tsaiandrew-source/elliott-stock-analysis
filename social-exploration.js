@@ -93,23 +93,6 @@
     news.append(create('span', record.newsDigest || '近期新聞摘要待補。', 'digest-copy'));
     appendCell(row, '新聞摘要', news, 'digest-cell');
 
-    const sourceCell = document.createElement('div');
-    const sourceDetails = create('details', null, 'source-details profile-sources');
-    sourceDetails.append(create('summary', `${(record.profileIds || []).length} 個來源`));
-    const links = create('div', null, 'source-links');
-    for (const id of record.profileIds || []) {
-      const profile = profileMap.get(id);
-      const href = safeUrl(profile?.url);
-      if (!profile || !href) continue;
-      const link = create('a', profile.label);
-      link.href = href;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      links.append(link);
-    }
-    if (links.children.length) sourceDetails.append(links);
-    sourceCell.append(sourceDetails);
-    appendCell(row, '來源', sourceCell);
     return row;
   }
 
