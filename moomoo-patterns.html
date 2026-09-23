@@ -1046,7 +1046,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;h2&gt;E+ 每日型態&lt;/h2&gt;
       &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍。&lt;/p&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 技術資料：2026-09-22 正式收盤&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;moomoo 圖註：2026-09-22 23／23 已核對（AMKR／BE／SNDK／RIVN 補齊；MRVL 文字已移近今日 K 線）&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權資料：2026-09-22 收盤後（23／23 已嘗試；22 檔完成時段鏈；FTNT 來源早於收盤，僅供參考）&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 全清單分析：2026-09-23 List 1 + Candidate 23／23 已完成&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;技術資料：2026-09-23 正式收盤；型態、Wyckoff、動能與圖註規格均已逐檔複核&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權可用性審核：23／23 已完成；同時段 0／23、可靠 signed GEX 0／23，價格窗口低信心&lt;/span&gt;&lt;/div&gt;
   &lt;/header&gt;
 
   &lt;section class=&quot;analysis-group&quot; data-scope=&quot;全部清單&quot;&gt;
@@ -1148,6 +1148,16 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;/table&gt;
     &lt;/div&gt;
   &lt;/section&gt;
+  &lt;section class=&quot;daily-change-summary&quot; aria-labelledby=&quot;daily-change-summary-title&quot;&gt;
+    &lt;h3 id=&quot;daily-change-summary-title&quot;&gt;今日變更摘要&lt;/h3&gt;
+    &lt;p class=&quot;text-small&quot;&gt;淡藍底表示相較 2026-09-22 的分析內容有實質變更。&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;技術處置：23／23 檔&lt;/strong&gt;——今日的期權窗口或資料品質狀態與昨日不同。&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;動能狀態：6 檔&lt;/strong&gt;——NOK、NBIS、CSCO、NKE、PLTR、TEAM。&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;型態相關：2 檔&lt;/strong&gt;——COHR、PLTR；包括確認狀態、目標／日期、Wyckoff 與分析文字。&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;未高亮：&lt;/strong&gt;單純收市價變化及由收市價重算的推估幅度。&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/section&gt;
 &lt;/div&gt;
 
 &lt;style&gt;
@@ -1192,6 +1202,25 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis td.changed-cell {
     background: color-mix(in srgb, var(--status-blue) 10%, var(--background)) !important;
   }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-stack { display: grid; justify-items: end; }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-price,
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-change { display: block; white-space: nowrap; }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-price { font-weight: 600; color: var(--foreground); }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-change { margin-top: 0.05rem; font-size: 0.9em; line-height: 1.2; }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-change.positive { color: var(--status-green); }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-change.negative { color: var(--status-red); }
+  #moomoo-sortable-analysis td[data-field=&quot;close&quot;] .close-change.flat { color: var(--status-gray); }
+  #moomoo-sortable-analysis .daily-change-summary {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--status-blue) 24%, var(--border));
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--status-blue) 6%, var(--background));
+  }
+  #moomoo-sortable-analysis .daily-change-summary h3 { margin: 0 0 0.35rem; font-size: 1rem; }
+  #moomoo-sortable-analysis .daily-change-summary p { margin: 0 0 0.45rem; color: var(--muted-foreground); }
+  #moomoo-sortable-analysis .daily-change-summary ul { margin: 0; padding-left: 1.2rem; }
+  #moomoo-sortable-analysis .daily-change-summary li + li { margin-top: 0.3rem; }
   #moomoo-sortable-analysis .control-panel {
     display: flex;
     flex-wrap: wrap;
@@ -1333,7 +1362,80 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis th[aria-sort=&quot;ascending&quot;] button,
   #moomoo-sortable-analysis th[aria-sort=&quot;descending&quot;] button { font-weight: 500; }
 
-  @media (max-width: 1024px) {
+  @media (min-width: 681px) and (max-width: 1024px) {
+    #moomoo-sortable-analysis { font-size: 0.78rem; }
+    #moomoo-sortable-analysis .dashboard-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
+      gap: 0.75rem 1rem;
+    }
+    #moomoo-sortable-analysis .freshness { margin-top: 0.1rem; }
+    #moomoo-sortable-analysis .decision-overview {
+      margin-top: 0.65rem;
+      padding-bottom: 0.55rem;
+      gap: 0.35rem 0.8rem;
+    }
+    #moomoo-sortable-analysis .control-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.65rem;
+      align-items: center;
+      padding: 0.5rem 0.6rem;
+    }
+    #moomoo-sortable-analysis .dashboard-toolbar,
+    #moomoo-sortable-analysis .decision-filters { display: contents; }
+    #moomoo-sortable-analysis .search-label {
+      grid-template-columns: auto minmax(8rem, 10rem);
+      gap: 0.3rem;
+    }
+    #moomoo-sortable-analysis .filter-group {
+      grid-template-columns: auto auto;
+      gap: 0.3rem;
+    }
+    #moomoo-sortable-analysis .filter-options { display: flex; flex-wrap: wrap; gap: 0.2rem; }
+    #moomoo-sortable-analysis .filter-chip {
+      min-height: 2rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 0.45rem;
+    }
+    #moomoo-sortable-analysis .ticker-search { min-height: 2rem; font-size: 0.85rem; }
+    #moomoo-sortable-analysis .filter-summary { margin-left: auto; }
+    #moomoo-sortable-analysis .mobile-sort-controls { display: none; }
+    #moomoo-sortable-analysis .table-responsive { overflow: visible; }
+    #moomoo-sortable-analysis table {
+      min-width: 0;
+      width: 100%;
+      table-layout: fixed;
+      font-size: 0.72rem;
+    }
+    #moomoo-sortable-analysis th,
+    #moomoo-sortable-analysis td { padding: 0.45rem 0.3rem; overflow-wrap: anywhere; }
+    #moomoo-sortable-analysis th[data-key=&quot;ticker&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;ticker&quot;] { width: 7%; }
+    #moomoo-sortable-analysis th[data-key=&quot;close&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;close&quot;] { width: 8%; }
+    #moomoo-sortable-analysis th[data-key=&quot;pattern&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;pattern&quot;] { width: 20%; }
+    #moomoo-sortable-analysis th[data-key=&quot;date&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;date&quot;] { width: 9%; }
+    #moomoo-sortable-analysis th[data-key=&quot;upside&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;upside&quot;] { width: 9%; }
+    #moomoo-sortable-analysis th[data-key=&quot;confidence&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;confidence&quot;] { width: 7%; }
+    #moomoo-sortable-analysis th[data-key=&quot;momentum&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;momentum&quot;] { width: 14%; }
+    #moomoo-sortable-analysis th[data-key=&quot;action&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;action&quot;] { width: 26%; }
+    #moomoo-sortable-analysis .momentum-evidence,
+    #moomoo-sortable-analysis .options-evidence,
+    #moomoo-sortable-analysis .cell-note { white-space: normal; line-height: 1.35; }
+    #moomoo-sortable-analysis .status-badge {
+      min-height: 1.4rem;
+      padding: 0.05rem 0.35rem;
+    }
+  }
+
+  @media (max-width: 680px) {
     #moomoo-sortable-analysis .dashboard-header { display: block; }
     #moomoo-sortable-analysis .freshness { margin-top: 0.5rem; }
     #moomoo-sortable-analysis .control-panel { display: grid; grid-template-columns: 1fr; gap: 0.45rem; align-items: stretch; }
@@ -1390,116 +1492,177 @@ html&gt;body{padding:0}&lt;/style&gt;
     #moomoo-sortable-analysis td[data-field=&quot;ticker&quot;] { position: static; }
     #moomoo-sortable-analysis .momentum-evidence { white-space: normal; }
   }
+
+  @media (min-width: 460px) and (max-width: 1024px) {
+    #moomoo-sortable-analysis td[data-field=&quot;action&quot;] {
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+  }
+
+  @media (min-width: 1025px) and (max-width: 1366px) {
+    #moomoo-sortable-analysis table { table-layout: fixed; }
+    #moomoo-sortable-analysis .momentum-evidence { white-space: normal; }
+    #moomoo-sortable-analysis td[data-field=&quot;momentum&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;action&quot;] { overflow-wrap: anywhere; }
+    #moomoo-sortable-analysis th[data-key=&quot;ticker&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;ticker&quot;] { width: 6%; }
+    #moomoo-sortable-analysis th[data-key=&quot;close&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;close&quot;] { width: 8%; }
+    #moomoo-sortable-analysis th[data-key=&quot;pattern&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;pattern&quot;] { width: 18%; }
+    #moomoo-sortable-analysis th[data-key=&quot;date&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;date&quot;] { width: 9%; }
+    #moomoo-sortable-analysis th[data-key=&quot;upside&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;upside&quot;] { width: 12%; }
+    #moomoo-sortable-analysis th[data-key=&quot;confidence&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;confidence&quot;] { width: 6%; }
+    #moomoo-sortable-analysis th[data-key=&quot;momentum&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;momentum&quot;] { width: 13%; }
+    #moomoo-sortable-analysis th[data-key=&quot;action&quot;],
+    #moomoo-sortable-analysis td[data-field=&quot;action&quot;] { width: 28%; }
+  }
 &lt;/style&gt;
 
 &lt;script&gt;
 (() =&gt; {
   const root = document.getElementById(&#x27;moomoo-sortable-analysis&#x27;);
   const rows = [
-    {ticker:&#x27;AMKR&#x27;,scope:&#x27;List 1&#x27;,close:54.59,pattern:&#x27;雙底&#x27;,target:71.5,targetConditional:true,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:31.0,confidence:72,condition:&#x27;日線收於 $58.50 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $58.50 才進入 Phase E；$46 為主要防守。&#x27;,analysis:[&#x27;兩個低點約 $45.50 與 $46.50，形成抬高第二底&#x27;,&#x27;頸線約 $58.50，現價仍未確認突破&#x27;,&#x27;突破後量度目標約 $71.50，尚餘 31.0%&#x27;,&#x27;動能改善但仍在頸線下方&#x27;,&#x27;跌破 $46 會令型態失效&#x27;]},
-    {ticker:&#x27;MU&#x27;,scope:&#x27;List 1&#x27;,close:1096.16,pattern:&#x27;杯柄&#x27;,target:1340,date:&#x27;2026-12-10&#x27;,dateLabel:&#x27;Dec-10&#x27;,upside:22.2,confidence:70,condition:&#x27;已確認&#x27;,wyckoff:&#x27;再累積 Phase E／Markup：預期趨勢延續；先留意 $1,025–$1,040 回測。&#x27;,analysis:[&#x27;杯底約 $737.88，右側已回到前高區&#x27;,&#x27;已突破約 $1,025–$1,040 柄部壓力&#x27;,&#x27;量度目標約 $1,340，尚餘 22.2%&#x27;,&#x27;動能強但進入短線高檔&#x27;,&#x27;跌回 $920 以下會破壞柄部結構&#x27;]},
-    {ticker:&#x27;MRVL&#x27;,scope:&#x27;List 1&#x27;,close:262.36,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-11-20&#x27;,dateLabel:&#x27;Nov-20&#x27;,upside:29.6,confidence:72,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：SOS 後預期續升；可能先 Back-up 測試 $245–$250。&#x27;,analysis:[&#x27;左肩約 $185、頭部約 $164、右肩約 $205&#x27;,&#x27;已突破約 $245–$250 的斜向頸線區&#x27;,&#x27;量度目標約 $340，尚餘 29.6%&#x27;,&#x27;短線已進入高檔&#x27;,&#x27;跌回 $230 以下會削弱；$205 以下失效&#x27;]},
-    {ticker:&#x27;COHR&#x27;,scope:&#x27;List 1&#x27;,close:310.39,pattern:&#x27;頭肩底&#x27;,target:420,date:&#x27;2026-11-29&#x27;,dateLabel:&#x27;Nov-29&#x27;,upside:35.3,confidence:80,condition:&#x27;已確認（邊際）&#x27;,wyckoff:&#x27;累積 Phase D／SOS：$300–$310 為 Back-up／LPS 驗證區，守穩才進入 Phase E。&#x27;,analysis:[&#x27;頭部約 $220.68，右肩約 $267&#x27;,&#x27;收市僅略高於約 $310 頸線，屬邊際確認&#x27;,&#x27;量度目標約 $420，尚餘 35.3%&#x27;,&#x27;動能高檔，突破後追價風險較高&#x27;,&#x27;跌回 $300 以下會削弱；$267 以下失效&#x27;]},
-    {ticker:&#x27;FTNT&#x27;,scope:&#x27;List 1&#x27;,close:174.26,pattern:&#x27;雙底&#x27;,target:196,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:12.5,confidence:84,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase D／SOS：預期回測 LPS 後再進入 Markup；$172.67 應轉為支撐。&#x27;,analysis:[&#x27;兩個底部均約 $149.67，對稱性清楚&#x27;,&#x27;頸線約 $172.67，Sep-14 確認突破&#x27;,&#x27;量度目標約 $195.67，尚餘 12.5%&#x27;,&#x27;短線動能高檔&#x27;,&#x27;跌回 $172.67 以下會削弱突破可信度&#x27;]},
-    {ticker:&#x27;NOK&#x27;,scope:&#x27;List 1&#x27;,close:10.82,pattern:&#x27;上升三角形&#x27;,target:12.8,targetConditional:true,date:&#x27;2026-11-13&#x27;,dateLabel:&#x27;Nov-13&#x27;,upside:18.3,confidence:82,condition:&#x27;日線收於 $11.05–$11.10 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $11.10 才可望進入 Phase E；跌破 $9.60 轉弱。&#x27;,analysis:[&#x27;高點受制於約 $11.05，低點逐步墊高&#x27;,&#x27;收市 $10.82，尚未確認突破&#x27;,&#x27;突破後條件式目標約 $12.80，尚餘 18.3%&#x27;,&#x27;動能偏強但仍受水平壓力限制&#x27;,&#x27;跌破約 $9.60 的上升支撐會令型態失效&#x27;]},
-    {ticker:&#x27;IREN&#x27;,scope:&#x27;List 1&#x27;,close:48.55,pattern:&#x27;頭肩底&#x27;,target:55,date:&#x27;2026-11-22&#x27;,dateLabel:&#x27;Nov-22&#x27;,upside:13.3,confidence:88,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期高低點續墊高；$42–$43 為關鍵 Back-up 支撐。&#x27;,analysis:[&#x27;左肩約 $34、頭部約 $28.93、右肩約 $36&#x27;,&#x27;已站上約 $42–$43 的斜向頸線&#x27;,&#x27;量度目標約 $55，尚餘 13.3%&#x27;,&#x27;動能高檔，短線回吐風險增加&#x27;,&#x27;跌回 $42 以下會削弱；$36 以下失效&#x27;]},
-    {ticker:&#x27;NBIS&#x27;,scope:&#x27;List 1&#x27;,close:236.12,pattern:&#x27;頭肩底&#x27;,target:247,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:4.6,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：接近量度目標，預期供給與震盪增加。&#x27;,analysis:[&#x27;頭部約 $194，兩側肩部約 $205–$210&#x27;,&#x27;已突破約 $222–$225 的頸線區&#x27;,&#x27;量度目標約 $247，只餘 4.6%&#x27;,&#x27;動能正向但上行空間已收窄&#x27;,&#x27;跌回 $220 以下會削弱；$205 以下失效&#x27;]},
-    {ticker:&#x27;CSCO&#x27;,scope:&#x27;List 1&#x27;,close:106.44,pattern:&#x27;下降楔形&#x27;,target:127,targetConditional:true,date:&#x27;2026-11-15&#x27;,dateLabel:&#x27;Nov-15&#x27;,upside:19.3,confidence:76,condition:&#x27;日線收復 $111.50–$112&#x27;,wyckoff:&#x27;再累積 Phase C／待 Spring：預期先測試 $105–$107 支撐；收復 $112 才形成 SOS。&#x27;,analysis:[&#x27;高低點同步下降並逐漸收斂&#x27;,&#x27;目前仍在楔形內，尚未向上確認&#x27;,&#x27;突破後量度目標約 $127，尚餘 19.3%&#x27;,&#x27;RSI 偏弱，MACD 尚未重返零軸&#x27;,&#x27;跌破 $104 會增加下行風險&#x27;]},
-    {ticker:&#x27;LITE&#x27;,scope:&#x27;List 1&#x27;,close:945.67,pattern:&#x27;頭肩底&#x27;,target:1090,date:&#x27;2026-09-29&#x27;,dateLabel:&#x27;Sep-29&#x27;,upside:15.3,confidence:90,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期趨勢延續；$840 頸線維持為主要支撐。&#x27;,analysis:[&#x27;頭部約 $605，肩部約 $680–$720&#x27;,&#x27;已突破約 $840 的頸線&#x27;,&#x27;目標約 $1,090，尚餘 15.3%&#x27;,&#x27;動能重新轉強，尚未過熱&#x27;,&#x27;跌回 $840 以下會破壞突破結構&#x27;]},
-    {ticker:&#x27;BE&#x27;,scope:&#x27;Candidate&#x27;,close:276.53,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:23.0,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：已越過 $243–$250 SOS 區，預期回測後續升。&#x27;,analysis:[&#x27;夏季低位形成大型底部，頭部約 $160&#x27;,&#x27;已突破約 $243–$250 頸線並出現放量&#x27;,&#x27;量度目標約 $340，尚餘 23.0%&#x27;,&#x27;動能高檔，短線可能先回測頸線&#x27;,&#x27;跌回 $220 以下會明顯削弱結構&#x27;]},
-    {ticker:&#x27;GAP&#x27;,scope:&#x27;Candidate&#x27;,close:21.46,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $22.80 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：預期 $20.50–$22.80 測試供需。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期反彈仍在 $22.80 壓力下&#x27;,&#x27;沒有足夠觸點形成可靠頸線&#x27;,&#x27;動能中性，MACD 柱狀圖仍負值&#x27;,&#x27;$20.50 為近期主要支撐&#x27;]},
-    {ticker:&#x27;NKE&#x27;,scope:&#x27;Candidate&#x27;,close:36.10,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $40 後重新評估&#x27;,wyckoff:&#x27;Mark-down／待止跌：預期弱勢延續；需先出現 Spring 或 SOS 才轉中性。&#x27;,analysis:[&#x27;無可信反轉型態&#x27;,&#x27;價格仍沿下降趨勢運行，近期低位約 $35.35&#x27;,&#x27;尚未形成可量度頸線或突破點&#x27;,&#x27;RSI 與 Stochastic 均在低檔&#x27;,&#x27;跌破 $35.35 會延續下行趨勢&#x27;]},
-    {ticker:&#x27;FIG&#x27;,scope:&#x27;Candidate&#x27;,close:21.80,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $25 後重新評估&#x27;,wyckoff:&#x27;Mark-down／待止跌：供給仍主導，預期先尋找需求區。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;YTD 維持高低點下移&#x27;,&#x27;沒有可靠量度邊界&#x27;,&#x27;RSI 偏弱且 Stochastic 超賣&#x27;,&#x27;跌破近期低位會延續下行風險&#x27;]},
-    {ticker:&#x27;ACHR&#x27;,scope:&#x27;Candidate&#x27;,close:5.69,pattern:&#x27;雙底（歷史已完成）&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:80,condition:&#x27;目前無新前瞻型態&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：守住 $5.20 並出現 SOS 才轉強。&#x27;,analysis:[&#x27;歷史底部約 $4.35、$4.48，原頸線約 $5.45&#x27;,&#x27;Aug-06 突破後最高升至約 $7.29&#x27;,&#x27;歷史 $6.56／Aug-27 目標已完成，不能順延&#x27;,&#x27;目前動能中性，MACD 仍在零軸下&#x27;,&#x27;失守 $5.20 會進一步轉弱&#x27;]},
-    {ticker:&#x27;INTC&#x27;,scope:&#x27;Candidate&#x27;,close:123.86,pattern:&#x27;雙底&#x27;,target:127,date:&#x27;2026-11-04&#x27;,dateLabel:&#x27;Nov-04&#x27;,upside:2.5,confidence:74,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：接近目標，預期上行速度放慢。&#x27;,analysis:[&#x27;第一底約 $81.79，第二底約 $87.74&#x27;,&#x27;已突破約 $104.16 的頸線&#x27;,&#x27;量度目標約 $127，只餘 2.5%&#x27;,&#x27;RSI 與 Stochastic 均過熱&#x27;,&#x27;跌回 $104 以下會削弱；$87.74 以下失效&#x27;]},
-    {ticker:&#x27;AVGO&#x27;,scope:&#x27;Candidate&#x27;,close:364.54,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $378–$390 後重新評估&#x27;,wyckoff:&#x27;可能再累積 Phase B：收復 $378–$390 才形成 SOS，跌破 $335.82 轉弱。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $335.82 反彈，但仍未收復主要壓力&#x27;,&#x27;尚未形成可量度頸線或突破點&#x27;,&#x27;動能中性，MACD 負值但柱狀圖改善&#x27;,&#x27;跌破 $335.82 會否定目前反彈&#x27;]},
-    {ticker:&#x27;SNDK&#x27;,scope:&#x27;Candidate&#x27;,close:1887.04,pattern:&#x27;上升三角形&#x27;,target:2500,targetConditional:true,date:&#x27;2026-11-06&#x27;,dateLabel:&#x27;Nov-06&#x27;,upside:32.5,confidence:72,condition:&#x27;日線收於 $1,900 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $1,900 才確認 Phase E；$1,500 為主要支撐。&#x27;,analysis:[&#x27;低點由約 $1,200、$1,450 逐步墊高&#x27;,&#x27;上方壓力集中在 $1,835–$1,900，尚未有效站穩&#x27;,&#x27;突破後條件式目標約 $2,500，尚餘 32.5%&#x27;,&#x27;動能已進入高檔，突破前不宜追價&#x27;,&#x27;$1,500 為主要失效支撐&#x27;]},
-    {ticker:&#x27;ONDS&#x27;,scope:&#x27;Candidate&#x27;,close:7.72,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $8.00 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（中性）：預期 $7.00–$8.00 震盪；跌破 $6.80 為 SOW。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $9.99 回落後維持寬幅整理&#x27;,&#x27;$7.00–$8.00 區間缺少足夠型態觸點&#x27;,&#x27;動能中性，MACD 柱狀圖微幅轉正&#x27;,&#x27;跌破 $6.80 會重新啟動下行風險&#x27;]},
-    {ticker:&#x27;RIVN&#x27;,scope:&#x27;Candidate&#x27;,close:15.14,pattern:&#x27;下降三角形&#x27;,target:11.6,targetConditional:true,date:&#x27;2026-11-30&#x27;,dateLabel:&#x27;Nov-30&#x27;,upside:-23.4,confidence:66,condition:&#x27;日線跌破 $14.80 才確認&#x27;,wyckoff:&#x27;可能派發 Phase D／待 SOW：跌破 $14.80 預期進入 Mark-down；收復 $17 否定。&#x27;,analysis:[&#x27;高點持續下降，底部約 $14.80 水平&#x27;,&#x27;現價仍未正式跌破支撐&#x27;,&#x27;跌破後條件式目標約 $11.60&#x27;,&#x27;RSI 偏弱且 Stochastic 低檔&#x27;,&#x27;收復 $16.80–$17.00 會否定型態&#x27;]},
-    {ticker:&#x27;PLTR&#x27;,scope:&#x27;Candidate&#x27;,close:184.99,pattern:&#x27;上升三角形&#x27;,target:212,targetConditional:true,date:&#x27;2026-11-09&#x27;,dateLabel:&#x27;Nov-09&#x27;,upside:14.6,confidence:70,condition:&#x27;日線收於約 $189 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $189 才進入 Phase E；跌破 $176 退回區間。&#x27;,analysis:[&#x27;高點受制於約 $189，低點沿上升支撐墊高&#x27;,&#x27;目前仍低於水平壓力&#x27;,&#x27;突破後條件式目標約 $212，尚餘 14.6%&#x27;,&#x27;動能中性，MACD 尚未重新金叉&#x27;,&#x27;跌破 $176 會削弱；$165 以下失效&#x27;]},
-    {ticker:&#x27;NOW&#x27;,scope:&#x27;Candidate&#x27;,close:137.00,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;突破 $149.60 或跌破 $132 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（未定向）：預期 $132–$149.60 震盪。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期仍在 $132–$149.60 整理&#x27;,&#x27;杯柄假設深度過大，暫不採用量度目標&#x27;,&#x27;動能中性，MACD 柱狀圖仍偏弱&#x27;,&#x27;$132 是近期重要支撐&#x27;]},
-    {ticker:&#x27;TEAM&#x27;,scope:&#x27;Candidate&#x27;,close:188.65,pattern:&#x27;上升三角形&#x27;,target:217,targetConditional:true,date:&#x27;2026-10-19&#x27;,dateLabel:&#x27;Oct-19&#x27;,upside:15.0,confidence:84,condition:&#x27;日線收於 $196.60–$199 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $199 才進入 Markup；跌破 $185 削弱。&#x27;,analysis:[&#x27;高點集中在 $196.60–$199，低點逐步墊高&#x27;,&#x27;盤中觸及壓力後收回其下，尚未確認&#x27;,&#x27;突破後條件式目標約 $217，尚餘 15.0%&#x27;,&#x27;動能中性，MACD 仍低於訊號線&#x27;,&#x27;跌破 $185 會削弱；$176 以下失效&#x27;]}
+    {ticker:&#x27;AMKR&#x27;,scope:&#x27;List 1&#x27;,close:53.32,pattern:&#x27;雙底&#x27;,target:71.5,targetConditional:true,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:34.1,confidence:72,condition:&#x27;日線收於 $58.50 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $58.50 才進入 Phase E；$46 為主要防守。&#x27;,analysis:[&#x27;兩個低點約 $45.50 與 $46.50，形成抬高第二底&#x27;,&#x27;頸線約 $58.50，現價仍未確認突破&#x27;,&#x27;突破後量度目標約 $71.50，尚餘 34.1%&#x27;,&#x27;動能改善但仍在頸線下方&#x27;,&#x27;跌破 $46 會令型態失效&#x27;]},
+    {ticker:&#x27;MU&#x27;,scope:&#x27;List 1&#x27;,close:1071.88,pattern:&#x27;杯柄&#x27;,target:1340,date:&#x27;2026-12-10&#x27;,dateLabel:&#x27;Dec-10&#x27;,upside:25.0,confidence:70,condition:&#x27;已確認&#x27;,wyckoff:&#x27;再累積 Phase E／Markup：預期趨勢延續；先留意 $1,025–$1,040 回測。&#x27;,analysis:[&#x27;杯底約 $737.88，右側已回到前高區&#x27;,&#x27;已突破約 $1,025–$1,040 柄部壓力&#x27;,&#x27;量度目標約 $1,340，尚餘 25.0%&#x27;,&#x27;動能強但進入短線高檔&#x27;,&#x27;跌回 $920 以下會破壞柄部結構&#x27;]},
+    {ticker:&#x27;MRVL&#x27;,scope:&#x27;List 1&#x27;,close:260.9,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-11-20&#x27;,dateLabel:&#x27;Nov-20&#x27;,upside:30.3,confidence:72,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：SOS 後預期續升；可能先 Back-up 測試 $245–$250。&#x27;,analysis:[&#x27;左肩約 $185、頭部約 $164、右肩約 $205&#x27;,&#x27;已突破約 $245–$250 的斜向頸線區&#x27;,&#x27;量度目標約 $340，尚餘 30.3%&#x27;,&#x27;短線已進入高檔&#x27;,&#x27;跌回 $230 以下會削弱；$205 以下失效&#x27;]},
+    {ticker:&#x27;COHR&#x27;,scope:&#x27;List 1&#x27;,close:300.6,pattern:&#x27;頭肩底&#x27;,target:420,targetConditional:true,date:&#x27;2026-11-29&#x27;,dateLabel:&#x27;Nov-29&#x27;,upside:39.7,confidence:80,condition:&#x27;日線重新站穩 $310 以上&#x27;,wyckoff:&#x27;累積 Phase D／待重奪 SOS：收市回落至 $300.60，需重新站穩 $310；$300／$267 為防守。&#x27;,analysis:[&#x27;頭部約 $220.68，右肩約 $267&#x27;,&#x27;收市回落至 $300.60，跌回約 $310 頸線下方，轉為待重新站穩&#x27;,&#x27;重新站穩後量度目標約 $420，尚餘 39.7%&#x27;,&#x27;動能高檔，突破後追價風險較高&#x27;,&#x27;跌回 $300 以下會削弱；$267 以下失效&#x27;]},
+    {ticker:&#x27;FTNT&#x27;,scope:&#x27;List 1&#x27;,close:178.74,pattern:&#x27;雙底&#x27;,target:196,date:&#x27;2026-11-02&#x27;,dateLabel:&#x27;Nov-02&#x27;,upside:9.7,confidence:84,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase D／SOS：預期回測 LPS 後再進入 Markup；$172.67 應轉為支撐。&#x27;,analysis:[&#x27;兩個底部均約 $149.67，對稱性清楚&#x27;,&#x27;頸線約 $172.67，Sep-14 確認突破&#x27;,&#x27;量度目標約 $195.67，尚餘 9.7%&#x27;,&#x27;短線動能高檔&#x27;,&#x27;跌回 $172.67 以下會削弱突破可信度&#x27;]},
+    {ticker:&#x27;NOK&#x27;,scope:&#x27;List 1&#x27;,close:10.63,pattern:&#x27;上升三角形&#x27;,target:12.8,targetConditional:true,date:&#x27;2026-11-13&#x27;,dateLabel:&#x27;Nov-13&#x27;,upside:20.4,confidence:82,condition:&#x27;日線收於 $11.05–$11.10 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：站穩 $11.10 才可望進入 Phase E；跌破 $9.60 轉弱。&#x27;,analysis:[&#x27;高點受制於約 $11.05，低點逐步墊高&#x27;,&#x27;收市 $10.63，尚未確認突破&#x27;,&#x27;突破後條件式目標約 $12.80，尚餘 20.4%&#x27;,&#x27;動能轉中性，仍受水平壓力限制&#x27;,&#x27;跌破約 $9.60 的上升支撐會令型態失效&#x27;]},
+    {ticker:&#x27;IREN&#x27;,scope:&#x27;List 1&#x27;,close:47.05,pattern:&#x27;頭肩底&#x27;,target:55,date:&#x27;2026-11-22&#x27;,dateLabel:&#x27;Nov-22&#x27;,upside:16.9,confidence:88,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期高低點續墊高；$42–$43 為關鍵 Back-up 支撐。&#x27;,analysis:[&#x27;左肩約 $34、頭部約 $28.93、右肩約 $36&#x27;,&#x27;已站上約 $42–$43 的斜向頸線&#x27;,&#x27;量度目標約 $55，尚餘 16.9%&#x27;,&#x27;動能高檔，短線回吐風險增加&#x27;,&#x27;跌回 $42 以下會削弱；$36 以下失效&#x27;]},
+    {ticker:&#x27;NBIS&#x27;,scope:&#x27;List 1&#x27;,close:226.61,pattern:&#x27;頭肩底&#x27;,target:247,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:9.0,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：接近量度目標，預期供給與震盪增加。&#x27;,analysis:[&#x27;頭部約 $194，兩側肩部約 $205–$210&#x27;,&#x27;已突破約 $222–$225 的頸線區&#x27;,&#x27;量度目標約 $247，尚餘 9.0%&#x27;,&#x27;動能正向但上行空間已收窄&#x27;,&#x27;跌回 $220 以下會削弱；$205 以下失效&#x27;]},
+    {ticker:&#x27;CSCO&#x27;,scope:&#x27;List 1&#x27;,close:106.43,pattern:&#x27;下降楔形&#x27;,target:127,targetConditional:true,date:&#x27;2026-11-15&#x27;,dateLabel:&#x27;Nov-15&#x27;,upside:19.3,confidence:76,condition:&#x27;日線收復 $111.50–$112&#x27;,wyckoff:&#x27;再累積 Phase C／待 Spring：預期先測試 $105–$107 支撐；收復 $112 才形成 SOS。&#x27;,analysis:[&#x27;高低點同步下降並逐漸收斂&#x27;,&#x27;目前仍在楔形內，尚未向上確認&#x27;,&#x27;突破後量度目標約 $127，尚餘 19.3%&#x27;,&#x27;RSI 偏弱，MACD 尚未重返零軸&#x27;,&#x27;跌破 $104 會增加下行風險&#x27;]},
+    {ticker:&#x27;LITE&#x27;,scope:&#x27;List 1&#x27;,close:937,pattern:&#x27;頭肩底&#x27;,target:1090,date:&#x27;2026-09-29&#x27;,dateLabel:&#x27;Sep-29&#x27;,upside:16.3,confidence:90,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：預期趨勢延續；$840 頸線維持為主要支撐。&#x27;,analysis:[&#x27;頭部約 $605，肩部約 $680–$720&#x27;,&#x27;已突破約 $840 的頸線&#x27;,&#x27;目標約 $1,090，尚餘 16.3%&#x27;,&#x27;動能重新轉強，尚未過熱&#x27;,&#x27;跌回 $840 以下會破壞突破結構&#x27;]},
+    {ticker:&#x27;BE&#x27;,scope:&#x27;Candidate&#x27;,close:275.19,pattern:&#x27;頭肩底&#x27;,target:340,date:&#x27;2026-10-14&#x27;,dateLabel:&#x27;Oct-14&#x27;,upside:23.6,confidence:78,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup：已越過 $243–$250 SOS 區，預期回測後續升。&#x27;,analysis:[&#x27;夏季低位形成大型底部，頭部約 $160&#x27;,&#x27;已突破約 $243–$250 頸線並出現放量&#x27;,&#x27;量度目標約 $340，尚餘 23.6%&#x27;,&#x27;動能高檔，短線可能先回測頸線&#x27;,&#x27;跌回 $220 以下會明顯削弱結構&#x27;]},
+    {ticker:&#x27;GAP&#x27;,scope:&#x27;Candidate&#x27;,close:21.28,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $22.80 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：預期 $20.50–$22.80 測試供需。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期反彈仍在 $22.80 壓力下&#x27;,&#x27;沒有足夠觸點形成可靠頸線&#x27;,&#x27;動能中性，MACD 柱狀圖仍負值&#x27;,&#x27;$20.50 為近期主要支撐&#x27;]},
+    {ticker:&#x27;NKE&#x27;,scope:&#x27;Candidate&#x27;,close:36.05,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $40 後重新評估&#x27;,wyckoff:&#x27;Mark-down／待止跌：預期弱勢延續；需先出現 Spring 或 SOS 才轉中性。&#x27;,analysis:[&#x27;無可信反轉型態&#x27;,&#x27;價格仍沿下降趨勢運行，近期低位約 $35.35&#x27;,&#x27;尚未形成可量度頸線或突破點&#x27;,&#x27;RSI 與 Stochastic 均在低檔&#x27;,&#x27;跌破 $35.35 會延續下行趨勢&#x27;]},
+    {ticker:&#x27;FIG&#x27;,scope:&#x27;Candidate&#x27;,close:21.76,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $25 後重新評估&#x27;,wyckoff:&#x27;Mark-down／待止跌：供給仍主導，預期先尋找需求區。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;YTD 維持高低點下移&#x27;,&#x27;沒有可靠量度邊界&#x27;,&#x27;RSI 偏弱且 Stochastic 超賣&#x27;,&#x27;跌破近期低位會延續下行風險&#x27;]},
+    {ticker:&#x27;ACHR&#x27;,scope:&#x27;Candidate&#x27;,close:5.71,pattern:&#x27;雙底（歷史已完成）&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:80,condition:&#x27;目前無新前瞻型態&#x27;,wyckoff:&#x27;交易區間 Phase B（待判定）：守住 $5.20 並出現 SOS 才轉強。&#x27;,analysis:[&#x27;歷史底部約 $4.35、$4.48，原頸線約 $5.45&#x27;,&#x27;Aug-06 突破後最高升至約 $7.29&#x27;,&#x27;歷史 $6.56／Aug-27 目標已完成，不能順延&#x27;,&#x27;目前動能中性，MACD 仍在零軸下&#x27;,&#x27;失守 $5.20 會進一步轉弱&#x27;]},
+    {ticker:&#x27;INTC&#x27;,scope:&#x27;Candidate&#x27;,close:122.6,pattern:&#x27;雙底&#x27;,target:127,date:&#x27;2026-11-04&#x27;,dateLabel:&#x27;Nov-04&#x27;,upside:3.6,confidence:74,condition:&#x27;已確認&#x27;,wyckoff:&#x27;累積 Phase E／Markup 後段：接近目標，預期上行速度放慢。&#x27;,analysis:[&#x27;第一底約 $81.79，第二底約 $87.74&#x27;,&#x27;已突破約 $104.16 的頸線&#x27;,&#x27;量度目標約 $127，只餘 2.5%&#x27;,&#x27;RSI 與 Stochastic 均過熱&#x27;,&#x27;跌回 $104 以下會削弱；$87.74 以下失效&#x27;]},
+    {ticker:&#x27;AVGO&#x27;,scope:&#x27;Candidate&#x27;,close:354.99,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $378–$390 後重新評估&#x27;,wyckoff:&#x27;可能再累積 Phase B：收復 $378–$390 才形成 SOS，跌破 $335.82 轉弱。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $335.82 反彈，但仍未收復主要壓力&#x27;,&#x27;尚未形成可量度頸線或突破點&#x27;,&#x27;動能中性，MACD 負值但柱狀圖改善&#x27;,&#x27;跌破 $335.82 會否定目前反彈&#x27;]},
+    {ticker:&#x27;SNDK&#x27;,scope:&#x27;Candidate&#x27;,close:1816.5699,pattern:&#x27;上升三角形&#x27;,target:2500,targetConditional:true,date:&#x27;2026-11-06&#x27;,dateLabel:&#x27;Nov-06&#x27;,upside:37.6,confidence:72,condition:&#x27;日線收於 $1,900 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $1,900 才確認 Phase E；$1,500 為主要支撐。&#x27;,analysis:[&#x27;低點由約 $1,200、$1,450 逐步墊高&#x27;,&#x27;上方壓力集中在 $1,835–$1,900，尚未有效站穩&#x27;,&#x27;突破後條件式目標約 $2,500，尚餘 37.6%&#x27;,&#x27;動能已進入高檔，突破前不宜追價&#x27;,&#x27;$1,500 為主要失效支撐&#x27;]},
+    {ticker:&#x27;ONDS&#x27;,scope:&#x27;Candidate&#x27;,close:7.4,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;收復 $8.00 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（中性）：預期 $7.00–$8.00 震盪；跌破 $6.80 為 SOW。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;自約 $9.99 回落後維持寬幅整理&#x27;,&#x27;$7.00–$8.00 區間缺少足夠型態觸點&#x27;,&#x27;動能中性，MACD 柱狀圖微幅轉正&#x27;,&#x27;跌破 $6.80 會重新啟動下行風險&#x27;]},
+    {ticker:&#x27;RIVN&#x27;,scope:&#x27;Candidate&#x27;,close:15.02,pattern:&#x27;下降三角形&#x27;,target:11.6,targetConditional:true,date:&#x27;2026-11-30&#x27;,dateLabel:&#x27;Nov-30&#x27;,upside:-22.8,confidence:66,condition:&#x27;日線跌破 $14.80 才確認&#x27;,wyckoff:&#x27;可能派發 Phase D／待 SOW：跌破 $14.80 預期進入 Mark-down；收復 $17 否定。&#x27;,analysis:[&#x27;高點持續下降，底部約 $14.80 水平&#x27;,&#x27;現價仍未正式跌破支撐&#x27;,&#x27;跌破後條件式目標約 $11.60&#x27;,&#x27;RSI 偏弱且 Stochastic 低檔&#x27;,&#x27;收復 $16.80–$17.00 會否定型態&#x27;]},
+    {ticker:&#x27;PLTR&#x27;,scope:&#x27;Candidate&#x27;,close:191.79,pattern:&#x27;上升三角形&#x27;,target:212,date:&#x27;2026-11-09&#x27;,dateLabel:&#x27;Nov-09&#x27;,upside:10.5,confidence:70,condition:&#x27;已確認&#x27;,wyckoff:&#x27;再累積 Phase E／Markup：已站穩 $189 上方；預期回測 $189 附近確認支撐，跌破 $176 退回區間。&#x27;,analysis:[&#x27;高點受制於約 $189，低點沿上升支撐墊高&#x27;,&#x27;Sep-23 收市 $191.79，已站上約 $189 水平壓力並確認突破&#x27;,&#x27;量度目標約 $212，尚餘 10.5%&#x27;,&#x27;動能過熱，MACD 多方擴張&#x27;,&#x27;跌破 $176 會削弱；$165 以下失效&#x27;]},
+    {ticker:&#x27;NOW&#x27;,scope:&#x27;Candidate&#x27;,close:140.78,pattern:&#x27;無&#x27;,target:null,date:null,dateLabel:null,upside:null,confidence:0,condition:&#x27;突破 $149.60 或跌破 $132 後重新評估&#x27;,wyckoff:&#x27;交易區間 Phase B（未定向）：預期 $132–$149.60 震盪。&#x27;,analysis:[&#x27;無可信古典型態&#x27;,&#x27;近期仍在 $132–$149.60 整理&#x27;,&#x27;杯柄假設深度過大，暫不採用量度目標&#x27;,&#x27;動能中性，MACD 柱狀圖仍偏弱&#x27;,&#x27;$132 是近期重要支撐&#x27;]},
+    {ticker:&#x27;TEAM&#x27;,scope:&#x27;Candidate&#x27;,close:195.08,pattern:&#x27;上升三角形&#x27;,target:217,targetConditional:true,date:&#x27;2026-10-19&#x27;,dateLabel:&#x27;Oct-19&#x27;,upside:11.2,confidence:84,condition:&#x27;日線收於 $196.60–$199 以上&#x27;,wyckoff:&#x27;再累積 Phase D／待 SOS：突破 $199 才進入 Markup；跌破 $185 削弱。&#x27;,analysis:[&#x27;高點集中在 $196.60–$199，低點逐步墊高&#x27;,&#x27;盤中觸及壓力後收回其下，尚未確認&#x27;,&#x27;突破後條件式目標約 $217，尚餘 11.2%&#x27;,&#x27;動能過熱，但 MACD 仍低於訊號線&#x27;,&#x27;跌破 $185 會削弱；$176 以下失效&#x27;]}
   ];
 
+  const dailyChangeData = {
+    AMKR:{change:1.130001,pct:2.1652},
+    MU:{change:-24.280029,pct:-2.2150},
+    MRVL:{change:-1.459991,pct:-0.5565},
+    COHR:{change:-9.790009,pct:-3.1541},
+    FTNT:{change:3.510010,pct:2.0031},
+    NOK:{change:-0.190000,pct:-1.7560},
+    IREN:{change:-1.500000,pct:-3.0896},
+    NBIS:{change:-9.509995,pct:-4.0276},
+    CSCO:{change:-0.010002,pct:-0.0094},
+    LITE:{change:-8.669983,pct:-0.9168},
+    BE:{change:-1.339996,pct:-0.4846},
+    GAP:{change:0.030001,pct:0.1412},
+    NKE:{change:-0.049999,pct:-0.1385},
+    FIG:{change:-0.039999,pct:-0.1835},
+    ACHR:{change:0.020000,pct:0.3515},
+    INTC:{change:-1.260002,pct:-1.0173},
+    AVGO:{change:-9.550018,pct:-2.6197},
+    SNDK:{change:-70.470093,pct:-3.7344},
+    ONDS:{change:-0.320000,pct:-4.1451},
+    RIVN:{change:-0.120000,pct:-0.7926},
+    PLTR:{change:6.799988,pct:3.6759},
+    NOW:{change:3.779999,pct:2.7591},
+    TEAM:{change:-0.589996,pct:-0.3015}
+  };
+
   const changedFields = {
-    AMKR:[&#x27;ticker&#x27;],
-    BE:[&#x27;ticker&#x27;],
-    GAP:[&#x27;ticker&#x27;],
-    NKE:[&#x27;ticker&#x27;],
-    FIG:[&#x27;ticker&#x27;],
+    AMKR:[&#x27;action&#x27;],
     MU:[&#x27;action&#x27;],
     MRVL:[&#x27;action&#x27;],
+    COHR:[&#x27;action&#x27;,&#x27;pattern&#x27;,&#x27;date&#x27;,&#x27;target&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;],
     FTNT:[&#x27;action&#x27;],
-    NOK:[&#x27;action&#x27;],
+    NOK:[&#x27;action&#x27;,&#x27;momentum&#x27;],
     IREN:[&#x27;action&#x27;],
-    NBIS:[&#x27;action&#x27;],
-    LITE:[&#x27;momentum&#x27;,&#x27;action&#x27;],
-    COHR:[&#x27;pattern&#x27;,&#x27;momentum&#x27;,&#x27;action&#x27;,&#x27;wyckoff&#x27;],
-    CSCO:[&#x27;pattern&#x27;,&#x27;action&#x27;,&#x27;wyckoff&#x27;],
+    NBIS:[&#x27;action&#x27;,&#x27;momentum&#x27;],
+    CSCO:[&#x27;action&#x27;,&#x27;momentum&#x27;],
+    LITE:[&#x27;action&#x27;],
+    BE:[&#x27;action&#x27;],
+    GAP:[&#x27;action&#x27;],
+    NKE:[&#x27;action&#x27;,&#x27;momentum&#x27;],
+    FIG:[&#x27;action&#x27;],
     ACHR:[&#x27;action&#x27;],
     INTC:[&#x27;action&#x27;],
     AVGO:[&#x27;action&#x27;],
-    SNDK:[&#x27;pattern&#x27;,&#x27;target&#x27;,&#x27;date&#x27;,&#x27;upside&#x27;,&#x27;confidence&#x27;,&#x27;momentum&#x27;,&#x27;action&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;],
+    SNDK:[&#x27;action&#x27;],
     ONDS:[&#x27;action&#x27;],
     RIVN:[&#x27;action&#x27;],
-    PLTR:[&#x27;momentum&#x27;,&#x27;action&#x27;],
+    PLTR:[&#x27;action&#x27;,&#x27;momentum&#x27;,&#x27;pattern&#x27;,&#x27;date&#x27;,&#x27;target&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;],
     NOW:[&#x27;action&#x27;],
-    TEAM:[&#x27;momentum&#x27;,&#x27;action&#x27;]
+    TEAM:[&#x27;action&#x27;,&#x27;momentum&#x27;]
   };
   const changedClass = (row, field) =&gt; (changedFields[row.ticker] || []).includes(field) ? &#x27;changed-cell&#x27; : &#x27;&#x27;;
 
   const labels = {ticker:&#x27;股票代號&#x27;,close:&#x27;收市價&#x27;,pattern:&#x27;型態／確認&#x27;,target:&#x27;推估價格&#x27;,date:&#x27;推估日期&#x27;,upside:&#x27;推估幅度&#x27;,confidence:&#x27;信心&#x27;,momentum:&#x27;動能狀態&#x27;,action:&#x27;技術處置&#x27;,wyckoff:&#x27;Wyckoff 階段／預期行為&#x27;,analysis:&#x27;技術分析摘要&#x27;};
   const money = value =&gt; value == null ? &#x27;—&#x27; : &#x27;$&#x27; + value.toLocaleString(&#x27;en-US&#x27;, {maximumFractionDigits: 2});
+  const signedMoney = value =&gt; `${value &gt; 0 ? &#x27;+&#x27; : value &lt; 0 ? &#x27;-&#x27; : &#x27;&#x27;}$${Math.abs(value).toLocaleString(&#x27;en-US&#x27;, {minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  const signedPercent = value =&gt; `${value &gt; 0 ? &#x27;+&#x27; : &#x27;&#x27;}${value.toFixed(2)}%`;
+  const closeMove = row =&gt; {
+    const move = dailyChangeData[row.ticker] || {change:0,pct:0};
+    return {...move,tone:move.change &gt; 0 ? &#x27;positive&#x27; : move.change &lt; 0 ? &#x27;negative&#x27; : &#x27;flat&#x27;};
+  };
   const numericKeys = new Set([&#x27;close&#x27;,&#x27;target&#x27;,&#x27;upside&#x27;,&#x27;confidence&#x27;]);
   const indicatorData = {
-    AMKR:{rsi:57.0,k:89.9,d:67.4,macd:-0.819,signal:-1.812,hist:0.993,histPrev:0.717},
-    MU:{rsi:66.1,k:89.2,d:71.3,macd:24.774,signal:14.639,hist:10.135,histPrev:4.537},
-    MRVL:{rsi:64.0,k:93.5,d:86.9,macd:7.462,signal:3.705,hist:3.757,histPrev:2.873},
-    COHR:{rsi:53.7,k:84.9,d:81.0,macd:1.353,signal:-3.334,hist:4.688,histPrev:4.793},
-    FTNT:{rsi:61.1,k:87.7,d:85.2,macd:3.976,signal:2.561,hist:1.415,histPrev:1.475},
-    NOK:{rsi:55.2,k:78.1,d:69.7,macd:0.100,signal:0.021,hist:0.079,histPrev:0.074},
-    IREN:{rsi:62.3,k:87.0,d:75.9,macd:1.433,signal:0.820,hist:0.613,histPrev:0.479},
-    NBIS:{rsi:56.6,k:60.0,d:49.0,macd:2.393,signal:1.199,hist:1.193,histPrev:0.387},
-    CSCO:{rsi:40.8,k:51.2,d:49.5,macd:-1.174,signal:-1.263,hist:0.090,histPrev:0.330},
-    LITE:{rsi:55.0,k:60.0,d:52.6,macd:18.897,signal:17.901,hist:0.996,histPrev:-0.306},
-    BE:{rsi:60.6,k:81.6,d:83.0,macd:13.934,signal:11.390,hist:2.544,histPrev:2.908},
-    GAP:{rsi:53.3,k:41.2,d:28.0,macd:0.055,signal:0.141,hist:-0.087,histPrev:-0.140},
-    NKE:{rsi:37.5,k:14.1,d:10.9,macd:-1.152,signal:-1.104,hist:-0.048,histPrev:-0.091},
-    FIG:{rsi:38.7,k:12.7,d:14.6,macd:-0.802,signal:-0.466,hist:-0.337,histPrev:-0.332},
-    ACHR:{rsi:51.8,k:40.5,d:29.9,macd:-0.082,signal:-0.057,hist:-0.025,histPrev:-0.055},
-    INTC:{rsi:72.1,k:93.1,d:89.2,macd:4.981,signal:1.900,hist:3.082,histPrev:2.557},
-    AVGO:{rsi:50.1,k:71.1,d:52.4,macd:-6.826,signal:-8.510,hist:1.684,histPrev:0.795},
-    SNDK:{rsi:64.7,k:89.9,d:73.2,macd:62.164,signal:40.895,hist:21.269,histPrev:10.810},
-    ONDS:{rsi:49.7,k:53.3,d:38.3,macd:-0.236,signal:-0.271,hist:0.034,histPrev:0.000},
-    RIVN:{rsi:42.4,k:16.8,d:18.9,macd:-0.237,signal:-0.161,hist:-0.076,histPrev:-0.075},
-    PLTR:{rsi:62.5,k:78.8,d:63.5,macd:4.315,signal:4.402,hist:-0.086,histPrev:-0.582},
-    NOW:{rsi:54.2,k:35.8,d:37.4,macd:3.532,signal:4.558,hist:-1.026,histPrev:-0.982},
-    TEAM:{rsi:60.5,k:72.3,d:74.8,macd:11.133,signal:13.123,hist:-1.990,histPrev:-1.665}
+    AMKR:{rsi:54.8835,k:85.2168,d:65.8414,macd:-0.919961,signal:-1.832068,hist:0.912106,histPrev:0.716623},
+    MU:{rsi:62.1895,k:90.0630,d:84.4209,macd:28.925229,signal:17.496530,hist:11.428698,histPrev:10.134491},
+    MRVL:{rsi:63.1394,k:93.4194,d:92.4017,macd:8.688530,signal:4.701943,hist:3.986587,histPrev:3.756664},
+    COHR:{rsi:50.7998,k:71.6231,d:80.0692,macd:1.393052,signal:-2.388809,hist:3.781860,histPrev:4.687700},
+    FTNT:{rsi:64.8971,k:89.4814,d:85.7688,macd:4.333372,signal:2.632525,hist:1.700847,histPrev:1.474561},
+    NOK:{rsi:52.7608,k:77.0961,d:76.2781,macd:0.103758,signal:0.037704,hist:0.066053,histPrev:0.079183},
+    IREN:{rsi:58.3605,k:85.7062,d:82.7889,macd:1.521786,signal:0.960309,hist:0.561477,histPrev:0.612905},
+    NBIS:{rsi:52.2768,k:61.2472,d:57.0970,macd:2.471619,signal:1.453768,hist:1.017851,histPrev:1.193220},
+    CSCO:{rsi:40.7921,k:44.7657,d:52.5069,macd:-1.331577,signal:-1.276972,hist:-0.054605,histPrev:0.089663},
+    LITE:{rsi:54.0689,k:61.0141,d:57.5803,macd:19.205149,signal:18.161788,hist:1.043361,histPrev:0.996187},
+    BE:{rsi:60.0086,k:84.2394,d:83.1318,macd:13.881929,signal:11.888152,hist:1.993777,histPrev:2.544448},
+    GAP:{rsi:52.0256,k:39.1817,d:27.3230,macd:0.040428,signal:0.138473,hist:-0.098045,histPrev:-0.139502},
+    NKE:{rsi:37.2316,k:20.4842,d:15.7680,macd:-1.118558,signal:-1.107067,hist:-0.011491,histPrev:-0.047808},
+    FIG:{rsi:38.5041,k:11.4889,d:12.9822,macd:-0.866334,signal:-0.545687,hist:-0.320647,histPrev:-0.336810},
+    ACHR:{rsi:52.2292,k:58.3333,d:42.5926,macd:-0.060827,signal:-0.057444,hist:-0.003383,histPrev:-0.025058},
+    INTC:{rsi:70.2597,k:94.7814,d:92.8072,macd:5.838532,signal:2.687340,hist:3.151191,histPrev:3.081750},
+    AVGO:{rsi:44.7243,k:69.3328,d:64.7812,macd:-6.483873,signal:-8.104554,hist:1.620681,histPrev:1.683753},
+    SNDK:{rsi:60.0566,k:83.6652,d:82.6408,macd:68.194328,signal:46.354692,hist:21.839636,histPrev:21.269285},
+    ONDS:{rsi:44.2646,k:53.1753,d:47.3916,macd:-0.225737,signal:-0.261777,hist:0.036040,histPrev:0.034299},
+    RIVN:{rsi:41.1674,k:17.7899,d:18.6123,macd:-0.259592,signal:-0.180925,hist:-0.078667,histPrev:-0.075972},
+    PLTR:{rsi:66.8818,k:91.1618,d:77.6764,macd:5.180683,signal:4.557366,hist:0.623317,histPrev:-0.086127},
+    NOW:{rsi:57.8323,k:47.1284,d:39.9641,macd:3.558388,signal:4.357954,hist:-0.799566,histPrev:-1.025829},
+    TEAM:{rsi:67.0491,k:82.1921,d:78.1087,macd:11.646204,signal:13.226008,hist:-1.579803,histPrev:-1.665095}
   };
   const optionsData = {
-    ACHR:{asOf:&#x27;Sep-22 21:46 UTC&#x27;,sameSession:true,spot:5.6899,weekExpiry:&#x27;Sep-25&#x27;,weekIv:67.38,weekLow:5.4179,weekHigh:5.9619,weekPcr:0.345,weekCallNode:5.5,weekPutNode:5.5,weekGammaNode:5.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:61.24,nextLow:5.2776,nextHigh:6.1021,nextPcr:0.305,nextCallNode:6,nextPutNode:5.5,nextGammaNode:6},
-    AMKR:{asOf:&#x27;Sep-22 22:57 UTC&#x27;,sameSession:true,spot:54.72,weekExpiry:&#x27;Sep-25&#x27;,weekIv:65.53,weekLow:52.4887,weekHigh:56.9513,weekPcr:0.397,weekCallNode:61,weekPutNode:45,weekGammaNode:55,nextExpiry:&#x27;Oct-02&#x27;,nextIv:61.99,nextLow:50.5125,nextHigh:58.9275,nextPcr:0.746,nextCallNode:61,nextPutNode:44,nextGammaNode:61},
-    AVGO:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:366,weekExpiry:&#x27;Sep-25&#x27;,weekIv:36.81,weekLow:357.6913,weekHigh:374.3087,weekPcr:0.638,weekCallNode:375,weekPutNode:345,weekGammaNode:365,nextExpiry:&#x27;Oct-02&#x27;,nextIv:35.60,nextLow:351.3587,nextHigh:380.6413,nextPcr:0.611,nextCallNode:400,nextPutNode:360,nextGammaNode:360},
-    BE:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:276.9,weekExpiry:&#x27;Sep-25&#x27;,weekIv:83.28,weekLow:262.6412,weekHigh:291.1587,weekPcr:1.224,weekCallNode:300,weekPutNode:250,weekGammaNode:280,nextExpiry:&#x27;Oct-02&#x27;,nextIv:78.20,nextLow:252.5687,nextHigh:301.2312,nextPcr:0.899,nextCallNode:270,nextPutNode:245,nextGammaNode:270},
-    COHR:{asOf:&#x27;Sep-22 22:29 UTC&#x27;,sameSession:true,spot:311.03,weekExpiry:&#x27;Sep-25&#x27;,weekIv:80.19,weekLow:295.645,weekHigh:326.415,weekPcr:0.915,weekCallNode:350,weekPutNode:270,weekGammaNode:320,nextExpiry:&#x27;Oct-02&#x27;,nextIv:76.56,nextLow:284.3825,nextHigh:337.6775,nextPcr:0.696,nextCallNode:270,nextPutNode:225,nextGammaNode:310},
-    CSCO:{asOf:&#x27;Sep-22 22:57 UTC&#x27;,sameSession:true,spot:106.35,weekExpiry:&#x27;Sep-25&#x27;,weekIv:34.27,weekLow:104.072,weekHigh:108.628,weekPcr:0.425,weekCallNode:111,weekPutNode:100,weekGammaNode:109,nextExpiry:&#x27;Oct-02&#x27;,nextIv:32.04,nextLow:102.474,nextHigh:110.226,nextPcr:0.592,nextCallNode:110,nextPutNode:111,nextGammaNode:110},
-    FIG:{asOf:&#x27;Sep-22 21:56 UTC&#x27;,sameSession:true,spot:21.75,weekExpiry:&#x27;Sep-25&#x27;,weekIv:71.36,weekLow:20.7725,weekHigh:22.7275,weekPcr:0.781,weekCallNode:24.5,weekPutNode:22,weekGammaNode:22,nextExpiry:&#x27;Oct-02&#x27;,nextIv:65.61,nextLow:20.1393,nextHigh:23.3607,nextPcr:0.846,nextCallNode:26,nextPutNode:20,nextGammaNode:20},
-    FTNT:{asOf:&#x27;Sep-22 16:58 UTC&#x27;,sameSession:false,spot:173.135,weekExpiry:&#x27;Sep-25&#x27;,weekIv:49.95,weekLow:167.6737,weekHigh:178.5962,weekPcr:0.973,weekCallNode:177.5,weekPutNode:155,weekGammaNode:177.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:44.32,nextLow:164.4437,nextHigh:181.8262,nextPcr:0.895,nextCallNode:180,nextPutNode:140,nextGammaNode:180},
-    GAP:{asOf:&#x27;Sep-22 21:09 UTC&#x27;,sameSession:true,spot:21.46,weekExpiry:&#x27;Sep-25&#x27;,weekIv:41.01,weekLow:20.9032,weekHigh:22.0168,weekPcr:0.536,weekCallNode:21.5,weekPutNode:18.5,weekGammaNode:21.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:36.80,nextLow:20.5675,nextHigh:22.3525,nextPcr:0.505,nextCallNode:22,nextPutNode:22,nextGammaNode:22},
-    INTC:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:123.85,weekExpiry:&#x27;Sep-25&#x27;,weekIv:74.71,weekLow:118.1762,weekHigh:129.5238,weekPcr:0.885,weekCallNode:120,weekPutNode:110,weekGammaNode:120,nextExpiry:&#x27;Oct-02&#x27;,nextIv:68.64,nextLow:114.2025,nextHigh:133.4975,nextPcr:1.243,nextCallNode:115,nextPutNode:65,nextGammaNode:115},
-    IREN:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:48.3451,weekExpiry:&#x27;Sep-25&#x27;,weekIv:85.26,weekLow:45.8079,weekHigh:50.8824,weekPcr:0.722,weekCallNode:50,weekPutNode:42,weekGammaNode:50,nextExpiry:&#x27;Oct-02&#x27;,nextIv:79.85,nextLow:43.9931,nextHigh:52.6971,nextPcr:1.251,nextCallNode:50,nextPutNode:30,nextGammaNode:50},
-    LITE:{asOf:&#x27;Sep-22 20:40 UTC&#x27;,sameSession:true,spot:945,weekExpiry:&#x27;Sep-25&#x27;,weekIv:82.58,weekLow:896.805,weekHigh:993.195,weekPcr:0.915,weekCallNode:1000,weekPutNode:920,weekGammaNode:1000,nextExpiry:&#x27;Oct-02&#x27;,nextIv:76.50,nextLow:863.6975,nextHigh:1026.3025,nextPcr:1.886,nextCallNode:890,nextPutNode:825,nextGammaNode:890},
-    MRVL:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:263.2,weekExpiry:&#x27;Sep-25&#x27;,weekIv:75.16,weekLow:251.0237,weekHigh:275.3762,weekPcr:0.570,weekCallNode:250,weekPutNode:200,weekGammaNode:250,nextExpiry:&#x27;Oct-02&#x27;,nextIv:68.47,nextLow:242.7362,nextHigh:283.6637,nextPcr:0.800,nextCallNode:250,nextPutNode:150,nextGammaNode:275},
-    MU:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:1095,weekExpiry:&#x27;Sep-25&#x27;,weekIv:59.94,weekLow:1054.37,weekHigh:1135.63,weekPcr:1.885,weekCallNode:1100,weekPutNode:600,weekGammaNode:1100,nextExpiry:&#x27;Oct-02&#x27;,nextIv:77.81,nextLow:1000.2888,nextHigh:1189.7113,nextPcr:0.674,nextCallNode:1000,nextPutNode:900,nextGammaNode:1000},
-    NBIS:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:236,weekExpiry:&#x27;Sep-25&#x27;,weekIv:87.59,weekLow:223.2287,weekHigh:248.7713,weekPcr:0.860,weekCallNode:250,weekPutNode:220,weekGammaNode:230,nextExpiry:&#x27;Oct-02&#x27;,nextIv:81.64,nextLow:214.3462,nextHigh:257.6538,nextPcr:0.767,nextCallNode:310,nextPutNode:220,nextGammaNode:250,signedAsOf:&#x27;Sep-22 10:56 PT moomoo&#x27;,putWall:220,gammaFlip:218.12,callWall:240,twoSeriesCallWall:250,regime:&#x27;現價高於 Gamma Flip；正 Gamma／牆位磁吸&#x27;},
-    NKE:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:36.2,weekExpiry:&#x27;Sep-25&#x27;,weekIv:35.05,weekLow:35.4138,weekHigh:36.9863,weekPcr:0.682,weekCallNode:36,weekPutNode:36,weekGammaNode:36,nextExpiry:&#x27;Oct-02&#x27;,nextIv:64.25,nextLow:33.5905,nextHigh:38.8095,nextPcr:0.760,nextCallNode:40,nextPutNode:35,nextGammaNode:35},
-    NOK:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:10.75,weekExpiry:&#x27;Sep-25&#x27;,weekIv:64.90,weekLow:10.2655,weekHigh:11.2345,weekPcr:0.297,weekCallNode:11,weekPutNode:10.5,weekGammaNode:11,nextExpiry:&#x27;Oct-02&#x27;,nextIv:58.17,nextLow:10.0105,nextHigh:11.4895,nextPcr:0.290,nextCallNode:11,nextPutNode:9,nextGammaNode:11},
-    NOW:{asOf:&#x27;Sep-22 21:37 UTC&#x27;,sameSession:true,spot:137.05,weekExpiry:&#x27;Sep-25&#x27;,weekIv:58.59,weekLow:132.0903,weekHigh:142.0097,weekPcr:0.630,weekCallNode:150,weekPutNode:130,weekGammaNode:140,nextExpiry:&#x27;Oct-02&#x27;,nextIv:55.53,nextLow:128.4863,nextHigh:145.6138,nextPcr:0.865,nextCallNode:150,nextPutNode:130,nextGammaNode:130},
-    ONDS:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:7.74,weekExpiry:&#x27;Sep-25&#x27;,weekIv:71.86,weekLow:7.366,weekHigh:8.114,weekPcr:0.825,weekCallNode:8,weekPutNode:7,weekGammaNode:7.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:67.09,nextLow:7.145,nextHigh:8.335,nextPcr:0.838,nextCallNode:8,nextPutNode:5,nextGammaNode:8},
-    PLTR:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:185.2022,weekExpiry:&#x27;Sep-25&#x27;,weekIv:49.47,weekLow:179.5497,weekHigh:190.8547,weekPcr:0.717,weekCallNode:180,weekPutNode:165,weekGammaNode:185,nextExpiry:&#x27;Oct-02&#x27;,nextIv:46.53,nextLow:175.4909,nextHigh:194.9135,nextPcr:1.160,nextCallNode:200,nextPutNode:170,nextGammaNode:180},
-    RIVN:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:15.18,weekExpiry:&#x27;Sep-25&#x27;,weekIv:53.68,weekLow:14.6913,weekHigh:15.6687,weekPcr:0.506,weekCallNode:16,weekPutNode:15,weekGammaNode:15,nextExpiry:&#x27;Oct-02&#x27;,nextIv:52.19,nextLow:14.3003,nextHigh:16.0598,nextPcr:0.593,nextCallNode:16.5,nextPutNode:15,nextGammaNode:16.5},
-    SNDK:{asOf:&#x27;Sep-22 22:59 UTC&#x27;,sameSession:true,spot:1889.0001,weekExpiry:&#x27;Sep-25&#x27;,weekIv:80.92,weekLow:1795.1176,weekHigh:1982.8826,weekPcr:1.241,weekCallNode:2000,weekPutNode:1500,weekGammaNode:2000,nextExpiry:&#x27;Oct-02&#x27;,nextIv:81.90,nextLow:1715.2176,nextHigh:2062.7826,nextPcr:0.755,nextCallNode:1600,nextPutNode:1500,nextGammaNode:1600,signedAsOf:&#x27;Sep-22 10:55 PT moomoo&#x27;,callWall:2000,regime:&#x27;現價低於本週 Call Wall；Flip／Put Wall 未核對&#x27;},
-    TEAM:{asOf:&#x27;Sep-22 20:15 UTC&#x27;,sameSession:true,spot:188.65,weekExpiry:&#x27;Sep-25&#x27;,weekIv:65.07,weekLow:181.0425,weekHigh:196.2575,weekPcr:0.370,weekCallNode:200,weekPutNode:167.5,weekGammaNode:200,nextExpiry:&#x27;Oct-02&#x27;,nextIv:62.14,nextLow:175.475,nextHigh:201.825,nextPcr:1.435,nextCallNode:187.5,nextPutNode:192.5,nextGammaNode:192.5}
+    AMKR:{asOf:&#x27;09-23 01:48:32 UTC&#x27;,sameSession:false,spot:54.83,weekExpiry:&#x27;Sep-25&#x27;,weekIv:65.53,weekLow:52.5987,weekHigh:57.0613,weekPcr:0.397,weekCallNode:61,weekPutNode:45,weekGammaNode:55,nextExpiry:&#x27;Oct-02&#x27;,nextIv:61.99,nextLow:50.6225,nextHigh:59.0375,nextPcr:0.746,nextCallNode:61,nextPutNode:44,nextGammaNode:61},
+    MU:{asOf:&#x27;09-23 03:55:44 UTC&#x27;,sameSession:false,spot:1097.72,weekExpiry:&#x27;Sep-25&#x27;,weekIv:60.12,weekLow:1057.6425,weekHigh:1137.7975,weekPcr:1.885,weekCallNode:1100,weekPutNode:600,weekGammaNode:1100,nextExpiry:&#x27;Oct-02&#x27;,nextIv:77.75,nextLow:1002.18,nextHigh:1193.26,nextPcr:0.674,nextCallNode:1000,nextPutNode:900,nextGammaNode:1000},
+    MRVL:{asOf:&#x27;09-23 03:10:51 UTC&#x27;,sameSession:false,spot:263.4155,weekExpiry:&#x27;Sep-25&#x27;,weekIv:72.42,weekLow:251.2392,weekHigh:275.5917,weekPcr:0.57,weekCallNode:250,weekPutNode:200,weekGammaNode:250,nextExpiry:&#x27;Oct-02&#x27;,nextIv:67.05,nextLow:242.9518,nextHigh:283.8793,nextPcr:0.8,nextCallNode:250,nextPutNode:150,nextGammaNode:275},
+    COHR:{asOf:&#x27;09-23 03:13:36 UTC&#x27;,sameSession:false,spot:312.06,weekExpiry:&#x27;Sep-25&#x27;,weekIv:81.4,weekLow:296.3775,weekHigh:327.7425,weekPcr:0.915,weekCallNode:350,weekPutNode:270,weekGammaNode:320,nextExpiry:&#x27;Oct-02&#x27;,nextIv:75.77,nextLow:285.54,nextHigh:338.58,nextPcr:0.696,nextCallNode:270,nextPutNode:225,nextGammaNode:310},
+    FTNT:{asOf:&#x27;09-23 03:52:58 UTC&#x27;,sameSession:false,spot:173.6627,weekExpiry:&#x27;Sep-25&#x27;,weekIv:49.26,weekLow:168.2567,weekHigh:179.0687,weekPcr:0.973,weekCallNode:177.5,weekPutNode:155,weekGammaNode:177.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:44.45,nextLow:164.8652,nextHigh:182.4602,nextPcr:0.895,nextCallNode:180,nextPutNode:140,nextGammaNode:180},
+    NOK:{asOf:&#x27;09-23 03:36:32 UTC&#x27;,sameSession:false,spot:10.74,weekExpiry:&#x27;Sep-25&#x27;,weekIv:64.8,weekLow:10.2555,weekHigh:11.2245,weekPcr:0.297,weekCallNode:11,weekPutNode:10.5,weekGammaNode:11,nextExpiry:&#x27;Oct-02&#x27;,nextIv:58.17,nextLow:10.0005,nextHigh:11.4795,nextPcr:0.29,nextCallNode:11,nextPutNode:9,nextGammaNode:11},
+    IREN:{asOf:&#x27;09-23 03:59:09 UTC&#x27;,sameSession:false,spot:48.4,weekExpiry:&#x27;Sep-25&#x27;,weekIv:84.98,weekLow:45.8627,weekHigh:50.9372,weekPcr:0.722,weekCallNode:50,weekPutNode:42,weekGammaNode:50,nextExpiry:&#x27;Oct-02&#x27;,nextIv:79.91,nextLow:44.048,nextHigh:52.752,nextPcr:1.251,nextCallNode:50,nextPutNode:30,nextGammaNode:50},
+    NBIS:{asOf:&#x27;09-23 03:47:18 UTC&#x27;,sameSession:false,spot:236.5,weekExpiry:&#x27;Sep-25&#x27;,weekIv:87.9,weekLow:223.6438,weekHigh:249.3562,weekPcr:0.86,weekCallNode:250,weekPutNode:220,weekGammaNode:230,nextExpiry:&#x27;Oct-02&#x27;,nextIv:81.38,nextLow:214.825,nextHigh:258.175,nextPcr:0.767,nextCallNode:310,nextPutNode:220,nextGammaNode:250},
+    CSCO:{asOf:&#x27;09-23 03:12:26 UTC&#x27;,sameSession:false,spot:106.3841,weekExpiry:&#x27;Sep-25&#x27;,weekIv:34.27,weekLow:104.1061,weekHigh:108.6621,weekPcr:0.425,weekCallNode:111,weekPutNode:100,weekGammaNode:109,nextExpiry:&#x27;Oct-02&#x27;,nextIv:32.04,nextLow:102.5081,nextHigh:110.2601,nextPcr:0.592,nextCallNode:110,nextPutNode:111,nextGammaNode:110},
+    LITE:{asOf:&#x27;09-23 03:41:28 UTC&#x27;,sameSession:false,spot:949.89,weekExpiry:&#x27;Sep-25&#x27;,weekIv:81.64,weekLow:902.035,weekHigh:997.745,weekPcr:0.915,weekCallNode:1000,weekPutNode:920,weekGammaNode:1000,nextExpiry:&#x27;Oct-02&#x27;,nextIv:75.72,nextLow:869.1825,nextHigh:1030.5975,nextPcr:1.886,nextCallNode:890,nextPutNode:825,nextGammaNode:890},
+    BE:{asOf:&#x27;09-23 03:58:19 UTC&#x27;,sameSession:false,spot:277.38,weekExpiry:&#x27;Sep-25&#x27;,weekIv:83.3,weekLow:263.1212,weekHigh:291.6388,weekPcr:1.224,weekCallNode:300,weekPutNode:250,weekGammaNode:280,nextExpiry:&#x27;Oct-02&#x27;,nextIv:78.21,nextLow:253.0487,nextHigh:301.7113,nextPcr:0.899,nextCallNode:270,nextPutNode:245,nextGammaNode:270},
+    GAP:{asOf:&#x27;09-23 03:55:28 UTC&#x27;,sameSession:false,spot:21.46,weekExpiry:&#x27;Sep-25&#x27;,weekIv:41.01,weekLow:20.9032,weekHigh:22.0168,weekPcr:0.536,weekCallNode:21.5,weekPutNode:18.5,weekGammaNode:21.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:36.8,nextLow:20.5675,nextHigh:22.3525,nextPcr:0.505,nextCallNode:22,nextPutNode:22,nextGammaNode:22},
+    NKE:{asOf:&#x27;09-23 03:52:08 UTC&#x27;,sameSession:false,spot:36.2,weekExpiry:&#x27;Sep-25&#x27;,weekIv:35.04,weekLow:35.4138,weekHigh:36.9863,weekPcr:0.682,weekCallNode:36,weekPutNode:36,weekGammaNode:36,nextExpiry:&#x27;Oct-02&#x27;,nextIv:64.25,nextLow:33.5905,nextHigh:38.8095,nextPcr:0.76,nextCallNode:40,nextPutNode:35,nextGammaNode:35},
+    FIG:{asOf:&#x27;09-23 03:42:38 UTC&#x27;,sameSession:false,spot:21.77,weekExpiry:&#x27;Sep-25&#x27;,weekIv:78.29,weekLow:20.7033,weekHigh:22.8367,weekPcr:0.781,weekCallNode:24.5,weekPutNode:22,weekGammaNode:22,nextExpiry:&#x27;Oct-02&#x27;,nextIv:69.59,nextLow:20.0572,nextHigh:23.4827,nextPcr:0.846,nextCallNode:26,nextPutNode:20,nextGammaNode:20},
+    ACHR:{asOf:&#x27;09-23 02:30:09 UTC&#x27;,sameSession:false,spot:5.7,weekExpiry:&#x27;Sep-25&#x27;,weekIv:67.38,weekLow:5.428,weekHigh:5.972,weekPcr:0.345,weekCallNode:5.5,weekPutNode:5.5,weekGammaNode:5.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:61.24,nextLow:5.2877,nextHigh:6.1123,nextPcr:0.305,nextCallNode:6,nextPutNode:5.5,nextGammaNode:6},
+    INTC:{asOf:&#x27;09-23 03:24:07 UTC&#x27;,sameSession:false,spot:124.2354,weekExpiry:&#x27;Sep-25&#x27;,weekIv:74.73,weekLow:118.5617,weekHigh:129.9092,weekPcr:0.885,weekCallNode:120,weekPutNode:110,weekGammaNode:120,nextExpiry:&#x27;Oct-02&#x27;,nextIv:68.64,nextLow:114.5879,nextHigh:133.8829,nextPcr:1.243,nextCallNode:115,nextPutNode:65,nextGammaNode:115},
+    AVGO:{asOf:&#x27;09-23 03:58:39 UTC&#x27;,sameSession:false,spot:366.12,weekExpiry:&#x27;Sep-25&#x27;,weekIv:36.81,weekLow:357.8113,weekHigh:374.4287,weekPcr:0.638,weekCallNode:375,weekPutNode:345,weekGammaNode:365,nextExpiry:&#x27;Oct-02&#x27;,nextIv:35.61,nextLow:351.4787,nextHigh:380.7613,nextPcr:0.611,nextCallNode:400,nextPutNode:360,nextGammaNode:360},
+    SNDK:{asOf:&#x27;09-23 03:55:29 UTC&#x27;,sameSession:false,spot:1898.59,weekExpiry:&#x27;Sep-25&#x27;,weekIv:81.29,weekLow:1803.3475,weekHigh:1993.8325,weekPcr:1.241,weekCallNode:2000,weekPutNode:1500,weekGammaNode:2000,nextExpiry:&#x27;Oct-02&#x27;,nextIv:82.12,nextLow:1723.745,nextHigh:2073.435,nextPcr:0.755,nextCallNode:1600,nextPutNode:1500,nextGammaNode:1600},
+    ONDS:{asOf:&#x27;09-23 03:47:58 UTC&#x27;,sameSession:false,spot:7.75,weekExpiry:&#x27;Sep-25&#x27;,weekIv:71.84,weekLow:7.376,weekHigh:8.124,weekPcr:0.825,weekCallNode:8,weekPutNode:7,weekGammaNode:7.5,nextExpiry:&#x27;Oct-02&#x27;,nextIv:67.07,nextLow:7.155,nextHigh:8.345,nextPcr:0.838,nextCallNode:8,nextPutNode:5,nextGammaNode:8},
+    RIVN:{asOf:&#x27;09-23 03:22:22 UTC&#x27;,sameSession:false,spot:15.13,weekExpiry:&#x27;Sep-25&#x27;,weekIv:53.69,weekLow:14.6413,weekHigh:15.6188,weekPcr:0.506,weekCallNode:16,weekPutNode:15,weekGammaNode:15,nextExpiry:&#x27;Oct-02&#x27;,nextIv:52.3,nextLow:14.2503,nextHigh:16.0098,nextPcr:0.593,nextCallNode:16.5,nextPutNode:15,nextGammaNode:16.5},
+    PLTR:{asOf:&#x27;09-23 03:54:48 UTC&#x27;,sameSession:false,spot:185.1264,weekExpiry:&#x27;Sep-25&#x27;,weekIv:49.46,weekLow:179.4739,weekHigh:190.7789,weekPcr:0.717,weekCallNode:180,weekPutNode:165,weekGammaNode:185,nextExpiry:&#x27;Oct-02&#x27;,nextIv:46.53,nextLow:175.4151,nextHigh:194.8376,nextPcr:1.16,nextCallNode:200,nextPutNode:170,nextGammaNode:180},
+    NOW:{asOf:&#x27;09-23 01:58:32 UTC&#x27;,sameSession:false,spot:136.86,weekExpiry:&#x27;Sep-25&#x27;,weekIv:58.59,weekLow:131.9003,weekHigh:141.8197,weekPcr:0.63,weekCallNode:150,weekPutNode:130,weekGammaNode:140,nextExpiry:&#x27;Oct-02&#x27;,nextIv:55.53,nextLow:128.2963,nextHigh:145.4238,nextPcr:0.865,nextCallNode:150,nextPutNode:130,nextGammaNode:130},
+    TEAM:{asOf:&#x27;09-22 20:15:08 UTC&#x27;,sameSession:false,spot:188.65,weekExpiry:&#x27;Sep-25&#x27;,weekIv:65.07,weekLow:181.0425,weekHigh:196.2575,weekPcr:0.37,weekCallNode:200,weekPutNode:167.5,weekGammaNode:200,nextExpiry:&#x27;Oct-02&#x27;,nextIv:62.14,nextLow:175.475,nextHigh:201.825,nextPcr:1.435,nextCallNode:187.5,nextPutNode:192.5,nextGammaNode:192.5}
   };
   const momentumFor = indicator =&gt; {
     if (!indicator) return {label:&#x27;未判定&#x27;, key:&#x27;neutral&#x27;};
@@ -1681,7 +1844,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       body.innerHTML = visibleRows.length ? visibleRows.slice().sort((a, b) =&gt; compare(a, b, sortKey, direction)).map(row =&gt; `
       &lt;tr data-ticker=&quot;${row.ticker}&quot;&gt;
         &lt;td data-field=&quot;ticker&quot; data-label=&quot;股票代號&quot; class=&quot;${changedClass(row,&#x27;ticker&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.ticker}&lt;/span&gt;&lt;/td&gt;
-        &lt;td data-field=&quot;close&quot; data-label=&quot;收市價&quot; class=&quot;numeric&quot;&gt;${money(row.close)}&lt;/td&gt;
+        &lt;td data-field=&quot;close&quot; data-label=&quot;收市價&quot; class=&quot;numeric&quot;&gt;&lt;span class=&quot;close-stack&quot;&gt;&lt;span class=&quot;close-price&quot;&gt;${money(row.close)}&lt;/span&gt;&lt;span class=&quot;close-change ${closeMove(row).tone}&quot;&gt;${signedMoney(closeMove(row).change)}&lt;/span&gt;&lt;span class=&quot;close-change ${closeMove(row).tone}&quot;&gt;${signedPercent(closeMove(row).pct)}&lt;/span&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;pattern&quot; data-label=&quot;型態／確認&quot; class=&quot;${changedClass(row,&#x27;pattern&#x27;)}&quot;&gt;&lt;span class=&quot;ticker-main&quot;&gt;${row.pattern}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;${row.analysis[0]}&lt;/span&gt;&lt;span class=&quot;cell-note text-small&quot;&gt;${confirmationHtml(row)}&lt;br&gt;${row.analysis[1]}&lt;br&gt;${row.analysis[row.analysis.length - 1]}&lt;/span&gt;&lt;/td&gt;
         &lt;td data-field=&quot;target&quot; data-label=&quot;推估價格&quot; class=&quot;numeric ${changedClass(row,&#x27;target&#x27;)}&quot;&gt;${row.target == null ? &#x27;—&#x27; : money(row.target) + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
         &lt;td data-field=&quot;date&quot; data-label=&quot;推估日期&quot; class=&quot;text-nowrap ${changedClass(row,&#x27;date&#x27;)}&quot;&gt;${row.dateLabel == null ? &#x27;—&#x27; : row.dateLabel + (row.targetConditional ? &#x27;（條件式）&#x27; : &#x27;&#x27;)}&lt;/td&gt;
