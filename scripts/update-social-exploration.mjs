@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const modelDir = path.join(root, 'data-model');
 const rosterPath = path.join(modelDir, 'social-exploration-roster.json');
+const digestPath = path.join(modelDir, 'social-exploration-news-digests.json');
 const currentPath = path.join(modelDir, 'social-exploration.json');
 const bundlePath = path.join(modelDir, 'social-exploration-data.js');
 const historyDir = path.join(modelDir, 'social-exploration-history');
@@ -33,6 +34,10 @@ const addDays = (value, days) => {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
+const cjk = (value) => /[\u3400-\u9fff]/.test(String(value || ''));
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const containsTerm = (text, term) => new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(term)}(?:$|[^a-z0-9])`, 'i').test(text);
+let editorialDigests = new Map();
 
 function ema(values, period) {
   if (values.length < period) return null;
@@ -139,7 +144,60 @@ async function fetchTicker(entry) {
   });
   if (!response.ok) throw new Error(`Nasdaq HTTP ${response.status}`);
   const bars = normalizeBars(await response.json(), requestedAsOf);
-  return { ...entry, ...summarizeBars(bars), freshness:'current', sourceUrl:url };
+  const market = summarizeBars(bars);
+  const newsUrl = `https://api.nasdaq.com/api/news/topic/articlebysymbol?q=${encodeURIComponent(`${entry.ticker}|stocks`)}&limit=30&offset=0`;
+  let news = { newsFreshness:'unavailable', newsError:'No recent symbol news returned' };
+  try {
+    const newsResponse = await fetch(newsUrl, {
+      cache:'no-store',
+      headers:{
+        accept:'application/json, text/plain, */*',
+        'accept-language':'en-US,en;q=0.9',
+        origin:'https://www.nasdaq.com',
+        referer:`https://www.nasdaq.com/market-activity/stocks/${entry.ticker.toLowerCase()}/news-headlines`,
+        'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140 Safari/537.36'
+      },
+      signal:AbortSignal.timeout(25_000)
+    });
+    if (!newsResponse.ok) throw new Error(`Nasdaq news HTTP ${newsResponse.status}`);
+    const rows = (await newsResponse.json())?.data?.rows || [];
+    const ticker = entry.ticker.toLowerCase();
+    const companyTokens = entry.company.toLowerCase().split(/[^a-z0-9]+/).filter((token) => token.length >= 4 && !['group','technology','technologies','systems','platforms'].includes(token));
+    const score = (row) => {
+      const primary = String(row.primarysymbol || '').toLowerCase();
+      const haystack = `${row.title || ''} ${row.description || ''}`.toLowerCase();
+      const related = (row.related_symbols || []).some((symbol) => String(symbol).toLowerCase().split('|')[0] === ticker);
+      return (primary === ticker ? 8 : 0) + (containsTerm(haystack, ticker) ? 4 : 0) + (companyTokens.some((token) => containsTerm(haystack, token)) ? 3 : 0) + (related ? 1 : 0);
+    };
+    const editorial = editorialDigests.get(entry.ticker);
+    const sourceOverride = editorial?.replaceSource && requestedAsOf <= editorial.expiresAfter ? {
+      title:editorial.sourceHeadline,
+      url:editorial.sourceUrl,
+      publisher:editorial.publisher,
+      created:editorial.publishedLabel,
+      description:''
+    } : null;
+    const selected = sourceOverride || [...rows].map((row, index) => ({ row, index, score:score(row) })).filter((item) => item.score > 1).sort((a, b) => b.score - a.score || a.index - b.index)[0]?.row;
+    if (selected) {
+      const articleUrl = String(selected.url || '').startsWith('http') ? selected.url : `https://www.nasdaq.com${selected.url || ''}`;
+      const sourceHeadline = String(selected.title || '').trim();
+      const matchingEditorial = editorial?.sourceHeadline === sourceHeadline && cjk(editorial.digest) ? editorial : null;
+      news = {
+        newsFreshness:matchingEditorial ? 'current' : 'editorial-pending',
+        newsHeadline:sourceHeadline,
+        newsDigest:matchingEditorial?.digest || '近期關注事件已更新，繁中編輯摘要待完成。',
+        newsDigestLanguage:'zh-Hant',
+        newsPublisher:String(selected.publisher || 'Nasdaq').trim(),
+        newsPublishedLabel:String(selected.created || selected.ago || '').trim(),
+        newsUrl:articleUrl,
+        newsSourceUrl:newsUrl,
+        newsAttentionBasis:'Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary'
+      };
+    }
+  } catch (error) {
+    news = { newsFreshness:'unavailable', newsError:error.message, newsSourceUrl:newsUrl };
+  }
+  return { ...entry, ...market, ...news, freshness:'current', sourceUrl:url };
 }
 
 async function mapLimited(entries, limit, mapper) {
@@ -169,15 +227,24 @@ async function atomicWrite(file, content) {
 }
 
 const roster = JSON.parse(await fs.readFile(rosterPath, 'utf8'));
+const digestModel = JSON.parse(await fs.readFile(digestPath, 'utf8'));
+editorialDigests = new Map(Object.entries(digestModel.digests || {}));
 const existing = await readExisting();
 const existingByTicker = new Map((existing?.records || []).map((record) => [record.ticker, record]));
 const fetched = await mapLimited(roster.tickers, 4, fetchTicker);
 const records = fetched.map((record) => {
-  if (record.freshness !== 'unavailable') return record;
+  if (record.freshness !== 'unavailable') {
+    if (record.newsFreshness === 'current' || record.newsFreshness === 'editorial-pending') return record;
+    const lastGood = existingByTicker.get(record.ticker);
+    return lastGood?.newsHeadline && cjk(lastGood.newsDigest)
+      ? { ...record, newsFreshness:'stale', newsHeadline:lastGood.newsHeadline, newsDigest:lastGood.newsDigest, newsDigestLanguage:'zh-Hant', newsPublisher:lastGood.newsPublisher, newsPublishedLabel:lastGood.newsPublishedLabel, newsUrl:lastGood.newsUrl, newsAttentionBasis:lastGood.newsAttentionBasis }
+      : record;
+  }
   const lastGood = existingByTicker.get(record.ticker);
   return lastGood ? { ...lastGood, rank:record.rank, lane:record.lane, company:record.company, profileIds:record.profileIds, freshness:'stale', error:record.error } : record;
 });
 const completed = records.filter((record) => record.freshness === 'current' && record.dataThrough);
+const newsCompleted = records.filter((record) => record.newsFreshness === 'current' && record.newsDigest);
 const dates = completed.map((record) => record.dataThrough);
 const dataThrough = dates.sort((a, b) => dates.filter((date) => date === b).length - dates.filter((date) => date === a).length || b.localeCompare(a))[0] || existing?.dataThrough || null;
 const dataset = {
@@ -186,12 +253,13 @@ const dataset = {
   generatedAt:new Date().toISOString(),
   requestedAsOf,
   dataThrough,
-  status:completed.length === roster.tickers.length ? 'PASS' : completed.length ? 'PARTIAL_PASS' : 'BLOCKED',
+  status:completed.length === roster.tickers.length && newsCompleted.length === roster.tickers.length ? 'PASS' : completed.length || newsCompleted.length ? 'PARTIAL_PASS' : 'BLOCKED',
+  completeness:{ marketData:`${completed.length}/${roster.tickers.length}`, newsDigests:`${newsCompleted.length}/${roster.tickers.length}` },
   method:'social_exploration',
   records,
   profiles:roster.profiles,
   exclusion:roster.exclusion,
-  sourceDisclosure:'Completed-session OHLCV from Nasdaq public chart endpoints; indicators are computed locally. Profile mentions are discovery signals, not thesis evidence.'
+  sourceDisclosure:'價格與成交量採用 Nasdaq 完成交易資料，技術指標於本機計算；社群帳號僅作為探索線索，不直接視為投資結論。新聞欄為繁中編輯摘要，不複製原文。'
 };
 const json = `${JSON.stringify(dataset, null, 2)}\n`;
 await fs.mkdir(historyDir, { recursive:true });

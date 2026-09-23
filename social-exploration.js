@@ -78,8 +78,23 @@
     appendCell(row, '相對量', [create('span', record.relativeVolume20 == null ? '—' : `${number(record.relativeVolume20)}×`, 'ticker-main'), create('span', `20日均量 ${compact(record.averageVolume20)}`, 'cell-note')], 'full-only');
     appendCell(row, '20日位置', [create('span', record.rangePosition20 == null ? '—' : `${number(record.rangePosition20, 0)}%`, 'ticker-main'), create('span', `$${number(record.low20)}–$${number(record.high20)}`, 'cell-note')], 'full-only');
 
+    const business = document.createElement('div');
+    const reportPeriod = String(record.businessReportPeriod || '').trim();
+    const rawBusinessDigest = String(record.businessDigest || '最新季報摘要待補。').trim();
+    const businessDigest = reportPeriod && rawBusinessDigest.startsWith(reportPeriod)
+      ? rawBusinessDigest.slice(reportPeriod.length).trim()
+      : rawBusinessDigest;
+    business.append(create('span', businessDigest, 'digest-copy'));
+    if (reportPeriod) business.prepend(create('span', `最新季報 · ${reportPeriod}`, 'digest-kicker'));
+    appendCell(row, '營運摘要', business, 'digest-cell');
+
+    const news = document.createElement('div');
+    news.append(create('span', record.newsDigest || '近期新聞摘要待補。', 'digest-copy'));
+    appendCell(row, '新聞摘要', news, 'digest-cell');
+
     const sourceCell = document.createElement('div');
-    sourceCell.append(create('span', `${(record.profileIds || []).length} 個來源`, 'ticker-main'), create('span', record.lane, 'lane-label'));
+    const sourceDetails = create('details', null, 'source-details profile-sources');
+    sourceDetails.append(create('summary', `${(record.profileIds || []).length} 個來源`));
     const links = create('div', null, 'source-links');
     for (const id of record.profileIds || []) {
       const profile = profileMap.get(id);
@@ -91,8 +106,9 @@
       link.rel = 'noopener noreferrer';
       links.append(link);
     }
-    if (links.children.length) sourceCell.append(links);
-    appendCell(row, '來源／組別', sourceCell);
+    if (links.children.length) sourceDetails.append(links);
+    sourceCell.append(sourceDetails);
+    appendCell(row, '來源', sourceCell);
     return row;
   }
 
@@ -149,7 +165,9 @@
     const freshness = document.querySelector('.freshness');
     freshness.classList.add(dataset.status === 'PASS' ? 'is-pass' : dataset.status === 'BLOCKED' ? 'is-blocked' : 'is-partial');
     document.getElementById('data-status').textContent = dataset.status === 'PASS' ? '技術資料完整' : dataset.status === 'PARTIAL_PASS' ? '部分資料可用' : '資料尚未完成';
-    document.getElementById('data-cutoff').textContent = `${dataset.dataThrough || '—'} 正式收盤；20 檔核對 ${records.filter((record) => record.freshness === 'current').length} 檔`;
+    const marketCount = records.filter((record) => record.freshness === 'current').length;
+    const newsCount = records.filter((record) => record.newsFreshness === 'current').length;
+    document.getElementById('data-cutoff').textContent = `${dataset.dataThrough || '—'} 正式收盤；技術 ${marketCount}/${records.length}、新聞 ${newsCount}/${records.length}`;
     document.getElementById('source-disclosure').textContent = dataset.sourceDisclosure || '';
   }
 

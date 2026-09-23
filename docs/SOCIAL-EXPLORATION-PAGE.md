@@ -37,9 +37,11 @@ References:
 - Updater: `scripts/update-social-exploration.mjs`
 
 The updater retrieves Nasdaq public completed-session OHLCV, calculates RSI14,
-EMA20, EMA50, 20-session range position and relative volume, then renders only
-conditional technical state. It does not import profile conclusions or produce
-price targets.
+EMA20, EMA50, 20-session range position and relative volume, and retrieves the
+most relevant recent Nasdaq symbol-news item. 營運摘要以最新季度財報為核心，整理實績、
+主要成長來源與下一個驗證點，並在資料層保留官方或監管申報來源。新聞摘要由繁中編輯
+重述市場焦點、原因與可能意義，不複製原文，也不在頁面顯示新聞標題、媒體或參考連結。
+The reader does not import profile conclusions or produce price targets.
 
 Run manually:
 
