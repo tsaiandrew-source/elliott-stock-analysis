@@ -39,6 +39,33 @@ const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const containsTerm = (text, term) => new RegExp(`(?:^|[^a-z0-9])${escapeRegExp(term)}(?:$|[^a-z0-9])`, 'i').test(text);
 let editorialDigests = new Map();
 
+function automaticNewsDigest(entry, headline) {
+  const text = String(headline || '').toLowerCase();
+  const company = entry.company;
+  if (/earnings|results|revenue|profit|quarter|guidance|outlook/.test(text)) {
+    return `市場焦點轉向 ${company} 最新營運數字與展望。這類消息的意義在於檢驗成長是否同時改善獲利與現金流，後續仍要用下一季實績確認趨勢。`;
+  }
+  if (/analyst|rating|price target|upgrade|downgrade|buy|sell/.test(text)) {
+    return `${company} 近期的注意力主要來自分析師評級或估值調整。這反映市場預期正在重新定價，並非公司營運本身已改變，仍需由財報與訂單驗證。`;
+  }
+  if (/partner|partnership|contract|customer|deal|collaborat|agreement/.test(text)) {
+    return `${company} 的合作、客戶或合約進展成為近期焦點。市場在意這項進展能否轉成可辨識的收入與訂單，而不只是策略性消息。`;
+  }
+  if (/launch|product|platform|service|chip|model|ai\b|artificial intelligence/.test(text)) {
+    return `${company} 的產品或技術進展正在吸引市場注意。短線題材有助提高能見度，但真正影響仍取決於採用速度、商業化收入與利潤貢獻。`;
+  }
+  if (/offering|financ|debt|convertible|capital|funding|acqui|merger/.test(text)) {
+    return `${company} 的融資、資本配置或企業交易成為近期焦點。市場會衡量成長資源增加的效益，是否足以抵銷稀釋、負債或整合風險。`;
+  }
+  if (/lawsuit|court|regulat|investigat|antitrust|approval/.test(text)) {
+    return `${company} 近期受到法律或監管進展影響。這類事件可能改變成本與執行風險，在結果明朗前不宜直接視為營運趨勢反轉。`;
+  }
+  if (/dividend|buyback|repurchase/.test(text)) {
+    return `${company} 的股東回饋或資本配置受到關注。這可支持投資人信心，但不取代對營收、獲利與自由現金流持續性的檢驗。`;
+  }
+  return `${company} 出現新的公司相關報導並提高市場討論度。目前較像注意力事件，是否改變中期判讀仍要由後續營運數字、訂單或正式公司進展確認。`;
+}
+
 function ema(values, period) {
   if (values.length < period) return null;
   const multiplier = 2 / (period + 1);
@@ -182,16 +209,18 @@ async function fetchTicker(entry) {
       const articleUrl = String(selected.url || '').startsWith('http') ? selected.url : `https://www.nasdaq.com${selected.url || ''}`;
       const sourceHeadline = String(selected.title || '').trim();
       const matchingEditorial = editorial?.sourceHeadline === sourceHeadline && cjk(editorial.digest) ? editorial : null;
+      const newsDigest = matchingEditorial?.digest || automaticNewsDigest(entry, sourceHeadline);
       news = {
-        newsFreshness:matchingEditorial ? 'current' : 'editorial-pending',
+        newsFreshness:'current',
         newsHeadline:sourceHeadline,
-        newsDigest:matchingEditorial?.digest || '近期關注事件已更新，繁中編輯摘要待完成。',
+        newsDigest,
         newsDigestLanguage:'zh-Hant',
+        newsDigestMethod:matchingEditorial ? 'editorial' : 'rule-based-zh-Hant',
         newsPublisher:String(selected.publisher || 'Nasdaq').trim(),
         newsPublishedLabel:String(selected.created || selected.ago || '').trim(),
         newsUrl:articleUrl,
         newsSourceUrl:newsUrl,
-        newsAttentionBasis:'Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary'
+        newsAttentionBasis:'Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline'
       };
     }
   } catch (error) {
@@ -234,7 +263,7 @@ const existingByTicker = new Map((existing?.records || []).map((record) => [reco
 const fetched = await mapLimited(roster.tickers, 4, fetchTicker);
 const records = fetched.map((record) => {
   if (record.freshness !== 'unavailable') {
-    if (record.newsFreshness === 'current' || record.newsFreshness === 'editorial-pending') return record;
+    if (record.newsFreshness === 'current') return record;
     const lastGood = existingByTicker.get(record.ticker);
     return lastGood?.newsHeadline && cjk(lastGood.newsDigest)
       ? { ...record, newsFreshness:'stale', newsHeadline:lastGood.newsHeadline, newsDigest:lastGood.newsDigest, newsDigestLanguage:'zh-Hant', newsPublisher:lastGood.newsPublisher, newsPublishedLabel:lastGood.newsPublishedLabel, newsUrl:lastGood.newsUrl, newsAttentionBasis:lastGood.newsAttentionBasis }

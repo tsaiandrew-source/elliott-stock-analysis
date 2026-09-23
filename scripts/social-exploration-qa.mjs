@@ -15,7 +15,8 @@ const required = [
   'data-model/social-exploration-news-digests.json',
   'data-model/social-exploration.json',
   'data-model/social-exploration-data.js',
-  'scripts/update-social-exploration.mjs'
+  'scripts/update-social-exploration.mjs',
+  'scripts/social-exploration-public-smoke.mjs'
 ];
 for (const file of required) if (!(await exists(file))) failures.push(`missing ${file}`);
 const roster = JSON.parse(await read('data-model/social-exploration-roster.json'));
@@ -30,12 +31,13 @@ if ((roster.profiles || []).length !== 8) failures.push('all eight approved prof
 if (roster.tickers.filter((entry) => entry.lane === 'common').length !== 10) failures.push('Common lane must contain 10 names');
 if (roster.tickers.filter((entry) => entry.lane === 'surprise').length !== 10) failures.push('Surprise lane must contain 10 names');
 if (dataset.schemaVersion !== 'social-exploration-daily-v1') failures.push('daily schema mismatch');
+if (dataset.status !== 'PASS') failures.push(`daily dataset must be PASS before publication (received ${dataset.status || 'missing'})`);
 if ((dataset.records || []).length !== 20) failures.push('daily dataset must contain 20 records');
 if ((dataset.records || []).map((entry) => entry.ticker).join(',') !== tickers.join(',')) failures.push('daily dataset order does not match roster');
 if (roster.tickers.some((entry) => !entry.businessReportPeriod || !entry.businessDigest || !entry.businessSourceUrl)) failures.push('every roster entry must include a sourced latest-quarter Business Digest');
 const hasCjk = (value) => /[\u3400-\u9fff]/.test(String(value || ''));
 if (digestModel.language !== 'zh-Hant') failures.push('news editorial model must be Traditional Chinese');
-if (dataset.records.some((entry) => !hasCjk(entry.businessDigest) || !hasCjk(entry.newsDigest) || entry.newsDigestLanguage !== 'zh-Hant' || !['current','stale'].includes(entry.newsFreshness))) failures.push('every visible Business and News Digest must be a usable Traditional Chinese editorial summary');
+if (dataset.records.some((entry) => entry.freshness !== 'current' || !hasCjk(entry.businessDigest) || !hasCjk(entry.newsDigest) || entry.newsDigestLanguage !== 'zh-Hant' || entry.newsFreshness !== 'current')) failures.push('every published market record and visible Business/News Digest must be current and usable Traditional Chinese');
 const html = await read('social-exploration.html');
 const css = await read('social-exploration.css');
 const js = await read('social-exploration.js');
@@ -51,6 +53,8 @@ for (const marker of ['<title>E+ Social Exploration</title>', '<h1>E+ Social Exp
 for (const marker of ['<elliott-topbar', 'data-current="exploration"', 'data-digest-href="./data-model/home.html"', 'data-moomoo-href="./moomoo-patterns.html"', 'data-exploration-href="./social-exploration.html"']) if (!html.includes(marker)) failures.push(`shared top navigation missing ${marker}`);
 const topbarJs = await read('shared-topbar.js');
 if (!topbarJs.includes("key:'exploration'") || !topbarJs.includes("label:'Social Exploration'")) failures.push('Social Exploration must be the third shared topbar destination');
+const updater = await read('scripts/update-social-exploration.mjs');
+for (const marker of ['automaticNewsDigest', 'rule-based-zh-Hant', "newsFreshness:'current'"]) if (!updater.includes(marker)) failures.push(`autonomous Traditional Chinese news fallback missing ${marker}`);
 if (!js.includes('profile-sources') || !js.includes("create('details'")) failures.push('source profile links must remain collapsed');
 if (js.includes("create('summary', '新聞來源')") || js.includes("create('summary', '資料來源')") || js.includes('record.newsHeadline')) failures.push('digest cells must not expose source references or copied headlines');
 if (html.includes('shared-menu.css') || html.includes('<elliott-shared-menu')) failures.push('standalone decision reader must not mount the app navigation dock');

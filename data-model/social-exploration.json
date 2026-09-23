@@ -1,8 +1,8 @@
 {
   "schemaVersion": "social-exploration-daily-v1",
   "rosterId": "SOCIAL-EXPLORATION-20260923-V1",
-  "generatedAt": "2026-09-23T18:51:40.557Z",
-  "requestedAsOf": "2026-09-23",
+  "generatedAt": "2026-09-23T19:45:06.920Z",
+  "requestedAsOf": "2026-09-22",
   "dataThrough": "2026-09-22",
   "status": "PASS",
   "completeness": {
@@ -44,13 +44,14 @@
       "newsHeadline": "Meta's Muse Is Building Momentum With Another Major Partnership",
       "newsDigest": "市場焦點落在 Meta 把 Muse AI 購物代理連接 Shopify 與 Instacart。這有助擴大平台內的商品探索與交易場景，後續要觀察商家採用率及廣告、商務變現是否同步提升。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Sep 23, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/metas-muse-building-momentum-another-major-partnership",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=META%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/META/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/META/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 2,
@@ -82,13 +83,14 @@
       "newsHeadline": "McDonald's Outlines 2030 Growth Targets; Plans $8.5 Bln In Franchisee Support",
       "newsDigest": "麥當勞公布 2030 成長藍圖，並計畫投入 85 億美元支援加盟商。市場最關注門市效率、營業利益率與市占率能否同時改善，以及大額投入的回收速度。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "RTTNews",
       "newsPublishedLabel": "Sep 23, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/mcdonalds-outlines-2030-growth-targets-plans-85-bln-franchisee-support",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=MCD%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/MCD/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/MCD/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 3,
@@ -120,13 +122,14 @@
       "newsHeadline": "Should You Forget Palantir and Buy These 3 Quantum Computing Stocks Instead?",
       "newsDigest": "近期討論把 Alphabet 視為量子運算的成熟參與者，並將其估值與其他 AI、量子題材股比較。這屬投資觀點升溫，不是新的公司事件，短線催化力有限。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Sep 23, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/should-you-forget-palantir-and-buy-these-3-quantum-computing-stocks-instead",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=GOOGL%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/GOOGL/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/GOOGL/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 4,
@@ -158,13 +161,14 @@
       "newsHeadline": "Best Buy Extends Multi-Year Fire TV Partnership With Amazon",
       "newsDigest": "Amazon 與 Best Buy 擴大多年期 Fire TV 合作，將系統延伸至更多 Insignia 電視與聯網廣告場景。市場在看裝置覆蓋增加能否帶動廣告庫存與家庭入口的黏著度。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "RTTNews",
       "newsPublishedLabel": "Sep 23, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/best-buy-extends-multi-year-fire-tv-partnership-amazon",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=AMZN%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/AMZN/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/AMZN/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 5,
@@ -196,13 +200,14 @@
       "newsHeadline": "Vicor Buys Sites For New Fabs; Shares Jump",
       "newsDigest": "Vicor 購入兩處新廠址，準備擴充高密度電源模組產能，以承接 AI 應用需求。焦點是新產能的建置節奏、客戶認證與訂單能見度能否支持資本投入。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "RTTNews",
       "newsPublishedLabel": "Sep 11, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/vicor-buys-sites-new-fabs-shares-jump",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=VICR%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/VICR/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/VICR/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 6,
@@ -234,13 +239,14 @@
       "newsHeadline": "Alibaba (BABA) Q1 2027 Earnings Call Transcript",
       "newsDigest": "市場正在消化阿里巴巴最新財報電話會議，焦點是 AI 雲端高速成長能否抵銷電商競爭與高資本支出。季報已顯示雲端加速，後續仍要看投資轉成自由現金流的速度。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Aug 27, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/alibaba-baba-q1-2027-earnings-call-transcript",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=BABA%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/BABA/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/BABA/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 7,
@@ -272,13 +278,14 @@
       "newsHeadline": "Bernstein initiates coverage of Shopify with Outperform rating",
       "newsDigest": "Bernstein 以優於大盤評等開始追蹤 Shopify，市場注意力轉向其成長韌性與營運槓桿。這屬分析師觀點而非公司新事件，仍需用 GMV、營收與自由現金流延續性驗證。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "Fintel",
       "newsPublishedLabel": "Sep 11, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/bernstein-initiates-coverage-shopify-outperform-rating",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=SHOP%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/SHOP/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/SHOP/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 8,
@@ -310,13 +317,14 @@
       "newsHeadline": "PayPal Targets $1.5B in Savings as It Expands Beyond Branded Checkout",
       "newsDigest": "PayPal 正重整營運並設定 15 億美元節省目標，同時把成長重心延伸到品牌結帳以外。市場關注成本下降能否轉為持續獲利改善，而不是只靠一次性縮減支出。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "MarketBeat",
       "newsPublishedLabel": "Sep 9, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/paypal-targets-15b-savings-it-expands-beyond-branded-checkout",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=PYPL%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/PYPL/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/PYPL/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 9,
@@ -348,13 +356,14 @@
       "newsHeadline": "Mission Success: Rocket Lab Launches 96th Electron Mission, Deploys 12th Satellite for Synspective",
       "newsDigest": "Rocket Lab 完成第 96 次 Electron 任務，替 Synspective 部署第 12 顆 StriX 衛星。市場關注高頻發射能否持續轉化為可靠收入與積壓訂單執行，並降低單次任務風險。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "Rocket Lab",
       "newsPublishedLabel": "2026-09-19",
       "newsUrl": "https://rocketlabcorp.gcs-web.com/news-releases/news-release-details/mission-success-rocket-lab-launches-96th-electron-mission",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=RKLB%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/RKLB/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/RKLB/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 10,
@@ -386,13 +395,14 @@
       "newsHeadline": "AXTI Reaches Analyst Target Price",
       "newsDigest": "AXT 股價已越過市場平均目標價，注意力從上漲動能轉向估值是否提前反映預期。這不是基本面新消息，後續更需要訂單、毛利與光通訊需求來支持溢價。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "BNK Invest",
       "newsPublishedLabel": "Aug 18, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/axti-reaches-analyst-target-price",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=AXTI%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/AXTI/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/AXTI/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 11,
@@ -424,13 +434,14 @@
       "newsHeadline": "Down 53%, Should You Still Buy CoreWeave's (CRWV) Stock?",
       "newsDigest": "CoreWeave 自高點大幅回落後，市場重新評估 AI 雲端成長與高資本支出、融資壓力之間的取捨。焦點是長約收入能否追上資料中心擴張速度並改善現金流。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Sep 21, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/down-53-should-you-still-buy-coreweaves-crwv-stock",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=CRWV%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/CRWV/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/CRWV/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 12,
@@ -462,13 +473,14 @@
       "newsHeadline": "Credo (CRDO) Q1 2027 Earnings Call Transcript",
       "newsDigest": "市場正在消化 Credo 最新財報電話會議，重點放在 AI 互連需求、客戶集中度與高速產品放量節奏。真正的驗證是營收成長能否伴隨毛利與訂單能見度改善。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Sep 8, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/credo-crdo-q1-2027-earnings-call-transcript",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=CRDO%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/CRDO/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/CRDO/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 13,
@@ -500,13 +512,14 @@
       "newsHeadline": "MACOM (MTSI) Q3 2026 Earnings Call Transcript",
       "newsDigest": "MACOM 最新財報電話會議成為主要關注事件，市場聚焦資料中心光通訊需求、產品組合與獲利展望。後續要看設計勝出是否轉成可持續出貨。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Aug 13, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/macom-mtsi-q3-2026-earnings-call-transcript",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=MTSI%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/MTSI/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/MTSI/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 14,
@@ -538,13 +551,14 @@
       "newsHeadline": "Better Artificial Intelligence Stock: Aehr Test Systems vs. KLA Corporation",
       "newsDigest": "近期討論把 Aehr 的碳化矽與 AI 記憶體測試曝險，拿來與大型設備商比較。這是題材與估值比較，不是新訂單；營收多元化和客戶導入仍是關鍵驗證。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Sep 19, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/better-artificial-intelligence-stock-aehr-test-systems-vs-kla-corporation",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=AEHR%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/AEHR/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/AEHR/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 15,
@@ -576,13 +590,14 @@
       "newsHeadline": "Lightwave Logic Q2 Earnings Call Highlights",
       "newsDigest": "Lightwave Logic 的焦點仍是把電光聚合物從開發推進商業化，並增加進階客戶評估。市場最在意認證是否轉成量產、授權或材料收入，而非只增加測試合作。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "MarketBeat",
       "newsPublishedLabel": "Aug 11, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/lightwave-logic-q2-earnings-call-highlights",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=LWLG%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/LWLG/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/LWLG/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 16,
@@ -614,13 +629,14 @@
       "newsHeadline": "Applied Optoelectronics Bets on U.S. Laser Capacity to Capture AI Data Center Demand",
       "newsDigest": "Applied Optoelectronics 強調美國雷射產能與自動化製造，希望承接 AI 資料中心光模組需求。注意力集中在客戶認證、擴產速度和毛利能否同步改善。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "MarketBeat",
       "newsPublishedLabel": "Aug 18, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/applied-optoelectronics-bets-us-laser-capacity-capture-ai-data-center-demand",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=AAOI%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/AAOI/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/AAOI/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 17,
@@ -652,13 +668,14 @@
       "newsHeadline": "Corning (GLW) Shares Cross Below 200 DMA",
       "newsDigest": "Corning 跌破 200 日均線，引發技術面轉弱的討論。這不是新的公司基本面事件；是否形成中期壓力，仍要看能否快速收復長期均線及光通訊需求是否維持。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "BNK Invest",
       "newsPublishedLabel": "Sep 14, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/corning-glw-shares-cross-below-200-dma",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=GLW%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/GLW/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/GLW/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 18,
@@ -690,13 +707,14 @@
       "newsHeadline": "Why Everyone's Talking About Poet Technologies Stock Right Now",
       "newsDigest": "POET 因 AI 資料中心內的光互連題材受到關注，核心在 Optical Interposer 能否提升處理器間資料傳輸效率。市場需要看到客戶認證與量產收入，才能把題材轉成基本面。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "The Motley Fool",
       "newsPublishedLabel": "Jun 28, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/why-everyones-talking-about-poet-technologies-stock-right-now",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=POET%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/POET/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/POET/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 19,
@@ -728,13 +746,14 @@
       "newsHeadline": "LightPath’s Defense Pivot Could Send Shares Higher",
       "newsDigest": "LightPath 將策略轉向美國國防與紅外光學市場，並調整中國資產布局。市場關注本土化是否帶來更高品質訂單，以及轉型成本會不會壓縮短期獲利。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "MarketBeat",
       "newsPublishedLabel": "Sep 15, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/lightpaths-defense-pivot-could-send-shares-higher",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=LPTH%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/LPTH/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/LPTH/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     },
     {
       "rank": 20,
@@ -766,13 +785,14 @@
       "newsHeadline": "Reminder - GlobalFoundries (GFS) Goes Ex-Dividend Soon",
       "newsDigest": "GlobalFoundries 近期焦點是每股 0.12 美元股息的除息安排。這屬機械性的股價與現金流事件，不代表營運趨勢改變；基本面仍要看產能利用率與長約需求。",
       "newsDigestLanguage": "zh-Hant",
+      "newsDigestMethod": "editorial",
       "newsPublisher": "BNK Invest",
       "newsPublishedLabel": "Sep 21, 2026",
       "newsUrl": "https://www.nasdaq.com/articles/reminder-globalfoundries-gfs-goes-ex-dividend-soon",
       "newsSourceUrl": "https://api.nasdaq.com/api/news/topic/articlebysymbol?q=GFS%7Cstocks&limit=30&offset=0",
-      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest requires a separate Traditional Chinese editorial summary",
+      "newsAttentionBasis": "Nasdaq symbol-news results: newest exact-symbol item, otherwise newest related-symbol item; visible digest is a Traditional Chinese event-category summary and never copies the headline",
       "freshness": "current",
-      "sourceUrl": "https://api.nasdaq.com/api/quote/GFS/chart?assetclass=stocks&fromdate=2025-07-30&todate=2026-09-23"
+      "sourceUrl": "https://api.nasdaq.com/api/quote/GFS/chart?assetclass=stocks&fromdate=2025-07-29&todate=2026-09-22"
     }
   ],
   "profiles": [

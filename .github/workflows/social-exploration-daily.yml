@@ -8,7 +8,10 @@ on:
         required: false
         type: string
   schedule:
-    - cron: '45 23 * * 1-5'
+    # Candidate pair for 17:30 America/Los_Angeles. The local admission gate
+    # below accepts the active PDT/PST offset and safely rejects the other.
+    - cron: '30 0 * * 2-6'
+    - cron: '30 1 * * 2-6'
 
 permissions:
   contents: write
@@ -25,13 +28,47 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Refresh completed-session snapshot
+      - name: Admit the 17:30 PT window
+        id: time_gate
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "admitted=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          local_time=$(TZ=America/Los_Angeles date +%H%M)
+          if [ "$local_time" -ge 1730 ] && [ "$local_time" -le 1759 ]; then
+            echo "admitted=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "admitted=false" >> "$GITHUB_OUTPUT"
+            echo "Transport-only candidate at $(TZ=America/Los_Angeles date --iso-8601=seconds); no-op"
+          fi
+      - name: Refresh and validate completed-session snapshot
+        if: steps.time_gate.outputs.admitted == 'true'
         env:
           AS_OF: ${{ inputs.as_of }}
-        run: node scripts/update-social-exploration.mjs ${AS_OF:+--as-of=$AS_OF}
-      - name: Validate reader and roster
-        run: node scripts/social-exploration-qa.mjs
+        run: |
+          set -e
+          for attempt in 1 2 3; do
+            node scripts/update-social-exploration.mjs ${AS_OF:+--as-of=$AS_OF}
+            if node scripts/social-exploration-qa.mjs; then
+              break
+            fi
+            if [ "$attempt" = "3" ]; then
+              echo "Release gate remained incomplete after three attempts"
+              exit 1
+            fi
+            echo "Completed-session gate not ready; retrying in 10 minutes"
+            sleep 600
+          done
+      - name: Record verified snapshot metadata
+        if: steps.time_gate.outputs.admitted == 'true'
+        id: snapshot
+        run: |
+          echo "data_through=$(node -e \"const d=require('./data-model/social-exploration.json'); process.stdout.write(d.dataThrough)\")" >> "$GITHUB_OUTPUT"
       - name: Commit changed daily data
+        if: steps.time_gate.outputs.admitted == 'true'
         run: |
           if git diff --quiet -- data-model/social-exploration.json data-model/social-exploration-data.js data-model/social-exploration-history; then
             echo "No completed-session change"
@@ -41,4 +78,10 @@ jobs:
           git config user.email "elliott-data-bot@users.noreply.github.com"
           git add data-model/social-exploration.json data-model/social-exploration-data.js data-model/social-exploration-history
           git commit -m "Update Social Exploration daily snapshot"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Verify the published page and data
+        if: steps.time_gate.outputs.admitted == 'true'
+        env:
+          EXPECTED_SOCIAL_DATA_THROUGH: ${{ steps.snapshot.outputs.data_through }}
+        run: node scripts/social-exploration-public-smoke.mjs

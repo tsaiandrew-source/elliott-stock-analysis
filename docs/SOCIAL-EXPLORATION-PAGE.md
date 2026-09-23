@@ -52,7 +52,20 @@ node scripts/update-social-exploration.mjs --as-of=YYYY-MM-DD
 node scripts/social-exploration-qa.mjs
 ```
 
-The prepared GitHub Actions workflow runs at 23:45 UTC on weekdays, which is
-after the regular U.S. close in both PDT and PST. It commits only when the
-current snapshot or append-only daily history changes. The workflow is not live
-until this branch is reviewed and merged.
+The prepared GitHub Actions workflow opens its first window at 17:30
+`America/Los_Angeles` on U.S. weekdays. Two UTC transport candidates cover PDT
+and PST; a local-time admission gate accepts only the active offset, so daylight-
+saving changes do not create a duplicate run. It retries incomplete data gates
+three times inside that window, publishes only a full `PASS`, commits
+only the current snapshot and append-only history, and then verifies the public
+page, the third navigation destination, and the exact published data-through
+date. If a gate remains incomplete, the workflow stops and the last verified
+public version stays in place. The workflow is not live until this branch is
+reviewed and merged.
+
+News digests prefer the locked human-edited Traditional Chinese summary when its
+source headline still matches. If a new headline becomes the highest-attention
+item, a deterministic event-category summarizer produces a short Traditional
+Chinese explanation without copying the headline; this removes a daily manual
+editorial dependency. Quarterly business digests remain sourced, compact latest-
+report summaries and are not rewritten by daily price/news refreshes.

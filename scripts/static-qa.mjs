@@ -51,6 +51,7 @@ const requiredFiles = [
   'data-model/social-exploration-data.js',
   'scripts/update-social-exploration.mjs',
   'scripts/social-exploration-qa.mjs',
+  'scripts/social-exploration-public-smoke.mjs',
   'offline.html',
   'assets/elliott-asterisk-icon-192.png',
   'assets/elliott-asterisk-icon-512.png',
@@ -320,14 +321,14 @@ if (await exists('data-model/home.html')) {
   for (const forbidden of ['class="masthead"', 'network-state', '<elliott-shared-menu', 'shared-menu.css', 'shared-menu.js', 'pwa-register-v27.js', 'manifest.webmanifest']) {
     if (home.includes(forbidden)) failures.push(`data-model/home.html: discarded app shell is still exposed via ${forbidden}`);
   }
-  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="digest"', 'data-digest-href="home.html"', 'data-moomoo-href="../moomoo-patterns.html"']) {
+  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="digest"', 'data-digest-href="home.html"', 'data-moomoo-href="../moomoo-patterns.html"', 'data-exploration-href="../social-exploration.html"']) {
     if (!home.includes(marker)) failures.push(`data-model/home.html: reusable top bar is missing ${marker}`);
   }
 }
 
 if (await exists('moomoo-patterns.html')) {
   const moomoo = await read('moomoo-patterns.html');
-  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="moomoo"', 'data-digest-href="data-model/home.html"', 'data-moomoo-href="moomoo-patterns.html"', '<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
+  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="moomoo"', 'data-digest-href="data-model/home.html"', 'data-moomoo-href="moomoo-patterns.html"', 'data-exploration-href="social-exploration.html"', '<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
     if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: reusable top bar is missing ${marker}`);
   }
   for (const marker of ["script-src 'self'", "style-src 'self'", "img-src 'self'", '--shared-topbar-height', 'safe-area-inset-top', 'safe-area-inset-bottom', '100dvh']) {
@@ -338,7 +339,7 @@ if (await exists('moomoo-patterns.html')) {
 if (await exists('shared-topbar.js') && await exists('shared-topbar.css')) {
   const topbarScript = await read('shared-topbar.js');
   const topbarStyle = await read('shared-topbar.css');
-  for (const marker of ['class ElliottTopbar', "customElements.define('elliott-topbar'", "label:'市場摘要'", "label:'每日型態'", 'aria-current']) {
+  for (const marker of ['class ElliottTopbar', "customElements.define('elliott-topbar'", "label:'市場摘要'", "label:'每日型態'", "label:'Social Exploration'", 'aria-current']) {
     if (!topbarScript.includes(marker)) failures.push(`shared-topbar.js: missing ${marker}`);
   }
   for (const marker of ['position:fixed', 'top:0', '--shared-topbar-height:36px', '--content-max,900px', 'safe-area-inset-top', '@media (pointer:coarse)', '--shared-topbar-height:44px']) {
