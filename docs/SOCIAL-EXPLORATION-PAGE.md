@@ -9,7 +9,8 @@ The information architecture now directly follows the existing Moomoo Patterns
 decision reader: compact title and freshness, inline status totals, one control
 panel and a sortable full-analysis table. The prior
 large hero, navigation dock, status banner and four summary cards are not part
-of this page. The implementation also applies the Nielsen Norman Group UX
+of this page. The compact shared topbar follows the public E+ market-summary
+navigation and lists Social Exploration as the third destination. The implementation also applies the Nielsen Norman Group UX
 basics used for this page:
 
 - communication before decoration;

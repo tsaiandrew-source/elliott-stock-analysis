@@ -9,6 +9,8 @@ const required = [
   'social-exploration.html',
   'social-exploration.css',
   'social-exploration.js',
+  'shared-topbar.css',
+  'shared-topbar.js',
   'data-model/social-exploration-roster.json',
   'data-model/social-exploration-news-digests.json',
   'data-model/social-exploration.json',
@@ -46,6 +48,9 @@ for (const marker of ['data-filter="momentum"', 'filter-momentum-overbought-coun
 if (html.includes('決策檢視') || html.includes('data-view=')) failures.push('page must expose full analysis only');
 for (const marker of ['營運摘要', '新聞摘要', '<th scope="col">來源</th>']) if (!html.includes(marker)) failures.push(`digest table missing ${marker}`);
 for (const marker of ['<title>E+ Social Exploration</title>', '<h1>E+ Social Exploration</h1>', 'elliott-asterisk-icon-32.png', 'class="page-title"']) if (!html.includes(marker)) failures.push(`page identity missing ${marker}`);
+for (const marker of ['<elliott-topbar', 'data-current="exploration"', 'data-digest-href="./data-model/home.html"', 'data-moomoo-href="./moomoo-patterns.html"', 'data-exploration-href="./social-exploration.html"']) if (!html.includes(marker)) failures.push(`shared top navigation missing ${marker}`);
+const topbarJs = await read('shared-topbar.js');
+if (!topbarJs.includes("key:'exploration'") || !topbarJs.includes("label:'Social Exploration'")) failures.push('Social Exploration must be the third shared topbar destination');
 if (!js.includes('profile-sources') || !js.includes("create('details'")) failures.push('source profile links must remain collapsed');
 if (js.includes("create('summary', '新聞來源')") || js.includes("create('summary', '資料來源')") || js.includes('record.newsHeadline')) failures.push('digest cells must not expose source references or copied headlines');
 if (html.includes('shared-menu.css') || html.includes('<elliott-shared-menu')) failures.push('standalone decision reader must not mount the app navigation dock');
