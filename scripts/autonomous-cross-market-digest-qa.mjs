@@ -28,10 +28,12 @@ assert.deepEqual(routes('2026-09-14T16:50:00'), [
   { edition:'midday', mode:'recovery' },
   { edition:'close', mode:'recovery' }
 ]);
-assert.deepEqual(routes('2026-09-19T16:50:00'), []);
-assert.deepEqual(routes('2026-09-20T16:19:00'), []);
-assert.deepEqual(routes('2026-09-20T16:20:00'), [{ edition:'weekly', mode:'primary' }]);
-assert.deepEqual(routes('2026-09-20T16:50:00'), [{ edition:'weekly', mode:'recovery' }]);
+assert.deepEqual(routes('2026-09-19T15:59:00'), []);
+assert.deepEqual(routes('2026-09-19T16:00:00'), [{ edition:'close', mode:'primary' }]);
+assert.deepEqual(routes('2026-09-19T16:30:00'), [{ edition:'close', mode:'recovery' }]);
+assert.deepEqual(routes('2026-09-20T15:59:00'), []);
+assert.deepEqual(routes('2026-09-20T16:00:00'), [{ edition:'close', mode:'primary' }]);
+assert.deepEqual(routes('2026-09-20T16:30:00'), [{ edition:'close', mode:'recovery' }]);
 
 const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'elliott-autonomous-digest-qa-'));
 const repoRoot = path.join(temporary, 'repo');
@@ -84,7 +86,6 @@ console.log(JSON.stringify({
   status:'PASS',
   timezone:'America/Los_Angeles',
   weekdayCatchup:true,
-  saturdayQuiet:true,
-  sundayWeeklyOnly:true,
+  weekendEndOfDayAt1600:true,
   laterEditionsContinueAfterFailure:true
 }, null, 2));

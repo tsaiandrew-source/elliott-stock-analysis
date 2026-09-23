@@ -1,6 +1,6 @@
 # Digest automation contract
 
-This contract provides one fail-closed ingestion and release path for the weekday Elliott cross-market **morning**, **midday**, and **close** editions plus the Sunday **weekly** edition. The existing close command remains backward compatible: omitting `--edition` still selects `close`. The pipeline does not touch the Iris v2/AppSheet ticker feed or any social route.
+This contract provides one fail-closed ingestion and release path for the weekday Elliott cross-market **morning**, **midday**, and **close** editions plus one **close** end-of-day edition on both Saturday and Sunday. The existing weekly command remains available for historical or manual packets, but it is not part of the autonomous Home cadence. Omitting `--edition` still selects `close`. The pipeline does not touch the Iris v2/AppSheet ticker feed or any social route.
 
 ## Ownership
 
@@ -20,11 +20,11 @@ All times use `America/Los_Angeles`.
 | morning | weekdays 05:30 | 05:50 | 06:20 |
 | midday | weekdays 11:30 | 11:50 | 12:20 |
 | close | weekdays 16:00 | 16:20 | 16:50 |
-| weekly | Sunday 16:00 | 16:20 | 16:50 |
+| close | Saturday and Sunday 15:50 | 16:00 | 16:30 |
 
-Primary absence is a quiet no-op. Recovery reconciles an existing acknowledgement/release state without re-ingesting; otherwise it retries with `--require-present` and reports a failed gate if the packet is still missing. Saturday has no run. Sunday morning and midday expansion wakes remain quiet.
+Primary absence is a quiet no-op. Recovery reconciles an existing acknowledgement/release state without re-ingesting; otherwise it retries with `--require-present` and reports a failed gate if the packet is still missing. Weekend morning and midday wakes do not exist; each weekend day has only the 16:00 close route.
 
-The producer and consumer are deliberately separated by 20 minutes. Recovery runs 30 minutes later. This avoids making release latency part of research time and keeps each edition out of the next producer window.
+Weekday producer and consumer windows remain separated by 20 minutes. Weekend packets are due by 15:50 so the primary publication attempt can begin at 16:00; recovery runs at 16:30. This keeps release latency out of research time while meeting the weekend 16:00 publication target.
 
 ## Producer packet
 
@@ -133,7 +133,7 @@ Resolution adopted on 2026-09-17: a valid morning packet was acknowledged and ar
 
 Andrew activated this exact scheduled route on 2026-09-15. No per-run review is required while the schedule, repository, GitHub identity, packet schema, two-file output scope, PR/check/squash-merge/Pages sequence, and recovery behavior remain unchanged.
 
-The standing authority is limited to `tsaiandrew-source/elliott-stock-analysis`, `data-model/digests.json`, `data-model/digest-data.js`, the morning/midday/close/weekly cadence above, and its same-day recovery. A changed repository, account, schedule, schema, output file, action type, or publication series requires new review. Every validation or platform gate still fails closed.
+The standing authority is limited to `tsaiandrew-source/elliott-stock-analysis`, `data-model/digests.json`, `data-model/digest-data.js`, the weekday morning/midday/close plus weekend close cadence above, and its same-day recovery. Historical/manual weekly packets remain supported but are outside this autonomous schedule. A changed repository, account, schedule, schema, output file, action type, or publication series requires new review. Every validation or platform gate still fails closed.
 
 ## Reporting
 

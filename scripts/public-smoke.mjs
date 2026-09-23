@@ -25,7 +25,6 @@ const routes = [
   `/chart-surface/partial-market-data/MANIFEST.json?refresh=${Date.now()}`,
   '/data-model/home.html',
   ...(expectedDigestId ? [`/data-model/digest-data.js?expected=${encodeURIComponent(expectedDigestId)}&refresh=${Date.now()}`] : []),
-  '/data-model/home.html?view=weekly',
   '/data-model/coverage.html',
   '/data-model/app.html',
   '/chart-surface/index.html?ticker=NBIS&view=daily',

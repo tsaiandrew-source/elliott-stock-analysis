@@ -98,7 +98,7 @@ if (await exists('scripts/run-autonomous-cross-market-digest.mjs')) {
     "edition:'morning'",
     "edition:'midday'",
     "edition:'close'",
-    "edition:'weekly'",
+    "weekday === 'Sat' || weekday === 'Sun'",
     'with-tsaiandrew-source',
     'run-close-digest-cycle.mjs',
     "status:'FAILED_GATE'"
@@ -190,7 +190,8 @@ for (const file of htmlFiles) {
   }
   if (file === 'data-model/home.html') {
     if (html.includes('data-view="weekly"') || html.includes("model.groupRecords(dataset.records, 'weekly')")) failures.push(`${file}: separate weekly digest view is still exposed`);
-    if (!html.includes("record.cadence === 'weekly' && displayDateFor(record) === selectedDate") || !html.includes("edition === 'weekly' ? '週線整合'") || !html.includes("updateUrl({ view:'daily'")) failures.push(`${file}: weekly digest is not nested into the canonical Daily view`);
+    if (!html.includes('const selectedDate = today;') || !html.includes('hasNonRuntimeQuery') || html.includes("query.get('date')")) failures.push(`${file}: Home is not pinned to one canonical current-day URL`);
+    if (!html.includes("const editionOrder = weekend ? ['close'] : ['close', 'midday', 'morning']")) failures.push(`${file}: current-day weekday/weekend cadence is not wired`);
   }
   if (file === 'data-model/app.html' && /data-view="coverage"/i.test(html)) {
     failures.push(`${file}: hidden coverage-management view is still exposed in the app navigation`);
@@ -268,8 +269,11 @@ if (await exists('data-model/home.html')) {
   const homeIndex = sharedMenu.indexOf("link('dock-home'");
   const coverageIndex = sharedMenu.indexOf("link('dock-coverage'");
   if (!home.includes('window.ELLIOTT_CROSS_MARKET_DIGESTS') && !home.includes('digest-data.js')) failures.push('data-model/home.html: digest dataset is not wired');
-  for (const marker of ['calendar-menu', 'calendarWeeks()', "['close', 'midday', 'morning']", "query.get('date')", 'aria-pressed']) {
-    if (!home.includes(marker)) failures.push(`data-model/home.html: two-week digest calendar is missing ${marker}`);
+  for (const forbidden of ['calendar-menu', 'calendarWeeks()', "query.get('date')", 'previous-day', 'next-day', 'today-button']) {
+    if (home.includes(forbidden)) failures.push(`data-model/home.html: current-day-only Home still exposes ${forbidden}`);
+  }
+  for (const marker of ['day-summary', 'const selectedDate = today;', "weekend ? ['close'] : ['close', 'midday', 'morning']", '16:00 PT']) {
+    if (!home.includes(marker)) failures.push(`data-model/home.html: current-day digest surface is missing ${marker}`);
   }
   if (!home.includes('edition-details') || !home.includes("button.getAttribute('aria-expanded') === 'true'")) failures.push('data-model/home.html: inline digest expansion is missing');
   if (!home.includes('.edition-card[aria-expanded="true"] .edition-copy span')) failures.push('data-model/home.html: expanded digest summary is still truncated');

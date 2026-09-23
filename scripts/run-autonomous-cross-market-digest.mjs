@@ -31,10 +31,9 @@ const modeAt = (minuteOfDay, primaryAt, recoveryAt) => {
 
 export function dueDigestRuns(value = new Date()) {
   const { weekday, minuteOfDay } = localClock(value);
-  if (weekday === 'Sat') return [];
-  if (weekday === 'Sun') {
-    const mode = modeAt(minuteOfDay, 16 * 60 + 20, 16 * 60 + 50);
-    return mode ? [{ edition:'weekly', mode }] : [];
+  if (weekday === 'Sat' || weekday === 'Sun') {
+    const mode = modeAt(minuteOfDay, 16 * 60, 16 * 60 + 30);
+    return mode ? [{ edition:'close', mode }] : [];
   }
   if (!WEEKDAYS.has(weekday)) return [];
   const routes = [];
