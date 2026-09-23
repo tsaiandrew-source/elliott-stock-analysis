@@ -1044,7 +1044,7 @@ html&gt;body{padding:0}&lt;/style&gt;
   &lt;header class=&quot;dashboard-header&quot;&gt;
     &lt;div&gt;
       &lt;h2&gt;E+ 每日型態&lt;/h2&gt;
-      &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍；需要時才展開完整分析。&lt;/p&gt;
+      &lt;p class=&quot;dashboard-purpose&quot;&gt;先看技術處置，再用動能與清單縮小範圍。&lt;/p&gt;
     &lt;/div&gt;
     &lt;div class=&quot;freshness&quot;&gt;&lt;span&gt;&lt;span class=&quot;freshness-dot&quot; aria-hidden=&quot;true&quot;&gt;●&lt;/span&gt; 技術資料：2026-09-22 正式收盤&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;moomoo 圖註：2026-09-22 23／23 已核對（AMKR／BE／SNDK／RIVN 補齊；MRVL 文字已移近今日 K 線）&lt;/span&gt;&lt;span class=&quot;freshness-meta text-small&quot;&gt;期權資料：2026-09-22 收盤後（23／23 已嘗試；22 檔完成時段鏈；FTNT 來源早於收盤，僅供參考）&lt;/span&gt;&lt;/div&gt;
   &lt;/header&gt;
@@ -1057,19 +1057,12 @@ html&gt;body{padding:0}&lt;/style&gt;
       &lt;span&gt;&lt;strong class=&quot;overview-unsuitable&quot;&gt;2&lt;/strong&gt; 不宜&lt;/span&gt;
     &lt;/div&gt;
 
-    &lt;div class=&quot;control-panel&quot; aria-label=&quot;搜尋、檢視與篩選&quot;&gt;
+    &lt;div class=&quot;control-panel&quot; aria-label=&quot;搜尋與篩選&quot;&gt;
     &lt;div class=&quot;dashboard-toolbar&quot;&gt;
       &lt;label class=&quot;form-label search-label&quot;&gt;搜尋股票
         &lt;input class=&quot;form-control ticker-search&quot; type=&quot;search&quot; inputmode=&quot;search&quot; autocomplete=&quot;off&quot; placeholder=&quot;例如 NBIS&quot; aria-describedby=&quot;search-help&quot;&gt;
       &lt;/label&gt;
       &lt;span id=&quot;search-help&quot; class=&quot;sr-only&quot;&gt;輸入完整或部分股票代號&lt;/span&gt;
-      &lt;div class=&quot;view-mode&quot; role=&quot;group&quot; aria-labelledby=&quot;view-mode-label&quot;&gt;
-        &lt;span class=&quot;group-label&quot; id=&quot;view-mode-label&quot;&gt;檢視&lt;/span&gt;
-        &lt;div class=&quot;view-options&quot;&gt;
-          &lt;button type=&quot;button&quot; class=&quot;btn view-button active&quot; data-view=&quot;decision&quot; aria-pressed=&quot;true&quot;&gt;決策檢視&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost view-button&quot; data-view=&quot;full&quot; aria-pressed=&quot;false&quot;&gt;完整分析&lt;/button&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;decision-filters&quot; aria-label=&quot;決策篩選&quot;&gt;
@@ -1218,11 +1211,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     align-items: center;
     margin: 0;
   }
-  #moomoo-sortable-analysis .view-mode { display: grid; grid-template-columns: auto auto; gap: 0.35rem; align-items: center; margin: 0; padding: 0; border: 0; }
   #moomoo-sortable-analysis .group-label { width: auto; margin: 0; padding: 0; font-weight: 500; white-space: nowrap; }
-  #moomoo-sortable-analysis .view-options { display: flex; gap: 0.25rem; }
-  #moomoo-sortable-analysis .view-button.active { font-weight: 500; }
-  #moomoo-sortable-analysis .view-button[aria-pressed=&quot;true&quot;] { background: var(--primary); color: var(--primary-foreground); }
   #moomoo-sortable-analysis .ticker-search { width: 100%; }
   #moomoo-sortable-analysis .filter-count {
     margin-left: 0.25rem;
@@ -1323,7 +1312,6 @@ html&gt;body{padding:0}&lt;/style&gt;
   #moomoo-sortable-analysis td.empty-row { color: var(--muted-foreground); text-align: center; }
   #moomoo-sortable-analysis .table-responsive { margin-top: 0.75rem; scroll-margin-top: 1rem; }
   #moomoo-sortable-analysis table { min-width: 1000px; }
-  #moomoo-sortable-analysis.view-full table { min-width: 1500px; }
   #moomoo-sortable-analysis.view-decision th[data-key=&quot;target&quot;],
   #moomoo-sortable-analysis.view-decision th[data-key=&quot;wyckoff&quot;],
   #moomoo-sortable-analysis.view-decision th[data-key=&quot;analysis&quot;],
@@ -1352,20 +1340,16 @@ html&gt;body{padding:0}&lt;/style&gt;
     #moomoo-sortable-analysis .dashboard-toolbar,
     #moomoo-sortable-analysis .decision-filters { display: contents; }
     #moomoo-sortable-analysis .search-label,
-    #moomoo-sortable-analysis .view-mode,
     #moomoo-sortable-analysis .filter-group { grid-template-columns: 4.8rem minmax(0, 1fr); gap: 0.35rem; }
-    #moomoo-sortable-analysis .view-options &gt; * { flex: 1 1 0; }
     #moomoo-sortable-analysis .filter-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     #moomoo-sortable-analysis .filter-chip { min-height: 44px; }
     #moomoo-sortable-analysis .ticker-search { min-height: 44px; font-size: 16px; }
-    #moomoo-sortable-analysis .view-button,
     #moomoo-sortable-analysis .reset-filters,
     #moomoo-sortable-analysis .mobile-sort-direction { min-height: 44px; }
     #moomoo-sortable-analysis .mobile-sort-key { min-height: 44px; font-size: 16px; }
     #moomoo-sortable-analysis .mobile-sort-controls { display: flex; margin-top: 0.75rem; }
     #moomoo-sortable-analysis .table-responsive { overflow: visible; }
     #moomoo-sortable-analysis table { display: block; min-width: 0; width: 100%; }
-    #moomoo-sortable-analysis.view-full table { min-width: 0; }
     #moomoo-sortable-analysis thead {
       position: absolute;
       width: 1px;
@@ -1665,7 +1649,6 @@ html&gt;body{padding:0}&lt;/style&gt;
     const filterStatus = group.querySelector(&#x27;.filter-status&#x27;);
     const resetFilters = group.querySelector(&#x27;.reset-filters&#x27;);
     const searchInput = group.querySelector(&#x27;.ticker-search&#x27;);
-    const viewButtons = group.querySelectorAll(&#x27;.view-button&#x27;);
     const filters = {
       scope: new Set(),
       action: new Set(),
@@ -1766,25 +1749,6 @@ html&gt;body{padding:0}&lt;/style&gt;
     searchInput.addEventListener(&#x27;input&#x27;, () =&gt; {
       filters.query = searchInput.value.trim().toUpperCase();
       render();
-    });
-
-    viewButtons.forEach(button =&gt; {
-      button.addEventListener(&#x27;click&#x27;, () =&gt; {
-        const view = button.dataset.view;
-        root.classList.toggle(&#x27;view-decision&#x27;, view === &#x27;decision&#x27;);
-        root.classList.toggle(&#x27;view-full&#x27;, view === &#x27;full&#x27;);
-        viewButtons.forEach(option =&gt; {
-          const active = option === button;
-          option.classList.toggle(&#x27;active&#x27;, active);
-          option.classList.toggle(&#x27;btn-ghost&#x27;, !active);
-          option.setAttribute(&#x27;aria-pressed&#x27;, active ? &#x27;true&#x27; : &#x27;false&#x27;);
-        });
-        if (view === &#x27;decision&#x27; &amp;&amp; [&#x27;target&#x27;,&#x27;wyckoff&#x27;,&#x27;analysis&#x27;].includes(sortKey)) {
-          sortKey = &#x27;action&#x27;;
-          direction = 1;
-        }
-        render();
-      });
     });
 
     group.querySelectorAll(&#x27;th[data-key] button&#x27;).forEach(button =&gt; {
