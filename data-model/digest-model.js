@@ -4,10 +4,10 @@
   const SCHEMA_VERSION = 'elliott-cross-market-digest-v1';
   const EDITION_ORDER = { morning: 0, midday: 1, close: 2, weekly: 3 };
   const EDITION_LABELS = {
-    morning: '晨間設定',
-    midday: '午間訊號',
-    close: '收盤綜合判讀',
-    weekly: '每週總結與展望'
+    morning: 'Pre-market · 盤前',
+    midday: 'Mid-market · 盤中',
+    close: 'Close-market · 收盤',
+    weekly: 'End of day · 週末收盤'
   };
 
   const clean = (value) => String(value ?? '').trim();

@@ -111,8 +111,9 @@ June owns producer packets in
 `/Users/andrtsai/Documents/ChatGPT/P F Social/handoffs/elliott-cross-market/outbox`.
 The existing digest consumer/release runner remains the sole owner of
 `data-model/digests.json` and `data-model/digest-data.js`: 05:50/06:20 morning,
-11:50/12:20 midday, 16:20/16:50 close on weekdays, and 16:20/16:50 weekly on
-Sunday. Those are canonical scheduled releases with standing authority; they
+11:50/12:20 midday, and 16:20/16:50 close on weekdays; Saturday and Sunday
+each publish one end-of-day close digest at 16:00 with a 16:30 recovery gate.
+Those are canonical scheduled releases with standing authority; they
 must not ask for per-run approval when destination, account, series and scope
 are unchanged and all gates pass.
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#071018">
+  <meta name="theme-color" content="#181818">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="E+">
@@ -16,90 +16,96 @@
   <script src="../pwa-register-v27.js" defer></script>
   <title>股市分析</title>
   <style>
-    :root { color-scheme:dark; --bg:#071018; --surface:#0d1a25; --surface2:#112433; --line:#203849; --text:#edf6fb; --muted:#91a8b7; --aqua:#55d9d5; --lime:#c8f169; --amber:#f2b84b; --rose:#ff7e8f; }
+    :root { color-scheme:dark; --bg:#181818; --surface:#202020; --surface2:#2d2d2d; --line:rgba(255,255,255,.082); --text:#fff; --muted:rgba(255,255,255,.5); --aqua:#83c3ff; --lime:#40c977; --amber:#ff8549; --rose:#ff6764; --radius:10px; }
     * { box-sizing:border-box; }
     html { min-height:100%; background:var(--bg); }
-    body { min-height:100vh; min-height:100dvh; margin:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(82px + env(safe-area-inset-bottom)) env(safe-area-inset-left); overflow-x:hidden; background:radial-gradient(circle at 90% -10%,rgba(85,217,213,.12),transparent 34%),var(--bg); color:var(--text); font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-text-size-adjust:100%; }
+    body { min-height:100vh; min-height:100dvh; margin:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(82px + env(safe-area-inset-bottom)) env(safe-area-inset-left); overflow-x:hidden; background:var(--bg); color:var(--text); font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-text-size-adjust:100%; }
     button, a { font:inherit; }
     button { -webkit-tap-highlight-color:transparent; }
     a { color:var(--aqua); }
-    .shell { width:min(920px,100%); margin:0 auto; padding:24px 18px 44px; }
-    .masthead { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:22px; }
+    .shell { width:min(1040px,100%); margin:0 auto; padding:22px 18px 44px; }
+    .masthead { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--line); }
     .eyebrow { color:var(--aqua); font-size:11px; font-weight:800; letter-spacing:.11em; }
-    h1 { margin:3px 0 2px; font-size:clamp(27px,5vw,38px); line-height:1.15; }
+    h1 { margin:3px 0 2px; font-size:clamp(24px,3.2vw,34px); line-height:1.18; letter-spacing:-.02em; }
     .dek { margin:0; color:var(--muted); font-size:13px; }
-    .network { display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; color:var(--muted); font-size:11px; }
+    .network { display:inline-flex; min-height:38px; align-items:center; gap:7px; flex:0 0 auto; padding:8px 11px; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:var(--surface); font-size:11px; }
     .network::before { width:7px; height:7px; border-radius:50%; background:var(--lime); content:""; }
     .network.is-offline::before { background:var(--amber); }
-    .calendar-menu { display:grid; gap:10px; margin:0 0 18px; padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.84); overflow-x:auto; }
-    .calendar-menu[hidden], .selected-date[hidden] { display:none; }
-    .calendar-week { display:grid; grid-template-columns:repeat(7,minmax(34px,1fr)); align-items:center; gap:3px; min-width:252px; }
-    .calendar-day { position:relative; display:grid; place-items:center; gap:1px; min-height:58px; padding:5px 2px 10px; border:1px solid transparent; border-radius:11px; color:var(--muted); background:transparent; cursor:pointer; }
-    .calendar-day:hover, .calendar-day:focus-visible { border-color:rgba(85,217,213,.45); outline:0; }
-    .calendar-day[aria-pressed="true"] { color:#071018; background:var(--aqua); }
-    .calendar-day-name { font-size:10px; font-weight:750; }
-    .calendar-day-number { font-size:16px; font-weight:900; line-height:1.15; }
-    .calendar-day.has-digest::after { position:absolute; bottom:5px; width:5px; height:5px; border-radius:50%; background:var(--lime); content:""; box-shadow:0 0 8px rgba(200,241,105,.6); }
-    .calendar-day[aria-pressed="true"]::after { background:#071018; box-shadow:none; }
-    .calendar-day:not(.has-digest):not([aria-pressed="true"]) { opacity:.52; }
-    .selected-date { margin:0 0 10px; color:var(--muted); font-size:12px; font-weight:800; }
-    .status-card, .group { border:1px solid var(--line); border-radius:16px; background:rgba(13,26,37,.9); box-shadow:0 16px 40px rgba(0,0,0,.16); }
-    .status-card { padding:22px; color:var(--muted); }
+    .day-summary { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin:0 0 14px; padding:11px 13px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
+    .day-summary strong { font-size:15px; }
+    .day-summary span { color:var(--muted); font-size:11px; text-align:right; }
+    .status-card, .group { border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
+    .status-card { padding:18px; color:var(--muted); }
     .status-card strong { display:block; margin-bottom:4px; color:var(--text); font-size:17px; }
     .digest-list { display:grid; gap:14px; min-width:0; }
     .group { min-width:0; overflow:hidden; }
-    .group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:13px 15px; border-bottom:1px solid var(--line); }
+    .group-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:11px 13px; border-bottom:1px solid var(--line); }
     .group-head time { color:var(--text); font-weight:850; }
     .group-head span { color:var(--muted); font-size:11px; }
     .edition-list { display:grid; }
-    .edition-card { display:grid; grid-template-columns:auto 1fr auto; align-items:start; gap:12px; width:100%; min-height:66px; padding:14px 15px; border:0; border-bottom:1px solid rgba(32,56,73,.72); color:var(--text); background:transparent; text-align:left; cursor:pointer; }
+    .edition-card { display:grid; grid-template-columns:auto 1fr auto; align-items:start; gap:12px; width:100%; min-height:64px; padding:13px; border:0; border-bottom:1px solid var(--line); color:var(--text); background:transparent; text-align:left; cursor:pointer; }
     .edition-card:last-child { border-bottom:0; }
-    .edition-card:hover, .edition-card:focus-visible { background:rgba(85,217,213,.07); outline:0; }
+    .edition-card:hover, .edition-card:focus-visible { background:rgba(131,195,255,.07); outline:0; }
     .edition-card.is-missing { cursor:default; opacity:.42; }
     .edition-card.is-missing:hover { background:transparent; }
-    .edition-card[aria-expanded="true"] { background:rgba(85,217,213,.08); box-shadow:inset 3px 0 var(--aqua); }
-    .edition-details { border-bottom:1px solid rgba(32,56,73,.72); background:rgba(7,16,24,.34); }
+    .edition-card[aria-expanded="true"] { background:rgba(131,195,255,.09); box-shadow:inset 3px 0 var(--aqua); }
+    .edition-details { border-bottom:1px solid var(--line); background:rgba(0,0,0,.12); }
     .article.edition-details { padding-top:16px; }
     .edition-details > section:first-child { margin-top:0; }
-    .edition-badge { min-width:76px; padding:4px 7px; border:1px solid rgba(85,217,213,.35); border-radius:999px; color:var(--aqua); font-size:11px; font-weight:800; text-align:center; }
-    .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { border-color:rgba(200,241,105,.36); color:var(--lime); }
+    .edition-badge { min-width:76px; padding:4px 7px; border:1px solid rgba(131,195,255,.36); border-radius:999px; color:var(--aqua); font-size:11px; font-weight:800; text-align:center; }
+    .edition-card[data-edition="close"] .edition-badge, .edition-card[data-edition="weekly"] .edition-badge { border-color:rgba(64,201,119,.4); color:var(--lime); }
     .edition-copy { min-width:0; }
     .edition-copy strong { display:block; font-size:14px; }
     .edition-copy span { display:-webkit-box; margin-top:3px; overflow:hidden; color:var(--muted); font-size:15px; line-height:1.6; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
     .edition-card[aria-expanded="true"] .edition-copy span { display:block; overflow:visible; -webkit-line-clamp:unset; }
     .edition-time { color:var(--muted); font-size:11px; white-space:nowrap; }
     .list-view[hidden] { display:none; }
-    .article { width:min(720px,100%); min-width:0; margin:0 auto; padding:26px 22px 40px; overflow-wrap:anywhere; }
-    .article section { margin-top:28px; }
+    .article { width:min(820px,100%); min-width:0; margin:0 auto; padding:24px 22px 38px; overflow-wrap:anywhere; }
+    .article section { margin-top:24px; }
     .article h3 { margin:0 0 10px; color:var(--aqua); font-size:17px; }
     .article p { margin:0 0 12px; }
     .article ul { margin:0; padding-left:1.3em; }
     .article li + li { margin-top:8px; }
-    .table-wrap { width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:11px; }
+    .table-wrap { width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
     table { width:100%; max-width:100%; min-width:0; border-collapse:collapse; font-size:13px; }
     th, td { padding:10px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; overflow-wrap:anywhere; }
     th { color:var(--aqua); background:var(--surface2); }
     tr:last-child td { border-bottom:0; }
     .article .source-list { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:8px 0 0; padding:0; list-style:none; }
     .article .source-list li, .article .source-list li + li { display:flex; align-items:center; margin:0; }
-    .source-list a { display:inline-flex; height:30px; align-items:center; padding:0 9px; border:1px solid var(--line); border-radius:8px; font-size:12px; line-height:1; text-decoration:none; }
+    .source-list a { display:inline-flex; min-height:32px; align-items:center; padding:5px 9px; border:1px solid var(--line); border-radius:7px; font-size:12px; line-height:1.2; text-decoration:none; }
     .source-list a:hover, .source-list a:focus-visible { border-color:var(--aqua); }
     @media (min-width:760px) {
       body { padding-bottom:24px; }
-      .shell { padding:34px 28px 54px; }
-      .article { padding:38px 42px 54px; }
+      .shell { padding:28px 28px 54px; }
+      .article { padding:32px 36px 48px; }
     }
-    @media (max-width:520px) {
+    @media (max-width:1024px) {
+      .table-wrap { overflow:visible; border:0; }
+      .article table, .article tbody { display:block; width:100%; }
+      .article thead { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+      .article tbody { display:grid; gap:10px; }
+      .article tbody tr { display:block; border:1px solid var(--line); border-radius:8px; background:var(--surface2); overflow:hidden; }
+      .article tbody td { display:grid; grid-template-columns:minmax(120px,34%) 1fr; gap:12px; min-height:44px; padding:10px 12px; border-bottom:1px solid var(--line); white-space:normal; }
+      .article tbody td::before { content:attr(data-label); color:var(--muted); font-size:11px; font-weight:750; letter-spacing:.03em; }
+      .article tbody tr:last-child td:not(:last-child) { border-bottom:1px solid var(--line); }
+      .article tbody td:last-child { border-bottom:0; }
+    }
+    @media (max-width:620px) {
       .shell { padding:18px 12px 36px; }
-      .masthead { align-items:flex-start; }
+      .masthead { display:grid; gap:12px; }
+      .network { width:100%; }
+      .day-summary { display:grid; gap:3px; }
+      .day-summary span { text-align:left; }
       .edition-card { grid-template-columns:1fr auto; gap:7px 10px; }
       .edition-badge { grid-column:1; justify-self:start; min-width:0; }
       .edition-copy { grid-column:1 / -1; grid-row:2; }
       .edition-time { grid-column:2; grid-row:1; }
-      .article { padding:22px 16px 36px; }
-      .table-wrap { overflow-x:hidden; }
-      table { table-layout:fixed; font-size:12px; }
-      th, td { padding:8px 6px; }
+      .article { padding:20px 14px 34px; }
+      .article tbody td { grid-template-columns:1fr; gap:2px; }
+    }
+    @media (pointer:coarse) {
+      .edition-card, .source-list a { min-height:44px; }
     }
   </style>
 </head>
@@ -111,8 +117,7 @@
     </header>
 
     <div class="list-view" id="list-view">
-      <div class="calendar-menu" id="calendar-menu" aria-label="最近兩週摘要日期"></div>
-      <p class="selected-date" id="selected-date"></p>
+      <section class="day-summary" aria-label="今日摘要排程"><strong id="selected-date"></strong><span id="day-cadence"></span></section>
       <div class="digest-list" id="digest-list" aria-live="polite">
         <div class="status-card"><strong>正在整理摘要</strong>請稍候。</div>
       </div>
@@ -134,13 +139,19 @@
       const dataset = model.normalizeDataset(window.ELLIOTT_CROSS_MARKET_DIGESTS);
       const listView = document.getElementById('list-view');
       const list = document.getElementById('digest-list');
-      const calendar = document.getElementById('calendar-menu');
       const selectedDateLabel = document.getElementById('selected-date');
-      const query = new URLSearchParams(window.location.search);
+      const dayCadenceLabel = document.getElementById('day-cadence');
+      const canonicalUrl = new URL(window.location.href);
+      const desktopRuntime = canonicalUrl.searchParams.get('runtime') === 'tauri';
+      const hasNonRuntimeQuery = [...canonicalUrl.searchParams.keys()].some((key) => key !== 'runtime');
+      if (hasNonRuntimeQuery || (canonicalUrl.search && !desktopRuntime)) {
+        const canonicalSearch = desktopRuntime ? '?runtime=tauri' : '';
+        history.replaceState({}, '', `${canonicalUrl.pathname}${canonicalSearch}${canonicalUrl.hash}`);
+      }
       const dateKey = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       const fromDateKey = (value) => new Date(`${value}T12:00:00`);
       const today = dateKey(new Date());
-      let selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(query.get('date') || '') ? query.get('date') : today;
+      const selectedDate = today;
 
       const text = (tag, value, className) => {
         const element = document.createElement(tag);
@@ -166,60 +177,12 @@
         }
         return record.marketDate || '';
       };
-      const editionLabel = (edition) => edition === 'weekly' ? '週線整合' : model.EDITION_LABELS[edition];
-      const updateUrl = (changes, mode = 'push') => {
-        const url = new URL(window.location.href);
-        Object.entries(changes).forEach(([key, value]) => value ? url.searchParams.set(key, value) : url.searchParams.delete(key));
-        history[mode === 'replace' ? 'replaceState' : 'pushState']({}, '', url);
-      };
+      const editionLabel = (edition) => model.EDITION_LABELS[edition];
       const scrollKey = () => `digest-scroll-daily-${selectedDate}`;
       const saveScroll = () => sessionStorage.setItem(scrollKey(), String(window.scrollY));
       const restoreScroll = () => requestAnimationFrame(() => window.scrollTo({ top:Number(sessionStorage.getItem(scrollKey()) || 0), behavior:'auto' }));
 
-      function calendarWeeks() {
-        const current = fromDateKey(today);
-        const thisSunday = new Date(current);
-        thisSunday.setDate(current.getDate() - current.getDay());
-        return [-7, 0].map((offset) => {
-          const start = new Date(thisSunday);
-          start.setDate(thisSunday.getDate() + offset);
-          return Array.from({ length:7 }, (_, index) => {
-            const day = new Date(start);
-            day.setDate(start.getDate() + index);
-            return dateKey(day);
-          });
-        });
-      }
-
-      function renderCalendar() {
-        const daysWithDigests = new Set(dataset.records.map(displayDateFor).filter(Boolean));
-        calendar.replaceChildren();
-        calendarWeeks().forEach((days) => {
-          const row = text('div', '', 'calendar-week');
-          days.forEach((value) => {
-            const date = fromDateKey(value);
-            const button = text('button', '', 'calendar-day');
-            button.type = 'button';
-            button.dataset.date = value;
-            button.classList.toggle('has-digest', daysWithDigests.has(value));
-            button.setAttribute('aria-pressed', String(value === selectedDate));
-            button.setAttribute('aria-label', `${formatDate(value, { weekday:'long' })}${daysWithDigests.has(value) ? '，有摘要' : '，尚無摘要'}`);
-            button.append(text('span', new Intl.DateTimeFormat('en-US', { weekday:'short' }).format(date), 'calendar-day-name'));
-            button.append(text('span', String(date.getDate()), 'calendar-day-number'));
-            button.addEventListener('click', () => {
-              if (value === selectedDate) return;
-              saveScroll();
-              selectedDate = value;
-              updateUrl({ view:'daily', date:selectedDate, digest:null });
-              renderCalendar();
-              renderList();
-              restoreScroll();
-            });
-            row.append(button);
-          });
-          calendar.append(row);
-        });
-      }
+      const isWeekend = (value) => [0, 6].includes(fromDateKey(value).getDay());
 
       function emptyState() {
         list.replaceChildren();
@@ -231,23 +194,27 @@
 
       function renderList() {
         listView.hidden = false;
-        calendar.hidden = false;
-        selectedDateLabel.hidden = false;
         selectedDateLabel.textContent = formatDate(selectedDate, { weekday:'long' });
+        const weekend = isWeekend(selectedDate);
+        dayCadenceLabel.textContent = weekend ? '週末 · 收盤後一篇 · 16:00 PT' : '平日 · 盤前／盤中／收盤';
+        const displayEditionLabel = (edition) => weekend && ['close', 'weekly'].includes(edition)
+          ? 'End of day · 週末收盤'
+          : editionLabel(edition);
         const records = dataset.records.filter((record) => record.cadence === 'daily' && record.marketDate === selectedDate);
         const weeklyRecords = dataset.records.filter((record) => record.cadence === 'weekly' && displayDateFor(record) === selectedDate);
         list.replaceChildren();
         const byEdition = new Map([...records, ...weeklyRecords].map((record) => [record.edition, record]));
-        if (!records.length && !weeklyRecords.length) { emptyState(); return; }
-        const editionOrder = ['close', 'midday', 'morning'];
+        if (dataset.error) { emptyState(); return; }
+        const editionOrder = weekend ? ['close'] : ['close', 'midday', 'morning'];
         const available = editionOrder.map((edition) => byEdition.get(edition)).filter(Boolean);
-        weeklyRecords.forEach((record) => available.push(record));
-        const missing = records.length ? editionOrder.filter((edition) => !byEdition.has(edition)).map((edition) => ({ edition })) : [];
+        if (weekend && !available.length && weeklyRecords.length) available.push(weeklyRecords[0]);
+        const presentEditions = new Set(available.map((record) => record.edition === 'weekly' ? 'close' : record.edition));
+        const missing = editionOrder.filter((edition) => !presentEditions.has(edition)).map((edition) => ({ edition }));
         [{ key:selectedDate, items:[...available, ...missing] }].forEach((group) => {
           const section = text('section', '', 'group');
           const head = text('div', '', 'group-head');
-          head.append(text('time', 'Daily · 每日摘要（含週線整合）'));
-          head.append(text('span', `${records.length ? `${records.length} / 3 篇` : '僅週線整合'}${weeklyRecords.length ? ' · 含週線整合' : ''}`));
+          head.append(text('time', weekend ? 'Weekend · 週末收盤摘要' : 'Daily · 每日市場摘要'));
+          head.append(text('span', `${available.length} / ${editionOrder.length} 篇`));
           section.append(head);
           const editions = text('div', '', 'edition-list');
           group.items.forEach((record) => {
@@ -257,21 +224,21 @@
             if (!record.id) {
               button.disabled = true;
               button.classList.add('is-missing');
-              button.setAttribute('aria-label', `${editionLabel(record.edition)}尚未發布`);
+              button.setAttribute('aria-label', `${displayEditionLabel(record.edition)}尚未發布`);
             } else {
             button.dataset.recordId = record.id;
             button.setAttribute('aria-expanded', 'false');
-            button.setAttribute('aria-label', `開啟 ${editionLabel(record.edition)}：${record.title}`);
+            button.setAttribute('aria-label', `開啟 ${displayEditionLabel(record.edition)}：${record.title}`);
             }
-            button.append(text('span', editionLabel(record.edition), 'edition-badge'));
+            button.append(text('span', displayEditionLabel(record.edition), 'edition-badge'));
             const copy = text('span', '', 'edition-copy');
             copy.append(text('strong', record.title || '尚未發布'));
             copy.append(text('span', record.id ? (record.summary || '開啟閱讀完整摘要') : '這個時段目前沒有摘要'));
             button.append(copy);
             button.append(text('time', record.id ? formatTime(record.publishedAt) : '—', 'edition-time'));
             if (record.id) button.addEventListener('click', () => {
-              if (button.getAttribute('aria-expanded') === 'true') closeReader(true);
-              else openReader(record, true);
+              if (button.getAttribute('aria-expanded') === 'true') closeReader();
+              else openReader(record);
             });
             editions.append(button);
           });
@@ -291,7 +258,11 @@
         const tbody = document.createElement('tbody');
         table.rows.forEach((row) => {
           const tr = document.createElement('tr');
-          table.columns.forEach((_, index) => tr.append(text('td', Array.isArray(row) ? row[index] : '')));
+          table.columns.forEach((column, index) => {
+            const cell = text('td', Array.isArray(row) ? row[index] : '');
+            cell.dataset.label = column;
+            tr.append(cell);
+          });
           tbody.append(tr);
         });
         node.append(thead, tbody);
@@ -315,12 +286,9 @@
         return ul;
       }
 
-      function openReader(record, push) {
+      function openReader(record) {
         const recordDate = displayDateFor(record);
-        if (recordDate && recordDate !== selectedDate) {
-          selectedDate = recordDate;
-          renderCalendar();
-        }
+        if (recordDate && recordDate !== selectedDate) return;
         renderList();
         listView.hidden = false;
         list.querySelectorAll('.edition-details').forEach((node) => node.remove());
@@ -353,26 +321,14 @@
           article.append(section);
         }
         button.after(article);
-        if (recordDate) selectedDate = recordDate;
-        if (push) updateUrl({ view:'daily', date:selectedDate, digest:record.id });
         document.title = `${record.title} · 股市分析`;
       }
 
-      function closeReader(push) {
-        if (push) updateUrl({ view:'daily', date:selectedDate, digest:null });
+      function closeReader() {
         document.title = '股市分析';
         list.querySelectorAll('.edition-details').forEach((node) => node.remove());
         list.querySelectorAll('.edition-card[aria-expanded="true"]').forEach((node) => node.setAttribute('aria-expanded', 'false'));
       }
-
-      window.addEventListener('popstate', () => {
-        const current = new URLSearchParams(window.location.search);
-        selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(current.get('date') || '') ? current.get('date') : today;
-        renderCalendar();
-        renderList();
-        const record = model.recordById(dataset.records, current.get('digest'));
-        if (record) openReader(record, false); else closeReader(false);
-      });
       const updateNetwork = () => {
         const node = document.getElementById('network-state');
         const online = navigator.onLine;
@@ -383,18 +339,8 @@
       window.addEventListener('offline', updateNetwork);
       updateNetwork();
 
-      const initial = model.recordById(dataset.records, query.get('digest'));
-      if (initial) {
-        if (displayDateFor(initial)) selectedDate = displayDateFor(initial);
-        renderCalendar();
-        renderList();
-        openReader(initial, false);
-      } else {
-        updateUrl({ view:'daily', date:selectedDate, digest:null }, 'replace');
-        renderCalendar();
-        renderList();
-        restoreScroll();
-      }
+      renderList();
+      restoreScroll();
     })();
   </script>
 </body>
