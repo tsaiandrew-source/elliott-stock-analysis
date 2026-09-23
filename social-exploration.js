@@ -1,160 +1,215 @@
 (() => {
   'use strict';
+
   const dataset = window.ELLIOTT_SOCIAL_EXPLORATION || { records:[], profiles:[], status:'BLOCKED' };
-  const state = { lane:'all', signal:'all', query:'', sort:'rank' };
-  const grid = document.getElementById('ticker-grid');
-  const empty = document.getElementById('empty-state');
+  const dashboard = document.getElementById('social-exploration-dashboard');
+  const tableBody = document.getElementById('ticker-table-body');
+  const emptyState = document.getElementById('empty-state');
   const resultCount = document.getElementById('result-count');
+  const resetButton = document.getElementById('reset-filters');
   const profileMap = new Map((dataset.profiles || []).map((profile) => [profile.id, profile]));
-  const text = (tag, value, className) => {
+  const state = { signal:'all', lane:'all', query:'', sort:'rank', direction:'asc', view:'decision' };
+  const sortLabels = { rank:'探索排名', close:'收市價', move:'今日變動', signal:'結構狀態', rsi:'RSI', volume:'相對量', position:'20日位置' };
+  const signalOrder = { positive:0, neutral:1, negative:2 };
+  const signalMeta = {
+    positive:{ label:'偏強', className:'positive' },
+    neutral:{ label:'觀望', className:'neutral' },
+    negative:{ label:'偏弱', className:'negative' }
+  };
+
+  const create = (tag, value, className) => {
     const element = document.createElement(tag);
-    element.textContent = value ?? '';
+    if (value !== undefined && value !== null) element.textContent = value;
     if (className) element.className = className;
     return element;
   };
-  const formatNumber = (value, digits = 2) => Number.isFinite(Number(value))
+  const safeUrl = (value) => {
+    try {
+      const url = new URL(value, location.href);
+      return url.protocol === 'https:' ? url.href : null;
+    } catch (_) {
+      return null;
+    }
+  };
+  const number = (value, digits = 2) => Number.isFinite(Number(value))
     ? new Intl.NumberFormat('en-US', { maximumFractionDigits:digits, minimumFractionDigits:digits }).format(Number(value))
     : '—';
-  const formatPercent = (value) => Number.isFinite(Number(value)) ? `${Number(value) >= 0 ? '+' : ''}${formatNumber(value)}%` : '—';
-  const safeUrl = (value) => { try { const url = new URL(value, location.href); return url.protocol === 'https:' ? url.href : null; } catch (_) { return null; } };
-  const signalMeta = {
-    positive:{ label:'↑ 結構偏強', className:'positive' },
-    neutral:{ label:'— 結構中性', className:'neutral' },
-    negative:{ label:'↓ 結構偏弱', className:'negative' }
-  };
+  const percent = (value) => Number.isFinite(Number(value)) ? `${Number(value) >= 0 ? '+' : ''}${number(value)}%` : '—';
+  const compact = (value) => Number.isFinite(Number(value))
+    ? new Intl.NumberFormat('en-US', { notation:'compact', maximumFractionDigits:1 }).format(Number(value))
+    : '—';
 
   function interpretation(record) {
-    if (record.freshness === 'unavailable') return '本次沒有可驗證的完成交易資料，暫不判讀。';
-    const base = record.signal === 'positive'
-      ? '收盤站上 EMA20／EMA50，RSI 同步偏強。'
-      : record.signal === 'negative'
-        ? '收盤低於 EMA20／EMA50，RSI 同步偏弱。'
-        : '價格、均線與 RSI 尚未形成一致方向。';
-    const heat = record.momentum === 'overbought' ? ' RSI 已進入過熱區，追價風險提高。' : record.momentum === 'oversold' ? ' RSI 已進入超賣區，仍需價格確認。' : '';
-    const volume = Number(record.relativeVolume20) >= 1.5 ? ` 相對量 ${formatNumber(record.relativeVolume20)}×，今日訊號較值得留意。` : '';
-    return `${base}${heat}${volume}`;
+    if (record.freshness === 'unavailable') return '沒有可驗證的完成交易資料，暫不判讀。';
+    if (record.signal === 'positive') return '收盤高於 EMA20／EMA50，RSI 同步偏強。';
+    if (record.signal === 'negative') return '收盤低於 EMA20／EMA50，RSI 同步偏弱。';
+    return '價格、均線與 RSI 尚未形成一致方向。';
   }
 
-  function detailItem(label, value) {
-    const wrapper = document.createElement('div');
-    wrapper.append(text('dt', label), text('dd', value));
-    return wrapper;
+  function momentumText(record) {
+    const labels = { overbought:'超買／過熱', strong:'偏強', neutral:'中性', weak:'偏弱', oversold:'超賣' };
+    const condition = record.rsi14 == null ? 'RSI 待補' : `RSI ${number(record.rsi14, 1)}`;
+    const ema = record.ema20 == null || record.ema50 == null ? 'EMA 待補' : `EMA20 ${number(record.ema20)} · EMA50 ${number(record.ema50)}`;
+    return { label:labels[record.momentum] || '中性', note:`${condition} · ${ema}` };
   }
 
-  function card(record) {
-    const article = document.createElement('article');
-    article.className = `ticker-card signal-${record.signal || 'neutral'}${record.freshness === 'current' ? '' : ' is-stale'}`;
-    article.dataset.ticker = record.ticker;
-    const main = text('div', '', 'card-main');
-    const head = text('div', '', 'card-head');
-    const identity = text('div', '', 'identity');
-    const names = document.createElement('div');
-    names.append(text('strong', record.ticker), text('small', record.company));
-    identity.append(text('span', `#${record.rank}`, 'rank'), names);
-    head.append(identity, text('span', record.lane, `lane-badge ${record.lane}`));
-    const priceRow = text('div', '', 'price-row');
-    const priceBlock = document.createElement('div');
-    priceBlock.append(text('div', record.close == null ? '—' : `$${formatNumber(record.close)}`, 'price'));
-    const direction = Number(record.dayChangePct) > 0 ? 'up' : Number(record.dayChangePct) < 0 ? 'down' : 'flat';
-    priceBlock.append(text('div', formatPercent(record.dayChangePct), `change ${direction}`));
-    const meta = signalMeta[record.signal] || signalMeta.neutral;
-    priceRow.append(priceBlock, text('span', meta.label, `signal-label ${meta.className}`));
-    const metrics = text('div', '', 'metric-grid');
-    [['RSI 14',formatNumber(record.rsi14,1)],['相對量',record.relativeVolume20 == null ? '—' : `${formatNumber(record.relativeVolume20)}×`],['20日位置',record.rangePosition20 == null ? '—' : `${formatNumber(record.rangePosition20,0)}%`]].forEach(([label,value]) => {
-      const item = text('div', '', 'metric'); item.append(text('span', label), text('strong', value)); metrics.append(item);
-    });
-    const profileCount = Array.isArray(record.profileIds) ? record.profileIds.length : 0;
-    main.append(head, priceRow, text('span', interpretation(record), 'interpretation'), metrics, text('p', `來源帳號：${profileCount} 個${profileCount === 1 ? ' · 單一來源，不代表共識' : ' · 跨來源提及'}`, 'profile-note'));
-    const details = document.createElement('details');
-    details.className = 'card-details';
-    details.append(text('summary', '展開完整資料'));
-    const detailBody = text('div', '', 'detail-body');
-    const dl = text('dl', '', 'detail-list');
-    dl.append(
-      detailItem('資料日期', record.dataThrough || '—'),
-      detailItem('EMA 20', record.ema20 == null ? '—' : `$${formatNumber(record.ema20)}`),
-      detailItem('EMA 50', record.ema50 == null ? '—' : `$${formatNumber(record.ema50)}`),
-      detailItem('20 日高點', record.high20 == null ? '—' : `$${formatNumber(record.high20)}`),
-      detailItem('20 日低點', record.low20 == null ? '—' : `$${formatNumber(record.low20)}`),
-      detailItem('平均量', record.averageVolume20 == null ? '—' : new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(record.averageVolume20))
-    );
-    detailBody.append(dl);
-    const links = text('div', '', 'profile-links');
-    (record.profileIds || []).forEach((id) => {
+  function appendCell(row, label, children, className = '') {
+    const cell = document.createElement('td');
+    cell.dataset.label = label;
+    if (className) cell.className = className;
+    for (const child of Array.isArray(children) ? children : [children]) if (child) cell.append(child);
+    row.append(cell);
+    return cell;
+  }
+
+  function buildRow(record) {
+    const row = document.createElement('tr');
+    row.dataset.ticker = record.ticker;
+    const meta = record.freshness === 'unavailable'
+      ? { label:'資料待補', className:'unavailable' }
+      : (signalMeta[record.signal] || signalMeta.neutral);
+    const moveClass = Number(record.dayChangePct) > 0 ? 'move-up' : Number(record.dayChangePct) < 0 ? 'move-down' : '';
+    const momentum = momentumText(record);
+
+    appendCell(row, '股票代號', [create('span', record.ticker, 'ticker-main'), create('span', `#${record.rank} · ${record.company}`, 'cell-note')]);
+    appendCell(row, '收市價', [create('span', record.close == null ? '—' : `$${number(record.close)}`, 'ticker-main'), create('span', record.dataThrough || '—', 'cell-note')], 'numeric');
+    appendCell(row, '今日變動', [create('span', percent(record.dayChangePct), `ticker-main ${moveClass}`), create('span', `前收 $${number(record.previousClose)}`, 'cell-note')], 'numeric');
+    appendCell(row, '結構判讀', [create('span', meta.label, `state-badge ${meta.className}`), create('span', interpretation(record), 'cell-note')]);
+    appendCell(row, 'RSI／動能', [create('span', momentum.label, 'ticker-main'), create('span', momentum.note, 'cell-note')]);
+    appendCell(row, '相對量', [create('span', record.relativeVolume20 == null ? '—' : `${number(record.relativeVolume20)}×`, 'ticker-main'), create('span', `20日均量 ${compact(record.averageVolume20)}`, 'cell-note')], 'full-only');
+    appendCell(row, '20日位置', [create('span', record.rangePosition20 == null ? '—' : `${number(record.rangePosition20, 0)}%`, 'ticker-main'), create('span', `$${number(record.low20)}–$${number(record.high20)}`, 'cell-note')], 'full-only');
+
+    const sourceCell = document.createElement('div');
+    sourceCell.append(create('span', `${(record.profileIds || []).length} 個來源`, 'ticker-main'), create('span', record.lane, 'lane-label'));
+    const links = create('div', null, 'source-links');
+    for (const id of record.profileIds || []) {
       const profile = profileMap.get(id);
       const href = safeUrl(profile?.url);
-      if (!profile || !href) return;
-      const anchor = text('a', profile.label); anchor.href = href; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; links.append(anchor);
-    });
-    if (links.children.length) detailBody.append(links);
-    const marketHref = safeUrl(record.sourceUrl);
-    if (marketHref) { const link = text('a', 'Nasdaq 完成交易資料', 'market-source'); link.href = marketHref; link.target = '_blank'; link.rel = 'noopener noreferrer'; detailBody.append(link); }
-    if (record.freshness !== 'current') detailBody.append(text('p', `資料狀態：${record.freshness || 'unavailable'}${record.error ? ` · ${record.error}` : ''}`, 'freshness-warning'));
-    details.append(detailBody);
-    article.append(main, details);
-    return article;
+      if (!profile || !href) continue;
+      const link = create('a', profile.label);
+      link.href = href;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      links.append(link);
+    }
+    if (links.children.length) sourceCell.append(links);
+    appendCell(row, '來源／組別', sourceCell);
+    return row;
   }
 
-  function filteredRecords() {
+  function compare(a, b) {
+    const direction = state.direction === 'asc' ? 1 : -1;
+    let left;
+    let right;
+    if (state.sort === 'rank') { left = Number(a.rank); right = Number(b.rank); }
+    else if (state.sort === 'close') { left = Number(a.close); right = Number(b.close); }
+    else if (state.sort === 'move') { left = Number(a.dayChangePct); right = Number(b.dayChangePct); }
+    else if (state.sort === 'signal') { left = signalOrder[a.signal] ?? 9; right = signalOrder[b.signal] ?? 9; }
+    else if (state.sort === 'rsi') { left = Number(a.rsi14); right = Number(b.rsi14); }
+    else if (state.sort === 'volume') { left = Number(a.relativeVolume20); right = Number(b.relativeVolume20); }
+    else { left = Number(a.rangePosition20); right = Number(b.rangePosition20); }
+    if (!Number.isFinite(left)) left = -Infinity;
+    if (!Number.isFinite(right)) right = -Infinity;
+    if (left === right) return Number(a.rank) - Number(b.rank);
+    return (left - right) * direction;
+  }
+
+  function visibleRecords() {
     const query = state.query.trim().toUpperCase();
-    const rows = (dataset.records || []).filter((record) => {
-      if (state.lane !== 'all' && record.lane !== state.lane) return false;
+    return [...(dataset.records || [])].filter((record) => {
       if (state.signal !== 'all' && record.signal !== state.signal) return false;
+      if (state.lane !== 'all' && record.lane !== state.lane) return false;
       return !query || `${record.ticker} ${record.company}`.toUpperCase().includes(query);
-    });
-    return rows.sort((a, b) => {
-      if (state.sort === 'move') return (Number(b.dayChangePct) || -Infinity) - (Number(a.dayChangePct) || -Infinity);
-      if (state.sort === 'rsi') return (Number(b.rsi14) || -Infinity) - (Number(a.rsi14) || -Infinity);
-      return Number(a.rank) - Number(b.rank);
-    });
+    }).sort(compare);
+  }
+
+  function updateResetState() {
+    resetButton.disabled = state.signal === 'all' && state.lane === 'all' && !state.query;
   }
 
   function render() {
-    const rows = filteredRecords();
-    grid.replaceChildren(...rows.map(card));
-    empty.hidden = rows.length > 0;
-    resultCount.textContent = `顯示 ${rows.length}／${(dataset.records || []).length} 檔`;
+    const records = visibleRecords();
+    tableBody.replaceChildren(...records.map(buildRow));
+    emptyState.hidden = records.length > 0;
+    document.querySelector('.table-shell').hidden = records.length === 0;
+    resultCount.textContent = `顯示 ${records.length}／${(dataset.records || []).length} 檔`;
+    document.getElementById('sort-status').textContent = `目前排序：${sortLabels[state.sort]}${state.direction === 'desc' ? '（高至低）' : ''}`;
+    updateResetState();
   }
 
   function updateSummary() {
     const records = dataset.records || [];
-    const current = records.filter((record) => record.freshness === 'current');
-    const up = current.filter((record) => Number(record.dayChangePct) > 0).length;
-    const down = current.filter((record) => Number(record.dayChangePct) < 0).length;
-    const positive = current.filter((record) => record.signal === 'positive').length;
-    const leader = [...current].sort((a, b) => Number(b.dayChangePct) - Number(a.dayChangePct))[0];
-    document.getElementById('available-count').textContent = `${current.length}／${records.length}`;
-    document.getElementById('breadth-count').textContent = `${up}／${down}`;
-    document.getElementById('positive-count').textContent = String(positive);
-    document.getElementById('leader-ticker').textContent = leader?.ticker || '—';
-    document.getElementById('leader-change').textContent = leader ? formatPercent(leader.dayChangePct) : '等待資料';
-    const status = document.querySelector('.system-status');
-    status.classList.add(dataset.status === 'PASS' ? 'is-pass' : dataset.status === 'BLOCKED' ? 'is-blocked' : 'is-partial');
-    document.getElementById('data-status').textContent = dataset.status === 'PASS' ? '資料完整' : dataset.status === 'PARTIAL_PASS' ? '部分資料可用' : '資料尚未完成';
-    document.getElementById('data-cutoff').textContent = `完成交易資料截至 ${dataset.dataThrough || '—'} · 更新 ${new Intl.DateTimeFormat('zh-TW',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Los_Angeles'}).format(new Date(dataset.generatedAt || Date.now()))}`;
+    const counts = {
+      positive:records.filter((record) => record.freshness !== 'unavailable' && record.signal === 'positive').length,
+      neutral:records.filter((record) => record.freshness !== 'unavailable' && record.signal === 'neutral').length,
+      negative:records.filter((record) => record.freshness !== 'unavailable' && record.signal === 'negative').length,
+      unavailable:records.filter((record) => record.freshness === 'unavailable').length
+    };
+    for (const key of ['positive','neutral','negative','unavailable']) document.getElementById(`${key}-count`).textContent = counts[key];
+    for (const key of ['positive','neutral','negative']) document.getElementById(`filter-${key}-count`).textContent = counts[key];
+    const freshness = document.querySelector('.freshness');
+    freshness.classList.add(dataset.status === 'PASS' ? 'is-pass' : dataset.status === 'BLOCKED' ? 'is-blocked' : 'is-partial');
+    document.getElementById('data-status').textContent = dataset.status === 'PASS' ? '技術資料完整' : dataset.status === 'PARTIAL_PASS' ? '部分資料可用' : '資料尚未完成';
+    document.getElementById('data-cutoff').textContent = `${dataset.dataThrough || '—'} 正式收盤；20 檔核對 ${records.filter((record) => record.freshness === 'current').length} 檔`;
     document.getElementById('source-disclosure').textContent = dataset.sourceDisclosure || '';
   }
 
   function renderProfiles() {
-    const profileGrid = document.getElementById('profile-grid');
-    (dataset.profiles || []).forEach((profile) => {
+    const grid = document.getElementById('profile-grid');
+    const items = (dataset.profiles || []).map((profile) => {
       const href = safeUrl(profile.url);
-      const item = text(href ? 'a' : 'div', '', `profile-item${profile.accessState === 'readable_partial' ? ' partial' : ''}`);
+      const item = create(href ? 'a' : 'div', null, 'profile-item');
       if (href) { item.href = href; item.target = '_blank'; item.rel = 'noopener noreferrer'; }
-      item.append(text('strong', profile.label), text('span', `${profile.platform} · ${profile.accessState === 'readable_partial' ? '部分可讀' : '已追蹤'}`));
-      profileGrid.append(item);
+      item.append(create('strong', profile.label), create('span', `${profile.platform} · ${profile.accessState === 'readable_partial' ? '部分可讀' : '已追蹤'}`));
+      return item;
     });
+    grid.replaceChildren(...items);
   }
 
-  document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
-    const key = button.dataset.filter;
-    state[key] = button.dataset.value;
-    button.parentElement.querySelectorAll(`[data-filter="${key}"]`).forEach((peer) => {
-      const active = peer === button; peer.classList.toggle('is-active', active); peer.setAttribute('aria-pressed', String(active));
+  document.querySelectorAll('.filter-group').forEach((group) => {
+    const key = group.dataset.filter;
+    group.querySelectorAll('.filter-chip').forEach((button) => button.addEventListener('click', () => {
+      state[key] = button.dataset.value;
+      group.querySelectorAll('.filter-chip').forEach((peer) => {
+        const active = peer === button;
+        peer.classList.toggle('is-active', active);
+        peer.setAttribute('aria-pressed', String(active));
+      });
+      render();
+    }));
+  });
+
+  document.querySelectorAll('.mode-button').forEach((button) => button.addEventListener('click', () => {
+    state.view = button.dataset.view;
+    dashboard.classList.toggle('view-decision', state.view === 'decision');
+    dashboard.classList.toggle('view-full', state.view === 'full');
+    document.querySelectorAll('.mode-button').forEach((peer) => {
+      const active = peer === button;
+      peer.classList.toggle('is-active', active);
+      peer.setAttribute('aria-pressed', String(active));
     });
+  }));
+
+  document.querySelectorAll('[data-sort]').forEach((button) => button.addEventListener('click', () => {
+    const next = button.dataset.sort;
+    if (state.sort === next) state.direction = state.direction === 'asc' ? 'desc' : 'asc';
+    else { state.sort = next; state.direction = next === 'rank' ? 'asc' : 'desc'; }
     render();
   }));
+
   document.getElementById('ticker-search').addEventListener('input', (event) => { state.query = event.target.value; render(); });
-  document.getElementById('sort-order').addEventListener('change', (event) => { state.sort = event.target.value; render(); });
-  updateSummary(); renderProfiles(); render();
+  resetButton.addEventListener('click', () => {
+    state.signal = 'all'; state.lane = 'all'; state.query = '';
+    document.getElementById('ticker-search').value = '';
+    document.querySelectorAll('.filter-group').forEach((group) => group.querySelectorAll('.filter-chip').forEach((button) => {
+      const active = button.dataset.value === 'all';
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    }));
+    render();
+  });
+
+  updateSummary();
+  renderProfiles();
+  render();
 })();

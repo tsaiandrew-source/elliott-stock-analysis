@@ -34,8 +34,9 @@ const js = await read('social-exploration.js');
 for (const marker of ['viewport-fit=cover', 'safe-area-inset-top', 'safe-area-inset-right', 'safe-area-inset-left', '100dvh']) {
   if (!`${html}\n${css}`.includes(marker)) failures.push(`mobile layout missing ${marker}`);
 }
-for (const marker of ['min-height:44px', '@media (min-width:700px)', 'prefers-reduced-motion']) if (!css.includes(marker)) failures.push(`responsive/accessibility CSS missing ${marker}`);
-for (const marker of ['aria-live="polite"', 'aria-pressed="true"', 'visually-hidden']) if (!html.includes(marker)) failures.push(`accessible interaction missing ${marker}`);
+for (const marker of ['min-height:44px', '@media (max-width:680px)', 'td::before', 'prefers-reduced-motion']) if (!css.includes(marker)) failures.push(`responsive/accessibility CSS missing ${marker}`);
+for (const marker of ['aria-live="polite"', 'aria-pressed="true"', 'data-view="decision"', 'data-sort="signal"']) if (!html.includes(marker)) failures.push(`accessible interaction missing ${marker}`);
+if (html.includes('shared-menu.css') || html.includes('<elliott-shared-menu')) failures.push('standalone decision reader must not mount the app navigation dock');
 for (const marker of ['textContent', 'safeUrl', 'freshness', 'interpretation']) if (!js.includes(marker)) failures.push(`safe reader behavior missing ${marker}`);
 if (/innerHTML|document\.write/.test(js)) failures.push('page renderer must not inject dataset HTML');
 if (!dataset.dataThrough || !/^\d{4}-\d{2}-\d{2}$/.test(dataset.dataThrough)) failures.push('daily dataset dataThrough is invalid');

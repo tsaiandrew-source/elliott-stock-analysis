@@ -5,19 +5,21 @@ Exploration roster independently from Universal Refresh.
 
 ## UX contract
 
-The information architecture follows the existing Moomoo Patterns reader:
-summary first, obvious filters, compact ticker cards and expandable supporting
-detail. The implementation also applies the Nielsen Norman Group UX basics used
-for this page:
+The information architecture now directly follows the existing Moomoo Patterns
+decision reader: compact title and freshness, inline status totals, one control
+panel, decision/full-analysis modes and a sortable analysis table. The prior
+large hero, navigation dock, status banner and four summary cards are not part
+of this page. The implementation also applies the Nielsen Norman Group UX
+basics used for this page:
 
 - communication before decoration;
 - clear system status and completed-session cutoff;
 - recognition over recall through persistent labels and visible filter state;
-- progressive disclosure, with the daily change visible before indicator and
-  source detail;
+- progressive disclosure through decision and full-analysis views;
 - limited choices tied to real tasks: lane, technical state, search and sort;
 - touch targets of at least 44px, safe-area handling and no hover-only control;
-- iPhone single-column and iPad two-column layouts;
+- responsive table-to-card conversion for iPhone and full-width table reading
+  on iPad;
 - color is always paired with arrows or text labels;
 - stale and unavailable data are explicit and never silently presented as live.
 
