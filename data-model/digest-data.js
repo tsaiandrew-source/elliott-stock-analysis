@@ -1,7 +1,271 @@
 window.ELLIOTT_CROSS_MARKET_DIGESTS = {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-23T18:56:36.196Z",
+  "generatedAt": "2026-09-23T23:20:04.940Z",
   "records": [
+    {
+      "id": "daily-2026-09-23-close",
+      "cadence": "daily",
+      "edition": "close",
+      "marketDate": "2026-09-23",
+      "publishedAt": "2026-09-23T16:05:00-07:00",
+      "timezone": "America/Los_Angeles",
+      "sourceCutoffAt": "2026-09-23T16:03:00-07:00",
+      "retrievedAt": "2026-09-23T16:04:00-07:00",
+      "status": "complete",
+      "revision": 1,
+      "title": "收盤綜合判讀｜2026-09-23",
+      "summary": "今天的核心不是單一油價反彈，而是「需求仍強、能源再升、聯準會仍須收緊」三者同時被確認。9月美國綜合PMI升至58.4，Barr明確表示進一步政策調整可能仍有必要，疲弱的5年期美債標售再放大賣壓；10年期殖利率收至約5.11%，創2007年以來新高。S&P 500跌0.75%、Nasdaq跌1.13%，而Brent升4.28%至103.50美元、美元升至近兩個月高點、黃金跌1.64%。市場以更高實質與名目利率定價，而不是典型避險。明日Trump–Xi會談若只延長停戰而缺少可執行承諾，未必足以抵銷油價與殖利率對估值的壓力。",
+      "sections": [
+        {
+          "heading": "1. 全日結論：強成長不再是純利多",
+          "paragraphs": [
+            "事實：S&P Global 9月美國綜合PMI由8月的56.0升至58.4，為2021年7月以來最高；新訂單升至58.2，投入價格指數由59.9跳至66.4。供應延遲與未完成訂單也同步上升。",
+            "判斷：市場把這份資料解讀成需求過熱與供給瓶頸並存，而不是無通膨的成長。企業營收動能仍強，但折現率與投入成本上升，對高估值資產的壓力更直接。信心：高。",
+            "反證：後續硬資料顯示PMI高估實際需求，且投入價格、能源與供應延遲迅速回落。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美國PMI",
+              "url": "https://www.marketscreener.com/news/us-business-activity-at-more-than-five-year-high-inflation-pressures-building-ce785ad9de88f325"
+            },
+            {
+              "label": "Reuters跨資產收盤",
+              "url": "https://www.marketscreener.com/news/asia-stocks-ride-tech-wave-higher-oil-slips-again-ce785ad9db8df226"
+            }
+          ]
+        },
+        {
+          "heading": "2. 債市升級：5%不再只是心理關卡",
+          "paragraphs": [
+            "事實：2年期美債殖利率升11.4個基點至4.891%，10年期升13.89個基點至5.106%，為2007年以來最高，也是2025年4月以來最大單日升幅；700億美元5年期標售需求疲弱，得標殖利率為2007年以來最高。",
+            "判斷：午間的5%突破在收盤獲得確認，而且壓力同時來自Fed路徑、通膨與國債需求。長久期科技、房地產、公用事業與高槓桿企業的估值門檻進一步提高。信心：高。",
+            "反證：10年期快速跌回5%下方、後續標售需求改善，且10月升息機率明顯回落。"
+          ],
+          "links": [
+            {
+              "label": "Reuters債券與市場收盤",
+              "url": "https://www.marketscreener.com/news/asia-stocks-ride-tech-wave-higher-oil-slips-again-ce785ad9db8df226"
+            },
+            {
+              "label": "Fed Barr住房與政策演講",
+              "url": "https://www.federalreserve.gov/newsevents/speech/barr20260923a.htm"
+            }
+          ]
+        },
+        {
+          "heading": "3. 聯準會訊號與市場定價同向",
+          "paragraphs": [
+            "事實：Barr表示通膨高於2%且未明確及時回落；他支持上週升息，並認為基準情境下可能仍需進一步政策調整。聯邦基金期貨對10月升息的估計機率由資料前約53%升至約66%至75%。",
+            "判斷：今天不是市場單方面挑戰Fed，而是官方表述、強PMI與價格壓力互相確認。「更高更久」已轉為「仍可能繼續升息」。信心：高。",
+            "反證：後續Fed官員明確反對再升息，或勞動與通膨資料快速轉弱。"
+          ],
+          "links": [
+            {
+              "label": "Fed Barr原文",
+              "url": "https://www.federalreserve.gov/newsevents/speech/barr20260923a.htm"
+            },
+            {
+              "label": "Reuters美元與Fed定價",
+              "url": "https://uk.marketscreener.com/news/dollar-jumps-to-near-two-month-high-on-fed-outlook-oil-climb-ce785ad9d188f026"
+            }
+          ]
+        },
+        {
+          "heading": "4. 油價反彈推翻早前的通膨喘息",
+          "paragraphs": [
+            "事實：WTI上漲2.3%至92.60美元，Brent上漲4.28%至103.50美元。伊朗官員表示，條件未獲滿足前不會重開霍爾木茲海峽，也不會談判；同日EIA資料顯示，包含戰略石油儲備在內的美國原油庫存增加260萬桶。",
+            "判斷：庫存增加不足以壓過地緣與航道風險，顯示現貨供應安全仍是主導變數。能源股相對受益，航空、運輸、零售與其他利率敏感產業承受成本與折現率雙重壓力。信心：高。",
+            "反證：美伊談判取得可驗證進展、霍爾木茲通行改善，且Brent重新跌回100美元以下。"
+          ],
+          "links": [
+            {
+              "label": "Reuters跨資產收盤",
+              "url": "https://www.marketscreener.com/news/asia-stocks-ride-tech-wave-higher-oil-slips-again-ce785ad9db8df226"
+            },
+            {
+              "label": "EIA每週石油報告",
+              "url": "https://www.eia.gov/petroleum/supply/weekly/index.php"
+            },
+            {
+              "label": "午間EIA與市場資料",
+              "url": "https://finance.yahoo.com/markets/stocks/articles/us-equity-indexes-fall-midday-175045108.html"
+            }
+          ]
+        },
+        {
+          "heading": "5. 股市不是恐慌，但估值壓力已全面化",
+          "paragraphs": [
+            "事實：S&P 500跌0.75%、Nasdaq跌1.13%、Dow跌0.68%；11個S&P產業中有7個下跌，金融跌1.68%、通訊服務跌約0.8%。Nasdaq在前兩日創收盤新高後明顯回落，Alphabet跌3.5%、Amazon跌2.4%、費城半導體指數跌1.4%。",
+            "判斷：跌勢仍有產業分化，能源上漲約1%、Meta逆勢升2.3%，所以尚非無差別去槓桿；但科技不再能抵銷利率衝擊，市場寬度與新高／新低結構惡化。信心：中高。",
+            "反證：科技與等權重指數同步反彈、信用與波動率保持穩定，且S&P 500收復今日跌幅。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美股收盤",
+              "url": "https://www.marketscreener.com/news/wall-street-falls-as-oil-prices-treasury-yields-rise-ce785ad9d180fe2d"
+            },
+            {
+              "label": "主要指數收盤",
+              "url": "https://finance.yahoo.com/markets/world-indices/articles/major-us-stock-indexes-fared-201246183.html"
+            }
+          ]
+        },
+        {
+          "heading": "6. 美元與黃金確認：今天是利率交易，不是避險交易",
+          "paragraphs": [
+            "事實：美元指數升0.54%至101.09，觸及7月29日以來高點；歐元跌至約1.1386美元，美元兌日圓升至158.32。現貨黃金跌1.64%至約4,283美元，美國12月黃金期貨收跌1.3%。",
+            "判斷：若市場主要交易地緣恐慌，美元與黃金通常可能同強；今天黃金反而下跌，顯示實質利率與Fed緊縮預期壓過傳統避險需求。信心：高。",
+            "反證：地緣風險升級後黃金與美元重新同步上漲，而長債殖利率回落。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美元收盤",
+              "url": "https://uk.marketscreener.com/news/dollar-jumps-to-near-two-month-high-on-fed-outlook-oil-climb-ce785ad9d188f026"
+            },
+            {
+              "label": "Reuters黃金收盤",
+              "url": "https://ca.marketscreener.com/news/gold-loses-shine-as-rate-hike-bets-foster-a-stronger-dollar-ce785ad9df81ff22"
+            }
+          ]
+        },
+        {
+          "heading": "7. 美中訊號改善，但尚不足以成為估值解藥",
+          "paragraphs": [
+            "事實：Bessent表示，美方願意延長11月10日到期的美中貿易停戰，或研究更廣泛協議；他形容與何立峰的會談具實質性，Trump與Xi預計週四繼續討論貿易、AI與其他戰略議題。",
+            "判斷：這降低短期關稅再升級的尾端風險，但在缺少可執行條款前，仍不足以抵銷油價、殖利率與Fed路徑對市場的壓力。信心：中。",
+            "反證：峰會產生明確的關稅、稀土、AI或投資執行協議，並使殖利率與風險溢價同步回落。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美中會談",
+              "url": "https://www.investing.com/news/stock-market-news/us-treasurys-bessent-chinas-he-to-meet-on-unfinished-business-before-trumpxi-summit-4913529"
+            },
+            {
+              "label": "AP峰會背景",
+              "url": "https://apnews.com/article/e560910c897fedb0448eda4cdbfdbaea"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產溫度表",
+          "table": {
+            "columns": [
+              "資產",
+              "狀態",
+              "收盤判讀"
+            ],
+            "rows": [
+              [
+                "美股大盤",
+                "偏弱",
+                "折現率上升，Nasdaq領跌"
+              ],
+              [
+                "能源股",
+                "相對強",
+                "油價與航道風險支撐"
+              ],
+              [
+                "長天期美債",
+                "明顯偏弱",
+                "10年期5.106%，技術關卡失守"
+              ],
+              [
+                "美元",
+                "偏強",
+                "近兩個月高點，Fed路徑主導"
+              ],
+              [
+                "原油",
+                "偏熱",
+                "Brent重返103.50美元"
+              ],
+              [
+                "黃金",
+                "偏弱",
+                "高實質利率壓過避險"
+              ],
+              [
+                "信用債",
+                "無足夠訊號",
+                "未取得可靠收盤擴散證據"
+              ],
+              [
+                "加密資產",
+                "無足夠訊號",
+                "不以早盤價格硬補方向"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "明日展望｜9月24日（週四）",
+          "paragraphs": [
+            "最重要催化是Trump–Xi會談。市場將檢驗貿易停戰能否延長，以及關稅、稀土、AI安全與投資是否出現可執行承諾。",
+            "05:30 PT／08:30 ET公布每週初領失業金；07:00 PT／10:00 ET公布8月新屋銷售。John Williams於01:10 PT／04:10 ET參與討論，Cleveland Fed的通膨會議於05:50 PT／08:50 ET開場。",
+            "基準路徑：峰會提供穩定訊號但缺少突破；10年期在5%以上高檔震盪，股市延續產業分化。",
+            "偏強路徑：美中形成可驗證協議，加上油價回落與失業申請走弱以外的溫和降溫；美元與殖利率回吐，科技與小型股修復。",
+            "偏弱路徑：美伊僵局推升油價，美中會談又缺乏成果；10年期續創高點，信用與波動率加入避險，行情才由估值調整升級為金融條件衝擊。"
+          ],
+          "links": [
+            {
+              "label": "紐約聯準銀行9月經濟日曆",
+              "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+            },
+            {
+              "label": "紐約聯準銀行活動",
+              "url": "https://www.newyorkfed.org/press"
+            },
+            {
+              "label": "Cleveland Fed通膨會議",
+              "url": "https://www.clevelandfed.org/events/ev-20260924-inflation-drivers-and-dynamics-conference-2026"
+            },
+            {
+              "label": "AP峰會背景",
+              "url": "https://apnews.com/article/8488ef4c2944d348193f441199179ae6"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "Reuters跨資產收盤",
+          "url": "https://www.marketscreener.com/news/asia-stocks-ride-tech-wave-higher-oil-slips-again-ce785ad9db8df226"
+        },
+        {
+          "label": "Reuters美股收盤",
+          "url": "https://www.marketscreener.com/news/wall-street-falls-as-oil-prices-treasury-yields-rise-ce785ad9d180fe2d"
+        },
+        {
+          "label": "Reuters美國PMI",
+          "url": "https://www.marketscreener.com/news/us-business-activity-at-more-than-five-year-high-inflation-pressures-building-ce785ad9de88f325"
+        },
+        {
+          "label": "Fed Barr原文",
+          "url": "https://www.federalreserve.gov/newsevents/speech/barr20260923a.htm"
+        },
+        {
+          "label": "EIA每週石油報告",
+          "url": "https://www.eia.gov/petroleum/supply/weekly/index.php"
+        },
+        {
+          "label": "Reuters美元收盤",
+          "url": "https://uk.marketscreener.com/news/dollar-jumps-to-near-two-month-high-on-fed-outlook-oil-climb-ce785ad9d188f026"
+        },
+        {
+          "label": "Reuters黃金收盤",
+          "url": "https://ca.marketscreener.com/news/gold-loses-shine-as-rate-hike-bets-foster-a-stronger-dollar-ce785ad9df81ff22"
+        },
+        {
+          "label": "Reuters美中會談",
+          "url": "https://www.investing.com/news/stock-market-news/us-treasurys-bessent-chinas-he-to-meet-on-unfinished-business-before-trumpxi-summit-4913529"
+        },
+        {
+          "label": "紐約聯準銀行9月經濟日曆",
+          "url": "https://www.newyorkfed.org/research/calendars/i-sep26.html"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-23-midday",
       "cadence": "daily",
