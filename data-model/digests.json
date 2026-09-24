@@ -1,7 +1,269 @@
 {
   "schemaVersion": "elliott-cross-market-digest-v1",
-  "generatedAt": "2026-09-23T23:20:04.940Z",
+  "generatedAt": "2026-09-24T18:50:06.191Z",
   "records": [
+    {
+      "id": "daily-2026-09-24-midday",
+      "cadence": "daily",
+      "edition": "midday",
+      "status": "complete",
+      "revision": 1,
+      "marketDate": "2026-09-24",
+      "timezone": "America/Los_Angeles",
+      "publishedAt": "2026-09-24T11:35:00-07:00",
+      "sourceCutoffAt": "2026-09-24T11:34:30-07:00",
+      "retrievedAt": "2026-09-24T11:34:50-07:00",
+      "title": "午間訊號｜2026-09-24",
+      "summary": "晨間的油價與長債警報得到確認，但股市沒有同步惡化。新公布的失業救濟申請與新屋銷售均強於預期，加上Fed官員維持鷹派，使10年期殖利率升至約5.16%、Brent升至106美元附近；然而S&P 500由開盤跌約0.5%收復至接近平盤。午間組合是「成長韌性延後寬鬆、能源抬高通膨尾部風險」，目前仍屬估值與產業再分配，尚未確認流動性事件。",
+      "sections": [
+        {
+          "heading": "1. 新確認：勞動市場沒有提供Fed退讓的理由",
+          "paragraphs": [
+            "事實：截至9月19日當週，初領失業救濟為19.7萬人，低於市場約20.1萬人的預期，也較前週修正後的19.8萬人下降；續領人數為171.9萬人，低於市場約174.5萬人的預期。",
+            "判斷：這不是就業重新加速的完整證據，但足以否定晨間可能出現的勞動市場快速轉弱情境。通膨仍高時，低裁員讓Fed更有空間維持或追加緊縮。信心：高。",
+            "反證：未來數週初領與續領同步上升，且就業、工時與薪資資料確認需求快速降溫。"
+          ],
+          "links": [
+            {
+              "label": "美國勞工部失業救濟週報",
+              "url": "https://www.dol.gov/ui/data.pdf"
+            },
+            {
+              "label": "Reuters市場更新",
+              "url": "https://www.fidelity.com/news/article/top-news/202609240626RTRSNEWSCOMBINED_KBN3VA14N-OUSBS_1"
+            }
+          ]
+        },
+        {
+          "heading": "2. 新屋銷售反彈，但價格透露購買力仍受壓",
+          "paragraphs": [
+            "事實：8月新屋銷售年率為68.4萬戶，較7月修正後的64.3萬戶增加6.4%，高於市場約61.5萬戶的預期。待售新屋維持48.3萬戶，供應為8.5個月；中位售價39.37萬美元，較去年同期低5.8%。",
+            "判斷：成交量韌性支持經濟活動，卻也讓長端利率更難因成長恐慌而下滑。價格年減與偏高庫存同時顯示，建商仍需用價格或優惠換取成交；住房不是重新過熱，而是高利率下的量價分化。信心：高。",
+            "反證：後續銷售被大幅下修、庫存月份重新上升，而且房貸利率上行令合約取消率提高。"
+          ],
+          "links": [
+            {
+              "label": "美國人口普查局新屋銷售",
+              "url": "https://www.census.gov/construction/nrs/pdf/newressales_202608.pdf"
+            }
+          ]
+        },
+        {
+          "heading": "3. 油價較晨間再升，能源通膨重新成為主導風險",
+          "paragraphs": [
+            "事實：午間Brent約106.38美元、較前收高約3.2%；WTI約94.47美元、漲約2.5%。Reuters指出，中東停火前景仍不明朗，美伊立場差距使供應溢價重新擴大。",
+            "判斷：晨間曾出現的油價降溫沒有延續。能源股相對受益，但航空、運輸、低毛利零售與長久期資產承受成本與折現率雙重壓力。信心：高。",
+            "反證：Brent跌回100美元以下，且停火、霍爾木茲通行與航運保險費出現可驗證改善。"
+          ],
+          "links": [
+            {
+              "label": "Reuters全球市場",
+              "url": "https://www.marketscreener.com/news/bonds-shaky-oil-eases-off-highs-amid-trade-peace-talks-ce785adedb8ff722"
+            },
+            {
+              "label": "Yahoo Finance Brent",
+              "url": "https://finance.yahoo.com/quote/BZ=F/"
+            },
+            {
+              "label": "Yahoo Finance WTI",
+              "url": "https://finance.yahoo.com/quote/CL=F/"
+            }
+          ]
+        },
+        {
+          "heading": "4. 長債更弱，Fed訊號把「更高更久」推向「可能再升一次」",
+          "paragraphs": [
+            "事實：10年期美債殖利率午間約5.16%，較前收高近5個基點。紐約Fed總裁Williams表示，今年內再升息一次是合理情境；Cleveland Fed總裁Hammack則警告，連續供應衝擊可能讓通膨心態固化。",
+            "判斷：失業救濟、新屋銷售與官員談話方向一致：目前政策風險仍偏鷹。殖利率上升不只是油價反應，也包含市場對需求韌性與政策利率路徑的重新定價。信心：高。",
+            "反證：10年期回落至5%以下，Fed官員轉而強調成長下行，而且通膨預期與能源價格同步下降。"
+          ],
+          "links": [
+            {
+              "label": "Reuters Williams談話",
+              "url": "https://www.marketscreener.com/news/fed-s-williams-says-it-is-reasonable-to-see-another-us-rate-hike-this-year-ce785adedd8efe26"
+            },
+            {
+              "label": "Cleveland Fed會議",
+              "url": "https://www.clevelandfed.org/events/ev-20260924-inflation-drivers-and-dynamics-conference-2026"
+            },
+            {
+              "label": "Hammack市場報導",
+              "url": "https://finance.yahoo.com/video/feds-hammack-says-shocks-risk-143220257.html"
+            },
+            {
+              "label": "Yahoo Finance 10年期殖利率",
+              "url": "https://finance.yahoo.com/quote/%5ETNX/"
+            }
+          ]
+        },
+        {
+          "heading": "5. 股票收復開盤跌幅，否定恐慌但沒有否定壓力",
+          "paragraphs": [
+            "事實：美股開盤時S&P 500約跌0.5%、Nasdaq約跌0.75%；截至午間，S&P 500已收復至接近平盤，Nasdaq約跌0.1%，道瓊約跌0.3%。VIX早盤雖上升，仍未顯示無差別拋售。",
+            "判斷：股票願意吸收5%以上的10年期殖利率與106美元油價，顯示企業獲利與AI主線仍提供承接；但反彈沒有長債確認，因此較像部位調整，而非金融條件改善。信心：中高。",
+            "反證：下午市場寬度、信用利差與VIX同步惡化，且Nasdaq重新跌破早盤低點。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美股開盤",
+              "url": "https://www.fidelity.com/news/article/us-markets/202609240932RTRSNEWSCOMBINED_L4N45G14X_1"
+            },
+            {
+              "label": "Yahoo Finance S&P 500",
+              "url": "https://finance.yahoo.com/quote/%5EGSPC/"
+            },
+            {
+              "label": "Yahoo Finance Nasdaq",
+              "url": "https://finance.yahoo.com/quote/%5EIXIC/"
+            }
+          ]
+        },
+        {
+          "heading": "6. 美中休戰延長降低尾部風險，但午間尚無更大的可執行成果",
+          "paragraphs": [
+            "事實：美中已同意把貿易休戰延長至1月10日；Trump與習近平的會談正在進行，議題涵蓋貿易、AI、台灣與伊朗。截至截稿，尚未取得足以改變關稅、科技限制或能源供應的新增正式協議。",
+            "判斷：兩個月延長避免近期關稅斷崖，屬於風險下限改善；但它沒有抵銷今日油價與長債造成的折現率壓力。市場需要可執行條款，而不只是穩定關係的訊號。信心：中高。",
+            "反證：會後公布可驗證的關稅削減、稀土供應、AI事故機制或能源合作，並帶動長債與油價同步回落。"
+          ],
+          "links": [
+            {
+              "label": "Reuters美中峰會",
+              "url": "https://www.marketscreener.com/news/trump-welcomes-xi-to-washington-looking-for-a-trade-win-ce785adeda88f323"
+            },
+            {
+              "label": "AP峰會背景",
+              "url": "https://apnews.com/article/e560910c897fedb0448eda4cdbfdbaea"
+            }
+          ]
+        },
+        {
+          "heading": "跨資產變化表",
+          "table": {
+            "columns": [
+              "資產",
+              "午間狀態",
+              "相較晨間"
+            ],
+            "rows": [
+              [
+                "美股大型股",
+                "接近平盤至小跌",
+                "由開盤低點改善，未確認恐慌"
+              ],
+              [
+                "科技股",
+                "小跌",
+                "折現率壓力仍在，但買盤承接"
+              ],
+              [
+                "長天期美債",
+                "更弱",
+                "10年期約5.16%，突破晨間區間"
+              ],
+              [
+                "原油",
+                "更強",
+                "Brent約106美元，供應溢價回升"
+              ],
+              [
+                "美元",
+                "偏強",
+                "高利率提供支撐"
+              ],
+              [
+                "黃金",
+                "小跌",
+                "高殖利率暫時壓過避險需求"
+              ],
+              [
+                "加密資產",
+                "大致持平偏弱",
+                "未確認獨立風險訊號"
+              ],
+              [
+                "信用債",
+                "無足夠訊號",
+                "尚無證據顯示壓力全面擴散"
+              ]
+            ]
+          }
+        },
+        {
+          "heading": "相較晨間的新變化",
+          "points": [
+            "初領與續領失業救濟均低於預期，勞動市場快速惡化情境被削弱。",
+            "新屋銷售高於預期，但售價年減與高庫存顯示需求仍依賴讓價。",
+            "Brent重新升至106美元附近，能源通膨風險較晨間惡化。",
+            "10年期殖利率升至約5.16%，Williams與Hammack強化鷹派路徑。",
+            "S&P 500收復大部分開盤跌幅，顯示利率衝擊尚未轉成全面去風險。",
+            "美中休戰延長仍是目前最具體成果；更廣泛協議尚待正式文件。"
+          ]
+        },
+        {
+          "heading": "收盤前催化劑",
+          "points": [
+            "Trump—習近平會後是否公布具體關稅、AI、稀土或能源條款。",
+            "10年期殖利率能否守在5.15%以上，或回落至5.10%以下。",
+            "Brent是否維持105美元以上，確認能源風險再次加速。",
+            "S&P 500的盤中修復能否擴散至小型股與利率敏感產業。",
+            "信用利差與VIX是否加入長債的風險訊號。"
+          ],
+          "paragraphs": [
+            "午間判斷：晨間的「油價高、長債弱」主線被強化，但股票只部分接受它。若下午出現「10年期續升＋Brent守在105美元以上＋股市跌幅重新擴大」，才會從估值壓力升級為更廣泛的金融條件衝擊；若峰會交付具體成果並讓殖利率、油價同步回落，股市的盤中修復才更可信。"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "label": "美國勞工部失業救濟週報",
+          "url": "https://www.dol.gov/ui/data.pdf"
+        },
+        {
+          "label": "美國人口普查局新屋銷售",
+          "url": "https://www.census.gov/construction/nrs/pdf/newressales_202608.pdf"
+        },
+        {
+          "label": "Reuters市場更新",
+          "url": "https://www.fidelity.com/news/article/top-news/202609240626RTRSNEWSCOMBINED_KBN3VA14N-OUSBS_1"
+        },
+        {
+          "label": "Reuters全球市場",
+          "url": "https://www.marketscreener.com/news/bonds-shaky-oil-eases-off-highs-amid-trade-peace-talks-ce785adedb8ff722"
+        },
+        {
+          "label": "Reuters Williams談話",
+          "url": "https://www.marketscreener.com/news/fed-s-williams-says-it-is-reasonable-to-see-another-us-rate-hike-this-year-ce785adedd8efe26"
+        },
+        {
+          "label": "Cleveland Fed會議",
+          "url": "https://www.clevelandfed.org/events/ev-20260924-inflation-drivers-and-dynamics-conference-2026"
+        },
+        {
+          "label": "Reuters美股開盤",
+          "url": "https://www.fidelity.com/news/article/us-markets/202609240932RTRSNEWSCOMBINED_L4N45G14X_1"
+        },
+        {
+          "label": "Reuters美中峰會",
+          "url": "https://www.marketscreener.com/news/trump-welcomes-xi-to-washington-looking-for-a-trade-win-ce785adeda88f323"
+        },
+        {
+          "label": "AP峰會背景",
+          "url": "https://apnews.com/article/e560910c897fedb0448eda4cdbfdbaea"
+        },
+        {
+          "label": "Yahoo Finance S&P 500",
+          "url": "https://finance.yahoo.com/quote/%5EGSPC/"
+        },
+        {
+          "label": "Yahoo Finance 10年期殖利率",
+          "url": "https://finance.yahoo.com/quote/%5ETNX/"
+        },
+        {
+          "label": "Yahoo Finance Brent",
+          "url": "https://finance.yahoo.com/quote/BZ=F/"
+        }
+      ]
+    },
     {
       "id": "daily-2026-09-23-close",
       "cadence": "daily",
