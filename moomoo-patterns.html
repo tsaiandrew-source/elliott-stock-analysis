@@ -8,12 +8,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/elliott-plus-icon-32.png?v=20260923-1">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/elliott-plus-apple-touch-icon.png?v=20260923-1">
 <title>E+ 每日型態</title>
-<link rel="stylesheet" href="shared-topbar.css?v=20260923-1">
-<script src="shared-topbar.js?v=20260923-2" defer></script>
-<style>:root{color-scheme:light dark;--background:light-dark(rgb(255 255 255),rgb(24 24 24));--foreground:light-dark(rgb(26 28 31),rgb(255 255 255));--card:color-mix(in oklab,var(--foreground) 5%,var(--background));--muted-foreground:light-dark(rgb(26 28 31 / 49.4%),rgb(255 255 255 / 49.8%));--primary:light-dark(rgb(51 156 255),rgb(131 195 255));--accent:light-dark(rgb(229 242 255),rgb(13 39 63));--border:light-dark(rgb(26 28 31 / 8%),rgb(255 255 255 / 8.2%));--ring:light-dark(rgb(51 156 255),rgb(131 195 255 / 76%));--radius-md:8px;--font-weight-medium:500;--content-max:900px;background:var(--background)}html,body{margin:0}body{box-sizing:border-box;padding:calc(var(--shared-topbar-height) + env(safe-area-inset-top) + 1rem) max(1rem,env(safe-area-inset-right)) max(1rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left));background:inherit}iframe{display:block;width:100%;height:calc(100vh - var(--shared-topbar-height) - env(safe-area-inset-top) - 2rem);height:calc(100dvh - var(--shared-topbar-height) - env(safe-area-inset-top) - 2rem);margin:0 auto;border:0}</style>
+<style>:root{color-scheme:light dark;--background:light-dark(rgb(255 255 255),rgb(24 24 24));--foreground:light-dark(rgb(26 28 31),rgb(255 255 255));--card:color-mix(in oklab,var(--foreground) 5%,var(--background));--muted-foreground:light-dark(rgb(26 28 31 / 49.4%),rgb(255 255 255 / 49.8%));--primary:light-dark(rgb(51 156 255),rgb(131 195 255));--accent:light-dark(rgb(229 242 255),rgb(13 39 63));--border:light-dark(rgb(26 28 31 / 8%),rgb(255 255 255 / 8.2%));--ring:light-dark(rgb(51 156 255),rgb(131 195 255 / 76%));--radius-md:8px;--font-weight-medium:500;--content-max:900px;background:var(--background)}html,body{margin:0}body{box-sizing:border-box;padding:max(1rem,env(safe-area-inset-top)) max(1rem,env(safe-area-inset-right)) max(1rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left));background:inherit}iframe{display:block;width:100%;height:calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 2rem);height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 2rem);margin:0 auto;border:0}</style>
 </head>
 <body>
-<elliott-topbar data-current="moomoo" data-digest-href="data-model/home.html" data-moomoo-href="moomoo-patterns.html" data-exploration-href="social-exploration.html"></elliott-topbar>
 <iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="E+ 每日型態" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
 &lt;head&gt;
@@ -1087,14 +1084,6 @@ html&gt;body{padding:0}&lt;/style&gt;
           &lt;button type=&quot;button&quot; class=&quot;filter-chip momentum-oversold&quot; data-value=&quot;超賣&quot; aria-pressed=&quot;false&quot;&gt;超賣&lt;/button&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-      &lt;div class=&quot;filter-group&quot; data-filter=&quot;scope&quot; role=&quot;group&quot; aria-labelledby=&quot;scope-filter-label&quot;&gt;
-        &lt;span class=&quot;group-label&quot; id=&quot;scope-filter-label&quot;&gt;清單&lt;/span&gt;
-        &lt;div class=&quot;filter-options&quot;&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip active&quot; data-value=&quot;all&quot; aria-pressed=&quot;true&quot;&gt;全部&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;List 1&quot; aria-pressed=&quot;false&quot;&gt;List 1&lt;/button&gt;
-          &lt;button type=&quot;button&quot; class=&quot;filter-chip&quot; data-value=&quot;Candidate&quot; aria-pressed=&quot;false&quot;&gt;Candidate&lt;/button&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
       &lt;div class=&quot;filter-summary&quot;&gt;
         &lt;span class=&quot;filter-status&quot; aria-live=&quot;polite&quot;&gt;顯示 24／24 檔&lt;/span&gt;
         &lt;button type=&quot;button&quot; class=&quot;btn btn-ghost reset-filters&quot; disabled&gt;清除篩選&lt;/button&gt;
@@ -1819,7 +1808,6 @@ html&gt;body{padding:0}&lt;/style&gt;
     const resetFilters = group.querySelector(&#x27;.reset-filters&#x27;);
     const searchInput = group.querySelector(&#x27;.ticker-search&#x27;);
     const filters = {
-      scope: new Set(),
       action: new Set(),
       momentum: new Set(),
       query: &#x27;&#x27;
@@ -1842,7 +1830,6 @@ html&gt;body{padding:0}&lt;/style&gt;
 
     function render() {
       const visibleRows = mergedRows.filter(row =&gt;
-        (!filters.scope.size || [...filters.scope].some(value =&gt; row.lists.includes(value))) &amp;&amp;
         (!filters.action.size || filters.action.has(row.action)) &amp;&amp;
         (!filters.momentum.size || filters.momentum.has(row.momentum)) &amp;&amp;
         (!filters.query || row.ticker.includes(filters.query))
@@ -1873,7 +1860,7 @@ html&gt;body{padding:0}&lt;/style&gt;
       mobileDirection.setAttribute(&#x27;aria-label&#x27;, `${scope} 排序方向：${direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}`);
       status.textContent = `${scope} 目前排序：${labels[sortKey]}（${sortKey === &#x27;action&#x27; &amp;&amp; direction === 1 ? &#x27;決策優先&#x27; : direction === 1 ? &#x27;升冪&#x27; : &#x27;降冪&#x27;}）`;
       filterStatus.textContent = `顯示 ${visibleRows.length}／${mergedRows.length} 檔${filters.query ? `，搜尋「${filters.query}」` : &#x27;&#x27;}`;
-      resetFilters.disabled = !filters.scope.size &amp;&amp; !filters.action.size &amp;&amp; !filters.momentum.size &amp;&amp; !filters.query;
+      resetFilters.disabled = !filters.action.size &amp;&amp; !filters.momentum.size &amp;&amp; !filters.query;
     }
 
     group.querySelectorAll(&#x27;.filter-group&#x27;).forEach(filterGroup =&gt; {
@@ -1900,7 +1887,6 @@ html&gt;body{padding:0}&lt;/style&gt;
     });
 
     resetFilters.addEventListener(&#x27;click&#x27;, () =&gt; {
-      filters.scope.clear();
       filters.action.clear();
       filters.momentum.clear();
       filters.query = &#x27;&#x27;;

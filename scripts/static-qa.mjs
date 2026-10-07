@@ -332,11 +332,14 @@ if (await exists('data-model/home.html')) {
 
 if (await exists('moomoo-patterns.html')) {
   const moomoo = await read('moomoo-patterns.html');
-  for (const marker of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', 'data-current="moomoo"', 'data-digest-href="data-model/home.html"', 'data-moomoo-href="moomoo-patterns.html"', 'data-exploration-href="social-exploration.html"', '<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
-    if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: reusable top bar is missing ${marker}`);
+  for (const marker of ['<title>E+ 每日型態</title>', '&lt;h2&gt;E+ 每日型態&lt;/h2&gt;', 'assets/elliott-plus-icon-32.png', 'assets/elliott-plus-apple-touch-icon.png']) {
+    if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: page identity is missing ${marker}`);
   }
-  for (const marker of ["script-src 'self'", "style-src 'self'", "img-src 'self'", '--shared-topbar-height', 'safe-area-inset-top', 'safe-area-inset-bottom', '100dvh']) {
-    if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: responsive top bar shell is missing ${marker}`);
+  for (const marker of ["script-src 'self'", "style-src 'self'", "img-src 'self'", 'safe-area-inset-top', 'safe-area-inset-bottom', '100dvh']) {
+    if (!moomoo.includes(marker)) failures.push(`moomoo-patterns.html: responsive shell is missing ${marker}`);
+  }
+  for (const forbidden of ['shared-topbar.css', 'shared-topbar.js', '<elliott-topbar', '--shared-topbar-height', 'data-filter=&quot;scope&quot;', 'scope-filter-label', 'filters.scope']) {
+    if (moomoo.includes(forbidden)) failures.push(`moomoo-patterns.html: removed navigation or list filter remains: ${forbidden}`);
   }
 }
 
